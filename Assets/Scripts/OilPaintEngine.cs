@@ -85,7 +85,7 @@ public class OilPaintEngine : MonoBehaviour
         //Debug.Log("Rakel is " + Rakel.Length + "x" + Rakel.Width + " = " + Rakel.Length * Rakel.Width);
         //Rakel.UpdateNormal(RakelNormal, LOG_MASK_CALC_APPLY_TIME);
 
-        Rakel = new Rakel(RakelLength, RakelWidth, TextureResolution);
+        Rakel = new Rakel(RakelLength, RakelWidth, TextureResolution, WorldSpaceCanvas);
         int rakelPixelsLength = MathUtil.ToTextureSpaceLength(RakelLength, TextureResolution);
         int rakelPixelsWidth = MathUtil.ToTextureSpaceLength(RakelWidth, TextureResolution);
         Debug.Log("Rakel is " + rakelPixelsLength + "x" + rakelPixelsWidth + " = " + rakelPixelsLength * rakelPixelsWidth);
@@ -103,7 +103,7 @@ public class OilPaintEngine : MonoBehaviour
             if (Input.GetMouseButton(0) || Input.GetMouseButtonDown(0))
             {
                 UnityEngine.Debug.Log("hit at " + worldSpaceHit);
-                Rakel.Apply(worldSpaceHit, 0, 0, WorldSpaceCanvas, Texture);
+                Rakel.Apply(worldSpaceHit, 0, 0, Texture);
             }
 
             //Vector2Int preciseBrushPosition = WorldSpaceCoordinateToTextureSpaceCoordinate(worldSpaceHit);

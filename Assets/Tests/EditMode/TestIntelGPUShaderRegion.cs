@@ -7,12 +7,11 @@ public class TestIntelGPUShaderRegion
     [Test]
     public void Point()
     {
-        Vector3 a = new Vector3(0, 0, 0);
-        Vector3 b = a;
-        Vector3 c = a;
-        Vector3 d = a;
-        WorldSpaceCanvas wsc = new WorldSpaceCanvas(1, 1, 3, new Vector3(0, 0, 0));
-        IntelGPUShaderRegion sr = new IntelGPUShaderRegion(wsc, a, b, c, d);
+        Vector2Int a = new Vector2Int(0, 0);
+        Vector2Int b = a;
+        Vector2Int c = a;
+        Vector2Int d = a;
+        IntelGPUShaderRegion sr = new IntelGPUShaderRegion(a, b, c, d);
 
         Assert.AreEqual(
             1,
@@ -35,12 +34,12 @@ public class TestIntelGPUShaderRegion
         );
 
         Assert.AreEqual(
-            1,
+            0,
             sr.CalculationPositionX
         );
 
         Assert.AreEqual(
-            1,
+            0,
             sr.CalculationPositionY
         );
     }
@@ -48,13 +47,12 @@ public class TestIntelGPUShaderRegion
     [Test]
     public void LineHorizontal_SmallerThanGroupSize()
     {
-        Vector3 a = new Vector3(0, 0, 0);
-        Vector3 b = a;
-        Vector3 c = new Vector3(1, 0, 0);
-        Vector3 d = c;
+        Vector2Int a = new Vector2Int(0, 0);
+        Vector2Int b = a;
+        Vector2Int c = new Vector2Int(1, 0);
+        Vector2Int d = c;
 
-        WorldSpaceCanvas wsc = new WorldSpaceCanvas(1, 1, 3, new Vector3(0, 0, 0));
-        IntelGPUShaderRegion sr = new IntelGPUShaderRegion(wsc, a, b, c, d);
+        IntelGPUShaderRegion sr = new IntelGPUShaderRegion(a, b, c, d);
 
         Assert.AreEqual(
             2,
@@ -70,13 +68,12 @@ public class TestIntelGPUShaderRegion
     [Test]
     public void LineHorizontal_BiggerThanGroupSize()
     {
-        Vector3 a = new Vector3(0, 0, 0);
-        Vector3 b = a;
-        Vector3 c = new Vector3(9, 0, 0);
-        Vector3 d = c;
+        Vector2Int a = new Vector2Int(0, 0);
+        Vector2Int b = a;
+        Vector2Int c = new Vector2Int(9, 0);
+        Vector2Int d = c;
 
-        WorldSpaceCanvas wsc = new WorldSpaceCanvas(19, 19, 1, new Vector3(0, 0, 0));
-        IntelGPUShaderRegion sr = new IntelGPUShaderRegion(wsc, a, b, c, d);
+        IntelGPUShaderRegion sr = new IntelGPUShaderRegion(a, b, c, d);
 
         Assert.AreEqual(
             10,
@@ -92,13 +89,12 @@ public class TestIntelGPUShaderRegion
     [Test]
     public void LineVertical_SmallerThanGroupSize()
     {
-        Vector3 a = new Vector3(0, 1, 0);
-        Vector3 b = a;
-        Vector3 c = new Vector3(0, 0, 0);
-        Vector3 d = c;
+        Vector2Int a = new Vector2Int(0, 1);
+        Vector2Int b = a;
+        Vector2Int c = new Vector2Int(0, 0);
+        Vector2Int d = c;
 
-        WorldSpaceCanvas wsc = new WorldSpaceCanvas(19, 19, 1, new Vector3(0, 0, 0));
-        IntelGPUShaderRegion sr = new IntelGPUShaderRegion(wsc, a, b, c, d);
+        IntelGPUShaderRegion sr = new IntelGPUShaderRegion(a, b, c, d);
 
         Assert.AreEqual(
             1,
@@ -114,13 +110,12 @@ public class TestIntelGPUShaderRegion
     [Test]
     public void LineVertical_BiggerThanGroupSize()
     {
-        Vector3 a = new Vector3(0, 8, 0);
-        Vector3 b = a;
-        Vector3 c = new Vector3(0, 0, 0);
-        Vector3 d = c;
+        Vector2Int a = new Vector2Int(0, 8);
+        Vector2Int b = a;
+        Vector2Int c = new Vector2Int(0, 0);
+        Vector2Int d = c;
 
-        WorldSpaceCanvas wsc = new WorldSpaceCanvas(19, 19, 1, new Vector3(0, 0, 0));
-        IntelGPUShaderRegion sr = new IntelGPUShaderRegion(wsc, a, b, c, d);
+        IntelGPUShaderRegion sr = new IntelGPUShaderRegion(a, b, c, d);
 
         Assert.AreEqual(
             1,
@@ -136,13 +131,12 @@ public class TestIntelGPUShaderRegion
     [Test]
     public void Rectangle()
     {
-        Vector3 a = new Vector3(0, 16, 0);
-        Vector3 b = new Vector3(8, 16, 0);
-        Vector3 c = new Vector3(0, 0, 0);
-        Vector3 d = new Vector3(8, 0, 0);
+        Vector2Int a = new Vector2Int(0, 16);
+        Vector2Int b = new Vector2Int(8, 16);
+        Vector2Int c = new Vector2Int(0, 0);
+        Vector2Int d = new Vector2Int(8, 0);
 
-        WorldSpaceCanvas wsc = new WorldSpaceCanvas(19, 19, 1, new Vector3(9, 9, 0));
-        IntelGPUShaderRegion sr = new IntelGPUShaderRegion(wsc, a, b, c, d);
+        IntelGPUShaderRegion sr = new IntelGPUShaderRegion(a, b, c, d);
 
         Assert.AreEqual(
             9,

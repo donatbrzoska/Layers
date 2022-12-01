@@ -16,17 +16,12 @@ public class IntelGPUShaderRegion
     public int CalculationPositionX { get; private set; }
     public int CalculationPositionY { get; private set; }
 
-    public IntelGPUShaderRegion(WorldSpaceCanvas wsc, Vector3 a, Vector3 b, Vector3 c, Vector3 d)
+    public IntelGPUShaderRegion(Vector2Int a, Vector2Int b, Vector2Int c, Vector2Int d)
     {
-        Vector2Int a_ = wsc.MapToPixelInRange(a);
-        Vector2Int b_ = wsc.MapToPixelInRange(b);
-        Vector2Int c_ = wsc.MapToPixelInRange(c);
-        Vector2Int d_ = wsc.MapToPixelInRange(d);
-
-        int minX = Mathf.Min(Mathf.Min(Mathf.Min(a_.x, b_.x), c_.x), d_.x);
-        int maxX = Mathf.Max(Mathf.Max(Mathf.Max(a_.x, b_.x), c_.x), d_.x);
-        int minY = Mathf.Min(Mathf.Min(Mathf.Min(a_.y, b_.y), c_.y), d_.y);
-        int maxY = Mathf.Max(Mathf.Max(Mathf.Max(a_.y, b_.y), c_.y), d_.y);
+        int minX = Mathf.Min(Mathf.Min(Mathf.Min(a.x, b.x), c.x), d.x);
+        int maxX = Mathf.Max(Mathf.Max(Mathf.Max(a.x, b.x), c.x), d.x);
+        int minY = Mathf.Min(Mathf.Min(Mathf.Min(a.y, b.y), c.y), d.y);
+        int maxY = Mathf.Max(Mathf.Max(Mathf.Max(a.y, b.y), c.y), d.y);
 
         int dx = maxX - minX;
         int cols = dx + 1;

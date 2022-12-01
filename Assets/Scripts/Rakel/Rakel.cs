@@ -8,18 +8,20 @@ public class Rakel : IRakel
     private float Length; // world space
     private float Width; // world space
     private int Resolution; // pixels per 1 world space
+    private WorldSpaceCanvas WorldSpaceCanvas;
 
-    public Rakel(float length, float width, int resolution)
+    public Rakel(float length, float width, int resolution, WorldSpaceCanvas wsc)
     {
         Length = length;
         Width = width;
         Resolution = resolution;
+        WorldSpaceCanvas = wsc;
     }
 
     // Position is located halfway through the rakel, at the handle
     // Rotation 0 means Rakel is directed to the right
     // Tilt 0 means Rakel is flat on canvas
-    public void Apply(Vector3 rakelPosition, float rakelRotation, float rakelTilt, WorldSpaceCanvas wsc, RenderTexture target)
+    public void Apply(Vector3 rakelPosition, float rakelRotation, float rakelTilt, RenderTexture target)
     {
         Vector3 ulOrigin = new Vector3(0, Length, 0);
         Vector3 urOrigin = new Vector3(Width, Length, 0);
@@ -46,9 +48,12 @@ public class Rakel : IRakel
         UnityEngine.Debug.Log("llFinal " + llFinal);
         UnityEngine.Debug.Log("lrFinal " + lrFinal);
 
-
-
-        IntelGPUShaderRegion sr = new IntelGPUShaderRegion(wsc, ulFinal, urFinal, llFinal, lrFinal);
+        IntelGPUShaderRegion sr = new IntelGPUShaderRegion(
+            WorldSpaceCanvas.MapToPixelInRange(ulFinal),
+            WorldSpaceCanvas.MapToPixelInRange(urFinal),
+            WorldSpaceCanvas.MapToPixelInRange(llFinal),
+            WorldSpaceCanvas.MapToPixelInRange(lrFinal)
+        );
 
 
         ComputeShader applyShader = (ComputeShader)Resources.Load("ApplyShader");
