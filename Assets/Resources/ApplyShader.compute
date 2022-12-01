@@ -1,0 +1,86 @@
+#pragma kernel main
+
+//RWStructuredBuffer<uint> debug;
+
+uint CalculationSizeX;
+uint CalculationSizeY;
+
+uint CalculationPositionX;
+uint CalculationPositionY;
+
+
+// needed?
+float mask_pos_x;
+float mask_pos_y;
+float mask_pos_z;
+
+//RWStructuredBuffer<int> mask_coordinates;
+uint mask_y_eq_0_index;
+uint mask_n_rows;
+uint mask_n_cols;
+
+float canvas_pos_x;
+float canvas_pos_y;
+float canvas_pos_z;
+
+//float canvas_width;
+//float canvas_height;
+
+uint canvas_width;
+uint canvas_height;
+
+RWTexture2D<float4> Texture;
+
+uint IJ(uint i, uint j)
+{
+    return i * 2 + j;
+}
+
+uint XYToX(uint x, uint y, uint width)
+{
+    return y * width + x;
+}
+
+[numthreads(1,8,1)]
+void main (uint3 id : SV_DispatchThreadID)
+{
+    //Texture[id.xy] = float4(id.x & id.y, (id.x & 15)/15.0, (id.y & 15)/15.0, 0.0);
+    //debug[XYToX(id.x, id.y, mask_n_cols)] = id.y;
+    if (id.x < CalculationSizeX && id.y < CalculationSizeY){
+        uint2 pos = id.xy + uint2(CalculationPositionX, CalculationPositionY);
+        Texture[pos] = float4(id.x & id.y, (id.x & 15)/15.0, (id.y & 15)/15.0, 0.0);
+    }
+/*
+    // filter out of calculation threads THIS WILL HAVE TO STAY
+    if (id.x < mask_n_rows && id.y < mask_n_cols) {
+        // filter out of mask threads
+        int mask_start = mask_coordinates[IJ(id.y, 0)];
+        int mask_end = mask_coordinates[IJ(id.y, 1)];
+        int mask_row_width = mask_end - mask_start + 1;
+        bool is_mask_relevant = (int) id.x >= mask_start + mask_row_width && (int) id.x <= mask_end + mask_row_width;
+        if (is_mask_relevant) {
+            // filter out of bounds threads
+            int x_mask = id.x;
+            int y_mask = mask_y_eq_0_index - id.y;
+
+            int x_canvas = x_mask + mask_pos_x;
+            int y_canvas = y_mask + mask_pos_y;
+
+            bool is_in_bounds = x_canvas >= 0
+                             && x_canvas < (int) canvas_width
+                             && y_canvas >= 0
+                             && y_canvas < (int) canvas_height;
+            if (is_in_bounds) {
+                Texture[id.xy] = float4(id.x & id.y, (id.x & 15)/15.0, (id.y & 15)/15.0, 0.0);
+            } else {
+                debug[XYToX(id.x, id.y, mask_n_cols)] = 3;
+            }
+        } else {
+            debug[XYToX(id.x, id.y, mask_n_cols)] = 2;
+        }
+    } else {
+        debug[XYToX(id.x, id.y, mask_n_cols)] = 1;
+    }
+*/
+
+}
