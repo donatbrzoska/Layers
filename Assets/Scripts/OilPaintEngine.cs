@@ -1,40 +1,28 @@
-using System.Collections;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Threading;
 using UnityEngine;
 
 public class OilPaintEngine : MonoBehaviour
 {
-    private const bool LOG_MASK_CALC_APPLY_TIME = false;
-
     private Camera Camera;
 
-    private int CanvasColliderID;
+    public int TextureResolution { get; private set; } = 100; // texture space pixels per 1 world space
+    private RenderTexture Texture;
 
+    private int CanvasColliderID;
     private Renderer CanvasRenderer;
     private float CanvasWidth; // world space
     private float CanvasHeight; // world space
     private Vector3 CanvasPosition; // world space
-
-    //private FastTexture2D Texture;
-    //private FastTexture2D NormalMap;
-    private int TextureWidth; // texture space
-    private int TextureHeight; // texture space
-    public int TextureResolution { get; private set; } = 100; // texture space pixels per 1 world space
     private WorldSpaceCanvas WorldSpaceCanvas;
-    private RenderTexture Texture;
 
-    //private IOilPaintSurface OilPaintSurface;
     //private IRakelPaintReservoir RakelPaintReservoir;
+    //public Paint RakelPaint { get; private set; }
 
     public Vector2 RakelNormal { get; private set; } = new Vector2(1, 0);
     public float RakelLength { get; private set; } = 8f; // world space
     public float RakelWidth { get; private set; } = 0.3f; // world space
+    private IRakel Rakel;
 
     private RakelInterpolator RakelInterpolator;
-    private IRakel Rakel;
-    //public Paint RakelPaint { get; private set; }
 
 
     void Awake()
@@ -43,16 +31,11 @@ public class OilPaintEngine : MonoBehaviour
 
         CanvasColliderID = GameObject.Find("Canvas").GetComponent<MeshCollider>().GetInstanceID();
         CanvasRenderer = GameObject.Find("Canvas").GetComponent<Renderer>();
-
-        // convert scale attribute to world space
-        CanvasWidth = GameObject.Find("Canvas").GetComponent<Transform>().localScale.x * 10;
-        CanvasHeight = GameObject.Find("Canvas").GetComponent<Transform>().localScale.y * 10;
-
+        CanvasWidth = GameObject.Find("Canvas").GetComponent<Transform>().localScale.x * 10; // convert scale attribute to world space
+        CanvasHeight = GameObject.Find("Canvas").GetComponent<Transform>().localScale.y * 10; // convert scale attribute to world space
         CanvasPosition = GameObject.Find("Canvas").GetComponent<Transform>().position;
 
         CreateCanvasAndTools();
-
-
     }
 
     void Start()
@@ -72,7 +55,6 @@ public class OilPaintEngine : MonoBehaviour
         //NormalMap = new FastTexture2D(TextureWidth, TextureHeight);
         //CanvasRenderer.material.EnableKeyword("_NORMALMAP");
         //CanvasRenderer.material.SetTexture("_BumpMap", NormalMap.Texture);
-
 
         CreateRakelDrawer();
     }
@@ -97,15 +79,6 @@ public class OilPaintEngine : MonoBehaviour
         Vector3 worldSpaceHit = InputUtil.GetMouseHit(Camera, CanvasColliderID);
         if (!worldSpaceHit.Equals(Vector3.negativeInfinity))
         {
-
-            //if (Input.GetMouseButton(0) || Input.GetMouseButtonDown(0))
-            //{
-            //    UnityEngine.Debug.Log("hit at " + worldSpaceHit);
-            //    Rakel.Apply(worldSpaceHit, 0, 0, Texture);
-            //}
-
-            //Vector2Int preciseBrushPosition = WorldSpaceCoordinateToTextureSpaceCoordinate(worldSpaceHit);
-
             if (Input.GetMouseButtonDown(0))
             {
                 RakelInterpolator.NewStroke();
@@ -113,30 +86,6 @@ public class OilPaintEngine : MonoBehaviour
             RakelInterpolator.AddNode(worldSpaceHit, 0, 0, TextureResolution / 2);
         }
     }
-
-    Vector2Int WorldSpaceCoordinateToTextureSpaceCoordinate(Vector3 worldSpaceCoordinate)
-    {
-        // "move" canvas to positive coordinates only, so further calculations are simplified
-        float absX = worldSpaceCoordinate.x + CanvasWidth / 2; // TODO what about odd numbers?
-        float absY = worldSpaceCoordinate.z + CanvasHeight / 2; // TODO what about odd numbers?
-
-        // for the space conversion, a ratio between the two sizes is needed
-        float xMultiplier = TextureWidth / CanvasWidth; // Calculate: How much wider is the texture than the world space?
-        float yMultiplier = TextureHeight / CanvasHeight;
-
-        int textureX = Mathf.RoundToInt(absX * xMultiplier);
-        int textureY = Mathf.RoundToInt(absY * yMultiplier);
-
-        return new Vector2Int(textureX, textureY);
-    }
-
-    
-
-    /*
-     MouseInput: Canvas hitpoint in world space
-     Canvas:     Convert world space hitpoint --> canvas texture space hitpoint
-     Brush:      Do stuff with texture space hitpoint
-    */
 
     public void UpdateRakelLength(float worldSpaceLength)
     {

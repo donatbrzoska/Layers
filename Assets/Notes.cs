@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Notes : MonoBehaviour
@@ -56,9 +54,7 @@ public class Notes : MonoBehaviour
  * 
  * 
  * 
- * 
  * - Bestehende Software zum Malen mit Ölfarbe anschauen
- * - Zeichnen asynchron ausführen
  * - Zusammenhang zwischen Neigungswinkel und Menge der Farbe untersuchen
  * - NormalMap über Sobel-Filter
  *   - Edge Cases müssen noch gemacht werden
@@ -81,6 +77,8 @@ public class Notes : MonoBehaviour
  * - Volumen für Emit und Pickup steuerbar machen, aktuell wird sonst von der Farbmischung im Reservoir kein Gebrauch gemacht, denn dort kann nie mehr als 1 Stück Farbe liegen
  * - Canvas Snapshot Buffer (oder Delay in AddPaint auf OilPaintSurface)
  * - Irgendwas überlegen, damit sich die Farbe auch auf dem Reservoir verschiebt?
+ * - Evtl. in OilPaintSurface gar nicht überprüfen, ob die Rakel über dem Canvas ist
+ *   - Problem ist dadurch aktuell, dass man nicht mit der äußersten Kante der Rakel zeichnen kann, weil der Cursor schon den Canvas verlassen hat
  * - GUI: Rotation für gegebene Strichlänge ermöglichen (Winkel_Anfang, Winkel_Ende, Strichlänge)
  * 
  * GPU-Beschleunigung
@@ -1299,4 +1297,7 @@ public class Notes : MonoBehaviour
  * - TestRakel schreiben?
  * - Interpolation / RakelDrawer aktivieren
  * - Commit machen bevor ich weitermache mit Rotation?
+ * 
+ * 
+ * 01.12.2022
  */
