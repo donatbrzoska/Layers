@@ -32,9 +32,7 @@ public class OilPaintEngine : MonoBehaviour
     public float RakelLength { get; private set; } = 8f; // world space
     public float RakelWidth { get; private set; } = 0.3f; // world space
 
-    private NodeInterpolator NodeInterpolator;
-    private Thread RakelDrawerThread;
-    private RakelDrawer RakelDrawer;
+    private RakelInterpolator RakelInterpolator;
     private IRakel Rakel;
     //public Paint RakelPaint { get; private set; }
 
@@ -90,20 +88,7 @@ public class OilPaintEngine : MonoBehaviour
         int rakelPixelsWidth = MathUtil.ToTextureSpaceLength(RakelWidth, TextureResolution);
         Debug.Log("Rakel is " + rakelPixelsLength + "x" + rakelPixelsWidth + " = " + rakelPixelsLength * rakelPixelsWidth);
 
-
-        //BlockingCollection<Node> nodeQueue = new BlockingCollection<Node>(new ConcurrentQueue<Node>());
-
-        //NodeInterpolator = new NodeInterpolator(nodeQueue);
-
-        //if (RakelDrawerThread != null && RakelDrawerThread.IsAlive)
-        //{
-        //    RakelDrawer.Stop();
-        //    RakelDrawerThread.Join();
-        //}
-        NodeInterpolator = new NodeInterpolator(Rakel, Texture);
-        //RakelDrawer = new RakelDrawer(Rakel, Texture);
-        //RakelDrawerThread = new Thread(RakelDrawer.Start);
-        //RakelDrawerThread.Start();
+        RakelInterpolator = new RakelInterpolator(Rakel, Texture);
     }
 
     // Update is called once per frame
@@ -123,9 +108,9 @@ public class OilPaintEngine : MonoBehaviour
 
             if (Input.GetMouseButtonDown(0))
             {
-                NodeInterpolator.NewStroke();
+                RakelInterpolator.NewStroke();
             }
-            NodeInterpolator.AddNode(worldSpaceHit, 0, 0, TextureResolution / 2);
+            RakelInterpolator.AddNode(worldSpaceHit, 0, 0, TextureResolution / 2);
         }
     }
 

@@ -3,21 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using UnityEngine;
 
-//public struct Node
-//{
-//    public Vector3 Position { get; }
-//    public float Rotation { get; }
-//    public float Tilt { get; }
-
-//    public Node(Vector3 position, float rotation, float tilt) : this()
-//    {
-//        Position = position;
-//        Rotation = rotation;
-//        Tilt = tilt;
-//    }
-//}
-
-public class NodeInterpolator
+public class RakelInterpolator
 {
     private RenderTexture DrawingTarget;
     private IRakel Rakel;
@@ -29,7 +15,7 @@ public class NodeInterpolator
     private float NO_ANGLE = float.NaN;
     private Vector3 NO_POSITION = Vector3.negativeInfinity;
 
-    public NodeInterpolator(IRakel rakel, RenderTexture drawingTarget)
+    public RakelInterpolator(IRakel rakel, RenderTexture drawingTarget)
     {
         Rakel = rakel;
         DrawingTarget = drawingTarget;
@@ -56,7 +42,6 @@ public class NodeInterpolator
                 && PreviousRakelTilt.Equals(NO_ANGLE);
             if (isFirstNodeOfStroke)
             {
-                //NodeSink.Add(new Node(rakelPosition, rakelRotation, rakelTilt));
                 Rakel.Apply(rakelPosition, rakelRotation, rakelTilt, DrawingTarget);
             }
             else
@@ -88,7 +73,6 @@ public class NodeInterpolator
                     float currentTilt = previousTilt + dt / steps;
 
                     Rakel.Apply(currentPosition, previousRotation, previousTilt, DrawingTarget);
-                    //NodeSink.Add(new Node(currentPosition, currentRotation, currentTilt));
 
                     previousPosition = currentPosition;
                     previousRotation = currentRotation;
