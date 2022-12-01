@@ -1,5 +1,7 @@
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 
 public class OilPaintEngine : MonoBehaviour
@@ -29,10 +31,13 @@ public class OilPaintEngine : MonoBehaviour
     public Vector2 RakelNormal { get; private set; } = new Vector2(1, 0);
     public float RakelLength { get; private set; } = 8f; // world space
     public float RakelWidth { get; private set; } = 0.3f; // world space
-    private Rakel Rakel;
+
+    private NodeInterpolator NodeInterpolator;
+    private Thread RakelDrawerThread;
+    private RakelDrawer RakelDrawer;
+    private IRakel Rakel;
     //public Paint RakelPaint { get; private set; }
 
-    public RakelDrawer RakelDrawer;
 
     void Awake()
     {
@@ -70,6 +75,7 @@ public class OilPaintEngine : MonoBehaviour
         //CanvasRenderer.material.EnableKeyword("_NORMALMAP");
         //CanvasRenderer.material.SetTexture("_BumpMap", NormalMap.Texture);
 
+
         CreateRakelDrawer();
     }
 
@@ -79,18 +85,25 @@ public class OilPaintEngine : MonoBehaviour
         //    WorldSpaceLengthToTextureSpaceLength(RakelLength, TextureResolution),
         //    WorldSpaceLengthToTextureSpaceLength(RakelWidth, TextureResolution));
 
-        //int length = WorldSpaceLengthToTextureSpaceLength(RakelLength, TextureResolution);
-        //int width = WorldSpaceLengthToTextureSpaceLength(RakelWidth, TextureResolution);
-        //IRakel Rakel = new Rakel(length, width, RakelPaintReservoir, new MaskCalculator(), new MaskApplicator());
-        //Debug.Log("Rakel is " + Rakel.Length + "x" + Rakel.Width + " = " + Rakel.Length * Rakel.Width);
-        //Rakel.UpdateNormal(RakelNormal, LOG_MASK_CALC_APPLY_TIME);
-
         Rakel = new Rakel(RakelLength, RakelWidth, TextureResolution, WorldSpaceCanvas);
         int rakelPixelsLength = MathUtil.ToTextureSpaceLength(RakelLength, TextureResolution);
         int rakelPixelsWidth = MathUtil.ToTextureSpaceLength(RakelWidth, TextureResolution);
         Debug.Log("Rakel is " + rakelPixelsLength + "x" + rakelPixelsWidth + " = " + rakelPixelsLength * rakelPixelsWidth);
 
-        //RakelDrawer = new RakelDrawer(Rakel);
+
+        //BlockingCollection<Node> nodeQueue = new BlockingCollection<Node>(new ConcurrentQueue<Node>());
+
+        //NodeInterpolator = new NodeInterpolator(nodeQueue);
+
+        //if (RakelDrawerThread != null && RakelDrawerThread.IsAlive)
+        //{
+        //    RakelDrawer.Stop();
+        //    RakelDrawerThread.Join();
+        //}
+        NodeInterpolator = new NodeInterpolator(Rakel, Texture);
+        //RakelDrawer = new RakelDrawer(Rakel, Texture);
+        //RakelDrawerThread = new Thread(RakelDrawer.Start);
+        //RakelDrawerThread.Start();
     }
 
     // Update is called once per frame
@@ -100,19 +113,19 @@ public class OilPaintEngine : MonoBehaviour
         if (!worldSpaceHit.Equals(Vector3.negativeInfinity))
         {
 
-            if (Input.GetMouseButton(0) || Input.GetMouseButtonDown(0))
-            {
-                UnityEngine.Debug.Log("hit at " + worldSpaceHit);
-                Rakel.Apply(worldSpaceHit, 0, 0, Texture);
-            }
+            //if (Input.GetMouseButton(0) || Input.GetMouseButtonDown(0))
+            //{
+            //    UnityEngine.Debug.Log("hit at " + worldSpaceHit);
+            //    Rakel.Apply(worldSpaceHit, 0, 0, Texture);
+            //}
 
             //Vector2Int preciseBrushPosition = WorldSpaceCoordinateToTextureSpaceCoordinate(worldSpaceHit);
 
-            //if (Input.GetMouseButtonDown(0))
-            //{
-            //    RakelDrawer.NewStroke();
-            //}
-            //RakelDrawer.AddNode(OilPaintSurface, preciseBrushPosition, RakelNormal, LOG_MASK_CALC_APPLY_TIME);
+            if (Input.GetMouseButtonDown(0))
+            {
+                NodeInterpolator.NewStroke();
+            }
+            NodeInterpolator.AddNode(worldSpaceHit, 0, 0, TextureResolution / 2);
         }
     }
 

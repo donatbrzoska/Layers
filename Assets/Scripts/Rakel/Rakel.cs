@@ -43,10 +43,10 @@ public class Rakel : IRakel
         Vector3 urFinal = urRotated + positionTranslation;
         Vector3 llFinal = llRotated + positionTranslation;
         Vector3 lrFinal = lrRotated + positionTranslation;
-        UnityEngine.Debug.Log("ulFinal " + ulFinal);
-        UnityEngine.Debug.Log("urFinal " + urFinal);
-        UnityEngine.Debug.Log("llFinal " + llFinal);
-        UnityEngine.Debug.Log("lrFinal " + lrFinal);
+        //UnityEngine.Debug.Log("ulFinal " + ulFinal);
+        //UnityEngine.Debug.Log("urFinal " + urFinal);
+        //UnityEngine.Debug.Log("llFinal " + llFinal);
+        //UnityEngine.Debug.Log("lrFinal " + lrFinal);
 
         IntelGPUShaderRegion sr = new IntelGPUShaderRegion(
             WorldSpaceCanvas.MapToPixelInRange(ulFinal),
@@ -65,13 +65,13 @@ public class Rakel : IRakel
         applyShader.SetInt("CalculationPositionX", sr.CalculationPositionX);
         applyShader.SetInt("CalculationPositionY", sr.CalculationPositionY);
 
-        UnityEngine.Debug.Log("Hit canvas at " + rakelPosition);
-        UnityEngine.Debug.Log("CalculationSizeX " + sr.CalculationSizeX);
-        UnityEngine.Debug.Log("CalculationSizeY " + sr.CalculationSizeY);
+        //UnityEngine.Debug.Log("Hit canvas at " + rakelPosition);
+        //UnityEngine.Debug.Log("CalculationSizeX " + sr.CalculationSizeX);
+        //UnityEngine.Debug.Log("CalculationSizeY " + sr.CalculationSizeY);
 
 
         applyShader.SetTexture(0, "Texture", target);
-        UnityEngine.Debug.Log("Dispatching with x y " + sr.ThreadGroupsX + " " + sr.ThreadGroupsY);
+        //UnityEngine.Debug.Log("Dispatching with x y " + sr.ThreadGroupsX + " " + sr.ThreadGroupsY);
         applyShader.Dispatch(0, sr.ThreadGroupsX, sr.ThreadGroupsY, 1);
 
         // Shader
