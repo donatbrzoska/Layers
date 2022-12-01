@@ -141,13 +141,13 @@ public class OilPaintEngine : MonoBehaviour
     public void UpdateRakelLength(float worldSpaceLength)
     {
         RakelLength = worldSpaceLength;
-        //CreateRakelDrawer();
+        CreateRakelDrawer();
     }
 
     public void UpdateRakelWidth(float worldSpaceWidth)
     {
         RakelWidth = worldSpaceWidth;
-        //CreateRakelDrawer();
+        CreateRakelDrawer();
     }
 
     public void UpdateRakelNormal(Vector2 normal)
@@ -164,6 +164,6 @@ public class OilPaintEngine : MonoBehaviour
     public void UpdateTextureResolution(int pixelsPerWorldSpaceUnit)
     {
         TextureResolution = pixelsPerWorldSpaceUnit;
-        //CreateCanvasAndTools();
+        CreateCanvasAndTools();
     }
 }

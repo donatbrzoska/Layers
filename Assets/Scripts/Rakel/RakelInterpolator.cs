@@ -57,7 +57,7 @@ public class RakelInterpolator
                 float dt = Mathf.Abs(PreviousRakelTilt - rakelTilt);
                 int tiltSteps = (int)(dt * interpolationResolution); // TODO maybe adjust
 
-                int steps = Mathf.Max(Mathf.Max(positionSteps, rotationSteps), tiltSteps);
+                int steps = Mathf.Max(1, Mathf.Max(Mathf.Max(positionSteps, rotationSteps), tiltSteps));
 
 
                 // 2. interpolate
