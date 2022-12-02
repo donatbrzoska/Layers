@@ -3,6 +3,7 @@
 public class RakelInterpolator
 {
     private RenderTexture DrawingTarget;
+    private WorldSpaceCanvas WorldSpaceCanvas;
     private IRakel Rakel;
 
     private Vector3 PreviousRakelPosition;
@@ -12,9 +13,10 @@ public class RakelInterpolator
     private float NO_ANGLE = float.NaN;
     private Vector3 NO_POSITION = Vector3.negativeInfinity;
 
-    public RakelInterpolator(IRakel rakel, RenderTexture drawingTarget)
+    public RakelInterpolator(IRakel rakel, WorldSpaceCanvas wsc, RenderTexture drawingTarget)
     {
         Rakel = rakel;
+        WorldSpaceCanvas = wsc;
         DrawingTarget = drawingTarget;
     }
 
@@ -39,20 +41,41 @@ public class RakelInterpolator
                 && PreviousRakelTilt.Equals(NO_ANGLE);
             if (isFirstNodeOfStroke)
             {
-                Rakel.Apply(rakelPosition, rakelRotation, rakelTilt, DrawingTarget);
+                Rakel.Apply(
+                    rakelPosition,
+                    rakelRotation,
+                    rakelTilt,
+                    WorldSpaceCanvas.Position,
+                    WorldSpaceCanvas.Size,
+                    DrawingTarget);
             }
             else
             {
-                // 1. determine steps
+                // 1. determine differences and steps
                 Vector3 dp = rakelPosition - PreviousRakelPosition;
                 float dpLength = dp.magnitude;
                 int positionSteps = (int)(dpLength * interpolationResolution);
-
-                float dr = Mathf.Abs(PreviousRakelRotation - rakelRotation);
-                int rotationSteps = (int)(dr * interpolationResolution); // TODO maybe adjust
+                
+                float dr = rakelRotation - PreviousRakelRotation;
+                if (Mathf.Abs(dr) >= 300){
+                    if (rakelRotation < PreviousRakelRotation) {
+                        // turn over case 1: from 360 to 0
+                        // -> dr in in this case is something like -345
+                        // -> needs to be positive and small though because we want to rotate further over
+                        dr = 360 + dr;
+                    } else {
+                        // turn over case 2: from 0 to 360
+                        // -> dr in this case is something like 345
+                        // -> needs to be negative negative and small though because we want to rotate further over
+                        dr = dr - 360;
+                    }
+                }
+                float arcLength = Mathf.PI * (Rakel.Length / 2) * (Mathf.Abs(dr)/180);
+                int rotationSteps = (int)(arcLength * interpolationResolution);
 
                 float dt = Mathf.Abs(PreviousRakelTilt - rakelTilt);
-                int tiltSteps = (int)(dt * interpolationResolution); // TODO maybe adjust
+                arcLength = Mathf.PI * Rakel.Width * (Mathf.Abs(dt)/180);
+                int tiltSteps = (int)(arcLength * interpolationResolution);
 
                 int steps = Mathf.Max(1, Mathf.Max(Mathf.Max(positionSteps, rotationSteps), tiltSteps));
 
@@ -64,12 +87,28 @@ public class RakelInterpolator
 
                 for (int i=0; i<steps; i++)
                 {
-                    // skip first one, because that was already added with new stroke call
+                    // first one is skipped, because that was already added with new stroke call
+
                     Vector3 currentPosition = previousPosition + dp / steps;
+
                     float currentRotation = previousRotation + dr / steps;
+                    if (currentRotation >= 360) { // fix turnover case 1
+                        currentRotation = currentRotation % 360;
+                    }
+                    if (currentRotation < 0) { // fix turnover case 2
+                        currentRotation = 360 + currentRotation;
+                    }
+
                     float currentTilt = previousTilt + dt / steps;
 
-                    Rakel.Apply(currentPosition, previousRotation, previousTilt, DrawingTarget);
+                    Rakel.Apply(
+                        currentPosition,
+                        currentRotation,
+                        currentTilt,
+                        WorldSpaceCanvas.Position,
+                        WorldSpaceCanvas.Size,
+                        DrawingTarget
+                    );
 
                     previousPosition = currentPosition;
                     previousRotation = currentRotation;

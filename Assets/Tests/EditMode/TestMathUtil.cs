@@ -12,6 +12,14 @@ public class TestMathUtil
             MathUtil.RotateAroundOrigin(Vector2.right, 90)
         );
     }
+    [Test]
+    public void RotateAroundOrigin_minus90()
+    {
+        AssertUtil.Vector2sEqual(
+            Vector2.up,
+            MathUtil.RotateAroundOrigin(Vector2.right, -90)
+        );
+    }
 
     [Test]
     public void Angle360_0()

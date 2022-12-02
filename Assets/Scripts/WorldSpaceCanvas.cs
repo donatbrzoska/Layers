@@ -2,12 +2,10 @@
 
 public class WorldSpaceCanvas
 {
-    public int PixelsX { get; private set; }
-    public int PixelsY { get; private set; }
+    public Vector2Int TextureSize { get; private set; }
 
-    private float Height;
-    private float Width;
-    private Vector3 Position;
+    public Vector2 Size { get; private set;}
+    public Vector3 Position { get; private set;}
     private int Resolution;
 
     public float XMin { get; private set; }
@@ -19,8 +17,7 @@ public class WorldSpaceCanvas
     // Position is the center of the canvas
     public WorldSpaceCanvas(float height, float width, int resolution, Vector3 position)
     {
-        Height = height;
-        Width = width;
+        Size = new Vector2(width, height);
         Position = position;
         Resolution = resolution;
 
@@ -29,8 +26,10 @@ public class WorldSpaceCanvas
         YMin = position.y - height / 2;
         YMax = position.y + height / 2;
 
-        PixelsX = (int)(Resolution * width);
-        PixelsY = (int)(Resolution * height);
+        TextureSize = new Vector2Int(
+            (int)(Resolution*Size.x),
+            (int)(Resolution*Size.y)
+        );
     }
 
     public Vector2Int MapToPixel(Vector3 worldSpace)
@@ -39,8 +38,8 @@ public class WorldSpaceCanvas
         float dx = worldSpace.x - lowerLeft.x;
         float dy = worldSpace.y - lowerLeft.y;
 
-        float px = dx / Width;
-        float py = dy / Height;
+        float px = dx / Size.x;
+        float py = dy / Size.y;
 
         // out of range
         if (px > 1 || px < 0 || py < 0 || py > 1)
@@ -48,11 +47,8 @@ public class WorldSpaceCanvas
             return new Vector2Int(int.MinValue, int.MinValue);
         }
 
-        int pixelWidth = (int)(Resolution * Width);
-        int pixelHeight = (int)(Resolution * Height);
-
-        int pixelX = MathUtil.RoundToInt(px * (pixelWidth - 1));
-        int pixelY = MathUtil.RoundToInt(py * (pixelHeight - 1));
+        int pixelX = MathUtil.RoundToInt(px * (TextureSize.x - 1));
+        int pixelY = MathUtil.RoundToInt(py * (TextureSize.y - 1));
 
         return new Vector2Int(pixelX, pixelY);
     }

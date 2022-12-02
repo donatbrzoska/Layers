@@ -53,7 +53,7 @@ public class Notes : MonoBehaviour
  * 
  * 
  * 
- * 
+ * - Tilt in Rakel auf <90° und >0 beschränken
  * - Bestehende Software zum Malen mit Ölfarbe anschauen
  * - Zusammenhang zwischen Neigungswinkel und Menge der Farbe untersuchen
  * - NormalMap über Sobel-Filter
@@ -1300,4 +1300,29 @@ public class Notes : MonoBehaviour
  * 
  * 
  * 01.12.2022
+ * Aufgehört bei:
+ * - Rotation implementiert
+ * - GUI wieder connected
+ * - Rotatin zur Mausbewegung angefangen
+ *   - Übergang zwischen 360 und 0 noch schwierig
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
  */

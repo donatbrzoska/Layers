@@ -97,6 +97,27 @@ public class LogUtil
         Debug.Log(result);
     }
 
+    public static void Log(Vector3[] vecs, int rows = 1, string descr = "")
+    {
+
+        if (descr != "")
+        {
+            Debug.Log(descr);
+        }
+
+        string result = "";
+        int cols = vecs.GetLength(0) / rows;
+        for (int i = 0; i < rows; i++)
+        {
+            for (int j = 0; j < cols; j++)
+            {
+                result += vecs[i * cols + j].ToString() + " ";
+            }
+            result += "\n";
+        }
+        Debug.Log(result);
+    }
+
     public static void Log(int[] ints, int rows = 1, string descr = "")
     {
 

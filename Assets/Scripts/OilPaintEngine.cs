@@ -17,7 +17,10 @@ public class OilPaintEngine : MonoBehaviour
     //private IRakelPaintReservoir RakelPaintReservoir;
     //public Paint RakelPaint { get; private set; }
 
-    public Vector2 RakelNormal { get; private set; } = new Vector2(1, 0);
+    private static Vector2 NO_VECTOR2 = new Vector2(float.NaN, float.NaN);
+    private bool PreviousMousePositionInitialized = false;
+    private Vector2 PreviousMousePosition = NO_VECTOR2;
+    public float RakelRotation { get; private set; } = 0;
     public float RakelLength { get; private set; } = 8f; // world space
     public float RakelWidth { get; private set; } = 0.3f; // world space
     private IRakel Rakel;
@@ -46,7 +49,7 @@ public class OilPaintEngine : MonoBehaviour
     {
         WorldSpaceCanvas = new WorldSpaceCanvas(CanvasHeight, CanvasWidth, TextureResolution, CanvasPosition);
 
-        Texture = new RenderTexture(WorldSpaceCanvas.PixelsX, WorldSpaceCanvas.PixelsY, 1);
+        Texture = new RenderTexture(WorldSpaceCanvas.TextureSize.x, WorldSpaceCanvas.TextureSize.y, 1);
         Texture.filterMode = FilterMode.Point;
         Texture.enableRandomWrite = true;
         Texture.Create();
@@ -70,12 +73,26 @@ public class OilPaintEngine : MonoBehaviour
         int rakelPixelsWidth = MathUtil.ToTextureSpaceLength(RakelWidth, TextureResolution);
         Debug.Log("Rakel is " + rakelPixelsLength + "x" + rakelPixelsWidth + " = " + rakelPixelsLength * rakelPixelsWidth);
 
-        RakelInterpolator = new RakelInterpolator(Rakel, Texture);
+        RakelInterpolator = new RakelInterpolator(Rakel, WorldSpaceCanvas, Texture);
     }
 
-    // Update is called once per frame
     void Update()
     {
+        Vector2 currentMousePosition = Input.mousePosition;
+        if (!PreviousMousePositionInitialized){
+            PreviousMousePosition = currentMousePosition;
+            PreviousMousePositionInitialized = true;
+        } else {
+            Vector2 direction = currentMousePosition - PreviousMousePosition;
+            
+            if (direction.magnitude > 8) {
+                float angle = MathUtil.Angle360(Vector2.right, direction);
+                RakelRotation = angle;
+
+                PreviousMousePosition = currentMousePosition;
+            }
+        }
+
         Vector3 worldSpaceHit = InputUtil.GetMouseHit(Camera, CanvasColliderID);
         if (!worldSpaceHit.Equals(Vector3.negativeInfinity))
         {
@@ -83,7 +100,7 @@ public class OilPaintEngine : MonoBehaviour
             {
                 RakelInterpolator.NewStroke();
             }
-            RakelInterpolator.AddNode(worldSpaceHit, 0, 0, TextureResolution / 2);
+            RakelInterpolator.AddNode(worldSpaceHit, RakelRotation, 0, TextureResolution);
         }
     }
 
@@ -99,9 +116,9 @@ public class OilPaintEngine : MonoBehaviour
         CreateRakelDrawer();
     }
 
-    public void UpdateRakelNormal(Vector2 normal)
+    public void UpdateRakelRotation(float rotation)
     {
-        RakelNormal = normal;
+        RakelRotation = rotation;
     }
 
     //public void UpdateRakelPaint(Paint paint)

@@ -10,12 +10,12 @@ public class TestWorldSpaceCanvas
 
         Assert.AreEqual(
             12,
-            wsc.PixelsX
+            wsc.TextureSize.x
         );
 
         Assert.AreEqual(
             8,
-            wsc.PixelsY
+            wsc.TextureSize.y
         );
     }
 
