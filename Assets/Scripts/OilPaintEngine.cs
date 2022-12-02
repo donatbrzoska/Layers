@@ -85,7 +85,7 @@ public class OilPaintEngine : MonoBehaviour
         } else {
             Vector2 direction = currentMousePosition - PreviousMousePosition;
             
-            if (direction.magnitude > 8) {
+            if (direction.magnitude > 16) {
                 float angle = MathUtil.Angle360(Vector2.right, direction);
                 RakelRotation = angle;
 
