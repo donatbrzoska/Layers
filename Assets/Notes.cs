@@ -52,7 +52,8 @@ public class Notes : MonoBehaviour
  * 
  * 
  * 
- * 
+ * - Tilt und Abstand zur Wand einstellbar machen
+ * - "Locked"-Checkbox für Rotation
  * - Tilt in Rakel auf <90° und >0 beschränken
  * - Bestehende Software zum Malen mit Ölfarbe anschauen
  * - Zusammenhang zwischen Neigungswinkel und Menge der Farbe untersuchen
@@ -1303,7 +1304,7 @@ public class Notes : MonoBehaviour
  * Aufgehört bei:
  * - Rotation implementiert
  * - GUI wieder connected
- * - Rotatin zur Mausbewegung angefangen
+ * - Rotation zur Mausbewegung angefangen
  *   - Übergang zwischen 360 und 0 noch schwierig
  *
  *

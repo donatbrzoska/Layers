@@ -3576,10 +3576,10 @@ MonoBehaviour:
   m_Horizontal: 0
   m_Vertical: 1
   m_MovementType: 2
-  m_Elasticity: 0.1
+  m_Elasticity: 0.05
   m_Inertia: 1
-  m_DecelerationRate: 0.135
-  m_ScrollSensitivity: 1
+  m_DecelerationRate: 0.08
+  m_ScrollSensitivity: 3
   m_Viewport: {fileID: 8405833246410133517}
   m_HorizontalScrollbar: {fileID: 0}
   m_VerticalScrollbar: {fileID: 8405833246040125467}
@@ -3610,7 +3610,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
   m_AnchoredPosition: {x: 0, y: 2}
-  m_SizeDelta: {x: 0, y: 150}
+  m_SizeDelta: {x: 0, y: 380}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!1 &8405833246808965444
 GameObject:
