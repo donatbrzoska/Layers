@@ -35,6 +35,17 @@ uint XY(uint x, uint y, uint width)
     return y * width + x;
 }
 
+// // b is right from a
+// float angle_between(float3 a, float3 b)
+// {
+//     return acos(dot(a,b)/(length(a)*length(b))); // TODO MAYBE THIS IS BUGGY BECAUSE OF RADS/DEGREES
+// }
+
+bool is_relevant_thread(uint3 id)
+{
+    return id.x < CalculationSize.x && id.y < CalculationSize.y;
+}
+
 float3 map_to_world_space(uint2 pixel, uint2 texture_size, float3 canvas_position, float2 canvas_size)
 {
     float px = (float)pixel.x / (float)texture_size.x;
@@ -47,12 +58,6 @@ float3 map_to_world_space(uint2 pixel, uint2 texture_size, float3 canvas_positio
 
     return canvas_aligned;
 }
-
-// // b is right from a
-// float angle_between(float3 a, float3 b)
-// {
-//     return acos(dot(a,b)/(length(a)*length(b))); // TODO MAYBE THIS IS BUGGY BECAUSE OF RADS/DEGREES
-// }
 
 float3 rotate_by_z(float3 vec, float angle, float3 around)
 {
@@ -69,36 +74,41 @@ float3 rotate_by_z(float3 vec, float angle, float3 around)
     return result + around;
 }
 
+bool pixel_is_under_rakel(uint2 pos_pixel)
+{
+    // translate pixel to world space
+    float3 pos_world_space = map_to_world_space(pos_pixel, TextureSize, CanvasPosition, CanvasSize);
+
+    // translate back so pixel is anchor aligned
+    float3 back_translation_position = - (float3(RakelPosition.x, RakelPosition.y, 0) - RakelAnchor);
+    float3 pos_back_translated_position = pos_world_space + back_translation_position;
+
+    // rotate back around anchor
+    float3 pos_back_rotated = rotate_by_z(pos_back_translated_position, - RakelRotation, RakelAnchor);
+
+    // check boundaries
+    if (pos_back_rotated.x <= RakelOriginBoundaries.x
+        && pos_back_rotated.x >= 0
+        && pos_back_rotated.y <= RakelOriginBoundaries.y
+        && pos_back_rotated.y >= 0) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 [numthreads(1,8,1)]
 void main (uint3 id : SV_DispatchThreadID)
 {
-    //Texture[id.xy] = float4(id.x & id.y, (id.x & 15)/15.0, (id.y & 15)/15.0, 0.0);
     // Filter #1
-    if (id.x < CalculationSize.x && id.y < CalculationSize.y) {
-        // Filter #2
+    if (is_relevant_thread(id)) {
         // calculate pixel position on canvas
         uint2 pos_pixel = id.xy + uint2(CalculationPosition.x, CalculationPosition.y);
 
-        // determine whether pixel is under rakel
-        // ... translate pixel to world space
-        float3 pos_world_space = map_to_world_space(pos_pixel, TextureSize, CanvasPosition, CanvasSize);
-
-        // ... translate back so pixel is anchor aligned
-        float3 back_translation_position = - (float3(RakelPosition.x, RakelPosition.y, 0) - RakelAnchor);
-        float3 pos_back_translated_position = pos_world_space + back_translation_position;
-
-        // ... rotate back around anchor
-        float3 pos_back_rotated = rotate_by_z(pos_back_translated_position, -RakelRotation, RakelAnchor);
-
-        // ... check boundaries
-        if (pos_back_rotated.x <= RakelOriginBoundaries.x
-            && pos_back_rotated.x >= 0
-            && pos_back_rotated.y <= RakelOriginBoundaries.y
-            && pos_back_rotated.y >= 0) {
+        // Filter #2
+        if (pixel_is_under_rakel(pos_pixel)) {
             Texture[pos_pixel] = float4(id.x & id.y, (id.x & 15)/15.0, (id.y & 15)/15.0, 0.0);
         }
         // Debug[XY(id.x, id.y, CalculationSize.x)] = pos_back_rotated;//back_translation;
-
-        //Texture[pos] = float4(col.x, col.y, col.z, 0.0);
     }
 }
