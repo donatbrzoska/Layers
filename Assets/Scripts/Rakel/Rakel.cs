@@ -70,25 +70,29 @@ public class Rakel : IRakel
         // Filter #1: Is the current thread even relevant or just spawned because size must be multiple of THREAD_GROUP_SIZE
         applyShader.SetInts("CalculationSize", new int[] { sr.CalculationSize.x, sr.CalculationSize.y });
         
-        
+
         // Filter #2: Is the pixel belonging to the current thread underneath the rakel?
-        CanvasPixelMappingInfo[] canvasPixelMappingInfoData = new CanvasPixelMappingInfo[] {
-            new CanvasPixelMappingInfo(
-                sr.CalculationPosition,
-                new Vector2Int(canvasTexture.width, canvasTexture.height),
-                canvasPosition,
-                canvasSize,
-                Anchor,
-                rakelPosition,
-                Length,
-                Width,
-                rakelRotation,
-                rakelSnapshot.OriginBoundaries
-            )
-        };
-        ComputeBuffer canvasPixelMappingInfo = new ComputeBuffer(1, 4 * 20 + 4 * 4);
-        canvasPixelMappingInfo.SetData(canvasPixelMappingInfoData);
-        applyShader.SetBuffer(0, "CanvasPixelMappingInfoBuffer", canvasPixelMappingInfo);
+        
+        // Values for pixel to world space back conversion
+        applyShader.SetInts("CalculationPosition", new int[] { sr.CalculationPosition.x, sr.CalculationPosition.y }); // ... Lowest left pixel on canvas that is modified though this shader computation
+        
+        applyShader.SetInts("TextureSize", new int[] { canvasTexture.width, canvasTexture.height });
+        applyShader.SetFloats("CanvasPosition", new float[] { canvasPosition.x, canvasPosition.y, canvasPosition.z });
+        applyShader.SetFloats("CanvasSize", new float[] { canvasSize.x, canvasSize.y });
+
+        applyShader.SetFloats("RakelAnchor", new float[] { Anchor.x, Anchor.y, Anchor.z });
+        applyShader.SetFloats("RakelPosition", new float[] { rakelPosition.x, rakelPosition.y, rakelPosition.z });
+        applyShader.SetFloat("RakelLength", Length);
+        applyShader.SetFloat("RakelWidth", Width);
+
+        // Vector3 orientationReference = ulRotated - llRotated;
+        // float angle = MathUtil.Angle360(Vector2.up, new Vector2(orientationReference.x, orientationReference.y));
+        // TODO maybe use rounded boundaries for this angle
+        applyShader.SetFloat("RakelRotation", rakelRotation);
+
+        // Tilted rakel boundary description
+        applyShader.SetFloats("RakelOriginBoundaries", new float[] { rakelSnapshot.OriginBoundaries.x, rakelSnapshot.OriginBoundaries.y });
+
 
 
         applyShader.SetTexture(0, "Texture", canvasTexture);
@@ -102,7 +106,5 @@ public class Rakel : IRakel
             LogUtil.Log(debugValues, sr.CalculationSize.y, "debug");
             debugBuffer.Dispose();  
         }
-
-        canvasPixelMappingInfo.Dispose();
     }
 }
