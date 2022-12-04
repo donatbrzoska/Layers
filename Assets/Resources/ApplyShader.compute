@@ -7,21 +7,43 @@
 uint2 CalculationSize;
 
 // Filter #2
-uint2 CalculationPosition;
+struct CanvasPixelMappingInfo_ {
+    float3 CanvasPosition;
+    float pad0;
+    float3 RakelAnchor;
+    float pad1;
+    float3 RakelPosition;
+    float pad2;
+    uint2 CalculationPosition;
+    uint2 TextureSize;
+    float2 CanvasSize;
+    float2 RakelOriginBoundaries;
 
-uint2 TextureSize;
-float3 CanvasPosition;
-float2 CanvasSize;
+    float RakelLength;
+    float RakelWidth;
 
-float3 RakelAnchor;
-float3 RakelPosition;
-float RakelLength;
-float RakelWidth;
+    float RakelRotation;
 
-float RakelRotation;
+};
+// struct CanvasPixelMappingInfo_ {
+//     uint2 CalculationPosition;
 
-float2 RakelOriginBoundaries;
+//     uint2 TextureSize;
+//     float3 CanvasPosition;
+//     float2 CanvasSize;
 
+//     float3 RakelAnchor;
+//     float3 RakelPosition;
+//     float RakelLength;
+//     float RakelWidth;
+
+//     float RakelRotation;
+
+//     float2 RakelOriginBoundaries;
+// };
+
+StructuredBuffer<CanvasPixelMappingInfo_> CanvasPixelMappingInfoBuffer;
+CanvasPixelMappingInfo_ CanvasPixelMappingInfo;
 
 RWTexture2D<float4> Texture;
 
@@ -77,19 +99,30 @@ float3 rotate_by_z(float3 vec, float angle, float3 around)
 bool pixel_is_under_rakel(uint2 pos_pixel)
 {
     // translate pixel to world space
-    float3 pos_world_space = map_to_world_space(pos_pixel, TextureSize, CanvasPosition, CanvasSize);
+    float3 pos_world_space = map_to_world_space(
+        pos_pixel,
+        CanvasPixelMappingInfo.TextureSize,
+        CanvasPixelMappingInfo.CanvasPosition,
+        CanvasPixelMappingInfo.CanvasSize
+    );
 
     // translate back so pixel is anchor aligned
-    float3 back_translation_position = - (float3(RakelPosition.x, RakelPosition.y, 0) - RakelAnchor);
+    float3 back_translation_position = - (float3(CanvasPixelMappingInfo.RakelPosition.x,
+                                                 CanvasPixelMappingInfo.RakelPosition.y,
+                                                 0)
+                                          - CanvasPixelMappingInfo.RakelAnchor);
     float3 pos_back_translated_position = pos_world_space + back_translation_position;
 
     // rotate back around anchor
-    float3 pos_back_rotated = rotate_by_z(pos_back_translated_position, - RakelRotation, RakelAnchor);
+    float3 pos_back_rotated = rotate_by_z(
+        pos_back_translated_position,
+        - CanvasPixelMappingInfo.RakelRotation,
+        CanvasPixelMappingInfo.RakelAnchor);
 
     // check boundaries
-    if (pos_back_rotated.x <= RakelOriginBoundaries.x
+    if (pos_back_rotated.x <= CanvasPixelMappingInfo.RakelOriginBoundaries.x
         && pos_back_rotated.x >= 0
-        && pos_back_rotated.y <= RakelOriginBoundaries.y
+        && pos_back_rotated.y <= CanvasPixelMappingInfo.RakelOriginBoundaries.y
         && pos_back_rotated.y >= 0) {
         return true;
     } else {
@@ -100,10 +133,11 @@ bool pixel_is_under_rakel(uint2 pos_pixel)
 [numthreads(1,8,1)]
 void main (uint3 id : SV_DispatchThreadID)
 {
+    CanvasPixelMappingInfo = CanvasPixelMappingInfoBuffer[0];
     // Filter #1
     if (is_relevant_thread(id)) {
         // calculate pixel position on canvas
-        uint2 pos_pixel = id.xy + uint2(CalculationPosition.x, CalculationPosition.y);
+        uint2 pos_pixel = id.xy + uint2(CanvasPixelMappingInfo.CalculationPosition.x, CanvasPixelMappingInfo.CalculationPosition.y);
 
         // Filter #2
         if (pixel_is_under_rakel(pos_pixel)) {

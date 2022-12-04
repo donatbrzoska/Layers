@@ -51,7 +51,7 @@ public class Notes : MonoBehaviour
  * # Farbmitnahme bei großem Neigungswinkel und genügend Druck
  * 
  * 
- * 
+ * - 16 Bit Floats für die Farbschichten auf dem Canvas https://stackoverflow.com/questions/59728656/c-sharp-16-bit-float-conversions
  * - Tilt und Abstand zur Wand einstellbar machen
  * - "Locked"-Checkbox für Rotation
  * - Tilt in Rakel auf <90° und >0 beschränken

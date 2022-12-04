@@ -4,16 +4,13 @@ public class IntelGPUShaderRegion
 {
     private const int GROUP_SIZE = 8;
 
-    public int ThreadGroupsX { get; private set; }
-    public int ThreadGroupsY { get; private set; }
+    public Vector2Int ThreadGroups;
 
     // Number of columns and rows the shader needs to be active in
-    public int CalculationSizeX { get; private set; }
-    public int CalculationSizeY { get; private set; }
+    public Vector2Int CalculationSize;
 
     // Pixel coordinates on canvas of lower left pixel of calculation
-    public int CalculationPositionX { get; private set; }
-    public int CalculationPositionY { get; private set; }
+    public Vector2Int CalculationPosition;
 
     public IntelGPUShaderRegion(Vector2Int a, Vector2Int b, Vector2Int c, Vector2Int d)
     {
@@ -24,21 +21,21 @@ public class IntelGPUShaderRegion
 
         int dx = maxX - minX;
         int cols = dx + 1;
-        ThreadGroupsX = cols;
+        ThreadGroups.x = cols;
 
         int dy = maxY - minY;
         int rows = dy + 1;
 
-        ThreadGroupsY = rows / GROUP_SIZE;
+        ThreadGroups.y = rows / GROUP_SIZE;
         if (rows % GROUP_SIZE > 0)
         {
-            ThreadGroupsY++;
+            ThreadGroups.y++;
         }
 
-        CalculationSizeX = maxX - minX + 1;
-        CalculationSizeY = maxY - minY + 1;
+        CalculationSize.x = maxX - minX + 1;
+        CalculationSize.y = maxY - minY + 1;
 
-        CalculationPositionX = minX;
-        CalculationPositionY = minY;
+        CalculationPosition.x = minX;
+        CalculationPosition.y = minY;
     }
 }

@@ -9,6 +9,14 @@ public class Rakel : IRakel
     private int Resolution; // pixels per 1 world space
     private WorldSpaceCanvas WorldSpaceCanvas;
 
+    Vector2Int RakelReservoirSize;
+    Paint[] RakelApplicationReservoirData;
+    ComputeBuffer RakelApplicationReservoir;
+    Paint[] RakelEmittedPaintData;
+    ComputeBuffer RakelEmittedPaint;
+    ComputeBuffer RakelPickupReservoir;
+    // ComputeBuffer CanvasReservoir;
+
     public Rakel(float length, float width, int resolution, WorldSpaceCanvas wsc)
     {
         Length = length;
@@ -16,9 +24,18 @@ public class Rakel : IRakel
         Resolution = resolution;
         WorldSpaceCanvas = wsc;
         Anchor = new Vector3(Width, Length / 2, 0);
+
+        RakelReservoirSize.y = (int)(length * resolution);
+        RakelReservoirSize.x = (int)(width * resolution);
     }
 
-    // Position is located halfway through the rakel, at the handle
+    public void Fill(Paint paint, ReservoirFiller filler)
+    {
+        filler.Fill(paint, RakelApplicationReservoirData, RakelReservoirSize);
+        RakelApplicationReservoir.SetData(RakelApplicationReservoirData);
+    }
+
+    // Position is located at Anchor
     // Rotation 0 means Rakel is directed to the right
     // Tilt 0 means Rakel is flat on canvas
     public void Apply(
@@ -38,57 +55,54 @@ public class Rakel : IRakel
             WorldSpaceCanvas.MapToPixelInRange(rakelSnapshot.LowerRight)
         );
 
-
         ComputeShader applyShader = (ComputeShader)Resources.Load("ApplyShader");
 
         ComputeBuffer debugBuffer;
         Vector3[] debugValues;
         if (DEBUG){
-            debugBuffer = new ComputeBuffer(sr.CalculationSizeX * sr.CalculationSizeY * 3, sizeof(float));
-            debugValues = new Vector3[sr.CalculationSizeX * sr.CalculationSizeY];
+            debugBuffer = new ComputeBuffer(sr.CalculationSize.x * sr.CalculationSize.y * 3, sizeof(float));
+            debugValues = new Vector3[sr.CalculationSize.x * sr.CalculationSize.y];
             debugBuffer.SetData(debugValues);
             applyShader.SetBuffer(0, "Debug", debugBuffer);
         }
 
 
         // Filter #1: Is the current thread even relevant or just spawned because size must be multiple of THREAD_GROUP_SIZE
-        applyShader.SetInts("CalculationSize", new int[] { sr.CalculationSizeX, sr.CalculationSizeY }); ;
-
-
+        applyShader.SetInts("CalculationSize", new int[] { sr.CalculationSize.x, sr.CalculationSize.y });
+        
+        
         // Filter #2: Is the pixel belonging to the current thread underneath the rakel?
-        
-        // Values for pixel to world space back conversion
-        applyShader.SetInts("CalculationPosition", new int[] { sr.CalculationPositionX, sr.CalculationPositionY }); // ... Lowest left pixel on canvas that is modified though this shader computation
-        
-        applyShader.SetInts("TextureSize", new int[] { canvasTexture.width, canvasTexture.height });
-        applyShader.SetFloats("CanvasPosition", new float[] { canvasPosition.x, canvasPosition.y, canvasPosition.z });
-        applyShader.SetFloats("CanvasSize", new float[] { canvasSize.x, canvasSize.y });
-
-        applyShader.SetFloats("RakelAnchor", new float[] { Anchor.x, Anchor.y, Anchor.z });
-        applyShader.SetFloats("RakelPosition", new float[] { rakelPosition.x, rakelPosition.y, rakelPosition.z });
-        applyShader.SetFloat("RakelLength", Length);
-        applyShader.SetFloat("RakelWidth", Width);
-
-        // Vector3 orientationReference = ulRotated - llRotated;
-        // float angle = MathUtil.Angle360(Vector2.up, new Vector2(orientationReference.x, orientationReference.y));
-        // TODO maybe use rounded boundaries for this angle
-        applyShader.SetFloat("RakelRotation", rakelRotation);
-
-        // Tilted rakel boundary description
-        applyShader.SetFloats("RakelOriginBoundaries", new float[] { rakelSnapshot.OriginBoundaries.x, rakelSnapshot.OriginBoundaries.y });
-
+        CanvasPixelMappingInfo[] canvasPixelMappingInfoData = new CanvasPixelMappingInfo[] {
+            new CanvasPixelMappingInfo(
+                sr.CalculationPosition,
+                new Vector2Int(canvasTexture.width, canvasTexture.height),
+                canvasPosition,
+                canvasSize,
+                Anchor,
+                rakelPosition,
+                Length,
+                Width,
+                rakelRotation,
+                rakelSnapshot.OriginBoundaries
+            )
+        };
+        ComputeBuffer canvasPixelMappingInfo = new ComputeBuffer(1, 4 * 20 + 4 * 4);
+        canvasPixelMappingInfo.SetData(canvasPixelMappingInfoData);
+        applyShader.SetBuffer(0, "CanvasPixelMappingInfoBuffer", canvasPixelMappingInfo);
 
 
         applyShader.SetTexture(0, "Texture", canvasTexture);
-        applyShader.Dispatch(0, sr.ThreadGroupsX, sr.ThreadGroupsY, 1);
+        applyShader.Dispatch(0, sr.ThreadGroups.x, sr.ThreadGroups.y, 1);
 
 
 
 
         if (DEBUG){
             debugBuffer.GetData(debugValues);
-            LogUtil.Log(debugValues, sr.CalculationSizeY, "debug");
+            LogUtil.Log(debugValues, sr.CalculationSize.y, "debug");
             debugBuffer.Dispose();  
         }
+
+        canvasPixelMappingInfo.Dispose();
     }
 }

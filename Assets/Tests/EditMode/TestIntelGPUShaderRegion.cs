@@ -14,32 +14,32 @@ public class TestIntelGPUShaderRegion
 
         Assert.AreEqual(
             1,
-            sr.ThreadGroupsX
+            sr.ThreadGroups.x
         );
 
         Assert.AreEqual(
             1,
-            sr.ThreadGroupsY
+            sr.ThreadGroups.y
         );
 
         Assert.AreEqual(
             1,
-            sr.CalculationSizeX
+            sr.CalculationSize.x
         );
 
         Assert.AreEqual(
             1,
-            sr.CalculationSizeY
+            sr.CalculationSize.y
         );
 
         Assert.AreEqual(
             0,
-            sr.CalculationPositionX
+            sr.CalculationPosition.x
         );
 
         Assert.AreEqual(
             0,
-            sr.CalculationPositionY
+            sr.CalculationPosition.y
         );
     }
 
@@ -55,12 +55,12 @@ public class TestIntelGPUShaderRegion
 
         Assert.AreEqual(
             2,
-            sr.ThreadGroupsX
+            sr.ThreadGroups.x
         );
 
         Assert.AreEqual(
             1,
-            sr.ThreadGroupsY
+            sr.ThreadGroups.y
         );
     }
 
@@ -76,12 +76,12 @@ public class TestIntelGPUShaderRegion
 
         Assert.AreEqual(
             10,
-            sr.ThreadGroupsX
+            sr.ThreadGroups.x
         );
 
         Assert.AreEqual(
             1,
-            sr.ThreadGroupsY
+            sr.ThreadGroups.y
         );
     }
 
@@ -97,12 +97,12 @@ public class TestIntelGPUShaderRegion
 
         Assert.AreEqual(
             1,
-            sr.ThreadGroupsX
+            sr.ThreadGroups.x
         );
 
         Assert.AreEqual(
             1,
-            sr.ThreadGroupsY
+            sr.ThreadGroups.y
         );
     }
 
@@ -118,12 +118,12 @@ public class TestIntelGPUShaderRegion
 
         Assert.AreEqual(
             1,
-            sr.ThreadGroupsX
+            sr.ThreadGroups.x
         );
 
         Assert.AreEqual(
             2,
-            sr.ThreadGroupsY
+            sr.ThreadGroups.y
         );
     }
 
@@ -139,32 +139,32 @@ public class TestIntelGPUShaderRegion
 
         Assert.AreEqual(
             9,
-            sr.ThreadGroupsX
+            sr.ThreadGroups.x
         );
 
         Assert.AreEqual(
             3,
-            sr.ThreadGroupsY
+            sr.ThreadGroups.y
         );
 
         Assert.AreEqual(
             9,
-            sr.CalculationSizeX
+            sr.CalculationSize.x
         );
 
         Assert.AreEqual(
             17,
-            sr.CalculationSizeY
+            sr.CalculationSize.y
         );
 
         Assert.AreEqual(
             0,
-            sr.CalculationPositionX
+            sr.CalculationPosition.x
         );
 
         Assert.AreEqual(
             0,
-            sr.CalculationPositionY
+            sr.CalculationPosition.y
         );
     }
 }
