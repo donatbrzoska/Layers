@@ -2,7 +2,7 @@
 // https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-intrinsic-functions
 // https://learn.microsoft.com/en-us/windows/win32/direct3d11/direct3d-11-advanced-stages-cs-atomic-functions
 
-// RWStructuredBuffer<float3> Debug;
+RWStructuredBuffer<float3> Debug;
 
 // Filter #1
 uint2 CalculationSize;
@@ -23,8 +23,18 @@ float RakelRotation;
 
 float2 RakelOriginBoundaries;
 
+// Emitting
+struct Paint {
+    float4 color;
+    int volume;
+};
+uint2 RakelReservoirSize;
+uint2 RakelLowerLeftRounded;
+RWStructuredBuffer<Paint> RakelApplicationReservoir;
+
 
 RWTexture2D<float4> Texture;
+
 
 uint IJ(uint i, uint j)
 {
@@ -91,25 +101,73 @@ bool pixel_is_under_rakel(uint2 pos_pixel)
     if (pos_back_rotated.x <= RakelOriginBoundaries.x
         && pos_back_rotated.x >= 0
         && pos_back_rotated.y <= RakelOriginBoundaries.y
-        && pos_back_rotated.y >= 0) {
+        && pos_back_rotated.y >= 0)
+    {
         return true;
-    } else {
+    }
+    else
+    {
         return false;
     }
+}
+
+int2 rotate_around_origin(int2 vec, float angle)
+{
+    // float2 vec_ = float2(float(vec.x), float(vec.y));
+    float rad = radians(angle);
+    float s = sin(rad);
+    float c = cos(rad);
+    int2 result = int2(
+        vec.x * c + vec.y * s,
+        vec.y * c - vec.x * s
+    );
+    return result;
+}
+
+int2 map_to_reservoir_pixel(uint2 canvas_pixel)
+{
+    // translate to origin
+    int2 origin_aligned = canvas_pixel - RakelLowerLeftRounded;
+
+    // rotate back
+    int2 back_rotated = rotate_around_origin(origin_aligned, -RakelRotation);
+
+    return back_rotated;
+}
+
+bool pixel_in_reservoir_range(uint2 pixel)
+{
+    return pixel.x >= 0
+        && pixel.x < RakelReservoirSize.x
+        && pixel.y >= 0
+        && pixel.y < RakelReservoirSize.y;
 }
 
 [numthreads(1,8,1)]
 void main (uint3 id : SV_DispatchThreadID)
 {
     // Filter #1
-    if (is_relevant_thread(id)) {
+    if (is_relevant_thread(id))
+    {
         // calculate pixel position on canvas
-        uint2 pos_pixel = id.xy + uint2(CalculationPosition.x, CalculationPosition.y);
-
+        uint2 canvas_pixel = id.xy + CalculationPosition;
         // Filter #2
-        if (pixel_is_under_rakel(pos_pixel)) {
-            Texture[pos_pixel] = float4(id.x & id.y, (id.x & 15)/15.0, (id.y & 15)/15.0, 0.0);
+        if (pixel_is_under_rakel(canvas_pixel))
+        {
+            int2 reservoir_pixel = map_to_reservoir_pixel(canvas_pixel);
+            if (pixel_in_reservoir_range(reservoir_pixel)) 
+            {
+                Paint reservoir_paint = RakelApplicationReservoir[XY(reservoir_pixel.x, reservoir_pixel.y, RakelReservoirSize.x)];
+                // Paint reservoir_paint = RakelApplicationReservoir[XY(id.x, id.y, RakelReservoirSize.x)];
+                if (reservoir_paint.volume > 0)
+                {
+                    Texture[canvas_pixel] = reservoir_paint.color;
+                    // RakelApplicationReservoir[XY(reservoir_pixel.x, reservoir_pixel.y, RakelReservoirSize.x)].volume -= 1;
+                    InterlockedAdd(RakelApplicationReservoir[XY(reservoir_pixel.x, reservoir_pixel.y, RakelReservoirSize.x)].volume, -1);
+                }
+            }
+            // InterlockedAdd(Debug[XY(id.x, id.y, CalculationSize.x)].x, 0.4);
+            // Debug[XY(id.x, id.y, CalculationSize.x)] = float3(, reservoir_pixel.y, 0);
         }
-        // Debug[XY(id.x, id.y, CalculationSize.x)] = pos_back_rotated;//back_translation;
     }
 }

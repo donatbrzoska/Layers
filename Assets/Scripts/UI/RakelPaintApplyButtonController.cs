@@ -63,6 +63,6 @@ public class RakelPaintApplyButtonController : MonoBehaviour
         Color color = ColorMapper[ColorDropdown.options[ColorDropdown.value].text];
         int volume = int.Parse(VolumeInputField.text);
 
-        //OilPaintEngine.UpdateRakelPaint(new Paint(color, volume));
+        OilPaintEngine.UpdateRakelPaint(new Paint(color, volume));
     }
 }

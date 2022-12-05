@@ -1307,7 +1307,12 @@ public class Notes : MonoBehaviour
  * - Rotation zur Mausbewegung angefangen
  *   - Übergang zwischen 360 und 0 noch schwierig
  *
- *
+ * 
+ * 04.12.2022
+ * Aufgehört bei:
+ * - Farbe aus Reservoir holen funktioniert
+ *   - Interlocked evtl. ersetzen durch zwei-Phasen Interpolation, Interlocked kann auch nur int und uint
+ *   -> Inpolation über Texture2D Call abbilden?
  *
  *
  *

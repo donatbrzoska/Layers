@@ -45,8 +45,7 @@ public class RakelInterpolator
                     rakelPosition,
                     rakelRotation,
                     rakelTilt,
-                    WorldSpaceCanvas.Position,
-                    WorldSpaceCanvas.Size,
+                    WorldSpaceCanvas,
                     DrawingTarget);
             }
             else
@@ -105,8 +104,7 @@ public class RakelInterpolator
                         currentPosition,
                         currentRotation,
                         currentTilt,
-                        WorldSpaceCanvas.Position,
-                        WorldSpaceCanvas.Size,
+                        WorldSpaceCanvas,
                         DrawingTarget
                     );
 

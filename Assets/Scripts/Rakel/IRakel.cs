@@ -8,7 +8,8 @@ public interface IRakel
         Vector3 rakelPosition,
         float rakelRotation,
         float rakelTilt,
-        Vector3 canvasPosition,
-        Vector2 canvasSize,
+        WorldSpaceCanvas wsc,
         RenderTexture canvasTexture);
+    public void Fill(Paint paint, ReservoirFiller filler);
+    public void Dispose();
 }

@@ -34,30 +34,25 @@ public class WorldSpaceCanvas
 
     public Vector2Int MapToPixel(Vector3 worldSpace)
     {
-        Vector3 lowerLeft = new Vector2(XMin, YMin);
-        float dx = worldSpace.x - lowerLeft.x;
-        float dy = worldSpace.y - lowerLeft.y;
+        float pixelWidthInWorldSpace = 1f/Resolution;
+        Vector3 lowerLeftPixelCenter = new Vector2(XMin, YMin) + new Vector2(0.5f * pixelWidthInWorldSpace, 0.5f * pixelWidthInWorldSpace);
+        float dx = worldSpace.x - lowerLeftPixelCenter.x;
+        float dy = worldSpace.y - lowerLeftPixelCenter.y;
 
         float px = dx / Size.x;
         float py = dy / Size.y;
 
-        // out of range
-        if (px > 1 || px < 0 || py < 0 || py > 1)
-        {
-            return new Vector2Int(int.MinValue, int.MinValue);
-        }
-
-        int pixelX = MathUtil.RoundToInt(px * (TextureSize.x - 1));
-        int pixelY = MathUtil.RoundToInt(py * (TextureSize.y - 1));
+        int pixelX = MathUtil.RoundToInt(px * (TextureSize.x));
+        int pixelY = MathUtil.RoundToInt(py * (TextureSize.y));
 
         return new Vector2Int(pixelX, pixelY);
     }
 
     public Vector2Int MapToPixelInRange(Vector3 worldSpace)
     {
-        bool yTopOOB = worldSpace.y > YMax;
+        bool yTopOOB = worldSpace.y >= YMax;
         if (yTopOOB)
-            worldSpace.y = YMax;
+            worldSpace.y = YMax - 0.0001f;
 
         bool yBottomOOB = worldSpace.y < YMin;
         if (yBottomOOB)
@@ -67,9 +62,9 @@ public class WorldSpaceCanvas
         if (xLeftOOB)
             worldSpace.x = XMin;
 
-        bool yRightOOB = worldSpace.x > XMax;
+        bool yRightOOB = worldSpace.x >= XMax;
         if (yRightOOB)
-            worldSpace.x = XMax;
+            worldSpace.x = XMax - 0.0001f;
 
         return MapToPixel(worldSpace);
     }
