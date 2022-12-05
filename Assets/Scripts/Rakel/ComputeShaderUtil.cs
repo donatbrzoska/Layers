@@ -40,6 +40,17 @@ public class ComputeShaderUtil
         return computeShader;
     }
 
+    public static ComputeShader GenerateReservoirRegionShader(
+        string computeShaderName,
+        IntelGPUShaderRegion sr)
+    {
+        ComputeShader computeShader = (ComputeShader)Resources.Load(computeShaderName); 
+    
+        computeShader.SetInts("CalculationSize", new int[] { sr.CalculationSize.x, sr.CalculationSize.y });
+
+        return computeShader;
+    }
+
     // public void AddBuffer(ComputeShader computeShader, string bufferID, ComputeBuffer buffer)
     // {
     //     computeShader.SetBuffer(0, bufferID, buffer);

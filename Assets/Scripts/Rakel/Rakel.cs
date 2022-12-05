@@ -10,7 +10,7 @@ public class Rakel : IRakel
 
     Vector2Int RakelReservoirSize;
     Paint[] RakelApplicationReservoirData;
-    ComputeBuffer RakelApplicationReservoir;
+    ComputeBuffer RakelApplicationReservoir; // 3D srray, z=1 is for duplication for correct interpolation
     Paint[] RakelEmittedPaintData;
     ComputeBuffer RakelEmittedPaint;
     ComputeBuffer RakelPickupReservoir;
@@ -26,8 +26,8 @@ public class Rakel : IRakel
         RakelReservoirSize.y = (int)(length * resolution);
         RakelReservoirSize.x = (int)(width * resolution);
         
-        RakelApplicationReservoir = new ComputeBuffer(RakelReservoirSize.y * RakelReservoirSize.x, 4 * sizeof(float) + sizeof(int)); // sizeof(Paint)
-        RakelApplicationReservoirData = new Paint[RakelReservoirSize.y*RakelReservoirSize.x];
+        RakelApplicationReservoir = new ComputeBuffer(RakelReservoirSize.y * RakelReservoirSize.x * 2, 4 * sizeof(float) + sizeof(int)); // sizeof(Paint)
+        RakelApplicationReservoirData = new Paint[RakelReservoirSize.y * RakelReservoirSize.x * 2];
         RakelApplicationReservoir.SetData(RakelApplicationReservoirData);
 
         // RakelEmittedPaint = new ComputeBuffer(RakelReservoirSize.y * RakelReservoirSize.x, 3 * sizeof(float) + sizeof(int));
@@ -55,25 +55,43 @@ public class Rakel : IRakel
         WorldSpaceCanvas wsc,
         RenderTexture canvasTexture)
     {
-        RakelSnapshot rakelSnapshot = new RakelSnapshot(Length, Width, Anchor, rakelPosition, rakelRotation, rakelTilt);
 
-        IntelGPUShaderRegion sr = new IntelGPUShaderRegion(
+
+        // STEP 1
+        // ... EMIT: Duplicate Reservoir
+        IntelGPUShaderRegion duplicateSR = new IntelGPUShaderRegion(
+            new Vector2Int(0, RakelReservoirSize.y),
+            new Vector2Int(RakelReservoirSize.x, RakelReservoirSize.y),
+            new Vector2Int(0,0),
+            new Vector2Int(RakelReservoirSize.y, 0)
+        );
+        ComputeShader reservoirDuplicationShader = ComputeShaderUtil.GenerateReservoirRegionShader(
+            "ReservoirDuplicationShader",
+            duplicateSR
+        );
+
+        reservoirDuplicationShader.SetBuffer(0, "Reservoir", RakelApplicationReservoir);
+
+        reservoirDuplicationShader.Dispatch(0, duplicateSR.ThreadGroups.x, duplicateSR.ThreadGroups.y, 1);
+
+
+
+        // ... EMIT: Extract interpolated volumes and resulting color from duplicate and delete from original
+        RakelSnapshot rakelSnapshot = new RakelSnapshot(Length, Width, Anchor, rakelPosition, rakelRotation, rakelTilt);
+        IntelGPUShaderRegion emitSR = new IntelGPUShaderRegion(
             wsc.MapToPixelInRange(rakelSnapshot.UpperLeft),
             wsc.MapToPixelInRange(rakelSnapshot.UpperRight),
             wsc.MapToPixelInRange(rakelSnapshot.LowerLeft),
             wsc.MapToPixelInRange(rakelSnapshot.LowerRight)
         );
-
-
-        // STEP 1
-        // ... EMIT
         ComputeShader emitFromRakelShader = ComputeShaderUtil.GenerateCanvasRegionShader(
             "EmitFromRakelShader",
             rakelSnapshot,
-            sr,
+            emitSR,
             wsc,
             this
         );
+
         emitFromRakelShader.SetBuffer(0, "RakelApplicationReservoir", RakelApplicationReservoir);
         Vector2Int lowerLeftRounded = wsc.MapToPixel(rakelSnapshot.LowerLeft);
         // Debug.Log("lower left roudned is " + lowerLeftRounded);
@@ -82,20 +100,21 @@ public class Rakel : IRakel
         emitFromRakelShader.SetInts("RakelReservoirSize", RakelReservoirSize.x, RakelReservoirSize.y);
         emitFromRakelShader.SetTexture(0, "Texture", canvasTexture); // TODO move away later
 
+        // ... EMIT: Interpolate again and delete extracted volumes from last step instead of Delete extracted 
         // ComputeBuffer debugBuffer;
         // Vector3[] debugValues;
         // if (true){
-        //     debugBuffer = new ComputeBuffer(sr.CalculationSize.x * sr.CalculationSize.y * 3, sizeof(float));
-        //     debugValues = new Vector3[sr.CalculationSize.x * sr.CalculationSize.y];
+        //     debugBuffer = new ComputeBuffer(emitSR.CalculationSize.x * emitSR.CalculationSize.y * 3, sizeof(float));
+        //     debugValues = new Vector3[emitSR.CalculationSize.x * emitSR.CalculationSize.y];
         //     debugBuffer.SetData(debugValues);
         //     emitFromRakelShader.SetBuffer(0, "Debug", debugBuffer);
         // }
 
-        emitFromRakelShader.Dispatch(0, sr.ThreadGroups.x, sr.ThreadGroups.y, 1);
+        emitFromRakelShader.Dispatch(0, emitSR.ThreadGroups.x, emitSR.ThreadGroups.y, 1);
 
         // if (true){
         //     debugBuffer.GetData(debugValues);
-        //     LogUtil.Log(debugValues, sr.CalculationSize.y, "debug");
+        //     LogUtil.Log(debugValues, emitSR.CalculationSize.y, "debug");
         //     debugBuffer.Dispose();  
         // }
 

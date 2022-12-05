@@ -2,7 +2,7 @@
 // https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-intrinsic-functions
 // https://learn.microsoft.com/en-us/windows/win32/direct3d11/direct3d-11-advanced-stages-cs-atomic-functions
 
-RWStructuredBuffer<float3> Debug;
+// RWStructuredBuffer<float3> Debug;
 
 // Filter #1
 uint2 CalculationSize;
@@ -44,6 +44,11 @@ uint IJ(uint i, uint j)
 uint XY(uint x, uint y, uint width)
 {
     return y * width + x;
+}
+
+uint XYZ(uint x, uint y, uint z, uint width, uint depth)
+{
+    return z * depth + y * width + x;
 }
 
 // // b is right from a
@@ -111,36 +116,35 @@ bool pixel_is_under_rakel(uint2 pos_pixel)
     }
 }
 
-int2 rotate_around_origin(int2 vec, float angle)
+float2 rotate_around_origin(int2 vec, float angle)
 {
-    // float2 vec_ = float2(float(vec.x), float(vec.y));
     float rad = radians(angle);
     float s = sin(rad);
     float c = cos(rad);
-    int2 result = int2(
+    float2 result = float2(
         vec.x * c + vec.y * s,
         vec.y * c - vec.x * s
     );
     return result;
 }
 
-int2 map_to_reservoir_pixel(uint2 canvas_pixel)
+float2 map_to_reservoir_pixel(uint2 canvas_pixel)
 {
     // translate to origin
     int2 origin_aligned = canvas_pixel - RakelLowerLeftRounded;
 
     // rotate back
-    int2 back_rotated = rotate_around_origin(origin_aligned, -RakelRotation);
+    float2 back_rotated = rotate_around_origin(origin_aligned, -RakelRotation);
 
     return back_rotated;
 }
 
-bool pixel_in_reservoir_range(uint2 pixel)
+bool pixel_in_reservoir_range(float2 pixel)
 {
     return pixel.x >= 0
-        && pixel.x < RakelReservoirSize.x
+        && pixel.x < (float)RakelReservoirSize.x
         && pixel.y >= 0
-        && pixel.y < RakelReservoirSize.y;
+        && pixel.y < (float)RakelReservoirSize.y;
 }
 
 [numthreads(1,8,1)]
@@ -154,19 +158,54 @@ void main (uint3 id : SV_DispatchThreadID)
         // Filter #2
         if (pixel_is_under_rakel(canvas_pixel))
         {
-            int2 reservoir_pixel = map_to_reservoir_pixel(canvas_pixel);
-            if (pixel_in_reservoir_range(reservoir_pixel)) 
+            float2 reservoir_pixel = map_to_reservoir_pixel(canvas_pixel);
+            if (pixel_in_reservoir_range(reservoir_pixel))
             {
-                Paint reservoir_paint = RakelApplicationReservoir[XY(reservoir_pixel.x, reservoir_pixel.y, RakelReservoirSize.x)];
-                // Paint reservoir_paint = RakelApplicationReservoir[XY(id.x, id.y, RakelReservoirSize.x)];
+                // TODO behaviour at borders
+                // calculate involved reservoir pixels
+                uint2 coord_ul = uint2(floor(reservoir_pixel.x), ceil(reservoir_pixel.y));
+                uint2 coord_ur = uint2(ceil(reservoir_pixel.x), ceil(reservoir_pixel.y));
+                uint2 coord_ll = uint2(floor(reservoir_pixel.x), floor(reservoir_pixel.y));
+                uint2 coord_lr = uint2(ceil(reservoir_pixel.x), floor(reservoir_pixel.y));
+
+                // calculate parts for involved pixels
+                float ul_part = frac(reservoir_pixel.x) * (1-frac(reservoir_pixel.y));
+                float ur_part = (1-frac(reservoir_pixel.x)) * (1-frac(reservoir_pixel.y));
+                float ll_part = frac(reservoir_pixel.x) * frac(reservoir_pixel.y);
+                float lr_part = (1-frac(reservoir_pixel.x)) * frac(reservoir_pixel.y);
+
+                // interpolate
+                // ... lookup at duplicate (z=1)
+                Paint paint_ul = RakelApplicationReservoir[XYZ(coord_ul.x, coord_ul.y, 1, RakelReservoirSize.x, 2)];
+                Paint paint_ur = RakelApplicationReservoir[XYZ(coord_ur.x, coord_ur.y, 1, RakelReservoirSize.x, 2)];
+                Paint paint_ll = RakelApplicationReservoir[XYZ(coord_ll.x, coord_ll.y, 1, RakelReservoirSize.x, 2)];
+                Paint paint_lr = RakelApplicationReservoir[XYZ(coord_lr.x, coord_lr.y, 1, RakelReservoirSize.x, 2)];
+                // ... calculate volume and color
+                int volume = ul_part * (float)paint_ul.volume
+                           + ur_part * (float)paint_ur.volume
+                           + ll_part * (float)paint_ll.volume
+                           + lr_part * (float)paint_lr.volume;
+                float4 color = ul_part * paint_ul.color
+                             + ur_part * paint_ur.color
+                             + ll_part * paint_ll.color
+                             + lr_part * paint_lr.color;
+                // ... create paint
+                Paint reservoir_paint;
+                reservoir_paint.color = color;
+                reservoir_paint.volume = volume;
+
                 if (reservoir_paint.volume > 0)
                 {
                     Texture[canvas_pixel] = reservoir_paint.color;
-                    // RakelApplicationReservoir[XY(reservoir_pixel.x, reservoir_pixel.y, RakelReservoirSize.x)].volume -= 1;
-                    InterlockedAdd(RakelApplicationReservoir[XY(reservoir_pixel.x, reservoir_pixel.y, RakelReservoirSize.x)].volume, -1);
+                    // delete amount of taken volume from reservoir
+                    // 100 volume is one unit of paint, since it doesnt make sense to
+                    // ... calculate parts of smaller integers and we have to use integers because of InterlockedAdd
+                    InterlockedAdd(RakelApplicationReservoir[XYZ(coord_ul.x, coord_ul.y, 0, RakelReservoirSize.x, 2)].volume, -((int)(100*ul_part)));
+                    InterlockedAdd(RakelApplicationReservoir[XYZ(coord_ur.x, coord_ur.y, 0, RakelReservoirSize.x, 2)].volume, -((int)(100*ur_part)));
+                    InterlockedAdd(RakelApplicationReservoir[XYZ(coord_ll.x, coord_ll.y, 0, RakelReservoirSize.x, 2)].volume, -((int)(100*ll_part)));
+                    InterlockedAdd(RakelApplicationReservoir[XYZ(coord_lr.x, coord_lr.y, 0, RakelReservoirSize.x, 2)].volume, -((int)(100*lr_part)));
                 }
             }
-            // InterlockedAdd(Debug[XY(id.x, id.y, CalculationSize.x)].x, 0.4);
             // Debug[XY(id.x, id.y, CalculationSize.x)] = float3(, reservoir_pixel.y, 0);
         }
     }

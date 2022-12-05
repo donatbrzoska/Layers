@@ -36,6 +36,7 @@ public class PerlinNoiseFiller : ReservoirFiller
             {
                 Paint actual = new Paint(paint);
                 actual.Volume += (int)(Mathf.Pow(added_volumes[i, j] - added_volumes_min, 2) / 2);
+                actual.Volume *= 100;
                 //actual.Volume += (int) (added_volumes[i, j] - added_volumes_min);
 
                 target[XY(j, i, targetSize.x)] = actual;
