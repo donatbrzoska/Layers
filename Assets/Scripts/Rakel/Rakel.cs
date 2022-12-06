@@ -9,8 +9,8 @@ public class Rakel : IRakel
     private int Resolution; // pixels per 1 world space
 
     Vector2Int RakelReservoirSize;
-    RenderTexture RakelApplicationReservoirColors; // 3D srray, z=1 is for duplication for correct interpolation
-    RenderTexture RakelApplicationReservoirVolumes; // 3D srray, z=1 is for duplication for correct interpolation
+    Paint[] RakelApplicationReservoirData;
+    ComputeBuffer RakelApplicationReservoir; // 3D srray, z=1 is for duplication for correct interpolation
     Paint[] RakelEmittedPaintData;
     ComputeBuffer RakelEmittedPaint;
     ComputeBuffer RakelPickupReservoir;
@@ -26,19 +26,9 @@ public class Rakel : IRakel
         RakelReservoirSize.y = (int)(length * resolution);
         RakelReservoirSize.x = (int)(width * resolution);
         
-        RakelApplicationReservoirColors = new RenderTexture(RakelReservoirSize.y, RakelReservoirSize.x, 0);
-        RakelApplicationReservoirColors.dimension = UnityEngine.Rendering.TextureDimension.Tex3D;
-        RakelApplicationReservoirColors.volumeDepth = 2;
-        // RakelApplicationReservoirColors.filterMode = FilterMode.Point;
-        RakelApplicationReservoirColors.enableRandomWrite = true;
-        RakelApplicationReservoirColors.Create();
-        
-        RakelApplicationReservoirVolumes = new RenderTexture(RakelReservoirSize.y, RakelReservoirSize.x, 0, RenderTextureFormat.RInt);
-        RakelApplicationReservoirVolumes.dimension = UnityEngine.Rendering.TextureDimension.Tex3D;
-        RakelApplicationReservoirVolumes.volumeDepth = 2;
-        // RakelApplicationReservoirVolumes.filterMode = FilterMode.Point;
-        RakelApplicationReservoirVolumes.enableRandomWrite = true;
-        RakelApplicationReservoirVolumes.Create();
+        RakelApplicationReservoir = new ComputeBuffer(RakelReservoirSize.y * RakelReservoirSize.x * 2, 4 * sizeof(float) + sizeof(int)); // sizeof(Paint)
+        RakelApplicationReservoirData = new Paint[RakelReservoirSize.y * RakelReservoirSize.x * 2];
+        RakelApplicationReservoir.SetData(RakelApplicationReservoirData);
 
         // RakelEmittedPaint = new ComputeBuffer(RakelReservoirSize.y * RakelReservoirSize.x, 3 * sizeof(float) + sizeof(int));
         // RakelEmittedPaintData = new Paint[RakelReservoirSize.y*RakelReservoirSize.x];
@@ -51,46 +41,8 @@ public class Rakel : IRakel
 
     public void Fill(Paint paint, ReservoirFiller filler)
     {
-        // generate paint values
-        Paint[] target = new Paint[RakelReservoirSize.x * RakelReservoirSize.y];
-        filler.Fill(paint, target, RakelReservoirSize);
-
-        // copy to GPU
-        ComputeBuffer paintBuffer = new ComputeBuffer(RakelReservoirSize.x * RakelReservoirSize.y, 5*4);
-        paintBuffer.SetData(target);
-
-        IntelGPUShaderRegion reservoirSR = new IntelGPUShaderRegion(
-            new Vector2Int(0, RakelReservoirSize.y),
-            new Vector2Int(RakelReservoirSize.x, RakelReservoirSize.y),
-            new Vector2Int(0,0),
-            new Vector2Int(RakelReservoirSize.x, 0)
-        );
-        ComputeShader copyColorsShader = ComputeShaderUtil.GenerateReservoirRegionShader(
-            "CopyPaintToGPUShader",
-            reservoirSR
-        );
-        copyColorsShader.SetBuffer(0, "Source", paintBuffer);
-        copyColorsShader.SetTexture(0, "ColorsTarget", RakelApplicationReservoirColors);
-        copyColorsShader.SetTexture(0, "VolumesTarget", RakelApplicationReservoirVolumes);
-
-
-        // ComputeBuffer debugBuffer;
-        // Vector3[] debugValues;
-        // if (true){
-        //     debugBuffer = new ComputeBuffer(reservoirSR.CalculationSize.x * reservoirSR.CalculationSize.y * 3, sizeof(float));
-        //     debugValues = new Vector3[reservoirSR.CalculationSize.x * reservoirSR.CalculationSize.y];
-        //     debugBuffer.SetData(debugValues);
-        //     copyColorsShader.SetBuffer(0, "Debug", debugBuffer);
-        // }
-
-        copyColorsShader.Dispatch(0, reservoirSR.ThreadGroups.x, reservoirSR.ThreadGroups.y, 1);
-
-        // if (true){
-        //     debugBuffer.GetData(debugValues);
-        //     LogUtil.Log(debugValues, reservoirSR.CalculationSize.y, "debug");
-        //     debugBuffer.Dispose();
-        // }
-        // paintBuffer.Dispose(); // TODO is this too early?
+        filler.Fill(paint, RakelApplicationReservoirData, RakelReservoirSize);
+        RakelApplicationReservoir.SetData(RakelApplicationReservoirData);
     }
 
     // Position is located at Anchor
@@ -116,25 +68,9 @@ public class Rakel : IRakel
             duplicateSR
         );
 
-        reservoirDuplicationShader.SetTexture(0, "Colors", RakelApplicationReservoirColors);
-        reservoirDuplicationShader.SetTexture(0, "Volumes", RakelApplicationReservoirVolumes);
-
-        ComputeBuffer debugBuffer;
-        Vector3[] debugValues;
-        if (true){
-            debugBuffer = new ComputeBuffer(duplicateSR.CalculationSize.x * duplicateSR.CalculationSize.y, 3 * sizeof(float));
-            debugValues = new Vector3[duplicateSR.CalculationSize.x * duplicateSR.CalculationSize.y];
-            debugBuffer.SetData(debugValues);
-            reservoirDuplicationShader.SetBuffer(0, "Debug", debugBuffer);
-        }
+        reservoirDuplicationShader.SetBuffer(0, "Reservoir", RakelApplicationReservoir);
 
         reservoirDuplicationShader.Dispatch(0, duplicateSR.ThreadGroups.x, duplicateSR.ThreadGroups.y, 1);
-
-        if (true){
-            debugBuffer.GetData(debugValues);
-            LogUtil.Log(debugValues, duplicateSR.CalculationSize.y, "debug");
-            debugBuffer.Dispose();
-        }
 
 
         // ... EMIT: Extract interpolated volumes and resulting color from duplicate and delete from original
@@ -153,8 +89,7 @@ public class Rakel : IRakel
             this
         );
 
-        emitFromRakelShader.SetTexture(0, "RakelApplicationReservoirColors", RakelApplicationReservoirColors);
-        emitFromRakelShader.SetTexture(0, "RakelApplicationReservoirVolumes", RakelApplicationReservoirVolumes);
+        emitFromRakelShader.SetBuffer(0, "RakelApplicationReservoir", RakelApplicationReservoir);
         Vector2Int lowerLeftRounded = wsc.MapToPixel(rakelSnapshot.LowerLeft);
         emitFromRakelShader.SetInts("RakelLowerLeftRounded", lowerLeftRounded.x, lowerLeftRounded.y);
         emitFromRakelShader.SetInts("RakelReservoirSize", RakelReservoirSize.x, RakelReservoirSize.y);
@@ -267,6 +202,6 @@ public class Rakel : IRakel
 
     public void Dispose()
     {
-        // RakelApplicationReservoir.Dispose();
+        RakelApplicationReservoir.Dispose();
     }
 }

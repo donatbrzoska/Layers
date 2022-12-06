@@ -24,10 +24,13 @@ float RakelRotation;
 float2 RakelOriginBoundaries;
 
 // Emitting
+struct Paint {
+    float4 color;
+    int volume;
+};
 uint2 RakelReservoirSize;
 uint2 RakelLowerLeftRounded;
-RWTexture3D<float4> RakelApplicationReservoirColors;
-RWTexture3D<int> RakelApplicationReservoirVolumes;
+RWStructuredBuffer<Paint> RakelApplicationReservoir;
 
 
 RWTexture2D<float4> Texture;
@@ -160,10 +163,10 @@ void main (uint3 id : SV_DispatchThreadID)
             {
                 // TODO behaviour at borders
                 // calculate involved reservoir pixels
-                uint3 coord_ul = uint3(floor(reservoir_pixel.x), ceil(reservoir_pixel.y), 1);
-                uint3 coord_ur = uint3(ceil(reservoir_pixel.x), ceil(reservoir_pixel.y), 1);
-                uint3 coord_ll = uint3(floor(reservoir_pixel.x), floor(reservoir_pixel.y), 1);
-                uint3 coord_lr = uint3(ceil(reservoir_pixel.x), floor(reservoir_pixel.y), 1);
+                uint2 coord_ul = uint2(floor(reservoir_pixel.x), ceil(reservoir_pixel.y));
+                uint2 coord_ur = uint2(ceil(reservoir_pixel.x), ceil(reservoir_pixel.y));
+                uint2 coord_ll = uint2(floor(reservoir_pixel.x), floor(reservoir_pixel.y));
+                uint2 coord_lr = uint2(ceil(reservoir_pixel.x), floor(reservoir_pixel.y));
 
                 // calculate parts for involved pixels
                 float ul_part = frac(reservoir_pixel.x) * (1-frac(reservoir_pixel.y));
@@ -173,23 +176,19 @@ void main (uint3 id : SV_DispatchThreadID)
 
                 // interpolate
                 // ... lookup at duplicate (z=1)
-                int volume_ul = RakelApplicationReservoirVolumes[coord_ul];
-                int volume_ur = RakelApplicationReservoirVolumes[coord_ur];
-                int volume_ll = RakelApplicationReservoirVolumes[coord_ll];
-                int volume_lr = RakelApplicationReservoirVolumes[coord_lr];
-                float4 color_ul = RakelApplicationReservoirColors[coord_ul];
-                float4 color_ur = RakelApplicationReservoirColors[coord_ur];
-                float4 color_ll = RakelApplicationReservoirColors[coord_ll];
-                float4 color_lr = RakelApplicationReservoirColors[coord_lr];
+                Paint paint_ul = RakelApplicationReservoir[XYZ(coord_ul.x, coord_ul.y, 1, RakelReservoirSize.x, 2)];
+                Paint paint_ur = RakelApplicationReservoir[XYZ(coord_ur.x, coord_ur.y, 1, RakelReservoirSize.x, 2)];
+                Paint paint_ll = RakelApplicationReservoir[XYZ(coord_ll.x, coord_ll.y, 1, RakelReservoirSize.x, 2)];
+                Paint paint_lr = RakelApplicationReservoir[XYZ(coord_lr.x, coord_lr.y, 1, RakelReservoirSize.x, 2)];
                 // ... calculate volume and color
-                int volume = ul_part * (float)volume_ul
-                           + ur_part * (float)volume_ur
-                           + ll_part * (float)volume_ll
-                           + lr_part * (float)volume_lr;
-                float4 color = ul_part * color_ul
-                             + ur_part * color_ur
-                             + ll_part * color_ll
-                             + lr_part * color_lr;
+                int volume = ul_part * (float)paint_ul.volume
+                           + ur_part * (float)paint_ur.volume
+                           + ll_part * (float)paint_ll.volume
+                           + lr_part * (float)paint_lr.volume;
+                float4 color = ul_part * paint_ul.color
+                             + ur_part * paint_ur.color
+                             + ll_part * paint_ll.color
+                             + lr_part * paint_lr.color;
                 // int volume = 1;
                 // float4 color = float4(0.4, 0.5, 0.6, 1);
 
@@ -199,17 +198,13 @@ void main (uint3 id : SV_DispatchThreadID)
                     // delete amount of taken volume from reservoir
                     // 100 volume is one unit of paint, since it doesnt make sense to
                     // ... calculate parts of smaller integers and we have to use integers because of InterlockedAdd
-                    // InterlockedAdd(RakelApplicationReservoirVolumes[coord_ul], -((int)(100*ul_part)));
-                    // InterlockedAdd(RakelApplicationReservoirVolumes[coord_ur], -((int)(100*ur_part)));
-                    // InterlockedAdd(RakelApplicationReservoirVolumes[coord_ll], -((int)(100*ll_part)));
-                    // InterlockedAdd(RakelApplicationReservoirVolumes[coord_lr], -((int)(100*lr_part)));
-                    RakelApplicationReservoirVolumes[uint3(coord_ul.x, coord_ul.y, 0)] -= ((int)(100*ul_part));
-                    RakelApplicationReservoirVolumes[uint3(coord_ur.x, coord_ur.y, 0)] -= ((int)(100*ur_part));
-                    RakelApplicationReservoirVolumes[uint3(coord_ll.x, coord_ll.y, 0)] -= ((int)(100*ll_part));
-                    RakelApplicationReservoirVolumes[uint3(coord_lr.x, coord_lr.y, 0)] -= ((int)(100*lr_part));
+                    InterlockedAdd(RakelApplicationReservoir[XYZ(coord_ul.x, coord_ul.y, 0, RakelReservoirSize.x, 2)].volume, -((int)(100*ul_part)));
+                    InterlockedAdd(RakelApplicationReservoir[XYZ(coord_ur.x, coord_ur.y, 0, RakelReservoirSize.x, 2)].volume, -((int)(100*ur_part)));
+                    InterlockedAdd(RakelApplicationReservoir[XYZ(coord_ll.x, coord_ll.y, 0, RakelReservoirSize.x, 2)].volume, -((int)(100*ll_part)));
+                    InterlockedAdd(RakelApplicationReservoir[XYZ(coord_lr.x, coord_lr.y, 0, RakelReservoirSize.x, 2)].volume, -((int)(100*lr_part)));
                 }
-                // Debug[XY(id.x, id.y, CalculationSize.x)] = color_ul;
             }
+            // Debug[XY(id.x, id.y, CalculationSize.x)] = float3(, reservoir_pixel.y, 0);
         }
     }
 }
