@@ -1,21 +1,20 @@
 #pragma kernel main
 
+RWStructuredBuffer<float3> Debug;
+
 uint2 CalculationSize;
 
-struct Paint {
-    float4 color;
-    int volume;
-};
-RWStructuredBuffer<Paint> Reservoir;
+RWTexture3D<float4> Colors;
+RWTexture3D<int> Volumes;
 
 bool is_relevant_thread(uint3 id)
 {
     return id.x < CalculationSize.x && id.y < CalculationSize.y;
 }
 
-uint XYZ(uint x, uint y, uint z, uint width, uint depth)
+uint XY(uint x, uint y, uint width)
 {
-    return z * depth + y * width + x;
+    return  y * width + x;
 }
 
 [numthreads(1,8,1)]
@@ -23,7 +22,12 @@ void main (uint3 id : SV_DispatchThreadID)
 {
     if (is_relevant_thread(id))
     {
-        // In this case CalculationSize == ReservoirSize
-        Reservoir[XYZ(id.x, id.y, 1, CalculationSize.x, 2)] = Reservoir[XYZ(id.x, id.y, 0, CalculationSize.x, 2)];
+        uint3 source_pos = uint3(id.x, id.y, 0);
+        uint3 target_pos = uint3(id.x, id.y, 1);
+        
+        Colors[target_pos] = Colors[source_pos];
+        Volumes[target_pos] = Volumes[source_pos];
+
+        Debug[XY(id.x, id.y, CalculationSize.x)] = Colors[source_pos];
     }
 }
