@@ -59,7 +59,7 @@ uint XYZ(uint x, uint y, uint z, uint width, uint depth)
 
 bool is_relevant_thread(uint3 id)
 {
-    return id.x < CalculationSize.x && id.y < CalculationSize.y;
+    return all(id.xy < CalculationSize);
 }
 
 float3 map_to_world_space(uint2 pixel, uint2 texture_size, float3 canvas_position, float2 canvas_size)
@@ -82,11 +82,13 @@ float3 rotate_by_z(float3 vec, float angle, float3 around)
     float rad = radians(angle);
     float s = sin(rad);
     float c = cos(rad);
-    float3 result = float3(
-        vec_.x * c + vec_.y * s,
-        vec_.y * c - vec_.x * s,
-        vec_.z
-    );
+    float3x3 rotation = {
+        c, -s, 1,
+        s,  c, 1,
+        1,  1, 1
+    };
+    
+    float3 result = mul(vec_, rotation);
     return result + around;
 }
 
@@ -121,11 +123,11 @@ float2 rotate_around_origin(int2 vec, float angle)
     float rad = radians(angle);
     float s = sin(rad);
     float c = cos(rad);
-    float2 result = float2(
-        vec.x * c + vec.y * s,
-        vec.y * c - vec.x * s
-    );
-    return result;
+    float2x2 mat = {
+        c, -s,
+        s,  c
+    };
+    return mul(vec, mat);
 }
 
 float2 map_to_reservoir_pixel(uint2 canvas_pixel)
@@ -181,16 +183,12 @@ void main (uint3 id : SV_DispatchThreadID)
                 Paint paint_ll = RakelApplicationReservoir[XYZ(coord_ll.x, coord_ll.y, 1, RakelReservoirSize.x, 2)];
                 Paint paint_lr = RakelApplicationReservoir[XYZ(coord_lr.x, coord_lr.y, 1, RakelReservoirSize.x, 2)];
                 // ... calculate volume and color
-                int volume = ul_part * (float)paint_ul.volume
-                           + ur_part * (float)paint_ur.volume
-                           + ll_part * (float)paint_ll.volume
-                           + lr_part * (float)paint_lr.volume;
+                int volume = dot(float4(ul_part,         ur_part,         ll_part,         lr_part),
+                                 float4(paint_ul.volume, paint_ur.volume, paint_ll.volume, paint_lr.volume));
                 float4 color = ul_part * paint_ul.color
                              + ur_part * paint_ur.color
                              + ll_part * paint_ll.color
                              + lr_part * paint_lr.color;
-                // int volume = 1;
-                // float4 color = float4(0.4, 0.5, 0.6, 1);
 
                 if (volume > 0)
                 {
