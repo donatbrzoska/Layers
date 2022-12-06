@@ -1315,10 +1315,12 @@ public class Notes : MonoBehaviour
  *   -> Inpolation über Texture2D Call abbilden?
  *
  *
- *
- *
- *
- *
+ * 05.12.2022
+ * Aufgehört bei:
+ * - Interpolation hat Berechnung stark verlangsamt
+ * - Paint ist nicht durch 16 byte teilbar -> pad einfügen zerstört das Programm
+ * - StructuredBuffer Load probieren?
+ * - Einfach zwei StructuredBuffer<float> und <int> verwenden statt Paint?
  *
  *
  *

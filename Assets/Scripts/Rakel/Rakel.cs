@@ -55,15 +55,13 @@ public class Rakel : IRakel
         WorldSpaceCanvas wsc,
         RenderTexture canvasTexture)
     {
-
-
         // STEP 1
         // ... EMIT: Duplicate Reservoir
         IntelGPUShaderRegion duplicateSR = new IntelGPUShaderRegion(
             new Vector2Int(0, RakelReservoirSize.y),
             new Vector2Int(RakelReservoirSize.x, RakelReservoirSize.y),
             new Vector2Int(0,0),
-            new Vector2Int(RakelReservoirSize.y, 0)
+            new Vector2Int(RakelReservoirSize.x, 0)
         );
         ComputeShader reservoirDuplicationShader = ComputeShaderUtil.GenerateReservoirRegionShader(
             "ReservoirDuplicationShader",
@@ -73,7 +71,6 @@ public class Rakel : IRakel
         reservoirDuplicationShader.SetBuffer(0, "Reservoir", RakelApplicationReservoir);
 
         reservoirDuplicationShader.Dispatch(0, duplicateSR.ThreadGroups.x, duplicateSR.ThreadGroups.y, 1);
-
 
 
         // ... EMIT: Extract interpolated volumes and resulting color from duplicate and delete from original
@@ -94,8 +91,6 @@ public class Rakel : IRakel
 
         emitFromRakelShader.SetBuffer(0, "RakelApplicationReservoir", RakelApplicationReservoir);
         Vector2Int lowerLeftRounded = wsc.MapToPixel(rakelSnapshot.LowerLeft);
-        // Debug.Log("lower left roudned is " + lowerLeftRounded);
-        // Debug.Log("rotation is " + rakelRotation);
         emitFromRakelShader.SetInts("RakelLowerLeftRounded", lowerLeftRounded.x, lowerLeftRounded.y);
         emitFromRakelShader.SetInts("RakelReservoirSize", RakelReservoirSize.x, RakelReservoirSize.y);
         emitFromRakelShader.SetTexture(0, "Texture", canvasTexture); // TODO move away later
@@ -117,6 +112,7 @@ public class Rakel : IRakel
         //     LogUtil.Log(debugValues, emitSR.CalculationSize.y, "debug");
         //     debugBuffer.Dispose();  
         // }
+
 
         // ... PICKUP
         // ComputeShader pickupFromCanvasShader = (ComputeShader)Resources.Load("PickupFromCanvasShader");

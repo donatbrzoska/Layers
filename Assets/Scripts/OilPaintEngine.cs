@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class OilPaintEngine : MonoBehaviour
 {
+    public bool BENCHMARK = false;
     private Camera Camera;
 
     public int TextureResolution { get; private set; } = 100; // texture space pixels per 1 world space
@@ -80,29 +81,37 @@ public class OilPaintEngine : MonoBehaviour
 
     void Update()
     {
-        Vector2 currentMousePosition = Input.mousePosition;
-        if (!PreviousMousePositionInitialized){
-            PreviousMousePosition = currentMousePosition;
-            PreviousMousePositionInitialized = true;
+        if (BENCHMARK){
+            for (int i=0; i<50; i++){
+                float x = Random.Range(-5f, 5f);
+                float y = Random.Range(-3f, 3f);
+                Rakel.Apply(new Vector3(x,y,0), 0, 0, WorldSpaceCanvas, Texture);
+            }
         } else {
-            Vector2 direction = currentMousePosition - PreviousMousePosition;
-            
-            if (direction.magnitude > 16) {
-                float angle = MathUtil.Angle360(Vector2.right, direction);
-                RakelRotation = angle;
-
+            Vector2 currentMousePosition = Input.mousePosition;
+            if (!PreviousMousePositionInitialized){
                 PreviousMousePosition = currentMousePosition;
-            }
-        }
+                PreviousMousePositionInitialized = true;
+            } else {
+                Vector2 direction = currentMousePosition - PreviousMousePosition;
 
-        Vector3 worldSpaceHit = InputUtil.GetMouseHit(Camera, CanvasColliderID);
-        if (!worldSpaceHit.Equals(Vector3.negativeInfinity))
-        {
-            if (Input.GetMouseButtonDown(0))
-            {
-                RakelInterpolator.NewStroke();
+                if (direction.magnitude > 8) {
+                    float angle = MathUtil.Angle360(Vector2.right, direction);
+                    RakelRotation = angle;
+
+                    PreviousMousePosition = currentMousePosition;
+                }
             }
-            RakelInterpolator.AddNode(worldSpaceHit, RakelRotation, 0, TextureResolution);
+
+            Vector3 worldSpaceHit = InputUtil.GetMouseHit(Camera, CanvasColliderID);
+            if (!worldSpaceHit.Equals(Vector3.negativeInfinity))
+            {
+                if (Input.GetMouseButtonDown(0))
+                {
+                    RakelInterpolator.NewStroke();
+                }
+                RakelInterpolator.AddNode(worldSpaceHit, RakelRotation, 0, TextureResolution);
+            }
         }
     }
     
