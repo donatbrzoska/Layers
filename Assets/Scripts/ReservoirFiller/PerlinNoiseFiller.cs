@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class PerlinNoiseFiller : ReservoirFiller
 {
-    public override void Fill(Paint paint, Color[] colorsTarget, int[] volumesTarget, Vector2Int targetSize)
+    public override void Fill(Paint paint, Paint[] target, Vector2Int targetSize)
     {
         int max_added_volume = paint.Volume;
 
@@ -39,8 +39,7 @@ public class PerlinNoiseFiller : ReservoirFiller
                 actual.Volume *= 100;
                 //actual.Volume += (int) (added_volumes[i, j] - added_volumes_min);
 
-                colorsTarget[XY(j, i, targetSize.x)] = actual.Color;
-                volumesTarget[XY(j, i, targetSize.x)] = actual.Volume;
+                target[XY(j, i, targetSize.x)] = actual;
             }
         }
 

@@ -2,13 +2,11 @@
 
 uint2 CalculationSize;
 
-// struct Paint {
-//     float4 color;
-//     int volume;
-// };
-// RWStructuredBuffer<Paint> Reservoir;
-RWStructuredBuffer<float4> Colors;
-RWStructuredBuffer<int> Volumes;
+struct Paint {
+    float4 color;
+    int volume;
+};
+RWStructuredBuffer<Paint> Reservoir;
 
 bool is_relevant_thread(uint3 id)
 {
@@ -26,8 +24,6 @@ void main (uint3 id : SV_DispatchThreadID)
     if (is_relevant_thread(id))
     {
         // In this case CalculationSize == ReservoirSize
-        // Reservoir[XYZ(id.x, id.y, 1, CalculationSize.x, 2)] = Reservoir[XYZ(id.x, id.y, 0, CalculationSize.x, 2)];
-        Colors[XYZ(id.x, id.y, 1, CalculationSize.x, 2)] = Colors[XYZ(id.x, id.y, 0, CalculationSize.x, 2)];
-        Volumes[XYZ(id.x, id.y, 1, CalculationSize.x, 2)] = Volumes[XYZ(id.x, id.y, 0, CalculationSize.x, 2)];
+        Reservoir[XYZ(id.x, id.y, 1, CalculationSize.x, 2)] = Reservoir[XYZ(id.x, id.y, 0, CalculationSize.x, 2)];
     }
 }
