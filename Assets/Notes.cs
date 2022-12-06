@@ -243,6 +243,16 @@ public class Notes : MonoBehaviour
  * Altes PaintReservoir (1x1) aus dem Init()-Block in neuen Rakel injected, der ist aber größer (3x1) ...
  * 
  * Ein gesamtes 2D Array mit Objekten besetzen wollen. Aber vergessen, dass ich dafür nicht einfach nur die Referenz setzen darf, weil dann ändern sich ja immer alle Objekte, wenn eines sich ändert.
+ *
+ * Copy Paste Fehler, zwei mal n.x statt einmal n.x und einmal n.y
+ *
+ *
+ * int wird zu uint gecastet ... bei negativen Werten kommen große Zahlen heraus
+ *
+ * Falsche Anzahl an Threadgruppen schlägt sich heftig auf die Performance nieder (ShaderRegion falsch initialisiert)
+ *
+ * 
+ * 
  */
 
 
@@ -1323,14 +1333,14 @@ public class Notes : MonoBehaviour
  * - Einfach zwei StructuredBuffer<float> und <int> verwenden statt Paint?
  *
  *
- *
- *
- *
- *
- *
- *
- *
- *
+ * 06.12.2022
+ * - InterlockedAdd auf TextureND wird nicht unterstützt
+ * - Überhaupt in Texture schreiben und dann von anderem Shader weiterverarbeiten lassen funktioniert nicht
+ * - evtl. ist Shader 1 noch gar nicht fertig? doch ist fertig in diesem Fall zumindest
+ * - AppendStructuredBuffer benutzen?
+ * - Texture2D für CPU -> GPU und RWTexture2D für GPU -> CPU?
+ * - globallycoherent
+ * - was ist der Unterschied zwischen Load und [] auf Textures?
  *
  *
  */
