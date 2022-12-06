@@ -9,8 +9,10 @@ public class Rakel : IRakel
     private int Resolution; // pixels per 1 world space
 
     Vector2Int RakelReservoirSize;
-    Paint[] RakelApplicationReservoirData;
-    ComputeBuffer RakelApplicationReservoir; // 3D srray, z=1 is for duplication for correct interpolation
+    Color[] RakelApplicationReservoirColorsData;
+    int[] RakelApplicationReservoirVolumesData;
+    ComputeBuffer RakelApplicationReservoirColors; // 3D array, z=1 is for duplication for correct interpolation
+    ComputeBuffer RakelApplicationReservoirVolumes; // 3D array, z=1 is for duplication for correct interpolation
     Paint[] RakelEmittedPaintData;
     ComputeBuffer RakelEmittedPaint;
     ComputeBuffer RakelPickupReservoir;
@@ -26,9 +28,13 @@ public class Rakel : IRakel
         RakelReservoirSize.y = (int)(length * resolution);
         RakelReservoirSize.x = (int)(width * resolution);
         
-        RakelApplicationReservoir = new ComputeBuffer(RakelReservoirSize.y * RakelReservoirSize.x * 2, 4 * sizeof(float) + sizeof(int)); // sizeof(Paint)
-        RakelApplicationReservoirData = new Paint[RakelReservoirSize.y * RakelReservoirSize.x * 2];
-        RakelApplicationReservoir.SetData(RakelApplicationReservoirData);
+        RakelApplicationReservoirColors = new ComputeBuffer(RakelReservoirSize.y * RakelReservoirSize.x * 2, 4 * sizeof(float));
+        RakelApplicationReservoirColorsData = new Color[RakelReservoirSize.y * RakelReservoirSize.x * 2];
+        RakelApplicationReservoirColors.SetData(RakelApplicationReservoirColorsData);
+        
+        RakelApplicationReservoirVolumes = new ComputeBuffer(RakelReservoirSize.y * RakelReservoirSize.x * 2, sizeof(int));
+        RakelApplicationReservoirVolumesData = new int[RakelReservoirSize.y * RakelReservoirSize.x * 2];
+        RakelApplicationReservoirVolumes.SetData(RakelApplicationReservoirVolumesData);
 
         // RakelEmittedPaint = new ComputeBuffer(RakelReservoirSize.y * RakelReservoirSize.x, 3 * sizeof(float) + sizeof(int));
         // RakelEmittedPaintData = new Paint[RakelReservoirSize.y*RakelReservoirSize.x];
@@ -41,8 +47,9 @@ public class Rakel : IRakel
 
     public void Fill(Paint paint, ReservoirFiller filler)
     {
-        filler.Fill(paint, RakelApplicationReservoirData, RakelReservoirSize);
-        RakelApplicationReservoir.SetData(RakelApplicationReservoirData);
+        filler.Fill(paint, RakelApplicationReservoirColorsData, RakelApplicationReservoirVolumesData, RakelReservoirSize);
+        RakelApplicationReservoirColors.SetData(RakelApplicationReservoirColorsData);
+        RakelApplicationReservoirVolumes.SetData(RakelApplicationReservoirVolumesData);
     }
 
     // Position is located at Anchor
@@ -68,7 +75,8 @@ public class Rakel : IRakel
             duplicateSR
         );
 
-        reservoirDuplicationShader.SetBuffer(0, "Reservoir", RakelApplicationReservoir);
+        reservoirDuplicationShader.SetBuffer(0, "Colors", RakelApplicationReservoirColors);
+        reservoirDuplicationShader.SetBuffer(0, "Volumes", RakelApplicationReservoirVolumes);
 
         reservoirDuplicationShader.Dispatch(0, duplicateSR.ThreadGroups.x, duplicateSR.ThreadGroups.y, 1);
 
@@ -89,7 +97,8 @@ public class Rakel : IRakel
             this
         );
 
-        emitFromRakelShader.SetBuffer(0, "RakelApplicationReservoir", RakelApplicationReservoir);
+        emitFromRakelShader.SetBuffer(0, "RakelApplicationReservoirColors", RakelApplicationReservoirColors);
+        emitFromRakelShader.SetBuffer(0, "RakelApplicationReservoirVolumes", RakelApplicationReservoirVolumes);
         Vector2Int lowerLeftRounded = wsc.MapToPixel(rakelSnapshot.LowerLeft);
         emitFromRakelShader.SetInts("RakelLowerLeftRounded", lowerLeftRounded.x, lowerLeftRounded.y);
         emitFromRakelShader.SetInts("RakelReservoirSize", RakelReservoirSize.x, RakelReservoirSize.y);
@@ -202,6 +211,7 @@ public class Rakel : IRakel
 
     public void Dispose()
     {
-        RakelApplicationReservoir.Dispose();
+        RakelApplicationReservoirColors.Dispose();
+        RakelApplicationReservoirVolumes.Dispose();
     }
 }

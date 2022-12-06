@@ -6,5 +6,5 @@ public abstract class ReservoirFiller
         return y * width + x;
     }
 
-    public abstract void Fill(Paint paint, Paint[] target, Vector2Int targetSize);
+    public abstract void Fill(Paint paint, Color[] colorsTarget, int[] volumesTarget, Vector2Int targetSize);
 }
