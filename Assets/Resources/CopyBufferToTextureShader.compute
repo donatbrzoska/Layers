@@ -17,7 +17,7 @@ RWStructuredBuffer<Paint> RakelEmittedPaint;
 RWTexture2D<float4> Texture;
 
 
-// RWStructuredBuffer<int> Finished;
+RWStructuredBuffer<int> Finished;
 
 
 bool is_relevant_thread(uint3 id)
@@ -46,8 +46,8 @@ void main (uint3 id : SV_DispatchThreadID)
             Texture[canvas_pixel] = p.color;
         }
     }
-    // if (id.x == 0 && id.y == 0)
-    // {
-    //     Finished[0] = 1;
-    // }
+    if (id.x == 0 && id.y == 0)
+    {
+        Finished[0] = 1;
+    }
 }

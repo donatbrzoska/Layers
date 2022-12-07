@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.Rendering;
+using System.Threading;
 
 public class OilPaintEngine : MonoBehaviour
 {
@@ -32,11 +33,6 @@ public class OilPaintEngine : MonoBehaviour
 
 
     private Queue<ComputeShaderTask> ComputeShaderTasks = new Queue<ComputeShaderTask>();
-    private Queue<List<ComputeBuffer>> BuffersToDispose = new Queue<List<ComputeBuffer>>();
-
-    //private AsyncGPUReadbackRequest CurrentReadbackRequest;
-    //private bool CurrentReadbackRequestSet;
-    //private List<ComputeBuffer> CurrentNextBuffersToDispose;
 
     void Awake()
     {
@@ -49,9 +45,6 @@ public class OilPaintEngine : MonoBehaviour
         CanvasPosition = GameObject.Find("Canvas").GetComponent<Transform>().position;
 
         CreateCanvasAndTools();
-
-
-        Application.targetFrameRate = 500;
     }
 
     void Start()
@@ -126,76 +119,41 @@ public class OilPaintEngine : MonoBehaviour
             }
         }
 
-        processComputeShaderTask();
+        processComputeShaderTasks();
     }
 
-    private void processComputeShaderTask()
+    private void processComputeShaderTasks()
     {
-        //if (CurrentReadbackRequestSet && CurrentReadbackRequest.done)
-        //{
-        //    foreach (ComputeBuffer c in CurrentNextBuffersToDispose){
-        //        c.Dispose();
-        //    }
-        //    CurrentReadbackRequestSet = false; // reset, so next task can be dispatched
-        //}
-
-        //if (CurrentReadbackRequestSet == false)
-        //{
-        //    if (ComputeShaderTasks.Count > 0)
-        //    {
-        //        ComputeShaderTask cst = ComputeShaderTasks.Dequeue();
-
-        //        // Debug.Log("dequeued " + cst.GetHashCode());
-        //        if (cst.FinishedMarkerBuffer != null) {
-        //            CurrentReadbackRequest = AsyncGPUReadback.Request(cst.FinishedMarkerBuffer);
-        //        } else {
-        //            CurrentReadbackRequest = AsyncGPUReadback.Request(cst.FinishedMarkerTexture);
-        //        }
-        //        CurrentReadbackRequestSet = true;
-        //        CurrentNextBuffersToDispose = cst.BuffersToDispose;
-
-        //        cst.ComputeShader.Dispatch(0, cst.ThreadGroups.x, cst.ThreadGroups.y, 1);
-        //        // BuffersToDispose.Enqueue(cst.BuffersToDispose);
-        //        // Debug.Log("enqeued " + cst.BuffersToDispose.GetHashCode());
-        //    }
-        //}
-
-        //if (BuffersToDispose.Count > 0)
-        //{
-        //    List<ComputeBuffer> buffers = BuffersToDispose.Dequeue();
-        //    // Debug.Log("dequeued " + buffers.GetHashCode());
-        //    BuffersToDisposeReally.Enqueue(buffers);
-        //}
-
-        if (BuffersToDispose.Count > 0)
-        {
-            List<ComputeBuffer> buffers = BuffersToDispose.Dequeue();
-            // Debug.Log("dequeued " + buffers.GetHashCode());
-            foreach (ComputeBuffer c in buffers)
-            {
-                c.Dispose();
-            }
-        }
-
-        if (ComputeShaderTasks.Count > 0)
+        int left = 100;
+        while (ComputeShaderTasks.Count > 0 && left-- > 0)
         {
             ComputeShaderTask cst = ComputeShaderTasks.Dequeue();
+
             foreach (CSAttribute ca in cst.Attributes)
             {
                 ca.Apply(cst.ComputeShader);
             }
-            cst.ComputeShader.Dispatch(0, cst.ThreadGroups.x, cst.ThreadGroups.y, 1);
-            BuffersToDispose.Enqueue(cst.BuffersToDispose);
-            // Debug.Log("enqeued " + cst.BuffersToDispose.GetHashCode());
-        }
 
-        // if (BuffersToDispose.Count > 0)
-        // {
-        //     List<ComputeBuffer> buffers = BuffersToDispose.Dequeue();
-        //     foreach (ComputeBuffer c in buffers){
-        //         c.Dispose();
-        //     }
-        // }
+            // The problem with AsyncGPUReadback is that .done is probably set in the next frame,
+            // .. so we cannot use this to run multiple dispatches during one frame
+            //CurrentReadbackRequest = AsyncGPUReadback.Request(cst.FinishedMarkerBuffer);
+
+            cst.ComputeShader.Dispatch(0, cst.ThreadGroups.x, cst.ThreadGroups.y, 1);
+
+            // Alternative but slow: GetData() blocks until the task is finished
+            cst.FinishedMarkerBuffer.GetData(new int[1]);
+            cst.FinishedMarkerBuffer.Dispose();
+
+            //while (!CurrentReadbackRequest.done)
+            //{
+            //    Thread.Sleep(1);
+            //}
+
+            foreach (ComputeBuffer c in cst.BuffersToDispose)
+            {
+                c.Dispose();
+            }
+        }
     }
     
     private void OnDestroy()

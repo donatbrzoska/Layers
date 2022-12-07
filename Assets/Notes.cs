@@ -253,6 +253,10 @@ public class Notes : MonoBehaviour
  * Integer Division liefert auch int und nicht float
  * 
  * ComputeShaderTasks: Vergessen, einen der ursprügnlichen Dispatch-Calls auszukommentieren
+ *
+ * Falsche API vermutet -> Man sollte nicht SetInt, SetBuffer, ... auf einem ComputeShader machen, wenn man ihn erst viel später ausführt
+ *
+ *
  */
 
 

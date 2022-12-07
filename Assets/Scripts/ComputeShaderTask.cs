@@ -122,13 +122,20 @@ public struct ComputeShaderTask {
     public ComputeShader ComputeShader;
     public List<CSAttribute> Attributes;
     public Vector2Int ThreadGroups;
+    public ComputeBuffer FinishedMarkerBuffer;
     public List<ComputeBuffer> BuffersToDispose;
 
-    public ComputeShaderTask(ComputeShader computeShader, List<CSAttribute> attributes, Vector2Int threadGroups, List<ComputeBuffer> buffersToDispose)
+    public ComputeShaderTask(
+        ComputeShader computeShader,
+        List<CSAttribute> attributes,
+        Vector2Int threadGroups,
+        ComputeBuffer finishedMarkerBuffer,
+        List<ComputeBuffer> buffersToDispose)
     {
         ComputeShader = computeShader;
         Attributes = attributes;
         ThreadGroups = threadGroups;
+        FinishedMarkerBuffer = finishedMarkerBuffer;
         BuffersToDispose = buffersToDispose;
     }
 }

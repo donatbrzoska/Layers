@@ -35,7 +35,7 @@ RWStructuredBuffer<Paint> RakelApplicationReservoir;
 RWStructuredBuffer<Paint> RakelEmittedPaint;
 
 
-// RWStructuredBuffer<int> Finished;
+RWStructuredBuffer<int> Finished;
 
 
 uint IJ(uint i, uint j)
@@ -210,8 +210,8 @@ void main (uint3 id : SV_DispatchThreadID)
             // Debug[XY(id.x, id.y, CalculationSize.x)] = float3(, reservoir_pixel.y, 0);
         }
     }
-    // if (id.x == 0 && id.y == 0)
-    // {
-    //     Finished[0] = 2;
-    // }
+    if (id.x == 0 && id.y == 0)
+    {
+        Finished[0] = 2;
+    }
 }
