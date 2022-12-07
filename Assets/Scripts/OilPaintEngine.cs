@@ -1,4 +1,6 @@
 using UnityEngine;
+using System.Collections.Generic;
+using UnityEngine.Rendering;
 
 public class OilPaintEngine : MonoBehaviour
 {
@@ -29,6 +31,13 @@ public class OilPaintEngine : MonoBehaviour
     private RakelInterpolator RakelInterpolator;
 
 
+    private Queue<ComputeShaderTask> ComputeShaderTasks = new Queue<ComputeShaderTask>();
+    private Queue<List<ComputeBuffer>> BuffersToDispose = new Queue<List<ComputeBuffer>>();
+
+    //private AsyncGPUReadbackRequest CurrentReadbackRequest;
+    //private bool CurrentReadbackRequestSet;
+    //private List<ComputeBuffer> CurrentNextBuffersToDispose;
+
     void Awake()
     {
         Camera = GameObject.Find("Main Camera").GetComponent<Camera>();
@@ -40,6 +49,9 @@ public class OilPaintEngine : MonoBehaviour
         CanvasPosition = GameObject.Find("Canvas").GetComponent<Transform>().position;
 
         CreateCanvasAndTools();
+
+
+        Application.targetFrameRate = 500;
     }
 
     void Start()
@@ -71,7 +83,7 @@ public class OilPaintEngine : MonoBehaviour
         if (Rakel != null)
             Rakel.Dispose();
                     
-        Rakel = new Rakel(RakelLength, RakelWidth, TextureResolution);
+        Rakel = new Rakel(RakelLength, RakelWidth, TextureResolution, ComputeShaderTasks);
         int rakelPixelsLength = MathUtil.ToTextureSpaceLength(RakelLength, TextureResolution);
         int rakelPixelsWidth = MathUtil.ToTextureSpaceLength(RakelWidth, TextureResolution);
         Debug.Log("Rakel is " + rakelPixelsLength + "x" + rakelPixelsWidth + " = " + rakelPixelsLength * rakelPixelsWidth);
@@ -113,6 +125,77 @@ public class OilPaintEngine : MonoBehaviour
                 RakelInterpolator.AddNode(worldSpaceHit, RakelRotation, 0, TextureResolution);
             }
         }
+
+        processComputeShaderTask();
+    }
+
+    private void processComputeShaderTask()
+    {
+        //if (CurrentReadbackRequestSet && CurrentReadbackRequest.done)
+        //{
+        //    foreach (ComputeBuffer c in CurrentNextBuffersToDispose){
+        //        c.Dispose();
+        //    }
+        //    CurrentReadbackRequestSet = false; // reset, so next task can be dispatched
+        //}
+
+        //if (CurrentReadbackRequestSet == false)
+        //{
+        //    if (ComputeShaderTasks.Count > 0)
+        //    {
+        //        ComputeShaderTask cst = ComputeShaderTasks.Dequeue();
+
+        //        // Debug.Log("dequeued " + cst.GetHashCode());
+        //        if (cst.FinishedMarkerBuffer != null) {
+        //            CurrentReadbackRequest = AsyncGPUReadback.Request(cst.FinishedMarkerBuffer);
+        //        } else {
+        //            CurrentReadbackRequest = AsyncGPUReadback.Request(cst.FinishedMarkerTexture);
+        //        }
+        //        CurrentReadbackRequestSet = true;
+        //        CurrentNextBuffersToDispose = cst.BuffersToDispose;
+
+        //        cst.ComputeShader.Dispatch(0, cst.ThreadGroups.x, cst.ThreadGroups.y, 1);
+        //        // BuffersToDispose.Enqueue(cst.BuffersToDispose);
+        //        // Debug.Log("enqeued " + cst.BuffersToDispose.GetHashCode());
+        //    }
+        //}
+
+        //if (BuffersToDispose.Count > 0)
+        //{
+        //    List<ComputeBuffer> buffers = BuffersToDispose.Dequeue();
+        //    // Debug.Log("dequeued " + buffers.GetHashCode());
+        //    BuffersToDisposeReally.Enqueue(buffers);
+        //}
+
+        if (BuffersToDispose.Count > 0)
+        {
+            List<ComputeBuffer> buffers = BuffersToDispose.Dequeue();
+            // Debug.Log("dequeued " + buffers.GetHashCode());
+            foreach (ComputeBuffer c in buffers)
+            {
+                c.Dispose();
+            }
+        }
+
+        if (ComputeShaderTasks.Count > 0)
+        {
+            ComputeShaderTask cst = ComputeShaderTasks.Dequeue();
+            foreach (CSAttribute ca in cst.Attributes)
+            {
+                ca.Apply(cst.ComputeShader);
+            }
+            cst.ComputeShader.Dispatch(0, cst.ThreadGroups.x, cst.ThreadGroups.y, 1);
+            BuffersToDispose.Enqueue(cst.BuffersToDispose);
+            // Debug.Log("enqeued " + cst.BuffersToDispose.GetHashCode());
+        }
+
+        // if (BuffersToDispose.Count > 0)
+        // {
+        //     List<ComputeBuffer> buffers = BuffersToDispose.Dequeue();
+        //     foreach (ComputeBuffer c in buffers){
+        //         c.Dispose();
+        //     }
+        // }
     }
     
     private void OnDestroy()

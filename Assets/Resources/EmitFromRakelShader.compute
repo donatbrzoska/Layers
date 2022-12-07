@@ -32,8 +32,10 @@ uint2 RakelReservoirSize;
 uint2 RakelLowerLeftRounded;
 RWStructuredBuffer<Paint> RakelApplicationReservoir;
 
+RWStructuredBuffer<Paint> RakelEmittedPaint;
 
-RWTexture2D<float4> Texture;
+
+// RWStructuredBuffer<int> Finished;
 
 
 uint IJ(uint i, uint j)
@@ -189,10 +191,13 @@ void main (uint3 id : SV_DispatchThreadID)
                              + ur_part * paint_ur.color
                              + ll_part * paint_ll.color
                              + lr_part * paint_lr.color;
+                Paint paint;
+                paint.color = color;
+                paint.volume = volume;
 
-                if (volume > 0)
+                if (paint.volume > 0)
                 {
-                    Texture[canvas_pixel] = color;
+                    RakelEmittedPaint[XY(id.x, id.y, CalculationSize.x)] = paint;
                     // delete amount of taken volume from reservoir
                     // 100 volume is one unit of paint, since it doesnt make sense to
                     // ... calculate parts of smaller integers and we have to use integers because of InterlockedAdd
@@ -205,4 +210,8 @@ void main (uint3 id : SV_DispatchThreadID)
             // Debug[XY(id.x, id.y, CalculationSize.x)] = float3(, reservoir_pixel.y, 0);
         }
     }
+    // if (id.x == 0 && id.y == 0)
+    // {
+    //     Finished[0] = 2;
+    // }
 }

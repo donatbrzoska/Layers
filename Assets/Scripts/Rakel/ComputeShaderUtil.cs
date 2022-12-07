@@ -1,7 +1,49 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class ComputeShaderUtil
 {
+    public static ComputeShader LoadComputeShader(string computeShaderName)
+    {
+        return (ComputeShader)Resources.Load(computeShaderName);
+    }
+
+    public static List<CSAttribute> GenerateReservoirRegionShaderAttributes(IntelGPUShaderRegion sr)
+    {
+        return new List<CSAttribute>() {
+            new CSInts2("CalculationSize", sr.CalculationSize)
+        };
+    }
+
+    public static List<CSAttribute> GenerateCanvasRegionShaderAttributes(
+        RakelSnapshot rakelSnapshot,
+        IntelGPUShaderRegion sr,
+        WorldSpaceCanvas wsc,
+        Rakel rakel)
+    {
+        return new List<CSAttribute>() {
+            new CSInts2("CalculationSize", sr.CalculationSize),
+            new CSInts2("CalculationPosition", sr.CalculationPosition),
+            new CSInts2("TextureSize", wsc.TextureSize),
+            new CSFloats3("CanvasPosition", wsc.Position),
+            new CSFloats2("CanvasSize", wsc.Size),
+            new CSFloats3("RakelAnchor", rakel.Anchor),
+            new CSFloats3("RakelPosition", rakelSnapshot.Position),
+            new CSFloat("RakelLength", rakel.Length),
+            new CSFloat("RakelWidth", rakel.Width),
+            new CSFloat("RakelRotation", rakelSnapshot.Rotation),
+            new CSFloats2("RakelOriginBoundaries", rakelSnapshot.OriginBoundaries)
+        };
+    }
+
+    public static List<CSAttribute> GenerateCopyBufferToTextureShaderAttributes(IntelGPUShaderRegion sr)
+    {
+        return new List<CSAttribute>() {
+            new CSInts2("CalculationSize", sr.CalculationSize),
+            new CSInts2("CalculationPosition", sr.CalculationPosition)
+        };
+    }
+
     public static ComputeShader GenerateCanvasRegionShader(
         string computeShaderName,
         RakelSnapshot rakelSnapshot,
@@ -47,6 +89,18 @@ public class ComputeShaderUtil
         ComputeShader computeShader = (ComputeShader)Resources.Load(computeShaderName); 
     
         computeShader.SetInts("CalculationSize", new int[] { sr.CalculationSize.x, sr.CalculationSize.y });
+
+        return computeShader;
+    }
+
+    public static ComputeShader GenerateCopyBufferToTextureShader(
+        string computeShaderName,
+        IntelGPUShaderRegion sr)
+    {
+        ComputeShader computeShader = (ComputeShader)Resources.Load(computeShaderName); 
+    
+        computeShader.SetInts("CalculationSize", sr.CalculationSize.x, sr.CalculationSize.y);
+        computeShader.SetInts("CalculationPosition", sr.CalculationPosition.x, sr.CalculationPosition.y); // ... Lowest left pixel on canvas that is modified though this shader computation
 
         return computeShader;
     }

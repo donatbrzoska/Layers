@@ -246,13 +246,13 @@ public class Notes : MonoBehaviour
  *
  * Copy Paste Fehler, zwei mal n.x statt einmal n.x und einmal n.y
  *
- *
  * int wird zu uint gecastet ... bei negativen Werten kommen große Zahlen heraus
  *
  * Falsche Anzahl an Threadgruppen schlägt sich heftig auf die Performance nieder (ShaderRegion falsch initialisiert)
  *
+ * Integer Division liefert auch int und nicht float
  * 
- * 
+ * ComputeShaderTasks: Vergessen, einen der ursprügnlichen Dispatch-Calls auszukommentieren
  */
 
 
@@ -1341,6 +1341,27 @@ public class Notes : MonoBehaviour
  * - Texture2D für CPU -> GPU und RWTexture2D für GPU -> CPU?
  * - globallycoherent
  * - was ist der Unterschied zwischen Load und [] auf Textures?
+ *
+ * Aufgehört bei:
+ * - ~10FPS durch Nutzung von Vektoroperationen
+ * - Nächste Schritte
+ *   - Volumenimplementierung + Normalmap auf Canvas
+ *   - Paint Pickup
+ *   - ...
+ *
+ *
+ * 07.12.2022
+ * Dispatch-Calls garantiert sequenziell ausführen:
+ * - Buffer mit einem Wert beschreiben und den Buffer zurücklesen -> extrem langsam
+ * - ComputeShaderTask-Queue
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
  *
  *
  */
