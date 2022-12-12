@@ -9,7 +9,9 @@ public interface IRakel
         float rakelRotation,
         float rakelTilt,
         WorldSpaceCanvas wsc,
-        RenderTexture canvasTexture);
+        ComputeBuffer Canvas,
+        RenderTexture canvasTexture,
+        RenderTexture canvasNormalMap);
     public void Fill(Paint paint, ReservoirFiller filler);
     public void Dispose();
 }

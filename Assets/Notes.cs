@@ -51,6 +51,8 @@ public class Notes : MonoBehaviour
  * # Farbmitnahme bei großem Neigungswinkel und genügend Druck
  * 
  * 
+ * - Out Of Bounds anfangen zu malen fängt dann von der anderen Seite an sobald man wieder über der Leinwand ist
+ * - Clip-Funktion benutzen um Pixel zu skippen
  * - 16 Bit Floats für die Farbschichten auf dem Canvas https://stackoverflow.com/questions/59728656/c-sharp-16-bit-float-conversions
  * - Tilt und Abstand zur Wand einstellbar machen
  * - "Locked"-Checkbox für Rotation
@@ -211,10 +213,10 @@ public class Notes : MonoBehaviour
  * ALT: Rotieren
  *
  * Command + D/Linksklick: Springe zu Deklaration
- * CMD + CTRL + LEFT/RIGHT: Springe zu vorheriger/nächster Curserposition
+ * CMD + CTRL + LEFT/RIGHT: Springe zu vorheriger/nächster Cursorposition
  * 
  * ALT + Mouse: Spaltenweise Mutliline-Markierung
- * CTRL + ALT + Mouse: Multicurser
+ * CTRL + ALT + Mouse: Multicursor
  */
 
 
@@ -256,7 +258,8 @@ public class Notes : MonoBehaviour
  *
  * Falsche API vermutet -> Man sollte nicht SetInt, SetBuffer, ... auf einem ComputeShader machen, wenn man ihn erst viel später ausführt
  *
- *
+ * Copy and Paste
+ * - += mitkopiert aber eigentlich gar nicht gewünscht ...
  */
 
 
@@ -1359,7 +1362,14 @@ public class Notes : MonoBehaviour
  * - Buffer mit einem Wert beschreiben und den Buffer zurücklesen -> extrem langsam
  * - ComputeShaderTask-Queue
  *
- *
+ * aufgehört bei:
+ * - Volumenimplementierung auf Canvas implementieren
+ * - Rendering-Shader muss damit einhergehen
+ * -> kombinieren mit Normalmap-Generierung
+ *   -> evtl. Shader Region um 1 Pixel padden, damit die Normalmap exakt ist
+ *   -> oder erstmal auf später verschieben, da sich an den Regions evtl. sowieso noch mal alles ändert für die weitere Optimierung
+ * 
+ * 
  *
  *
  *

@@ -14,10 +14,10 @@ struct Paint {
 };
 RWStructuredBuffer<Paint> RakelEmittedPaint;
 
-RWTexture2D<float4> Texture;
+RWStructuredBuffer<Paint> Canvas;
+uint CanvasWidth;
 
-
-RWStructuredBuffer<int> Finished;
+// RWStructuredBuffer<int> Finished;
 
 
 bool is_relevant_thread(uint3 id)
@@ -40,14 +40,20 @@ void main (uint3 id : SV_DispatchThreadID)
         uint2 canvas_pixel = id.xy + CalculationPosition;
 
         // get emitted paint
+        // .. in this case CalculationSize == ReservoirSize
         Paint p = RakelEmittedPaint[XY(id.x, id.y, CalculationSize.x)];
         if (p.volume > 0)
         {
-            Texture[canvas_pixel] = p.color;
+            // LATER: Implement layering here
+            Canvas[XY(canvas_pixel.x, canvas_pixel.y, CanvasWidth)].volume += p.volume;
+
+            // float4 canvas_color = Canvas[XY(canvas_pixel.x, canvas_pixel.y, CanvasWidth)].color;
+            // Canvas[XY(canvas_pixel.x, canvas_pixel.y, CanvasWidth)].color = canvas_color * 2 + p.color / 2;
+            Canvas[XY(canvas_pixel.x, canvas_pixel.y, CanvasWidth)].color = p.color;
         }
     }
-    if (id.x == 0 && id.y == 0)
-    {
-        Finished[0] = 1;
-    }
+    // if (id.x == 0 && id.y == 0)
+    // {
+    //     Finished[0] = 1;
+    // }
 }

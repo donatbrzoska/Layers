@@ -36,7 +36,7 @@ public class ComputeShaderUtil
         };
     }
 
-    public static List<CSAttribute> GenerateCopyBufferToTextureShaderAttributes(IntelGPUShaderRegion sr)
+    public static List<CSAttribute> GenerateCopyBufferToCanvasShaderAttributes(IntelGPUShaderRegion sr)
     {
         return new List<CSAttribute>() {
             new CSInts2("CalculationSize", sr.CalculationSize),

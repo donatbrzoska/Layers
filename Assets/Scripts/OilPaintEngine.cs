@@ -10,6 +10,7 @@ public class OilPaintEngine : MonoBehaviour
 
     public int TextureResolution { get; private set; } = 100; // texture space pixels per 1 world space
     private RenderTexture Texture;
+    private RenderTexture NormalMap;
 
     private int CanvasColliderID;
     private Renderer CanvasRenderer;
@@ -17,6 +18,7 @@ public class OilPaintEngine : MonoBehaviour
     private float CanvasHeight; // world space
     private Vector3 CanvasPosition; // world space
     private WorldSpaceCanvas WorldSpaceCanvas;
+    private ComputeBuffer Canvas;
 
     //private IRakelPaintReservoir RakelPaintReservoir;
     //public Paint RakelPaint { get; private set; }
@@ -54,6 +56,7 @@ public class OilPaintEngine : MonoBehaviour
     void CreateCanvasAndTools()
     {
         WorldSpaceCanvas = new WorldSpaceCanvas(CanvasHeight, CanvasWidth, TextureResolution, CanvasPosition);
+        Canvas = new ComputeBuffer(WorldSpaceCanvas.TextureSize.x * WorldSpaceCanvas.TextureSize.y, sizeof(float) * 4 + sizeof(int));
 
         Texture = new RenderTexture(WorldSpaceCanvas.TextureSize.x, WorldSpaceCanvas.TextureSize.y, 1);
         Texture.filterMode = FilterMode.Point;
@@ -61,9 +64,12 @@ public class OilPaintEngine : MonoBehaviour
         Texture.Create();
         CanvasRenderer.material.SetTexture("_MainTex", Texture);
 
-        //NormalMap = new FastTexture2D(TextureWidth, TextureHeight);
-        //CanvasRenderer.material.EnableKeyword("_NORMALMAP");
-        //CanvasRenderer.material.SetTexture("_BumpMap", NormalMap.Texture);
+        NormalMap = new RenderTexture(WorldSpaceCanvas.TextureSize.x, WorldSpaceCanvas.TextureSize.y, 1);
+        NormalMap.filterMode = FilterMode.Point;
+        NormalMap.enableRandomWrite = true;
+        NormalMap.Create();
+        CanvasRenderer.material.EnableKeyword("_NORMALMAP");
+        CanvasRenderer.material.SetTexture("_BumpMap", NormalMap);
 
         CreateRakelDrawer();
     }
@@ -81,7 +87,7 @@ public class OilPaintEngine : MonoBehaviour
         int rakelPixelsWidth = MathUtil.ToTextureSpaceLength(RakelWidth, TextureResolution);
         Debug.Log("Rakel is " + rakelPixelsLength + "x" + rakelPixelsWidth + " = " + rakelPixelsLength * rakelPixelsWidth);
 
-        RakelInterpolator = new RakelInterpolator(Rakel, WorldSpaceCanvas, Texture);
+        RakelInterpolator = new RakelInterpolator(Rakel, WorldSpaceCanvas, Canvas, Texture, NormalMap);
     }
 
     void Update()
@@ -90,7 +96,7 @@ public class OilPaintEngine : MonoBehaviour
             for (int i=0; i<50; i++){
                 float x = Random.Range(-5f, 5f);
                 float y = Random.Range(-3f, 3f);
-                Rakel.Apply(new Vector3(x,y,0), 0, 0, WorldSpaceCanvas, Texture);
+                Rakel.Apply(new Vector3(x,y,0), 0, 0, WorldSpaceCanvas, Canvas, Texture, NormalMap);
             }
         } else {
             Vector2 currentMousePosition = Input.mousePosition;
@@ -115,7 +121,8 @@ public class OilPaintEngine : MonoBehaviour
                 {
                     RakelInterpolator.NewStroke();
                 }
-                RakelInterpolator.AddNode(worldSpaceHit, RakelRotation, 0, TextureResolution);
+                //RakelInterpolator.AddNode(worldSpaceHit, RakelRotation, 0, TextureResolution);
+                RakelInterpolator.AddNode(worldSpaceHit, 0, 0, TextureResolution);
             }
         }
 
@@ -140,9 +147,11 @@ public class OilPaintEngine : MonoBehaviour
 
             cst.ComputeShader.Dispatch(0, cst.ThreadGroups.x, cst.ThreadGroups.y, 1);
 
+            //GL.Flush();
+
             // Alternative but slow: GetData() blocks until the task is finished
-            cst.FinishedMarkerBuffer.GetData(new int[1]);
-            cst.FinishedMarkerBuffer.Dispose();
+            //cst.FinishedMarkerBuffer.GetData(new int[1]);
+            //cst.FinishedMarkerBuffer.Dispose();
 
             //while (!CurrentReadbackRequest.done)
             //{
@@ -160,6 +169,9 @@ public class OilPaintEngine : MonoBehaviour
     {
         if (Rakel != null)
             Rakel.Dispose();
+
+        if (Canvas != null)
+            Canvas.Dispose();
     }
 
     public void UpdateRakelLength(float worldSpaceLength)

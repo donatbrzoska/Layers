@@ -14,8 +14,8 @@ public class Rakel : IRakel
     Paint[] RakelApplicationReservoirData;
     ComputeBuffer RakelApplicationReservoir; // 3D array, z=1 is for duplication for correct interpolation
     // Paint[] RakelEmittedPaintData;
-    ComputeBuffer RakelPickupReservoir;
-    // ComputeBuffer CanvasReservoir;
+    //ComputeBuffer RakelPickupReservoir;
+    ComputeBuffer Canvas;
 
     Queue<ComputeShaderTask> ComputeShaderTasks;
 
@@ -39,7 +39,7 @@ public class Rakel : IRakel
         // RakelEmittedPaint.SetData(RakelEmittedPaintData);
 
         // TODO add layers
-        // CanvasReservoir = new ComputeBuffer(wsc.TextureSize.x * wsc.TextureSize.y * 3, sizeof(float));
+         //Canvas = new ComputeBuffer(wsc.TextureSize.x * wsc.TextureSize.y * 3, sizeof(float));
 
     }
 
@@ -57,7 +57,9 @@ public class Rakel : IRakel
         float rakelRotation,
         float rakelTilt,
         WorldSpaceCanvas wsc,
-        RenderTexture canvasTexture)
+        ComputeBuffer Canvas,
+        RenderTexture canvasTexture,
+        RenderTexture canvasNormalMap)
     {
         // STEP 1
         // ... EMIT: Duplicate Reservoir
@@ -72,21 +74,21 @@ public class Rakel : IRakel
 
         List<CSAttribute> attributes = ComputeShaderUtil.GenerateReservoirRegionShaderAttributes(duplicateSR);
         attributes.Add(new CSComputeBuffer("Reservoir", RakelApplicationReservoir));
-        ComputeBuffer finishedBuffer = new ComputeBuffer(1, sizeof(int));
-        attributes.Add(new CSComputeBuffer("Finished", finishedBuffer));
+        //ComputeBuffer finishedBuffer = new ComputeBuffer(1, sizeof(int));
+        //attributes.Add(new CSComputeBuffer("Finished", finishedBuffer));
 
         ComputeShaderTask cst = new ComputeShaderTask(
             reservoirDuplicationShader,
             attributes,
             duplicateSR.ThreadGroups,
-            finishedBuffer,
+            //finishedBuffer,
+            null,
             new List<ComputeBuffer>()
         );
         ComputeShaderTasks.Enqueue(cst);
 
 
         // ... EMIT: Extract interpolated volumes and resulting color from duplicate and delete from original
-        // TODO maybe wait for previous shader to finish?
         RakelSnapshot rakelSnapshot = new RakelSnapshot(Length, Width, Anchor, rakelPosition, rakelRotation, rakelTilt);
         IntelGPUShaderRegion emitSR = new IntelGPUShaderRegion(
             wsc.MapToPixelInRange(rakelSnapshot.UpperLeft),
@@ -109,14 +111,15 @@ public class Rakel : IRakel
         Vector2Int lowerLeftRounded = wsc.MapToPixel(rakelSnapshot.LowerLeft);
         attributes.Add(new CSInts2("RakelLowerLeftRounded", lowerLeftRounded));
         attributes.Add(new CSInts2("RakelReservoirSize", RakelReservoirSize));
-        finishedBuffer = new ComputeBuffer(1, sizeof(int));
-        attributes.Add(new CSComputeBuffer("Finished", finishedBuffer));
+        //finishedBuffer = new ComputeBuffer(1, sizeof(int));
+        //attributes.Add(new CSComputeBuffer("Finished", finishedBuffer));
 
         cst = new ComputeShaderTask(
             emitFromRakelShader,
             attributes,
             emitSR.ThreadGroups,
-            finishedBuffer,
+            //finishedBuffer,
+            null,
             new List<ComputeBuffer>()
         );
         ComputeShaderTasks.Enqueue(cst);
@@ -142,18 +145,50 @@ public class Rakel : IRakel
 
         // STEP 3
         // ... PUT TO CANVAS
-        ComputeShader copyBufferToTextureShader = ComputeShaderUtil.LoadComputeShader("CopyBufferToTextureShader");
-        attributes = ComputeShaderUtil.GenerateCopyBufferToTextureShaderAttributes(emitSR);
+        ComputeShader copyBufferToTextureShader = ComputeShaderUtil.LoadComputeShader("CopyBufferToCanvasShader");
+        attributes = ComputeShaderUtil.GenerateCopyBufferToCanvasShaderAttributes(emitSR);
         attributes.Add(new CSComputeBuffer("RakelEmittedPaint", RakelEmittedPaint));
-        attributes.Add(new CSTexture("Texture", canvasTexture));
-        finishedBuffer = new ComputeBuffer(1, sizeof(int));
-        attributes.Add(new CSComputeBuffer("Finished", finishedBuffer));
+        attributes.Add(new CSComputeBuffer("Canvas", Canvas));
+        attributes.Add(new CSInt("CanvasWidth", canvasTexture.width));
+        //finishedBuffer = new ComputeBuffer(1, sizeof(int));
+        //attributes.Add(new CSComputeBuffer("Finished", finishedBuffer));
         cst = new ComputeShaderTask(
             copyBufferToTextureShader,
             attributes,
             emitSR.ThreadGroups,
-            finishedBuffer,
+            //finishedBuffer,
+            null,
             new List<ComputeBuffer>() { RakelEmittedPaint }
+        );
+        ComputeShaderTasks.Enqueue(cst);
+
+
+
+        // STEP 4
+        // ... GENERATE NORMALMAP + RENDER
+        // TODO 1 pixel padding for the shader region
+        //IntelGPUShaderRegion paddedEmitSR = new IntelGPUShaderRegion(
+        //    wsc.MapToPixelInRange(rakelSnapshot.UpperLeft),
+        //    wsc.MapToPixelInRange(rakelSnapshot.UpperRight),
+        //    wsc.MapToPixelInRange(rakelSnapshot.LowerLeft),
+        //    wsc.MapToPixelInRange(rakelSnapshot.LowerRight)
+        //);
+
+        ComputeShader normalMapAndRenderShader = ComputeShaderUtil.LoadComputeShader("NormalMapAndRenderShader");
+        attributes = ComputeShaderUtil.GenerateCopyBufferToCanvasShaderAttributes(emitSR);
+        attributes.Add(new CSComputeBuffer("Canvas", Canvas));
+        attributes.Add(new CSInts2("CanvasSize", wsc.TextureSize));
+        attributes.Add(new CSTexture("Texture", canvasTexture));
+        attributes.Add(new CSTexture("NormalMap", canvasNormalMap));
+        //finishedBuffer = new ComputeBuffer(1, sizeof(int));
+        //attributes.Add(new CSComputeBuffer("Finished", finishedBuffer));
+        cst = new ComputeShaderTask(
+            normalMapAndRenderShader,
+            attributes,
+            emitSR.ThreadGroups,
+            //finishedBuffer,
+            null,
+            new List<ComputeBuffer>()
         );
         ComputeShaderTasks.Enqueue(cst);
     }

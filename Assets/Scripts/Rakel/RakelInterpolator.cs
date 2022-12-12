@@ -2,9 +2,11 @@
 
 public class RakelInterpolator
 {
-    private RenderTexture DrawingTarget;
-    private WorldSpaceCanvas WorldSpaceCanvas;
     private IRakel Rakel;
+    private WorldSpaceCanvas WorldSpaceCanvas;
+    private ComputeBuffer Canvas;
+    private RenderTexture DrawingTarget;
+    private RenderTexture NormalMapTarget;
 
     private Vector3 PreviousRakelPosition;
     private float PreviousRakelRotation;
@@ -13,11 +15,13 @@ public class RakelInterpolator
     private float NO_ANGLE = float.NaN;
     private Vector3 NO_POSITION = Vector3.negativeInfinity;
 
-    public RakelInterpolator(IRakel rakel, WorldSpaceCanvas wsc, RenderTexture drawingTarget)
+    public RakelInterpolator(IRakel rakel, WorldSpaceCanvas wsc, ComputeBuffer canvas, RenderTexture drawingTarget, RenderTexture normalMapTarget)
     {
         Rakel = rakel;
         WorldSpaceCanvas = wsc;
+        Canvas = canvas;
         DrawingTarget = drawingTarget;
+        NormalMapTarget = normalMapTarget;
     }
 
     public void NewStroke()
@@ -46,7 +50,10 @@ public class RakelInterpolator
                     rakelRotation,
                     rakelTilt,
                     WorldSpaceCanvas,
-                    DrawingTarget);
+                    Canvas,
+                    DrawingTarget,
+                    NormalMapTarget
+                );
             }
             else
             {
@@ -105,7 +112,9 @@ public class RakelInterpolator
                         currentRotation,
                         currentTilt,
                         WorldSpaceCanvas,
-                        DrawingTarget
+                        Canvas,
+                        DrawingTarget,
+                        NormalMapTarget
                     );
 
                     previousPosition = currentPosition;
