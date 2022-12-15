@@ -164,28 +164,47 @@ public class Rakel : IRakel
 
 
 
-        // STEP 4
-        // ... GENERATE NORMALMAP + RENDER
-        // TODO 1 pixel padding for the shader region
-        //IntelGPUShaderRegion paddedEmitSR = new IntelGPUShaderRegion(
-        //    wsc.MapToPixelInRange(rakelSnapshot.UpperLeft),
-        //    wsc.MapToPixelInRange(rakelSnapshot.UpperRight),
-        //    wsc.MapToPixelInRange(rakelSnapshot.LowerLeft),
-        //    wsc.MapToPixelInRange(rakelSnapshot.LowerRight)
-        //);
-
-        ComputeShader normalMapAndRenderShader = ComputeShaderUtil.LoadComputeShader("NormalMapAndRenderShader");
+        // STEP 4.1
+        // ... COLORS
+        ComputeShader colorsShader = ComputeShaderUtil.LoadComputeShader("ColorsShader");
         attributes = ComputeShaderUtil.GenerateCopyBufferToCanvasShaderAttributes(emitSR);
         attributes.Add(new CSComputeBuffer("Canvas", Canvas));
         attributes.Add(new CSInts2("CanvasSize", wsc.TextureSize));
         attributes.Add(new CSTexture("Texture", canvasTexture));
+        //finishedBuffer = new ComputeBuffer(1, sizeof(int));
+        //attributes.Add(new CSComputeBuffer("Finished", finishedBuffer));
+        cst = new ComputeShaderTask(
+            colorsShader,
+            attributes,
+            emitSR.ThreadGroups,
+            //finishedBuffer,
+            null,
+            new List<ComputeBuffer>()
+        );
+        ComputeShaderTasks.Enqueue(cst);
+
+
+        // STEP 4.2
+        // ... NORMALS
+        IntelGPUShaderRegion paddedEmitSR = new IntelGPUShaderRegion(
+            wsc.MapToPixelInRange(rakelSnapshot.UpperLeft),
+            wsc.MapToPixelInRange(rakelSnapshot.UpperRight),
+            wsc.MapToPixelInRange(rakelSnapshot.LowerLeft),
+            wsc.MapToPixelInRange(rakelSnapshot.LowerRight),
+            1 // Padding because normals of the pixels around also have to be recalculated
+        );
+
+        ComputeShader normalsShader = ComputeShaderUtil.LoadComputeShader("NormalsShader");
+        attributes = ComputeShaderUtil.GenerateCopyBufferToCanvasShaderAttributes(paddedEmitSR);
+        attributes.Add(new CSComputeBuffer("Canvas", Canvas));
+        attributes.Add(new CSInts2("CanvasSize", wsc.TextureSize));
         attributes.Add(new CSTexture("NormalMap", canvasNormalMap));
         //finishedBuffer = new ComputeBuffer(1, sizeof(int));
         //attributes.Add(new CSComputeBuffer("Finished", finishedBuffer));
         cst = new ComputeShaderTask(
-            normalMapAndRenderShader,
+            normalsShader,
             attributes,
-            emitSR.ThreadGroups,
+            paddedEmitSR.ThreadGroups,
             //finishedBuffer,
             null,
             new List<ComputeBuffer>()

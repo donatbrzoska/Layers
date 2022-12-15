@@ -50,7 +50,9 @@ public class Notes : MonoBehaviour
  * 
  * # Farbmitnahme bei großem Neigungswinkel und genügend Druck
  * 
- * 
+ * - bei geringen Auflösungen gibt es Löcher
+ * - Normalen und Farben bei Canvas-Erstellung setzen
+ * - Dispose Buffers auch bei neuer Canvas-Resolution
  * - Out Of Bounds anfangen zu malen fängt dann von der anderen Seite an sobald man wieder über der Leinwand ist
  * - Clip-Funktion benutzen um Pixel zu skippen
  * - 16 Bit Floats für die Farbschichten auf dem Canvas https://stackoverflow.com/questions/59728656/c-sharp-16-bit-float-conversions
@@ -1370,7 +1372,20 @@ public class Notes : MonoBehaviour
  *   -> oder erstmal auf später verschieben, da sich an den Regions evtl. sowieso noch mal alles ändert für die weitere Optimierung
  * 
  * 
- *
+ * 12.12.2022
+ * Aufgehört bei:
+ * - Normalenberechnung implementiert
+ * - gerade Padding implementiert aber noch nicht nicht committet
+ *   - dafür wurde der Render+Normalen-Shader in zwei Teile geteilt
+ * - aber auf Fehlersuche:
+ *   - die Farbe wird bei wiederholtem Apply nicht in den ReservoirBuffer geschrieben -> sieht nur so aus
+ *   - es scheint auch, als wenn die Perlin-Noise Funktion, egal wie scale modifiziert wird, sich nicht ändert 
+ *   - außerdem ist unten immer unendlich viel Farbe auf der Rakel
+ *   
+ * 
+ * 13.12.2022
+ * Es gibt auf jeden Fall Probleme mit der Interpolation
+ * -> schnelle Bewegungen machen ein anderes Ergebnis als langsame
  *
  *
  *

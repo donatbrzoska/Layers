@@ -121,8 +121,8 @@ public class OilPaintEngine : MonoBehaviour
                 {
                     RakelInterpolator.NewStroke();
                 }
-                //RakelInterpolator.AddNode(worldSpaceHit, RakelRotation, 0, TextureResolution);
-                RakelInterpolator.AddNode(worldSpaceHit, 0, 0, TextureResolution);
+                RakelInterpolator.AddNode(worldSpaceHit, RakelRotation, 0, TextureResolution);
+                //RakelInterpolator.AddNode(worldSpaceHit, 0, 0, TextureResolution);
             }
         }
 

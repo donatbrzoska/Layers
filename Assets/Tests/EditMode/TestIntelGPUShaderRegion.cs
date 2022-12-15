@@ -44,6 +44,46 @@ public class TestIntelGPUShaderRegion
     }
 
     [Test]
+    public void PointPadded()
+    {
+        Vector2Int a = new Vector2Int(0, 0);
+        Vector2Int b = a;
+        Vector2Int c = a;
+        Vector2Int d = a;
+        IntelGPUShaderRegion sr = new IntelGPUShaderRegion(a, b, c, d, 1);
+
+        Assert.AreEqual(
+            3,
+            sr.ThreadGroups.x
+        );
+
+        Assert.AreEqual(
+            1,
+            sr.ThreadGroups.y
+        );
+
+        Assert.AreEqual(
+            3,
+            sr.CalculationSize.x
+        );
+
+        Assert.AreEqual(
+            3,
+            sr.CalculationSize.y
+        );
+
+        Assert.AreEqual(
+            -1,
+            sr.CalculationPosition.x
+        );
+
+        Assert.AreEqual(
+            -1,
+            sr.CalculationPosition.y
+        );
+    }
+
+    [Test]
     public void LineHorizontal_SmallerThanGroupSize()
     {
         Vector2Int a = new Vector2Int(0, 0);
