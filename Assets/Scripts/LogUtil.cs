@@ -159,4 +159,25 @@ public class LogUtil
         }
         Debug.Log(result);
     }
+
+    public static void Log(Paint[] paints, int rows = 1, string descr = "")
+    {
+
+        if (descr != "")
+        {
+            Debug.Log(descr);
+        }
+
+        string result = "";
+        int cols = paints.GetLength(0) / 2 / rows;
+        for (int i = 0; i < rows; i++)
+        {
+            for (int j = 0; j < cols; j++)
+            {
+                result += paints[i * cols + j].ToString() + " ";
+            }
+            result += "\n";
+        }
+        Debug.Log(result);
+    }
 }

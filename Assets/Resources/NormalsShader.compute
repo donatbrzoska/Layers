@@ -68,7 +68,7 @@ void main (uint3 id : SV_DispatchThreadID)
         int normal_z = 1;
 
         // ... ... scaling and normal assembly
-        float scale = 0.000025f;
+        float scale = 0.000008f;
         
         float4 normal = float4(scale * (float)normal_x, scale * (float)(-normal_y), normal_z, 1);
         float4 normalized = normalize(normal);

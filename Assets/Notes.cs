@@ -1379,11 +1379,11 @@ public class Notes : MonoBehaviour
  *   - dafür wurde der Render+Normalen-Shader in zwei Teile geteilt
  * - aber auf Fehlersuche:
  *   - die Farbe wird bei wiederholtem Apply nicht in den ReservoirBuffer geschrieben -> sieht nur so aus
- *   - es scheint auch, als wenn die Perlin-Noise Funktion, egal wie scale modifiziert wird, sich nicht ändert 
+ *   - es scheint auch, als wenn die Perlin-Noise Funktion, egal wie scale modifiziert wird, sich nicht ändert -> sieht auch nur so aus
  *   - außerdem ist unten immer unendlich viel Farbe auf der Rakel
  *   
  * 
- * 13.12.2022
+ * 15.12.2022
  * Es gibt auf jeden Fall Probleme mit der Interpolation
  * -> schnelle Bewegungen machen ein anderes Ergebnis als langsame
  *
