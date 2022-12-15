@@ -1,0 +1,26 @@
+#pragma kernel main
+
+uint2 CalculationSize;
+
+float4 Value;
+RWTexture2D<float4> Target;
+
+// RWStructuredBuffer<int> Finished;
+
+bool is_relevant_thread(uint3 id)
+{
+    return all(id.xy < CalculationSize);
+}
+
+[numthreads(1,8,1)]
+void main (uint3 id : SV_DispatchThreadID)
+{
+    if (is_relevant_thread(id))
+    {
+        Target[id.xy] = Value;
+    }
+    // if (id.x == 0 && id.y == 0)
+    // {
+    //     Finished[0] = 3;
+    // }
+}

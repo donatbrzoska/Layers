@@ -42,7 +42,10 @@ void main (uint3 id : SV_DispatchThreadID)
         Paint p = Canvas[XY(canvas_pixel.x, canvas_pixel.y, CanvasSize.x)];
 
         // set color
-        Texture[canvas_pixel] = p.color;
+        if (p.volume > 0)
+        {
+            Texture[canvas_pixel] = p.color;
+        }
     }
     // if (id.x == 0 && id.y == 0)
     // {

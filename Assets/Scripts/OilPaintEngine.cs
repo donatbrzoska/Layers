@@ -61,12 +61,33 @@ public class OilPaintEngine : MonoBehaviour
         WorldSpaceCanvas = new WorldSpaceCanvas(CanvasHeight, CanvasWidth, TextureResolution, CanvasPosition);
         Canvas = new ComputeBuffer(WorldSpaceCanvas.TextureSize.x * WorldSpaceCanvas.TextureSize.y, sizeof(float) * 4 + sizeof(int));
 
+
         Texture = new RenderTexture(WorldSpaceCanvas.TextureSize.x, WorldSpaceCanvas.TextureSize.y, 1);
         Texture.filterMode = FilterMode.Point;
         Texture.enableRandomWrite = true;
         Texture.Create();
         CanvasRenderer.material.SetTexture("_MainTex", Texture);
-        // TODO set to white Shader
+
+        // set colors to white
+        IntelGPUShaderRegion sr = new IntelGPUShaderRegion(
+            new Vector2Int(Texture.height, 0),
+            new Vector2Int(Texture.height, Texture.width),
+            new Vector2Int(0, 0),
+            new Vector2Int(Texture.width, 0)
+        );
+        ComputeShaderTask cst = new ComputeShaderTask(
+            ComputeShaderUtil.LoadComputeShader("SetTextureShader"),
+            new List<CSAttribute>() {
+                new CSInts2("CalculationSize", WorldSpaceCanvas.TextureSize),
+                new CSFloats4("Value", Vector4.one),
+                new CSTexture("Target", Texture)
+            },
+            sr.ThreadGroups,
+            null,
+            new List<ComputeBuffer>()
+        );
+        cst.Run();
+
 
         NormalMap = new RenderTexture(WorldSpaceCanvas.TextureSize.x, WorldSpaceCanvas.TextureSize.y, 1);
         NormalMap.filterMode = FilterMode.Point;
@@ -74,7 +95,20 @@ public class OilPaintEngine : MonoBehaviour
         NormalMap.Create();
         CanvasRenderer.material.EnableKeyword("_NORMALMAP");
         CanvasRenderer.material.SetTexture("_BumpMap", NormalMap);
-        // TODO set to white Shader
+
+        // set normals to up
+        cst = new ComputeShaderTask(
+            ComputeShaderUtil.LoadComputeShader("SetTextureShader"),
+            new List<CSAttribute>() {
+                new CSInts2("CalculationSize", WorldSpaceCanvas.TextureSize),
+                new CSFloats4("Value", (new Vector4(0, 0, 1, 0) + Vector4.one) / 2),
+                new CSTexture("Target", NormalMap)
+            },
+            sr.ThreadGroups,
+            null,
+            new List<ComputeBuffer>()
+        );
+        cst.Run();
     }
 
     void CreateRakelDrawer()

@@ -118,6 +118,21 @@ public class CSFloats3 : CSAttribute
     }
 }
 
+public class CSFloats4 : CSAttribute
+{
+    private Vector4 Values;
+
+    public CSFloats4(string key, Vector4 values) : base(key)
+    {
+        Values = values;
+    }
+
+    public override void ApplyTo(ComputeShader computeShader)
+    {
+        computeShader.SetFloats(Key, Values.x, Values.y, Values.z, Values.w);
+    }
+}
+
 public struct ComputeShaderTask {
     public ComputeShader ComputeShader;
     public List<CSAttribute> Attributes;
