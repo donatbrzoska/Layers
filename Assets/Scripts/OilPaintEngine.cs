@@ -26,7 +26,9 @@ public class OilPaintEngine : MonoBehaviour
     private static Vector2 NO_VECTOR2 = new Vector2(float.NaN, float.NaN);
     private bool PreviousMousePositionInitialized = false;
     private Vector2 PreviousMousePosition = NO_VECTOR2;
+
     public float RakelRotation { get; private set; } = 0;
+    public bool RakelRotationLocked { get; private set; } = false;
     public float RakelLength { get; private set; } = 8f; // world space
     public float RakelWidth { get; private set; } = 0.3f; // world space
     private IRakel Rakel;
@@ -46,14 +48,15 @@ public class OilPaintEngine : MonoBehaviour
         CanvasHeight = GameObject.Find("Canvas").GetComponent<Transform>().localScale.y * 10; // convert scale attribute to world space
         CanvasPosition = GameObject.Find("Canvas").GetComponent<Transform>().position;
 
-        CreateCanvasAndTools();
+        CreateCanvas();
+        CreateRakelDrawer();
     }
 
     void Start()
     {
     }
 
-    void CreateCanvasAndTools()
+    void CreateCanvas()
     {
         WorldSpaceCanvas = new WorldSpaceCanvas(CanvasHeight, CanvasWidth, TextureResolution, CanvasPosition);
         Canvas = new ComputeBuffer(WorldSpaceCanvas.TextureSize.x * WorldSpaceCanvas.TextureSize.y, sizeof(float) * 4 + sizeof(int));
@@ -63,6 +66,7 @@ public class OilPaintEngine : MonoBehaviour
         Texture.enableRandomWrite = true;
         Texture.Create();
         CanvasRenderer.material.SetTexture("_MainTex", Texture);
+        // TODO set to white Shader
 
         NormalMap = new RenderTexture(WorldSpaceCanvas.TextureSize.x, WorldSpaceCanvas.TextureSize.y, 1);
         NormalMap.filterMode = FilterMode.Point;
@@ -70,8 +74,7 @@ public class OilPaintEngine : MonoBehaviour
         NormalMap.Create();
         CanvasRenderer.material.EnableKeyword("_NORMALMAP");
         CanvasRenderer.material.SetTexture("_BumpMap", NormalMap);
-
-        CreateRakelDrawer();
+        // TODO set to white Shader
     }
 
     void CreateRakelDrawer()
@@ -99,18 +102,25 @@ public class OilPaintEngine : MonoBehaviour
                 Rakel.Apply(new Vector3(x,y,0), 0, 0, WorldSpaceCanvas, Canvas, Texture, NormalMap);
             }
         } else {
-            Vector2 currentMousePosition = Input.mousePosition;
-            if (!PreviousMousePositionInitialized){
-                PreviousMousePosition = currentMousePosition;
-                PreviousMousePositionInitialized = true;
-            } else {
-                Vector2 direction = currentMousePosition - PreviousMousePosition;
-
-                if (direction.magnitude > 8) {
-                    float angle = MathUtil.Angle360(Vector2.right, direction);
-                    RakelRotation = angle;
-
+            if (!RakelRotationLocked)
+            {
+                Vector2 currentMousePosition = Input.mousePosition;
+                if (!PreviousMousePositionInitialized)
+                {
                     PreviousMousePosition = currentMousePosition;
+                    PreviousMousePositionInitialized = true;
+                }
+                else
+                {
+                    Vector2 direction = currentMousePosition - PreviousMousePosition;
+
+                    if (direction.magnitude > 8)
+                    {
+                        float angle = MathUtil.Angle360(Vector2.right, direction);
+                        RakelRotation = angle;
+
+                        PreviousMousePosition = currentMousePosition;
+                    }
                 }
             }
 
@@ -166,6 +176,11 @@ public class OilPaintEngine : MonoBehaviour
         RakelRotation = rotation;
     }
 
+    public void UpdateRakelRotationLocked(bool locked)
+    {
+        RakelRotationLocked = locked;
+    }
+
     public void UpdateRakelPaint(Paint paint)
     {
     //    RakelPaint = paint;
@@ -174,7 +189,18 @@ public class OilPaintEngine : MonoBehaviour
 
     public void UpdateTextureResolution(int pixelsPerWorldSpaceUnit)
     {
+        OnDestroy();
+
         TextureResolution = pixelsPerWorldSpaceUnit;
-        CreateCanvasAndTools();
+        CreateCanvas();
+        CreateRakelDrawer();
+    }
+
+    public void ClearCanvas()
+    {
+        OnDestroy();
+
+        CreateCanvas();
+        CreateRakelDrawer(); // TODO make Rakelinterpolator not dependent on only one canvas
     }
 }

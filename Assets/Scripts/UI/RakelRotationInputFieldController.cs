@@ -4,9 +4,14 @@ using TMPro;
 [RequireComponent(typeof(TMP_InputField))]
 public class RakelRotationInputFieldController : InputFieldController
 {
-    public void Start()
+    //public void Start()
+    //{
+    //    InputField.text = "" + OilPaintEngine.RakelRotation;
+    //}
+
+    public void Update()
     {
-        InputField.text = "" + OilPaintEngine.RakelRotation;
+        InputField.SetTextWithoutNotify("" + OilPaintEngine.RakelRotation);
     }
 
     override public void OnValueChanged(string arg0)
