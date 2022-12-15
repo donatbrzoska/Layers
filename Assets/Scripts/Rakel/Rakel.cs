@@ -64,10 +64,10 @@ public class Rakel : IRakel
         // STEP 1
         // ... EMIT: Duplicate Reservoir
         IntelGPUShaderRegion duplicateSR = new IntelGPUShaderRegion(
-            new Vector2Int(0, RakelReservoirSize.y),
-            new Vector2Int(RakelReservoirSize.x, RakelReservoirSize.y),
+            new Vector2Int(0, RakelReservoirSize.y-1),
+            new Vector2Int(RakelReservoirSize.x-1, RakelReservoirSize.y-1),
             new Vector2Int(0, 0),
-            new Vector2Int(RakelReservoirSize.x, 0)
+            new Vector2Int(RakelReservoirSize.x-1, 0)
         );
 
         ComputeShader reservoirDuplicationShader = ComputeShaderUtil.LoadComputeShader("ReservoirDuplicationShader");
@@ -85,7 +85,8 @@ public class Rakel : IRakel
             null,
             new List<ComputeBuffer>()
         );
-        ComputeShaderTasks.Enqueue(cst);
+        //ComputeShaderTasks.Enqueue(cst);
+        cst.Run();
 
 
         // ... EMIT: Calculate interpolated volumes and resulting color from duplicate and delete from original
@@ -122,7 +123,11 @@ public class Rakel : IRakel
             null,
             new List<ComputeBuffer>()
         );
-        ComputeShaderTasks.Enqueue(cst);
+        //ComputeShaderTasks.Enqueue(cst);
+        cst.Run();
+
+        //RakelApplicationReservoir.GetData(RakelApplicationReservoirData);
+        //LogUtil.Log(RakelApplicationReservoirData, RakelReservoirSize.y);
 
 
 
@@ -160,7 +165,8 @@ public class Rakel : IRakel
             null,
             new List<ComputeBuffer>() { RakelEmittedPaint }
         );
-        ComputeShaderTasks.Enqueue(cst);
+        //ComputeShaderTasks.Enqueue(cst);
+        cst.Run();
 
 
 
@@ -181,7 +187,8 @@ public class Rakel : IRakel
             null,
             new List<ComputeBuffer>()
         );
-        ComputeShaderTasks.Enqueue(cst);
+        //ComputeShaderTasks.Enqueue(cst);
+        cst.Run();
 
 
         // STEP 4.2
@@ -209,7 +216,8 @@ public class Rakel : IRakel
             null,
             new List<ComputeBuffer>()
         );
-        ComputeShaderTasks.Enqueue(cst);
+        //ComputeShaderTasks.Enqueue(cst);
+        cst.Run();
     }
 
     public void Dispose()

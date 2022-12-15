@@ -127,7 +127,7 @@ public class OilPaintEngine : MonoBehaviour
             }
         }
 
-        processComputeShaderTasks();
+        //processComputeShaderTasks();
     }
 
     private void processComputeShaderTasks()

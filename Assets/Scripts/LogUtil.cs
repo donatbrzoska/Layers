@@ -160,7 +160,8 @@ public class LogUtil
         Debug.Log(result);
     }
 
-    public static void Log(Paint[] paints, int rows = 1, string descr = "")
+    // This function is for printing 3D arrays with depth of 2
+    public static void LogVolumes(Paint[] paints, int rows, int cols, string descr = "")
     {
 
         if (descr != "")
@@ -169,15 +170,27 @@ public class LogUtil
         }
 
         string result = "";
-        int cols = paints.GetLength(0) / 2 / rows;
         for (int i = 0; i < rows; i++)
         {
             for (int j = 0; j < cols; j++)
             {
-                result += paints[i * cols + j].ToString() + " ";
+                result += paints[i * cols + j].Volume + " ";
             }
             result += "\n";
         }
+        Debug.Log("0");
+        Debug.Log(result);
+
+        result = "";
+        for (int i = 0; i < rows; i++)
+        {
+            for (int j = 0; j < cols; j++)
+            {
+                result += paints[1 * rows * cols + i * cols + j].Volume + " ";
+            }
+            result += "\n";
+        }
+        Debug.Log("1");
         Debug.Log(result);
     }
 }

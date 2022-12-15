@@ -1386,11 +1386,16 @@ public class Notes : MonoBehaviour
  * 15.12.2022
  * Es gibt auf jeden Fall Probleme mit der Interpolation
  * -> schnelle Bewegungen machen ein anderes Ergebnis als langsame
+ * -> könnte eventuell daran liegen, dass bestimte Positionen doppelt angewandt werden
  *
+ * Endlich gefixt, dass unten die Farbe nicht zu Ende geht -> Bug in der XYZ Konvertierung ...
  *
- *
- *
- *
- *
+ * Next Steps:
+ * - Interpolator fixen (siehe 5 Zeilen ^)
+ *   - außerdem: schräges Ziehen erzeugt auch Löcher, liegt vermutlich auch am Interpolator
+ * - UI erweitern: Clear Canvas Button, Lock Rotation Haken
+ * - Es gab zuletzt auch wieder probleme mit dem sequenziellen Ausführen der Shader (vermutlich)
+ *   - auf jeden Fall kam wieder das bunte Viereck
+ * - Buffer auch bei neuer Canvas-Auflösung disposen
  *
  */

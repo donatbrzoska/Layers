@@ -152,7 +152,7 @@ public struct ComputeShaderTask {
 
         ComputeShader.Dispatch(0, ThreadGroups.x, ThreadGroups.y, 1);
 
-        //GL.Flush();
+        GL.Flush();
 
         // Alternative but slow: GetData() blocks until the task is finished
         //cst.FinishedMarkerBuffer.GetData(new int[1]);
