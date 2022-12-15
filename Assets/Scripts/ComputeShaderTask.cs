@@ -10,7 +10,7 @@ public abstract class CSAttribute
         Key = key;
     }
 
-    public abstract void Apply(ComputeShader computeShader);
+    public abstract void ApplyTo(ComputeShader computeShader);
 }
 
 public class CSComputeBuffer : CSAttribute
@@ -22,7 +22,7 @@ public class CSComputeBuffer : CSAttribute
         ComputeBuffer = computeBuffer;
     }
 
-    public override void Apply(ComputeShader computeShader)
+    public override void ApplyTo(ComputeShader computeShader)
     {
         computeShader.SetBuffer(0, Key, ComputeBuffer);
     }
@@ -37,7 +37,7 @@ public class CSTexture : CSAttribute
         RenderTexture = renderTexture;
     }
 
-    public override void Apply(ComputeShader computeShader)
+    public override void ApplyTo(ComputeShader computeShader)
     {
         computeShader.SetTexture(0, Key, RenderTexture);
     }
@@ -52,7 +52,7 @@ public class CSInt : CSAttribute
         Value = value;
     }
 
-    public override void Apply(ComputeShader computeShader)
+    public override void ApplyTo(ComputeShader computeShader)
     {
         computeShader.SetInt(Key, Value);
     }
@@ -67,7 +67,7 @@ public class CSInts2 : CSAttribute
         Values = values;
     }
 
-    public override void Apply(ComputeShader computeShader)
+    public override void ApplyTo(ComputeShader computeShader)
     {
         computeShader.SetInts(Key, Values.x, Values.y);
     }
@@ -82,7 +82,7 @@ public class CSFloat : CSAttribute
         Value = value;
     }
 
-    public override void Apply(ComputeShader computeShader)
+    public override void ApplyTo(ComputeShader computeShader)
     {
         computeShader.SetFloat(Key, Value);
     }
@@ -97,7 +97,7 @@ public class CSFloats2 : CSAttribute
         Values = values;
     }
 
-    public override void Apply(ComputeShader computeShader)
+    public override void ApplyTo(ComputeShader computeShader)
     {
         computeShader.SetFloats(Key, Values.x, Values.y);
     }
@@ -112,7 +112,7 @@ public class CSFloats3 : CSAttribute
         Values = values;
     }
 
-    public override void Apply(ComputeShader computeShader)
+    public override void ApplyTo(ComputeShader computeShader)
     {
         computeShader.SetFloats(Key, Values.x, Values.y, Values.z);
     }
@@ -137,5 +137,35 @@ public struct ComputeShaderTask {
         ThreadGroups = threadGroups;
         FinishedMarkerBuffer = finishedMarkerBuffer;
         BuffersToDispose = buffersToDispose;
+    }
+
+    public void Run()
+    {
+        foreach (CSAttribute ca in Attributes)
+        {
+            ca.ApplyTo(ComputeShader);
+        }
+
+        // The problem with AsyncGPUReadback is that .done is probably set in the next frame,
+        // .. so we cannot use this to run multiple dispatches during one frame
+        //CurrentReadbackRequest = AsyncGPUReadback.Request(cst.FinishedMarkerBuffer);
+
+        ComputeShader.Dispatch(0, ThreadGroups.x, ThreadGroups.y, 1);
+
+        //GL.Flush();
+
+        // Alternative but slow: GetData() blocks until the task is finished
+        //cst.FinishedMarkerBuffer.GetData(new int[1]);
+        //cst.FinishedMarkerBuffer.Dispose();
+
+        //while (!CurrentReadbackRequest.done)
+        //{
+        //    Thread.Sleep(1);
+        //}
+
+        foreach (ComputeBuffer c in BuffersToDispose)
+        {
+            c.Dispose();
+        }
     }
 }

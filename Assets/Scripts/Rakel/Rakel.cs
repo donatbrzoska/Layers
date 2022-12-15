@@ -88,7 +88,7 @@ public class Rakel : IRakel
         ComputeShaderTasks.Enqueue(cst);
 
 
-        // ... EMIT: Extract interpolated volumes and resulting color from duplicate and delete from original
+        // ... EMIT: Calculate interpolated volumes and resulting color from duplicate and delete from original
         RakelSnapshot rakelSnapshot = new RakelSnapshot(Length, Width, Anchor, rakelPosition, rakelRotation, rakelTilt);
         IntelGPUShaderRegion emitSR = new IntelGPUShaderRegion(
             wsc.MapToPixelInRange(rakelSnapshot.UpperLeft),

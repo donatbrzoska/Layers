@@ -136,33 +136,7 @@ public class OilPaintEngine : MonoBehaviour
         while (ComputeShaderTasks.Count > 0 && left-- > 0)
         {
             ComputeShaderTask cst = ComputeShaderTasks.Dequeue();
-
-            foreach (CSAttribute ca in cst.Attributes)
-            {
-                ca.Apply(cst.ComputeShader);
-            }
-
-            // The problem with AsyncGPUReadback is that .done is probably set in the next frame,
-            // .. so we cannot use this to run multiple dispatches during one frame
-            //CurrentReadbackRequest = AsyncGPUReadback.Request(cst.FinishedMarkerBuffer);
-
-            cst.ComputeShader.Dispatch(0, cst.ThreadGroups.x, cst.ThreadGroups.y, 1);
-
-            //GL.Flush();
-
-            // Alternative but slow: GetData() blocks until the task is finished
-            //cst.FinishedMarkerBuffer.GetData(new int[1]);
-            //cst.FinishedMarkerBuffer.Dispose();
-
-            //while (!CurrentReadbackRequest.done)
-            //{
-            //    Thread.Sleep(1);
-            //}
-
-            foreach (ComputeBuffer c in cst.BuffersToDispose)
-            {
-                c.Dispose();
-            }
+            cst.Run();
         }
     }
     
