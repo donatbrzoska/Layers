@@ -24,7 +24,7 @@ public class Rakel : IRakel
     public Rakel(float length, float width, int resolution, Queue<ComputeShaderTask> computeShaderTasks)
     {
         Length = length;
-        Width = width;
+        Width = ((int)(width * resolution))/resolution; // make sure Rakel is not bigger than it's reservoir
         Resolution = resolution;
         Anchor = new Vector3(Width, Length / 2, 0);
 
