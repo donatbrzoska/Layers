@@ -19,6 +19,8 @@ public class Rakel : IRakel
 
     Queue<ComputeShaderTask> ComputeShaderTasks;
 
+    Vector2Int PreviousApplyPosition = new Vector2Int(int.MinValue, int.MinValue);
+
     public Rakel(float length, float width, int resolution, Queue<ComputeShaderTask> computeShaderTasks)
     {
         Length = length;
@@ -61,6 +63,16 @@ public class Rakel : IRakel
         RenderTexture canvasTexture,
         RenderTexture canvasNormalMap)
     {
+        // this is needed to prevent double application on the same pixel
+        if (wsc.MapToPixel(rakelPosition).Equals(PreviousApplyPosition))
+        {
+            return;
+        }
+        else
+        {
+            PreviousApplyPosition = wsc.MapToPixel(rakelPosition);
+        }
+
         // STEP 1
         // ... EMIT: Duplicate Reservoir
         IntelGPUShaderRegion duplicateSR = new IntelGPUShaderRegion(
