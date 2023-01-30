@@ -6,7 +6,7 @@
 uint2 CalculationSize;
 
 // Really emitting
-uint2 CalculationPosition;
+int2 CalculationPosition;
 
 struct Paint {
     float4 color;
@@ -37,11 +37,37 @@ void main (uint3 id : SV_DispatchThreadID)
     if (is_relevant_thread(id))
     {
         // calculate pixel position on canvas
-        uint2 canvas_pixel = id.xy + CalculationPosition;
+        int2 canvas_pixel = id.xy + CalculationPosition;
 
+
+        // // ### SMOOTH
+        // uint kernel_size = 3;
+        // int radius = (kernel_size-1)/2;
+
+        // int volume = 0;
+        // for (int i=-radius; i<=radius; i++) {
+        //     for (int j=-radius; j<=radius; j++) {
+        //         // ... deal with oob access // TODO this generates volume at the borders, doesn't it?
+        //         uint x = clamp(id.x + i, 0, CalculationSize.x-1);
+        //         uint y = clamp(id.y + j, 0, CalculationSize.y-1);
+        //         volume += RakelEmittedPaint[XY(x, y, CalculationSize.x)].volume;
+        //     }
+        // }
+        // // volume = volume * 0.04; // == /25
+        // volume = int(float(volume) / float(kernel_size*kernel_size));
+
+        // // Create and put smoothed volume to z=1
+        // Paint p;
+        // p.color = RakelEmittedPaint[XY(id.x, id.y, CalculationSize.x)].color;
+        // p.volume = volume;
+
+
+        // ### COPY
         // get emitted paint
         // .. in this case CalculationSize == ReservoirSize
         Paint p = RakelEmittedPaint[XY(id.x, id.y, CalculationSize.x)];
+
+
         if (p.volume > 0)
         {
             // LATER: Implement layering here

@@ -60,7 +60,8 @@ public class MathUtil
             if (fracPart <= 0.5)
             {
                 return (int)a;
-            } else
+            }
+            else
             {
                 return (int)a - 1;
             }

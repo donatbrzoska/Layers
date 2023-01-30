@@ -2,7 +2,8 @@
 // https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-intrinsic-functions
 // https://learn.microsoft.com/en-us/windows/win32/direct3d11/direct3d-11-advanced-stages-cs-atomic-functions
 
-// RWStructuredBuffer<float3> Debug;
+// RWStructuredBuffer<float2> Debug;
+uint3 id;
 
 // Filter #1
 uint2 CalculationSize;
@@ -11,6 +12,7 @@ uint2 CalculationSize;
 uint2 CalculationPosition;
 
 uint2 TextureSize;
+uint TextureResolution;
 float3 CanvasPosition;
 float2 CanvasSize;
 
@@ -21,7 +23,10 @@ float RakelWidth;
 
 float RakelRotation;
 
-float2 RakelOriginBoundaries;
+float3 RakelULTilted;
+float3 RakelURTilted;
+float3 RakelLLTilted;
+float3 RakelLRTilted;
 
 // Emitting
 struct Paint {
@@ -29,7 +34,8 @@ struct Paint {
     int volume;
 };
 uint2 RakelReservoirSize;
-uint2 RakelLowerLeftRounded;
+uint RakelReservoirResolution;
+// uint2 RakelLowerLeftRounded;
 RWStructuredBuffer<Paint> RakelApplicationReservoir;
 
 RWStructuredBuffer<Paint> RakelEmittedPaint;
@@ -64,12 +70,12 @@ bool is_relevant_thread(uint3 id)
     return all(id.xy < CalculationSize);
 }
 
-float3 map_to_world_space(uint2 pixel, uint2 texture_size, float3 canvas_position, float2 canvas_size)
+float3 map_to_world_space(int2 pixel, uint texture_resolution, float3 canvas_position, float2 canvas_size)
 {
-    float px = (float)pixel.x / (float)texture_size.x;
-    float py = (float)pixel.y / (float)texture_size.y;
-
-    float3 positive_canvas_aligned = float3(px*canvas_size.x, py*canvas_size.y, 0);
+    float pixel_size = 1/float(texture_resolution);
+    float3 positive_canvas_aligned = float3(0.5*pixel_size + pixel.x*pixel_size,
+                                            0.5*pixel_size + pixel.y*pixel_size,
+                                            0);
 
     float3 canvas_lower_left = canvas_position - float3(canvas_size.x/2, canvas_size.y/2, 0);
     float3 canvas_aligned = positive_canvas_aligned + canvas_lower_left;
@@ -85,19 +91,38 @@ float3 rotate_by_z(float3 vec, float angle, float3 around)
     float s = sin(rad);
     float c = cos(rad);
     float3x3 rotation = {
-        c, -s, 1,
-        s,  c, 1,
-        1,  1, 1
+        c, -s, 0,
+        s,  c, 0,
+        0,  0, 1
     };
     
     float3 result = mul(vec_, rotation);
     return result + around;
+
+
+    // float3 origin_aligned = vec - around;
+    // float2 vec_ = float2(origin_aligned.x, origin_aligned.y);
+
+    // float rad = radians(angle);
+    // float s = sin(rad);
+    // float c = cos(rad);
+    // float2x2 rotation = {
+    //     c, -s,
+    //     s,  c,
+    // };
+    
+    // float2 result = mul(vec_, rotation);
+    // return float3(result.x, result.y, vec.z) + around;
 }
 
-bool pixel_is_under_rakel(uint2 pos_pixel)
+// returns:
+// - x: part of dx of rakel, 0-err..1+err would mean pixel is under rakel
+// - y: part of dy of rakel, 0-err..1+err would mean pixel is under rakel
+// - z: distance from rakel: -inf .. +inf
+float3 rakel_mapped(int2 pos_pixel)
 {
     // translate pixel to world space
-    float3 pos_world_space = map_to_world_space(pos_pixel, TextureSize, CanvasPosition, CanvasSize);
+    float3 pos_world_space = map_to_world_space(pos_pixel, TextureResolution, CanvasPosition, CanvasSize);
 
     // translate back so pixel is anchor aligned
     float3 back_translation_position = - (float3(RakelPosition.x, RakelPosition.y, 0) - RakelAnchor);
@@ -105,114 +130,255 @@ bool pixel_is_under_rakel(uint2 pos_pixel)
 
     // rotate back around anchor
     float3 pos_back_rotated = rotate_by_z(pos_back_translated_position, - RakelRotation, RakelAnchor);
+    // Debug[XY(id.x, id.y, CalculationSize.x)] = pos_back_rotated;
 
+    // calculate results
+    float rakel_tilted_x_max = RakelLRTilted.x;
+    float rakel_tilted_x_min = RakelLLTilted.x;
+    float rakel_tilted_dx = rakel_tilted_x_max - rakel_tilted_x_min;
+    float part_x = (pos_back_rotated.x - rakel_tilted_x_min) / rakel_tilted_dx;
+    float part_y = pos_back_rotated.y / RakelLength; // currently easy, because there is no length tilt
+
+    float m = (RakelLRTilted.y - RakelLLTilted.y) / (RakelLRTilted.x - RakelLLTilted.x);
+    float c = RakelPosition.y - m * RakelPosition.x;
+    float dist = m * pos_back_rotated.x + c;
+
+    return float3(part_x, part_y, dist);
+}
+
+bool pixel_is_under_rakel(float part_x, float part_y)
+{
     // check boundaries
-    if (pos_back_rotated.x <= RakelOriginBoundaries.x
-        && pos_back_rotated.x >= 0
-        && pos_back_rotated.y <= RakelOriginBoundaries.y
-        && pos_back_rotated.y >= 0)
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    // -> allow for error of half a reservoir pixel in world space
+    // .. because this area around the considered pixels would get paint from the interpolation
+    // .. in other words, everything that is under the rakel in terms of interpolation should be kept
+    float reservoir_pixel_size = 1/float(RakelReservoirResolution);
+    float err = 0.5 * reservoir_pixel_size;
+    return part_x * RakelWidth > -err
+        && part_y * RakelLength > -err
+        && part_x * RakelWidth < RakelWidth + err
+        && part_y * RakelLength < RakelLength + err;
 }
 
-float2 rotate_around_origin(int2 vec, float angle)
-{
-    float rad = radians(angle);
-    float s = sin(rad);
-    float c = cos(rad);
-    float2x2 mat = {
-        c, -s,
-        s,  c
-    };
-    return mul(vec, mat);
-}
+// float2 rotate_around_origin(int2 vec, float angle)
+// {
+//     float rad = radians(angle);
+//     float s = sin(rad);
+//     float c = cos(rad);
+//     float2x2 mat = {
+//         c, -s,
+//         s,  c
+//     };
+//     return mul(vec, mat);
+// }
 
-float2 map_to_reservoir_pixel(uint2 canvas_pixel)
-{
-    // translate to origin
-    int2 origin_aligned = canvas_pixel - RakelLowerLeftRounded;
-
-    // rotate back
-    float2 back_rotated = rotate_around_origin(origin_aligned, -RakelRotation);
-
-    return back_rotated;
-}
-
-bool pixel_in_reservoir_range(float2 pixel)
+bool pixel_in_reservoir_range(int2 pixel)
 {
     return pixel.x >= 0
-        && pixel.x < (float)RakelReservoirSize.x
+        && pixel.x < (int)RakelReservoirSize.x
         && pixel.y >= 0
-        && pixel.y < (float)RakelReservoirSize.y;
+        && pixel.y < (int)RakelReservoirSize.y;
+}
+
+// inspired by https://stackoverflow.com/a/27162334
+// returns the ratio of the max possible overlap
+// NOTE that this has to be adjusted for a curved rakel
+float calculate_overlap(int2 adjacent_reservoir_pixel, float2 reservoir_pixel)
+{
+    float pixel_size_half = 0.5/float(RakelReservoirResolution);
+
+    float adj_square_x_min = (float)adjacent_reservoir_pixel.x - pixel_size_half;
+    float adj_square_x_max = (float)adjacent_reservoir_pixel.x + pixel_size_half;
+    float adj_square_y_min = (float)adjacent_reservoir_pixel.y - pixel_size_half;
+    float adj_square_y_max = (float)adjacent_reservoir_pixel.y + pixel_size_half;
+
+    float res_square_x_min = reservoir_pixel.x - pixel_size_half;
+    float res_square_x_max = reservoir_pixel.x + pixel_size_half;
+    float res_square_y_min = reservoir_pixel.y - pixel_size_half;
+    float res_square_y_max = reservoir_pixel.y + pixel_size_half;
+
+    float dx = min(adj_square_x_max, res_square_x_max) - max(adj_square_x_min, res_square_x_min);
+    float dy = min(adj_square_y_max, res_square_y_max) - max(adj_square_y_min, res_square_y_min);
+    dx = max(0, dx);
+    dy = max(0, dy);
+
+    float max_overlap = pixel_size_half * pixel_size_half * 4;
+    float overlap = (dx*dy) / max_overlap;
+    return overlap;
+}
+
+void do_interpolated_emit(float2 reservoir_pixel)
+{
+    // calculate involved reservoir pixels
+    int2 coord_ul = int2(floor(reservoir_pixel.x), ceil(reservoir_pixel.y));
+    int2 coord_ur = int2(ceil(reservoir_pixel.x), ceil(reservoir_pixel.y));
+    int2 coord_ll = int2(floor(reservoir_pixel.x), floor(reservoir_pixel.y));
+    int2 coord_lr = int2(ceil(reservoir_pixel.x), floor(reservoir_pixel.y));
+
+
+
+    // ### BILINEAR INTERPOLATION
+    // calculate parts for involved pixels
+    float ul_part_raw = frac(reservoir_pixel.x) * (1-frac(reservoir_pixel.y));
+    float ur_part_raw = (1-frac(reservoir_pixel.x)) * (1-frac(reservoir_pixel.y));
+    float ll_part_raw = frac(reservoir_pixel.x) * frac(reservoir_pixel.y);
+    float lr_part_raw = (1-frac(reservoir_pixel.x)) * frac(reservoir_pixel.y);
+
+    // make sure borders are handled correctly
+    // -> only keep values, if pixel that is interpolated from is in range
+    //   -> if not in range, set part to 0
+    uint coord_ul_in_range = uint(pixel_in_reservoir_range(coord_ul));
+    uint coord_ur_in_range = uint(pixel_in_reservoir_range(coord_ur));
+    uint coord_ll_in_range = uint(pixel_in_reservoir_range(coord_ll));
+    uint coord_lr_in_range = uint(pixel_in_reservoir_range(coord_lr));
+    // uint n_pixels_in_range = coord_ul_in_range + coord_ur_in_range + coord_ll_in_range + coord_lr_in_range;
+    // Debug[XY(id.x, id.y, CalculationSize.x)] = float4(n_pixels_in_range, 0, 0, 0);
+    float ul_part = coord_ul_in_range * ul_part_raw;
+    float ur_part = coord_ur_in_range * ur_part_raw;
+    float ll_part = coord_ll_in_range * ll_part_raw;
+    float lr_part = coord_lr_in_range * lr_part_raw;
+
+
+    // ### OVERLAP INTERPOLATION
+    // // calculate parts for involved pixels
+    // float ul_part_raw = calculate_overlap(coord_ul, reservoir_pixel);
+    // float ur_part_raw = calculate_overlap(coord_ur, reservoir_pixel);
+    // float ll_part_raw = calculate_overlap(coord_ll, reservoir_pixel);
+    // float lr_part_raw = calculate_overlap(coord_lr, reservoir_pixel);
+
+    // // delete influence from pixels, if they occur twice or fourfold for the interpolation
+    // uint keep_left = coord_ul.x != coord_ur.x; // don't keep the left side, if left and right are identical
+    // uint keep_lower = coord_ul.y != coord_ll.y; // don't keep the lower side, if upper and lower are identical
+
+    // // make sure borders are handled correctly
+    // // -> only keep values, if pixel that is interpolated from is in range
+    // //   -> if not in range, set part to 0
+    // // also delete influence from pixels, if they occur twice or fourfold for the interpolation
+    // float ul_part = coord_ul_in_range * ul_part_raw * keep_left;
+    // float ur_part = coord_ur_in_range * ur_part_raw;
+    // float ll_part = coord_ll_in_range * ll_part_raw * keep_left * keep_lower;
+    // float lr_part = coord_lr_in_range * lr_part_raw             * keep_lower;
+
+
+    float part_sum = ul_part + ur_part + ll_part + lr_part;
+    // Debug[XY(id.x, id.y, CalculationSize.x)] = float3(ur_part,0,0);
+    // Debug[XY(id.x, id.y, CalculationSize.x)] = float3(part_sum,0,0);
+
+    // interpolate
+    // ... lookup at duplicate (z=1)
+    // TODO completely prevent OOB access
+    Paint paint_ul = RakelApplicationReservoir[XYZ(coord_ul.x, coord_ul.y, 1, RakelReservoirSize)];
+    Paint paint_ur = RakelApplicationReservoir[XYZ(coord_ur.x, coord_ur.y, 1, RakelReservoirSize)];
+    Paint paint_ll = RakelApplicationReservoir[XYZ(coord_ll.x, coord_ll.y, 1, RakelReservoirSize)];
+    Paint paint_lr = RakelApplicationReservoir[XYZ(coord_lr.x, coord_lr.y, 1, RakelReservoirSize)];
+
+    // ... calculate volume
+    // ### BILINEAR INTERPOLATION part 2
+    // -> divide by sum of parts, because some parts may have been set to 0, because not in reservoir range
+    int volume = dot(float4(ul_part,         ur_part,         ll_part,         lr_part),
+                        float4(paint_ul.volume, paint_ur.volume, paint_ll.volume, paint_lr.volume))
+                    / part_sum;
+    // ### OVERLAP INTERPOLATION part 2
+    // int volume = dot(float4(ul_part,         ur_part,         ll_part,         lr_part),
+    //                  float4(paint_ul.volume, paint_ur.volume, paint_ll.volume, paint_lr.volume));
+                    
+    // ... and color
+    //     -> mutiply result based on the "amount" of pixels that was interpolated from
+    //       -> for example: if color was only drawn from one pixel with part 0.1, then
+    //          this has to be multiplied by 10 to keep the brightness
+    float4 color = (  ul_part * paint_ul.color
+                    + ur_part * paint_ur.color
+                    + ll_part * paint_ll.color
+                    + lr_part * paint_lr.color)
+                    / part_sum;
+    Paint available_paint;
+    available_paint.color = color;
+    available_paint.volume = volume;
+
+    if (available_paint.volume > 0)
+    {
+        // delete amount of taken volume from reservoir (z=0)
+        // 1000 volume is one unit of paint, since it doesnt make sense to
+        // ... calculate parts of smaller integers and we have to use integers because of InterlockedAdd
+        // also make sure not to produce negative volume values
+        // also make sure to not take volume from pixels that are out of reservoir range and possibly deliver undefined values for volume
+        float VOLUME_TO_TAKE = 1000;// * part_sum;
+        int to_be_deleted_ul = min((int)(VOLUME_TO_TAKE*ul_part), paint_ul.volume * coord_ul_in_range);
+        int to_be_deleted_ur = min((int)(VOLUME_TO_TAKE*ur_part), paint_ur.volume * coord_ur_in_range);
+        int to_be_deleted_ll = min((int)(VOLUME_TO_TAKE*ll_part), paint_ll.volume * coord_ll_in_range);
+        int to_be_deleted_lr = min((int)(VOLUME_TO_TAKE*lr_part), paint_lr.volume * coord_lr_in_range);
+        // int to_be_deleted_ul = min((int)(VOLUME_TO_TAKE*ul_part), paint_ul.volume);
+        // int to_be_deleted_ur = min((int)(VOLUME_TO_TAKE*ur_part), paint_ur.volume);
+        // int to_be_deleted_ll = min((int)(VOLUME_TO_TAKE*ll_part), paint_ll.volume);
+        // int to_be_deleted_lr = min((int)(VOLUME_TO_TAKE*lr_part), paint_lr.volume);
+        // Debug[XY(id.x, id.y, CalculationSize.x)] = float3(to_be_deleted_ul
+        //                                                 + to_be_deleted_ur
+        //                                                 + to_be_deleted_ll
+        //                                                 + to_be_deleted_lr,0,0);
+
+        InterlockedAdd(RakelApplicationReservoir[XYZ(coord_ul.x, coord_ul.y, 0, RakelReservoirSize)].volume, -(to_be_deleted_ul));
+        InterlockedAdd(RakelApplicationReservoir[XYZ(coord_ur.x, coord_ur.y, 0, RakelReservoirSize)].volume, -(to_be_deleted_ur));
+        InterlockedAdd(RakelApplicationReservoir[XYZ(coord_ll.x, coord_ll.y, 0, RakelReservoirSize)].volume, -(to_be_deleted_ll));
+        InterlockedAdd(RakelApplicationReservoir[XYZ(coord_lr.x, coord_lr.y, 0, RakelReservoirSize)].volume, -(to_be_deleted_lr));
+        
+        Paint emittedPaint;
+        emittedPaint.color = available_paint.color;
+        emittedPaint.volume = to_be_deleted_ul + to_be_deleted_ur + to_be_deleted_ll + to_be_deleted_lr;
+        RakelEmittedPaint[XY(id.x, id.y, CalculationSize.x)] = emittedPaint;
+        // Debug[XY(id.x, id.y, CalculationSize.x)] = emittedPaint.volume;
+    }
+}
+
+// Main Problem with this method is that reservoirs are emptied in a pixeled manner
+// -> could try some smoothing but then we may also just do the exact interpolation
+void do_nearest_neighbour_emit(float2 reservoir_pixel)
+{
+    uint2 reservoir_pixel_ = clamp(round(reservoir_pixel), uint2(0,0), RakelReservoirSize-uint2(1,1));
+
+    // TODO Problem with this:
+    // - Paint is taken non uniformly from the reservoir
+    // - But this is assumed because otherwise we could see paint volume in z=1 which is not really there anymore
+    // -> For exact calculation, the pipeline had to be restructured
+    Paint available = RakelApplicationReservoir[XYZ(reservoir_pixel_.x, reservoir_pixel_.y, 1, RakelReservoirSize)];
+
+    if (available.volume > 0)
+    {
+        float VOLUME_TO_TAKE = 1000;
+        Paint emitted;
+        emitted.color = available.color;
+        emitted.volume = VOLUME_TO_TAKE;
+
+        // This can still lead to negative volume values in RakelApplicationReservoir
+        InterlockedAdd(RakelApplicationReservoir[XYZ(reservoir_pixel_.x, reservoir_pixel_.y, 0, RakelReservoirSize)].volume, -(emitted.volume));
+        RakelEmittedPaint[XY(id.x, id.y, CalculationSize.x)] = emitted;
+    }
 }
 
 [numthreads(1,8,1)]
-void main (uint3 id : SV_DispatchThreadID)
+void main (uint3 id_ : SV_DispatchThreadID)
 {
+    id = id_;
     // Filter #1
     if (is_relevant_thread(id))
     {
         // calculate pixel position on canvas
-        uint2 canvas_pixel = id.xy + CalculationPosition;
+        // was uint2 before, but negative values are possible due to padding and no prevention of that because it should not cause any more problems
+        int2 canvas_pixel = id.xy + CalculationPosition;
         // Filter #2
-        if (pixel_is_under_rakel(canvas_pixel))
+        float3 rakel_mapped_info = rakel_mapped(canvas_pixel);
+        if (pixel_is_under_rakel(rakel_mapped_info.x, rakel_mapped_info.y)) // should only benefit performance or be relevant for nn mapping
         {
-            float2 reservoir_pixel = map_to_reservoir_pixel(canvas_pixel);
-            if (pixel_in_reservoir_range(reservoir_pixel)) // TODO necessary?
-            {
-                // TODO behaviour at borders
-                // calculate involved reservoir pixels
-                uint2 coord_ul = uint2(floor(reservoir_pixel.x), ceil(reservoir_pixel.y));
-                uint2 coord_ur = uint2(ceil(reservoir_pixel.x), ceil(reservoir_pixel.y));
-                uint2 coord_ll = uint2(floor(reservoir_pixel.x), floor(reservoir_pixel.y));
-                uint2 coord_lr = uint2(ceil(reservoir_pixel.x), floor(reservoir_pixel.y));
+            // NOTE: this calculation does not work for a curved rakel
+            float reservoir_pixel_size_half = 0.5/float(RakelReservoirResolution);
+             // rakel_mapped_info.x 0 means actually left from the pixel, because the part_ info is about world space
+             // also, RakelReservoirSize is used (and not -1), because when there are 2 pixels, you have 3 pixel borders so to say
+            float2 reservoir_pixel = float2(rakel_mapped_info.x * RakelReservoirSize.x - reservoir_pixel_size_half,
+                                            rakel_mapped_info.y * RakelReservoirSize.y - reservoir_pixel_size_half);
+            // Debug[XY(id.x, id.y, CalculationSize.x)] = float4(reservoir_pixel.x, reservoir_pixel.y,0,0);
+            
+            do_interpolated_emit(reservoir_pixel);
 
-                // calculate parts for involved pixels
-                float ul_part = frac(reservoir_pixel.x) * (1-frac(reservoir_pixel.y));
-                float ur_part = (1-frac(reservoir_pixel.x)) * (1-frac(reservoir_pixel.y));
-                float ll_part = frac(reservoir_pixel.x) * frac(reservoir_pixel.y);
-                float lr_part = (1-frac(reservoir_pixel.x)) * frac(reservoir_pixel.y);
-
-                // interpolate
-                // ... lookup at duplicate (z=1)
-                Paint paint_ul = RakelApplicationReservoir[XYZ(coord_ul.x, coord_ul.y, 1, RakelReservoirSize)];
-                Paint paint_ur = RakelApplicationReservoir[XYZ(coord_ur.x, coord_ur.y, 1, RakelReservoirSize)];
-                Paint paint_ll = RakelApplicationReservoir[XYZ(coord_ll.x, coord_ll.y, 1, RakelReservoirSize)];
-                Paint paint_lr = RakelApplicationReservoir[XYZ(coord_lr.x, coord_lr.y, 1, RakelReservoirSize)];
-                // ... calculate volume and color
-                int volume = dot(float4(ul_part,         ur_part,         ll_part,         lr_part),
-                                 float4(paint_ul.volume, paint_ur.volume, paint_ll.volume, paint_lr.volume));
-                float4 color = ul_part * paint_ul.color
-                             + ur_part * paint_ur.color
-                             + ll_part * paint_ll.color
-                             + lr_part * paint_lr.color;
-                Paint paint;
-                paint.color = color;
-                paint.volume = volume;
-
-                if (paint.volume > 0)
-                {
-                    RakelEmittedPaint[XY(id.x, id.y, CalculationSize.x)] = paint;
-                    // delete amount of taken volume from reservoir (z=0)
-                    // 100 volume is one unit of paint, since it doesnt make sense to
-                    // ... calculate parts of smaller integers and we have to use integers because of InterlockedAdd
-                    int to_be_deleted_ul = (int)(100*ul_part);
-                    int to_be_deleted_ur = (int)(100*ur_part);
-                    int to_be_deleted_ll = (int)(100*ll_part);
-                    int to_be_deleted_lr = (int)(100*lr_part);
-
-                    InterlockedAdd(RakelApplicationReservoir[XYZ(coord_ul.x, coord_ul.y, 0, RakelReservoirSize)].volume, -(to_be_deleted_ul));
-                    InterlockedAdd(RakelApplicationReservoir[XYZ(coord_ur.x, coord_ur.y, 0, RakelReservoirSize)].volume, -(to_be_deleted_ur));
-                    InterlockedAdd(RakelApplicationReservoir[XYZ(coord_ll.x, coord_ll.y, 0, RakelReservoirSize)].volume, -(to_be_deleted_ll));
-                    InterlockedAdd(RakelApplicationReservoir[XYZ(coord_lr.x, coord_lr.y, 0, RakelReservoirSize)].volume, -(to_be_deleted_lr));
-                }
-            }
-            // Debug[XY(id.x, id.y, CalculationSize.x)] = float3(, reservoir_pixel.y, 0);
+            // do_nearest_neighbour_emit(reservoir_pixel);
         }
     }
     // if (id.x == 0 && id.y == 0)

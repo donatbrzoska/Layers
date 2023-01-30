@@ -50,6 +50,7 @@ public class Notes : MonoBehaviour
  * 
  * # Farbmitnahme bei großem Neigungswinkel und genügend Druck
  * 
+ * - Positionen außerhalb der Leinwand müssen auch erlaubt sein
  * - bei geringen Auflösungen gibt es Löcher
  * - Normalen und Farben bei Canvas-Erstellung setzen
  * - Dispose Buffers auch bei neuer Canvas-Resolution
@@ -262,6 +263,14 @@ public class Notes : MonoBehaviour
  *
  * Copy and Paste
  * - += mitkopiert aber eigentlich gar nicht gewünscht ...
+ * 
+ * Den Fehler im Shader vermutet und gedacht, ich wüsste nur irgendwas nicht. Dabei vollkommen ausgeblendet,
+ * dass ich tatsächlich schon im PerlinNoiseFiller Random benutze ... (Suche nach "Random" im Projekt hätte etwas Arbeit sparen können)
+ * 
+ * Rotation falsch optimiert -> gedacht ich wüsste, wie die Rotationsmatrix für Rotation um z aussehen müsste
+ * 
+ * vermutet, dass int implizit zu uint gecastet wird bei einer Zuweisung
+ * 
  */
 
 
@@ -1398,4 +1407,196 @@ public class Notes : MonoBehaviour
  *   - auf jeden Fall kam wieder das bunte Viereck
  * - DONE Buffer auch bei neuer Canvas-Auflösung disposen
  *
+ * Interpolation vermutlich nicht vollständig, weil es beim Mapping große Probleme durch das Runden gibt
+ * -> 0° Rakel mit niedriger Auflösung -> reservoir_pixel ausgeben zeigt das Problem
+ * -> Rotation ist auch immer noch von damals ungenau
+ * 
+ * aufgehört bei: EmitFromRakelShader: // TODO find out the right error
+ *
+ *
+ * 20.12.2022
+ * Es gibt verschiedene Probleme:
+ * - ComputeShader Region wird zu breit berechnet
+ * - Irgendwo ist ein Bug der zu Ungenauigkeiten beim Mapping von Canvas auf ReservoirPixel führt
+ * - RakelInterpolator immer noch irgendwo ungenau, weil schnelles Ziehen nicht den gleichen Effekt hat, wie langsames
+ *
+ * TODO Interpolation am Rand
+ * 
+ * Obwohl die gleichen x-Positionen angewandt werden mit und ohne Interpolation gibt es einen Unterschied im Ergebnis
+ * Außerdem sind die Ergebnisse generell nie exakt identisch, auch nicht bei programmatischem AddNode, ...
+ * - interessant wären die Volumenwerte auf dem Canvas
+ * 
+ * 
+ * Aufgehört bei:
+ * - viele Fehler gefunden: 
+ *   - Rakel darf nur so breit sein wie das Reservoir
+ *   - Rakel hat doppelte Anwendungen an der selben Stelle erlaubt
+ *   - Spielraum in pixel_under_rakel eingefügt
+ * 
+ * - RakelInterpolator Zeile 86 ist sehr misteriös
+ * - pixel_in_reservoir_range macht einen großen Unterschied -> sollte es aber nicht
+ * - Erste UND letzte Reihe sind immer noch leer (DebugBuffer)
+ * - map_to_reservoir evtl. falsch? Siehe Grafiken
+ * 
+ * - InterlockedAdd funktioniert wahrscheinlich nicht
+ * - UAV Counter benutzen? siehe https://www.gamedev.net/forums/topic/676919-uav-counters/ und Intel Manual
+ * 
+ * 
+ * 14.01.2023
+ * - Random war im PerlinNoiseFiller ...
+ * - Mapping und Interpolation grundlegend überarbeitet
+ * 
+ * TODO
+ * - DONE Button für y-Lock
+ * - DONE Button für kontrolliertes Ziehen (Kommentar aus AddPaint extrahieren)
+ * - DONE Herausfinden, warum die ShaderRegion immer ein Pixel größer ist
+ * - DONE Was hat es damit auf sich, dass immer ein Teil des Reservoirs nicht geleert wird und dann später Streifen macht?
+ *   - evtl. kann auch keine feste Distanz zwischen den Schritten definiert werden, weil dann bestimmte Pixel nicht getroffen werden?
+ *   -> Volumen im ComputeShader dürfen beim Subtrahieren nicht kleiner als 0 werden!!!
+ * - DONE DefaultConfig scheint auch irgendwo zu einem Bug zu führen, damit geht jedenfalls nichts mehr
+ *   -> evtl. wird die RakelWidth irgendwo als int interpretiert
+ * - Herausfinden, ob das mit der Reihenfolge der ComputeShader ein Problem ist
+ * - Anwendung auf der nvidia Grafikkarte testen
+ * - Wieso funktioniert das mit der Perlin-Noise Landschaft überhaupt so gut?
+ * - Herausfinden, warum die 3D-Arrays immer komplett invertiert geprintet werden (upside down ist ja normal aber nicht rechts-links gespiegelt)
+ * - UI Regionen noch mal ordentlich in ihre Parents verschieben
+ * 
+ * 
+ * 15.01.2023
+ * - DONE Herausfinden, warum die ShaderRegion immer ein Pixel größer ist
+ * - DONE DefaultConfig scheint auch irgendwo zu einem Bug zu führen, damit geht jedenfalls nichts mehr
+ * - DONE Warum ist der unterste linke Pixel 1,1?
+ *   - Und wieso passiert einfach nichts, wenn man hier klickt?
+ *   ->> vergessen, dass PixelKoordinaten mit 0,0 beginnen -> also einfach (1,1) abziehen in WSC
+ * - Warum wird das Ergebnis manchmal beim y=0 Ziehen so streifig und manchmal nicht?
+ * - Warum macht der Check auf die Mindestdistance in Rakel so einen Unterschied?
+ * - DONE Der andere Weg der Interpolation (i+1) * ... scheint sogar ein richtiges Problem zu sein -> aber wieso?
+ * - Wo kommt beim 30° Ziehen schon wieder der lange Streifen her???
+ * - Woher kommen die senkrechten Streifen?
+ *   - passieren auch beim winkligen Ziehen
+ * - Wieso wird manchmal einfach an Pixeln die Rakel nicht angewandt? Pixel werden irgendwie übersprungen
+ * -> kann umgangen werden mit höherer Apply-Dichte
+ * 
+ * TODO
+ * - Interpolator noch mal anschauen
+ *   - Warum macht schnelles Ziehen einen Unterschied?
+ *   - richtige Anzahl der Steps finden, auch an die Begrenzung in Rakel:Apply denken
+ *   - Warum macht der Check auf die Mindestdistance in Rakel so einen Unterschied?
+ *   - Wieso wird manchmal einfach an Pixeln die Rakel nicht angewandt? Pixel werden irgendwie übersprungen
+ *     -> kann umgangen werden mit höherer Apply-Dichte
+ * - Wo kommt beim 30° Ziehen schon wieder der lange Streifen her???
+ *   -> evtl. noch mal pixel_in_reservoir_range anschauen
+ * - Warum wird das Ergebnis manchmal beim y=0 Ziehen so streifig und manchmal nicht?
+ *   - pasiert sogar mit dem Makro und FlatFiller!!!!
+ * - Woher kommen die senkrechten Streifen?
+ *   - passieren auch beim winkligen Ziehen
+ *   - aber vor allem zwischen nicht-interpolierten Schritten
+ *      - naja nicht unbedingt
+ *      - kommen sogar bei 2-Punkt Interpolation mit FlatFiller
+ *   - vielleicht wird irgendwo die Konvertierung in den WorldSpace verschieden gemacht
+ *      - also eine Variante ist ja in WorldSpaceCanvas und dann vielleicht noch mal im Shader suchen?
+ *      -> map_to_world_space anschauen
+ *      -> evtl. gibt es noch eine Stelle?
+ * - irgendwo wird auch immer noch negatives Volumen erzeugt (andere Return-Condition Variante in Rakel und dann ziehen)
+ * - EmitFromRakelShader:  // TODOODODODO what to do when we precisely hit a pixel?
+ * - Was hat es eigentlich mit der dunklen Stelle am Anfang auf sich?
+ * - Evtl. auch Padding für EmitSR?
+ *   -> macht sehr komische Fehler, sollte es aber nicht
+ *   
+ * 16.01.2023
+ * - Interpolator-Problem:
+ *   - eigentlich müsste man die WorldSpace-Apply-Position auch nur auf Gridpunkten zulassen?
+ *   
+ *   
+ * 17.01.2023
+ * - Es gibt auf jeden Fall mindestens einen Bug bei der Interpolation
+ * -> Abgegebene Volumes ausgeben lassen -> bei 2x5 Rakel sollte auch insgesamt nicht mehr als 2x5*Wert abgegeben werden
+ * -> Volumeberechnung am Ende außerdem abhängig machen von einer OutOfRange-Rate
+ *   - Aber wie berechnet sich diese OutOfRange Rate?
+ *   - Wie viel Prozent der Pixel aus denen interpoliert wird, liegt insgesamt tatsächlich im Reservoir?
+ * 
+ * 
+ * 21.01.2023
+ * - Reservoir-Pixel haben komische Werte
+ *   - bug in rakel_mapped?
+ * - Bilineare Interpolation falsches Verfahren und auch nicht identisch zu dem was Prof. Israel vorgeschlagen hat
+ *   - Neuer Ansastz aber vermutlich auch noch fehlerhaft
+ * - es wäre praktisch, wenn
+ *   - die Log-Ausgaben mal nicht mehr doppelt invertiert wären
+ *   - ich sehen könnte, für welchen Bereich der Shader tatsächlich gelaufen ist
+ *     -> CalculationPosition ausgeben?
+ * - am besten mal den Canvas genau so in Keynote nachzeichnen mit allem
+ *   - dann mit Debug-Ausgaben schauen, was genau passiert
+ *   - und alles einzeichnen
+ *   
+ * - aufgehört bei:
+ *   - Alles debuggen mit Keynote-Zeichnung
+ *   - zuletzt: Rakel.cs //Debug.Log("calculation size=" + emitSR.CalculationSize);
+ * 
+ * 
+ * 23.01.2023
+ * - aufgehört bei: Interpolation funktioniert besser
+ *   - aber es gibt noch Probleme in y-Richtung
+ *   -> schauen, was jeweils die umliegenden Pixel sind, ob eins fehlt, etc. ...
+ *   
+ * 24.01.2023
+ * - Für geringe Auflösungen funktioniert die Interpolation jetzt
+ * -> warum nicht bei höheren?
+ * -> der vorherige Weg für die Interpolation funktioniert einigermaßen
+ * -> trotzdem gibt es das Problem, dass die Farbe bei rotierten Rakeln vermutlich nicht gleichmäßig aus dem Reservoir entnommen wird
+ *    - sehr auffällig bei der overlap Interpolation
+ *    - etwas weniger aber dennoch sehr auffällig bei der bilinearen Interpolation
+ * -> oder auf jeden Fall mindestens nach ein paar mal auftragen nicht mehr gleichmäßig aufgetragen wird
+ * -> daher kommt es dann zu eckigen Furchen im Reservoir?
+ * DONE -> Aber wieso haben die Furchen im Reservoir überhaupt so eine große Auswirkung?
+ * DONE   -> Genau so unlogisch wie, dass das mit dem PerlinNoise funktioniert
+ * - Positionen außerhalb der Leinwand müssen auch erlaubt sein
+ * - Es gibt außerdem manchmal Artefakte -> Wrden Shader evtl. nicht sequenziell ausgeführt?
+ *    
+ * - TODO irgendwie werden auch immer noch manchmal Pixel am Rand einfach so gesetzt
+ * - TODO Streifen gibts auch immer noch!!!!!!! DONE??
+ * 
+ * 25.01.2023
+ * 
+ * ANSWERS!!!!!! SOLUTIONS!!!!!
+ * - Funktionierten rotierte Rakeln nicht mit bilinearer Interpolation sogar mal? (bis auf das mit den Streifen)
+ * -> Problem ist vermutlich, dass bei dem gepixelten Worldspace manche Pixel im Reservoir unterdurchschnittlich
+ *    häufig geleert werden
+ * -> vorher haben wir den Worldspace ja nicht gepixelt
+ * -> Problem ist jetzt trotzdem noch, dass manche Bereiche erst später erreicht werden
+ *    -> liegt an zu kleiner Stepsize
+ *    -> denn es werden so wieder bestimmte Bereiche nicht geleert
+ *    -> hier könnte die Umverteilung evtl. auch helfen
+ * -> Mittelweg zwischen Umverteilung / Glättung und Stepsize finden
+ * -> Worldspace muss aber vermutlich sowieso gepixelt werden um die Streifen zu vermeiden
+ * -> Umverteilung quasi die einzige Lösung
+ * 
+ * Verschiedene Probleme und Lösungen
+ * - Streifen beim Ziehen -> Worldspace pixeln und immer garantiert alle Positionen auf einer Linie verwenden
+ * - Reservoir wird nicht gleichmäßig geleert
+ *   - Stepsize kleiner machen um verschiedene Positionen der ins Reservoir gemappten Pixel zu ermöglichen
+ *     -> bei gepixeltem Worldspace nur möglich, indem die Worldspace-Auflösung kleiner ist, als die Textur-Auflösung
+ *   - Reservoir-Auflösung verringern
+ *     -> daran denken, dass die im Shader auch angepasst werden muss!!!
+ *     -> aber warum bleibt unten und links ein Streifen länger voll?
+ *   - Multipass-Interpolation machen?
+ *   - Reservoir-Volumen glätten? -> bringt leider nichts, vermutlich da ja dann immer noch schwer zu erreichende Pixel befüllt sind
+ *     - evtl. ist die Glättung aber auch falsch implementiert
+ *   - Threshhold für Übertragung? -> bringt nichts
+ * 
+ * Am besten noch mal in allen Papern nach Lösungswegen für das Problem im Allgemeinen suchen
+ * - Painting Knife macht Mesh und mappt die Pixel auf dem Canvas zum nächstliegenden Vertex
+ * - Baxter
+ * - Industrial
+ * - Detail Preserving?
+ * 
+ * 26.01.2023
+ * - bilineare Interpolation ungeeignet für mein Problemunktioniert nicht i
+ *   - denn die Reservoirpixel dürften nur zu insgesamt einem zurückrotierten Pixel beitragen
+ *   -> nicht der Fall
+ *      - jedes Reservoirpixel hat einen Einflussbereich von 2x2 Pixelgröße
+ *      - wenn jetzt ein zurückrotiertes Pixel genau auf einem Reservoirpixel liegt,
+ *      - dann hat dieses Reservoirpixel schon seinen gesamten Beitrag an das Reservoirpixel abgegeben
+ *      - beeinflusst aber trotzdem noch die umliegenden zurückrotierten Pixel
+ * - Lösung: Überlappung rotierter Quadrate
  */

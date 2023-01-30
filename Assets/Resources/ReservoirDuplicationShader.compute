@@ -15,9 +15,9 @@ bool is_relevant_thread(uint3 id)
     return all(id.xy < CalculationSize);
 }
 
-uint XYZ(uint x, uint y, uint z, uint width, uint height)
+uint XYZ(uint x, uint y, uint z, uint2 dimensions)
 {
-    return z * height * width + y * width + x;
+    return z * dimensions.y * dimensions.x + y * dimensions.x + x;
 }
 
 [numthreads(1,8,1)]
@@ -25,8 +25,32 @@ void main (uint3 id : SV_DispatchThreadID)
 {
     if (is_relevant_thread(id))
     {
+        // uint kernel_size = 5;
+        // int radius = (kernel_size-1)/2;
+
+        // int volume = 0;
+        // for (int i=-radius; i<=radius; i++) {
+        //     for (int j=-radius; j<=radius; j++) {
+        //         // ... deal with oob access // TODO this generates volume at the borders, doesn't it?
+        //         uint x = clamp(id.x + i, 0, CalculationSize.x-1);
+        //         uint y = clamp(id.y + j, 0, CalculationSize.y-1);
+        //         volume += Reservoir[XYZ(x, y, 0, CalculationSize)].volume;
+        //     }
+        // }
+        // // volume = volume * 0.04; // == /25
+        // volume = int(float(volume) / float(kernel_size*kernel_size));
+
+        // // Create and put smoothed volume to z=1
+        // Paint paint;
+        // paint.color = Reservoir[XYZ(id.x, id.y, 0, CalculationSize)].color;
+        // paint.volume = volume;
+
+        // // In this case CalculationSize == ReservoirSize
+        // Reservoir[XYZ(id.x, id.y, 1, CalculationSize)] = paint;
+
+
         // In this case CalculationSize == ReservoirSize
-        Reservoir[XYZ(id.x, id.y, 1, CalculationSize.x, CalculationSize.y)] = Reservoir[XYZ(id.x, id.y, 0, CalculationSize.x, CalculationSize.y)];
+        Reservoir[XYZ(id.x, id.y, 1, CalculationSize)] = Reservoir[XYZ(id.x, id.y, 0, CalculationSize)];
     }
     // if (id.x == 0 && id.y == 0)
     // {

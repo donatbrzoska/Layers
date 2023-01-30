@@ -4,7 +4,7 @@
 
 uint2 CalculationSize;
 
-uint2 CalculationPosition;
+int2 CalculationPosition;
 
 struct Paint {
     float4 color;
@@ -24,6 +24,14 @@ bool is_relevant_thread(uint3 id)
     return all(id.xy < CalculationSize);
 }
 
+bool pixel_in_canvas_range(int2 pixel)
+{
+    return pixel.x >= 0
+        && pixel.x < (int)CanvasSize.x
+        && pixel.y >= 0
+        && pixel.y < (int)CanvasSize.y;
+}
+
 uint XY(uint x, uint y, uint width)
 {
     return y * width + x;
@@ -36,15 +44,18 @@ void main (uint3 id : SV_DispatchThreadID)
     if (is_relevant_thread(id))
     {
         // calculate pixel position on canvas
-        uint2 canvas_pixel = id.xy + CalculationPosition;
-
-        // get paint from canvas
-        Paint p = Canvas[XY(canvas_pixel.x, canvas_pixel.y, CanvasSize.x)];
-
-        // set color
-        if (p.volume > 0)
+        int2 canvas_pixel = id.xy + CalculationPosition;
+        if (pixel_in_canvas_range(canvas_pixel))
         {
-            Texture[canvas_pixel] = p.color;
+
+            // get paint from canvas
+            Paint p = Canvas[XY(canvas_pixel.x, canvas_pixel.y, CanvasSize.x)];
+
+            // set color
+            if (p.volume > 0)
+            {
+                Texture[canvas_pixel] = p.color;
+            }
         }
     }
     // if (id.x == 0 && id.y == 0)

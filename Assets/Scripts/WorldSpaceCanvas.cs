@@ -6,7 +6,7 @@ public class WorldSpaceCanvas
 
     public Vector2 Size { get; private set;}
     public Vector3 Position { get; private set;}
-    private int Resolution;
+    public int Resolution { get; private set; }
 
     public float XMin { get; private set; }
     private float XMax;
@@ -32,39 +32,52 @@ public class WorldSpaceCanvas
         );
     }
 
+    public Vector3 AlignToPixelGrid(Vector3 point)
+    {
+        Vector2Int pixel = MapToPixel(point);
+        Vector3 gridAlignedIncomplete = MapToWorldSpace(pixel);
+        gridAlignedIncomplete.z = point.z;
+        return gridAlignedIncomplete;
+    }
+
+    private Vector3 MapToWorldSpace(Vector2Int pixel)
+    {
+        float pixelSize = 1 / (float)Resolution;
+        Vector3 positiveCanvasAligned = new Vector3(0.5f * pixelSize + pixel.x * pixelSize,
+                                                    0.5f * pixelSize + pixel.y * pixelSize,
+                                                    0);
+
+        Vector3 canvasLowerLeft = Position - new Vector3(Size.x / 2, Size.y / 2, 0);
+        Vector3 canvasAligned = positiveCanvasAligned + canvasLowerLeft;
+
+        return canvasAligned;
+    }
+
     public Vector2Int MapToPixel(Vector3 worldSpace)
     {
-        float pixelWidthInWorldSpace = 1f/Resolution;
-        Vector3 lowerLeftPixelCenter = new Vector2(XMin, YMin) + new Vector2(0.5f * pixelWidthInWorldSpace, 0.5f * pixelWidthInWorldSpace);
-        float dx = worldSpace.x - lowerLeftPixelCenter.x;
-        float dy = worldSpace.y - lowerLeftPixelCenter.y;
-
-        float px = dx / Size.x;
-        float py = dy / Size.y;
-
-        int pixelX = MathUtil.RoundToInt(px * (TextureSize.x));
-        int pixelY = MathUtil.RoundToInt(py * (TextureSize.y));
-
-        return new Vector2Int(pixelX, pixelY);
+        Vector3 lowerLeftOriented = worldSpace + new Vector3(Size.x / 2, Size.y / 2, 0);
+        // really lowerLeftOriented / pixelSize, but that is lowerLeftOriented / (1/Resolution)
+        Vector2 floatPixel = lowerLeftOriented * Resolution;
+        return new Vector2Int((int)Mathf.Ceil(floatPixel.x), (int)Mathf.Ceil(floatPixel.y)) - new Vector2Int(1, 1);
     }
 
     public Vector2Int MapToPixelInRange(Vector3 worldSpace)
     {
-        bool yTopOOB = worldSpace.y >= YMax;
+        bool yTopOOB = worldSpace.y > YMax;
         if (yTopOOB)
-            worldSpace.y = YMax - 0.0001f;
+            worldSpace.y = YMax;
 
-        bool yBottomOOB = worldSpace.y < YMin;
+        bool yBottomOOB = worldSpace.y <= YMin;
         if (yBottomOOB)
-            worldSpace.y = YMin;
+            worldSpace.y = YMin + 0.0001f;
 
-        bool xLeftOOB = worldSpace.x < XMin;
-        if (xLeftOOB)
-            worldSpace.x = XMin;
-
-        bool yRightOOB = worldSpace.x >= XMax;
+        bool yRightOOB = worldSpace.x > XMax;
         if (yRightOOB)
-            worldSpace.x = XMax - 0.0001f;
+            worldSpace.x = XMax;
+
+        bool xLeftOOB = worldSpace.x <= XMin;
+        if (xLeftOOB)
+            worldSpace.x = XMin + 0.0001f;
 
         return MapToPixel(worldSpace);
     }

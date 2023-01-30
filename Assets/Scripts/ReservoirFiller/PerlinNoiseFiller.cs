@@ -6,12 +6,12 @@ public class PerlinNoiseFiller : ReservoirFiller
     public override void Fill(Paint paint, Paint[] target, Vector2Int targetSize)
     {
         // HACK multiply volume by 100, because the shader sees 100 as 1 unit of paint
-        paint.Volume *= 100;
+        paint.Volume *= 1000;
 
         // determine added volume
         int max_added_volume = paint.Volume;
 
-        float scale = 10f; // bigger values == larger areas of the perlin noise terrain == more frequent noise
+        float scale = 5f; // bigger values == larger areas of the perlin noise terrain == more frequent noise
         float offset_x = Random.Range(0f, 1000f);
         float offset_y = Random.Range(0f, 1000f);
 

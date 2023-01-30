@@ -2,6 +2,8 @@
 using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
+using System;
+using System.Linq;
 
 [RequireComponent(typeof(Button))]
 public class RakelPaintApplyButtonController : MonoBehaviour
@@ -11,6 +13,7 @@ public class RakelPaintApplyButtonController : MonoBehaviour
 
     TMP_Dropdown ColorDropdown;
     TMP_InputField VolumeInputField;
+    TMP_Dropdown FillModeDropdown;
 
     Dictionary<string, Color> ColorMapper = new Dictionary<string, Color>()
     {
@@ -50,19 +53,23 @@ public class RakelPaintApplyButtonController : MonoBehaviour
 
         ColorDropdown = GameObject.Find("Predefined Colors Dropdown").GetComponent<TMP_Dropdown>();
         VolumeInputField = GameObject.Find("Paint Volume Value").GetComponent<TMP_InputField>();
+        FillModeDropdown = GameObject.Find("Fill Mode Dropdown").GetComponent<TMP_Dropdown>();
+        FillModeDropdown.AddOptions(Enum.GetNames(typeof(FillMode)).ToList());
     }
 
     public void Start()
     {
         ColorDropdown.SetValueWithoutNotify(9); // TODO retrieve from OilPaintEngine? Requires backwards mapping though ...
-        VolumeInputField.SetTextWithoutNotify("40");
+        VolumeInputField.SetTextWithoutNotify("240");
+        FillModeDropdown.SetValueWithoutNotify((int)OilPaintEngine.FillMode);
     }
 
     public void OnClick()
     {
         Color color = ColorMapper[ColorDropdown.options[ColorDropdown.value].text];
         int volume = int.Parse(VolumeInputField.text);
+        FillMode fillMode = (FillMode)FillModeDropdown.value;
 
-        OilPaintEngine.UpdateRakelPaint(new Paint(color, volume));
+        OilPaintEngine.UpdateRakelPaint(new Paint(color, volume), fillMode);
     }
 }

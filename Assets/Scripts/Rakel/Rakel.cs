@@ -8,7 +8,7 @@ public class Rakel : IRakel
     public Vector3 Anchor { get; private set; }
     public float Length { get; private set; } // world space
     public float Width { get; private set; } // world space
-    private int Resolution; // pixels per 1 world space
+    private int ReservoirResolution; // pixels per 1 world space
 
     Vector2Int RakelReservoirSize;
     Paint[] RakelApplicationReservoirData;
@@ -20,16 +20,18 @@ public class Rakel : IRakel
     Queue<ComputeShaderTask> ComputeShaderTasks;
 
     Vector2Int PreviousApplyPosition = new Vector2Int(int.MinValue, int.MinValue);
+    Vector3 PreviousApplyPosition_ = new Vector3(int.MinValue, int.MinValue);
 
-    public Rakel(float length, float width, int resolution, Queue<ComputeShaderTask> computeShaderTasks)
+    public Rakel(float length, float width, int reservoirResolution, Queue<ComputeShaderTask> computeShaderTasks)
     {
-        Length = length;
-        Width = ((int)(width * resolution))/resolution; // make sure Rakel is not bigger than it's reservoir
-        Resolution = resolution;
-        Anchor = new Vector3(Width, Length / 2, 0);
+        RakelReservoirSize.x = (int)(width * reservoirResolution);
+        RakelReservoirSize.y = (int)(length * reservoirResolution);
 
-        RakelReservoirSize.y = (int)(length * resolution);
-        RakelReservoirSize.x = (int)(width * resolution);
+        float reservoirPixelSize = 1 / (float)reservoirResolution;
+        Length = RakelReservoirSize.y * reservoirPixelSize; // make sure Rakel is not bigger than its reservoir
+        Width = RakelReservoirSize.x * reservoirPixelSize; // make sure Rakel is not bigger than its reservoir
+        ReservoirResolution = reservoirResolution;
+        Anchor = new Vector3(Width, Length / 2, 0);
 
         ComputeShaderTasks = computeShaderTasks;
         
@@ -63,6 +65,7 @@ public class Rakel : IRakel
         RenderTexture canvasTexture,
         RenderTexture canvasNormalMap)
     {
+        rakelPosition = wsc.AlignToPixelGrid(rakelPosition);// + new Vector3(0.2f, 0.2f, 0);
         // this is needed to prevent double application on the same pixel
         if (wsc.MapToPixel(rakelPosition).Equals(PreviousApplyPosition))
         {
@@ -73,8 +76,22 @@ public class Rakel : IRakel
             PreviousApplyPosition = wsc.MapToPixel(rakelPosition);
         }
 
+        // this is needed to prevent double application on the same pixel
+        //float pixelSize = 1 / (float)Resolution;
+        //float requiredDistanceBetweenApplications = 1 * pixelSize;
+        //if ((rakelPosition - PreviousApplyPosition_).magnitude < requiredDistanceBetweenApplications)
+        //{
+        //    return;
+        //}
+        //else
+        //{
+        //    PreviousApplyPosition_ = rakelPosition;
+        //}
+
+        //Debug.Log("Applying at x=" + wsc.MapToPixel(rakelPosition));
+
         // STEP 1
-        // ... EMIT: Duplicate Reservoir
+        // ... EMIT: Duplicate Reservoir and smooth it while we are at it
         IntelGPUShaderRegion duplicateSR = new IntelGPUShaderRegion(
             new Vector2Int(0, RakelReservoirSize.y-1),
             new Vector2Int(RakelReservoirSize.x-1, RakelReservoirSize.y-1),
@@ -90,15 +107,17 @@ public class Rakel : IRakel
         //attributes.Add(new CSComputeBuffer("Finished", finishedBuffer));
 
         ComputeShaderTask cst = new ComputeShaderTask(
+            "ReservoirDuplicationShader",
             reservoirDuplicationShader,
             attributes,
             duplicateSR.ThreadGroups,
             //finishedBuffer,
             null,
-            new List<ComputeBuffer>()
+            new List<ComputeBuffer>(),
+            null
         );
-        //ComputeShaderTasks.Enqueue(cst);
-        cst.Run();
+        ComputeShaderTasks.Enqueue(cst);
+        //cst.Run();
 
 
         // ... EMIT: Calculate interpolated volumes and resulting color from duplicate and delete from original
@@ -107,7 +126,8 @@ public class Rakel : IRakel
             wsc.MapToPixelInRange(rakelSnapshot.UpperLeft),
             wsc.MapToPixelInRange(rakelSnapshot.UpperRight),
             wsc.MapToPixelInRange(rakelSnapshot.LowerLeft),
-            wsc.MapToPixelInRange(rakelSnapshot.LowerRight)
+            wsc.MapToPixelInRange(rakelSnapshot.LowerRight),
+            1
         );
 
         ComputeShader emitFromRakelShader = ComputeShaderUtil.LoadComputeShader("EmitFromRakelShader");
@@ -121,25 +141,25 @@ public class Rakel : IRakel
         attributes.Add(new CSComputeBuffer("RakelApplicationReservoir", RakelApplicationReservoir));
         ComputeBuffer RakelEmittedPaint = new ComputeBuffer(emitSR.CalculationSize.x * emitSR.CalculationSize.y, 4 * sizeof(float) + sizeof(int));
         attributes.Add(new CSComputeBuffer("RakelEmittedPaint", RakelEmittedPaint));
-        Vector2Int lowerLeftRounded = wsc.MapToPixel(rakelSnapshot.LowerLeft);
-        attributes.Add(new CSInts2("RakelLowerLeftRounded", lowerLeftRounded));
         attributes.Add(new CSInts2("RakelReservoirSize", RakelReservoirSize));
-        //finishedBuffer = new ComputeBuffer(1, sizeof(int));
-        //attributes.Add(new CSComputeBuffer("Finished", finishedBuffer));
+        attributes.Add(new CSInt("RakelReservoirResolution", ReservoirResolution));
 
         cst = new ComputeShaderTask(
+            "EmitFromRakelShader",
             emitFromRakelShader,
             attributes,
             emitSR.ThreadGroups,
-            //finishedBuffer,
             null,
-            new List<ComputeBuffer>()
+            new List<ComputeBuffer>(),
+            null
+        //new List<int>() { emitSR.CalculationSize.x, emitSR.CalculationSize.y }
         );
-        //ComputeShaderTasks.Enqueue(cst);
-        cst.Run();
+        ComputeShaderTasks.Enqueue(cst);
+        //cst.Run();
 
         //RakelApplicationReservoir.GetData(RakelApplicationReservoirData);
         //LogUtil.Log(RakelApplicationReservoirData, RakelReservoirSize.y);
+
 
 
 
@@ -162,23 +182,22 @@ public class Rakel : IRakel
 
         // STEP 3
         // ... PUT TO CANVAS
-        ComputeShader copyBufferToTextureShader = ComputeShaderUtil.LoadComputeShader("CopyBufferToCanvasShader");
+        ComputeShader copyBufferToCanvasShader = ComputeShaderUtil.LoadComputeShader("CopyBufferToCanvasShader");
         attributes = ComputeShaderUtil.GenerateCopyBufferToCanvasShaderAttributes(emitSR);
         attributes.Add(new CSComputeBuffer("RakelEmittedPaint", RakelEmittedPaint));
         attributes.Add(new CSComputeBuffer("Canvas", Canvas));
         attributes.Add(new CSInt("CanvasWidth", canvasTexture.width));
-        //finishedBuffer = new ComputeBuffer(1, sizeof(int));
-        //attributes.Add(new CSComputeBuffer("Finished", finishedBuffer));
         cst = new ComputeShaderTask(
-            copyBufferToTextureShader,
+            "CopyBufferToCanvasShader",
+            copyBufferToCanvasShader,
             attributes,
             emitSR.ThreadGroups,
-            //finishedBuffer,
             null,
-            new List<ComputeBuffer>() { RakelEmittedPaint }
+            new List<ComputeBuffer>() { RakelEmittedPaint },
+            null
         );
-        //ComputeShaderTasks.Enqueue(cst);
-        cst.Run();
+        ComputeShaderTasks.Enqueue(cst);
+        //cst.Run();
 
 
 
@@ -189,18 +208,17 @@ public class Rakel : IRakel
         attributes.Add(new CSComputeBuffer("Canvas", Canvas));
         attributes.Add(new CSInts2("CanvasSize", wsc.TextureSize));
         attributes.Add(new CSTexture("Texture", canvasTexture));
-        //finishedBuffer = new ComputeBuffer(1, sizeof(int));
-        //attributes.Add(new CSComputeBuffer("Finished", finishedBuffer));
         cst = new ComputeShaderTask(
+            "ColorsShader",
             colorsShader,
             attributes,
             emitSR.ThreadGroups,
-            //finishedBuffer,
             null,
-            new List<ComputeBuffer>()
+            new List<ComputeBuffer>(),
+            null
         );
-        //ComputeShaderTasks.Enqueue(cst);
-        cst.Run();
+        ComputeShaderTasks.Enqueue(cst);
+        //cst.Run();
 
 
         // STEP 4.2
@@ -210,6 +228,7 @@ public class Rakel : IRakel
             wsc.MapToPixelInRange(rakelSnapshot.UpperRight),
             wsc.MapToPixelInRange(rakelSnapshot.LowerLeft),
             wsc.MapToPixelInRange(rakelSnapshot.LowerRight),
+            // TODO Padding 2, because emit already had padding 1?
             1 // Padding because normals of the pixels around also have to be recalculated
         );
 
@@ -218,18 +237,17 @@ public class Rakel : IRakel
         attributes.Add(new CSComputeBuffer("Canvas", Canvas));
         attributes.Add(new CSInts2("CanvasSize", wsc.TextureSize));
         attributes.Add(new CSTexture("NormalMap", canvasNormalMap));
-        //finishedBuffer = new ComputeBuffer(1, sizeof(int));
-        //attributes.Add(new CSComputeBuffer("Finished", finishedBuffer));
         cst = new ComputeShaderTask(
+            "NormalsShader",
             normalsShader,
             attributes,
             paddedEmitSR.ThreadGroups,
-            //finishedBuffer,
             null,
-            new List<ComputeBuffer>()
+            new List<ComputeBuffer>(),
+            null
         );
-        //ComputeShaderTasks.Enqueue(cst);
-        cst.Run();
+        ComputeShaderTasks.Enqueue(cst);
+        //cst.Run();
     }
 
     public void Dispose()
@@ -239,19 +257,3 @@ public class Rakel : IRakel
 }
 
 
-
-// ComputeBuffer debugBuffer;
-// Vector3[] debugValues;
-// if (true){
-//     debugBuffer = new ComputeBuffer(emitSR.CalculationSize.x * emitSR.CalculationSize.y * 3, sizeof(float));
-//     debugValues = new Vector3[emitSR.CalculationSize.x * emitSR.CalculationSize.y];
-//     debugBuffer.SetData(debugValues);
-//     emitFromRakelShader.SetBuffer(0, "Debug", debugBuffer);
-// }
-
-
-// if (true){
-//     debugBuffer.GetData(debugValues);
-//     LogUtil.Log(debugValues, emitSR.CalculationSize.y, "debug");
-//     debugBuffer.Dispose();  
-// }

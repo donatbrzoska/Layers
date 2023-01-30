@@ -86,11 +86,13 @@ public class LogUtil
 
         string result = "";
         int cols = colors.GetLength(0) / rows;
-        for (int i = 0; i < rows; i++)
+        for (int i = rows - 1; i >= 0; i--)
         {
             for (int j = 0; j < cols; j++)
             {
-                result += colors[i * cols + j].ToString() + " ";
+                //string color_str = colors[i * cols + j].rToString();
+                string color_str = colors[i * cols + j].ToString();
+                result += color_str + " ";
             }
             result += "\n";
         }
@@ -107,7 +109,7 @@ public class LogUtil
 
         string result = "";
         int cols = vecs.GetLength(0) / rows;
-        for (int i = 0; i < rows; i++)
+        for (int i = rows - 1; i >= 0; i--)
         {
             for (int j = 0; j < cols; j++)
             {
@@ -128,7 +130,49 @@ public class LogUtil
 
         string result = "";
         int cols = vecs.GetLength(0) / rows;
-        for (int i = 0; i < rows; i++)
+        for (int i = rows - 1; i >= 0; i--)
+        {
+            for (int j = 0; j < cols; j++)
+            {
+                result += vecs[i * cols + j].ToString() + " ";
+            }
+            result += "\n";
+        }
+        Debug.Log(result);
+    }
+
+    public static void Log(Vector2[] vecs, int rows = 1, string descr = "")
+    {
+
+        if (descr != "")
+        {
+            Debug.Log(descr);
+        }
+
+        string result = "";
+        int cols = vecs.GetLength(0) / rows;
+        for (int i = rows - 1; i >= 0; i--)
+        {
+            for (int j = 0; j < cols; j++)
+            {
+                result += vecs[i * cols + j].ToString() + " ";
+            }
+            result += "\n";
+        }
+        Debug.Log(result);
+    }
+
+    public static void Log(Vector2Int[] vecs, int rows = 1, string descr = "")
+    {
+
+        if (descr != "")
+        {
+            Debug.Log(descr);
+        }
+
+        string result = "";
+        int cols = vecs.GetLength(0) / rows;
+        for (int i = rows - 1; i >= 0; i--)
         {
             for (int j = 0; j < cols; j++)
             {
@@ -149,11 +193,32 @@ public class LogUtil
 
         string result = "";
         int cols = ints.GetLength(0) / rows;
-        for (int i = 0; i < rows; i++)
+        for (int i = rows - 1; i >= 0; i--)
         {
             for (int j = 0; j < cols; j++)
             {
                 result += ints[i * cols + j].ToString() + " ";
+            }
+            result += "\n";
+        }
+        Debug.Log(result);
+    }
+
+    public static void Log(float[] floats, int rows = 1, string descr = "")
+    {
+
+        if (descr != "")
+        {
+            Debug.Log(descr);
+        }
+
+        string result = "";
+        int cols = floats.GetLength(0) / rows;
+        for (int i = rows - 1; i >= 0; i--)
+        {
+            for (int j = 0; j < cols; j++)
+            {
+                result += floats[i * cols + j].ToString() + " ";
             }
             result += "\n";
         }

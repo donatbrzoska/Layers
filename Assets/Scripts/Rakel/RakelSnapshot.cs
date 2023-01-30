@@ -10,7 +10,10 @@ public class RakelSnapshot
     public Vector3 LowerLeft { get; private set; }
     public Vector3 LowerRight { get; private set; }
 
-    public Vector2 OriginBoundaries { get; private set; }
+    public Vector3 ulTilted { get; private set; }
+    public Vector3 urTilted { get; private set; }
+    public Vector3 llTilted { get; private set; }
+    public Vector3 lrTilted { get; private set; }
 
     public RakelSnapshot(float length, float width, Vector3 anchor, Vector3 position, float rotation, float tilt){
         Position = position;
@@ -22,13 +25,15 @@ public class RakelSnapshot
         Vector3 lrOrigin = new Vector3(width, 0, 0);
 
         Quaternion tiltQuaternion = Quaternion.AngleAxis(tilt, Vector3.up);
-        Vector3 urTilted = tiltQuaternion * urOrigin;
-        Vector3 lrTilted = tiltQuaternion * lrOrigin;
+        ulTilted = tiltQuaternion * (ulOrigin - anchor) + anchor; // tilt around anchor
+        urTilted = tiltQuaternion * (urOrigin - anchor) + anchor; // tilt around anchor
+        llTilted = tiltQuaternion * (llOrigin - anchor) + anchor; // tilt around anchor
+        lrTilted = tiltQuaternion * (lrOrigin - anchor) + anchor; // tilt around anchor
 
         Quaternion rotationQuaternion = Quaternion.AngleAxis(rotation, Vector3.back);
-        Vector3 ulRotated = rotationQuaternion * (ulOrigin - anchor) + anchor; // rotate around anchor
+        Vector3 ulRotated = rotationQuaternion * (ulTilted - anchor) + anchor; // rotate around anchor
         Vector3 urRotated = rotationQuaternion * (urTilted - anchor) + anchor; // rotate around anchor
-        Vector3 llRotated = rotationQuaternion * (llOrigin - anchor) + anchor; // rotate around anchor
+        Vector3 llRotated = rotationQuaternion * (llTilted - anchor) + anchor; // rotate around anchor
         Vector3 lrRotated = rotationQuaternion * (lrTilted - anchor) + anchor; // rotate around anchor
 
         Vector3 positionTranslation = position - anchor;
@@ -36,7 +41,5 @@ public class RakelSnapshot
         UpperRight = urRotated + positionTranslation;
         LowerLeft = llRotated + positionTranslation;
         LowerRight = lrRotated + positionTranslation;
-
-        OriginBoundaries = new Vector2(urTilted.x, urTilted.y);
     }
 }

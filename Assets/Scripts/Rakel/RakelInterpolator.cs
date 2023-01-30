@@ -59,9 +59,11 @@ public class RakelInterpolator
             {
                 // 1. determine differences and steps
                 Vector3 dp = rakelPosition - PreviousRakelPosition;
-                float dpLength = dp.magnitude;
-                int positionSteps = (int)(dpLength * interpolationResolution);
-                
+                //float dpLength = dp.magnitude;
+                Vector2 dp_ = WorldSpaceCanvas.MapToPixel(rakelPosition) - WorldSpaceCanvas.MapToPixel(PreviousRakelPosition);
+                float dpLength = dp_.magnitude;
+                int positionSteps = (int)(dpLength * interpolationResolution); // don't add 1 because the first one is already done when isFirstNodeOfStroke
+
                 float dr = rakelRotation - PreviousRakelRotation;
                 if (Mathf.Abs(dr) >= 300){
                     if (rakelRotation < PreviousRakelRotation) {
@@ -83,7 +85,7 @@ public class RakelInterpolator
                 arcLength = Mathf.PI * Rakel.Width * (Mathf.Abs(dt)/180);
                 int tiltSteps = (int)(arcLength * interpolationResolution);
 
-                int steps = Mathf.Max(1, Mathf.Max(Mathf.Max(positionSteps, rotationSteps), tiltSteps));
+                int steps = Mathf.Max(1, Mathf.Max(Mathf.Max(positionSteps, rotationSteps), tiltSteps))*10;
 
 
                 // 2. interpolate
@@ -93,9 +95,10 @@ public class RakelInterpolator
 
                 for (int i=0; i<steps; i++)
                 {
-                    // first one is skipped, because that was already added with new stroke call
+                    // first one is skipped, because that was already done when isFirstNodeOfStroke
 
                     Vector3 currentPosition = previousPosition + dp / steps;
+                    //Vector3 currentPosition = PreviousRakelPosition + (i+1) * (dp / steps); // doesn't seem to make a difference
 
                     float currentRotation = previousRotation + dr / steps;
                     if (currentRotation >= 360) { // fix turnover case 1

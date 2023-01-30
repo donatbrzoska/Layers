@@ -1,0 +1,35 @@
+#pragma kernel main
+
+uint2 CalculationSize;
+
+struct Paint {
+    float4 color;
+    int volume;
+};
+RWStructuredBuffer<Paint> Reservoir;
+
+// RWStructuredBuffer<int> Finished;
+
+bool is_relevant_thread(uint3 id)
+{
+    return all(id.xy < CalculationSize);
+}
+
+uint XYZ(uint x, uint y, uint z, uint width, uint height)
+{
+    return z * height * width + y * width + x;
+}
+
+[numthreads(1,8,1)]
+void main (uint3 id : SV_DispatchThreadID)
+{
+    if (is_relevant_thread(id))
+    {
+        // In this case CalculationSize == ReservoirSize
+        Reservoir[XYZ(id.x, id.y, 1, CalculationSize.x, CalculationSize.y)] = Reservoir[XYZ(id.x, id.y, 0, CalculationSize.x, CalculationSize.y)];
+    }
+    // if (id.x == 0 && id.y == 0)
+    // {
+    //     Finished[0] = 3;
+    // }
+}
