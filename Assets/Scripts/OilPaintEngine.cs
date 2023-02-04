@@ -77,17 +77,30 @@ public class OilPaintEngine : MonoBehaviour
         RakelYPositionLocked = false;
     }
 
-    void LoadDebugConfig()
+    void LoadDefaultConfig_SmallRakel()
     {
         RakelRotation = 0;
         RakelRotationLocked = true;
-        RakelLength = 5f;
-        RakelWidth = 2f;
+        RakelLength = 2f;
+        RakelWidth = 0.2f;
+        TextureResolution = 80;
+
+        FillMode = FillMode.Perlin;
+
+        RakelYPositionLocked = false;
+    }
+
+    void LoadDebugConfig()
+    {
+        RakelRotation = 12;
+        RakelRotationLocked = true;
+        RakelLength = 2f;
+        RakelWidth = 0.2f;
         TextureResolution = 40;
 
         FillMode = FillMode.Flat;
 
-        RakelYPositionLocked = true;
+        RakelYPositionLocked = false;
     }
 
     void LoadDebugConfig2()
@@ -96,9 +109,9 @@ public class OilPaintEngine : MonoBehaviour
         RakelRotationLocked = true;
         RakelLength = 5f;
         RakelWidth = 2f;
-        TextureResolution = 1;
+        TextureResolution = 5;
 
-        FillMode = FillMode.Flat;
+        FillMode = FillMode.Perlin;
 
         RakelYPositionLocked = false;
     }
@@ -107,6 +120,7 @@ public class OilPaintEngine : MonoBehaviour
     {
         LoadDefaultConfig();
         LoadDefaultConfig2();
+        LoadDefaultConfig_SmallRakel();
         //LoadDebugConfig();
         //LoadDebugConfig2();
 
@@ -368,9 +382,11 @@ public class OilPaintEngine : MonoBehaviour
     public void DoMacro2Action()
     {
         //Rakel.Fill(new Paint(new Color(0 / 255f, 107 / 255f, 60 / 255f), 240), new PerlinNoiseFiller());
-        Rakel.Fill(new Paint(new Color(0 / 255f, 107 / 255f, 60 / 255f), 240), new FlatFiller());
+        //RakelInterpolator.NewStroke();
+        //RakelInterpolator.AddNode(new Vector3(-5, 0, -0.10f), 45, 0, TextureResolution);
 
+        Rakel.Fill(new Paint(new Color(0 / 255f, 107 / 255f, 60 / 255f), 1), new FlatFiller());
         RakelInterpolator.NewStroke();
-        RakelInterpolator.AddNode(new Vector3(-5, 0, -0.10f), 0, 0, TextureResolution);
+        RakelInterpolator.AddNode(new Vector3(-5, 0, -0.10f), 30, 0, TextureResolution);
     }
 }

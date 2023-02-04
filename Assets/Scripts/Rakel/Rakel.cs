@@ -115,13 +115,14 @@ public class Rakel : IRakel
             null,
             new List<ComputeBuffer>(),
             null
+            //new List<int>() { duplicateSR.CalculationSize.x, duplicateSR.CalculationSize.y }
         );
         ComputeShaderTasks.Enqueue(cst);
         //cst.Run();
 
-
         // ... EMIT: Calculate interpolated volumes and resulting color from duplicate and delete from original
         RakelSnapshot rakelSnapshot = new RakelSnapshot(Length, Width, Anchor, rakelPosition, rakelRotation, rakelTilt);
+
         IntelGPUShaderRegion emitSR = new IntelGPUShaderRegion(
             wsc.MapToPixelInRange(rakelSnapshot.UpperLeft),
             wsc.MapToPixelInRange(rakelSnapshot.UpperRight),
@@ -129,6 +130,10 @@ public class Rakel : IRakel
             wsc.MapToPixelInRange(rakelSnapshot.LowerRight),
             1
         );
+        //Debug.Log("ul " + wsc.MapToPixelInRange(rakelSnapshot.UpperLeft));
+        //Debug.Log("ur " + wsc.MapToPixelInRange(rakelSnapshot.UpperRight));
+        //Debug.Log("ll " + wsc.MapToPixelInRange(rakelSnapshot.LowerLeft));
+        //Debug.Log("lr " + wsc.MapToPixelInRange(rakelSnapshot.LowerRight));
 
         ComputeShader emitFromRakelShader = ComputeShaderUtil.LoadComputeShader("EmitFromRakelShader");
         attributes = ComputeShaderUtil.GenerateCanvasRegionShaderAttributes(
@@ -152,7 +157,7 @@ public class Rakel : IRakel
             null,
             new List<ComputeBuffer>(),
             null
-        //new List<int>() { emitSR.CalculationSize.x, emitSR.CalculationSize.y }
+            //new List<int>() { emitSR.CalculationSize.x, emitSR.CalculationSize.y }
         );
         ComputeShaderTasks.Enqueue(cst);
         //cst.Run();

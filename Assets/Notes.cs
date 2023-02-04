@@ -271,6 +271,20 @@ public class Notes : MonoBehaviour
  * 
  * vermutet, dass int implizit zu uint gecastet wird bei einer Zuweisung
  * 
+ * falsche 0 im Makro ersetzt -> wollte Rotation ersetzen, habe aber Position.y ersetzt ...
+ * 
+ * Wert setzen auskommentiert -> direkt über DebugMeldungen -> Warum ist der Wert weg?
+ * 
+ * Copy and Paste (beim vertex_inside Variablen umbenennen)
+ * 
+ * Fehler beim Abschreiben/Portieren (overlap Algorithmus, zweiten Hauptfall vermutlich einfach vergessen anzupassen)
+ * 
+ * Manchmal scheint es so als werden die ComputeShader einfach nicht neu geladen von Unity und dann wundere ich mich warum der Shit nicht funktioniert
+ * 
+ * Falsche API vermutet, InterlockedAdd darf als Value nicht direkt einen Wert aus einem 2D-Array bekommen -> Wert vorher aus Array holen
+ * 
+ * Falsche API vermutet, Arrays werden in HLSL nicht mit 0 initialisiert
+ * 
  */
 
 
@@ -1599,4 +1613,63 @@ public class Notes : MonoBehaviour
  *      - dann hat dieses Reservoirpixel schon seinen gesamten Beitrag an das Reservoirpixel abgegeben
  *      - beeinflusst aber trotzdem noch die umliegenden zurückrotierten Pixel
  * - Lösung: Überlappung rotierter Quadrate
+ * 
+ * 30.01.2023
+ * aufgehört bei:
+ * - Sutherford Hodgman angefangen, irgendwas stimmt aber noch nicht. Macro2 zeigt bei Volumenausgaben schon ein Problem
+ * 6h
+ * 
+ * 02.02.2023
+ * - paar Fehler gefunden (vertex_inside und area calculation)
+ * - nicht-rotierte Pixel funktionieren
+ * - jetzt: einzelnes, rotiertes Pixel debuggen
+ *   - pos_back_rotated stimmt schon mal
+ * 2h
+ * 
+ * 03.02.2023
+ * 11:30 - 13:00 1,5h
+ * 14:00 - 17:15 3,25h warum verändert sich die Farbhelligkeit?
+ * 20:00 - 22:15 2,25h
+ * -> 7h
+ * 
+ * DONE Rotierte Rakeln mit Resolution 1 mit Größe >1x1 geben nicht so viel Farbe ab wie sie sollten
+ * - 2x1 0° gibt sogar mehr Farbe ab -> unten links werden 42 mehr rausgeholt -> Lösung: Array mit 0 initialisieren
+ * DONE Gleiches gilt für rotierte und nicht-rotierte Rakeln mit höheren Auflösungen
+ * 
+ * Abgeben sollte eine Rakel insgesamt immer Anzahl Pixel x 1000
+ * 
+ * DONE 1x1 Rakel sollte bei Auflösung 2 eigentlich auch 4000 abgeben oder?
+ * 
+ * DONE negative Volumenwerte im Reservoir verhindern, ist das so richtig?:
+ *    volume_to_emit[y+1][x+1] = min(target_volume, available.volume);
+ *    nein war nicht richtig
+ * 
+ * aufgehört bei:
+ * - Prüfen: Farbabgabe sollte sich nach einem Klick in allen Variationen von Rotation, Abmessungen und Auflösung verbrauchen
+ * 
+ * 04.02.2023
+ * 20:45 - 0:45?
+ * - Algorithmus führt zu schlechter Laufzeit
+ *   - compute_intersection könnte man evtl. noch optimieren
+ * - 45° funktioniert - Ich musste noch mal richtig verstehen, was reservoir_pixel eigentlich für eine Bedeutung hat und wie man das berechnet
+ * - 30° macht aber noch Probleme
+ *   - liegt evtl. an den Volumen Ints oder an der Restentnahme -> negative Volumenwerte im Reservoir möglich?
+ *   - Resolution 2 nimmt sogar mehr Farbe aus dem Reservoir als drin ist
+ * - Scheint auch so als wenn wir besser auf Floats statt Ints umsteigen sollten für die Volumenwerte
+ * >>> Erstmal ~ halb so schlimm, musste really_available_volume doch mit overlap berechnen
+ * 
+ * Debughilfe für calculate_overlap_:
+ *   bool debug_this = adjacent_reservoir_pixel.x == 0 && adjacent_reservoir_pixel.y == 0
+ *                  && f2_eq(reservoir_pixel, float2(0.0, 0.5));
+ *                  
+ * TODO compute_intersection optimieren
+ * TODO Tilted
+ * TODO senkrechte Streifen sind wieder da
+ * TODO Winkel != 45° sehen teils noch mit hohen Auflösungen komisch aus
+ *      - könnte an Resten durch Integers liegen, weil dann krummere Werte rauskommen
+ * TODO Teils erwischt man bei einer leeren Rakel mit einem anderem Winkel doch noch bisschen Farbe, könnte an dem Rest 1-2 liegen
+ *      - könnte an Resten durch Integers liegen
+ * 
+ * TODO Farbmenge durch Config konfigugierbar
+ * TODO Positionen außerhalb
  */

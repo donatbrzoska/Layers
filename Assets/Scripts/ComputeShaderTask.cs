@@ -225,7 +225,7 @@ public struct ComputeShaderTask {
             //int sum = 0;
             //for (int i=0; i<debugValues.GetLength(0); i++)
             //{
-            //    sum += debugValues[i];
+            //    sum += (int)debugValues[i].x;
             //}
             //Debug.Log("Sum is " + sum);
         }

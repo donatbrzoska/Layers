@@ -1,5 +1,7 @@
 #pragma kernel main
 
+// RWStructuredBuffer<float2> Debug;
+
 uint2 CalculationSize;
 
 struct Paint {
@@ -13,6 +15,11 @@ RWStructuredBuffer<Paint> Reservoir;
 bool is_relevant_thread(uint3 id)
 {
     return all(id.xy < CalculationSize);
+}
+
+uint XY(uint x, uint y, uint width)
+{
+    return y * width + x;
 }
 
 uint XYZ(uint x, uint y, uint z, uint2 dimensions)
@@ -48,6 +55,7 @@ void main (uint3 id : SV_DispatchThreadID)
         // // In this case CalculationSize == ReservoirSize
         // Reservoir[XYZ(id.x, id.y, 1, CalculationSize)] = paint;
 
+        // Debug[XY(id.x, id.y, CalculationSize.x)] = float2(Reservoir[XYZ(id.x, id.y, 0, CalculationSize)].volume, 0);
 
         // In this case CalculationSize == ReservoirSize
         Reservoir[XYZ(id.x, id.y, 1, CalculationSize)] = Reservoir[XYZ(id.x, id.y, 0, CalculationSize)];
