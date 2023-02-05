@@ -82,10 +82,10 @@ public class OilPaintEngine : MonoBehaviour
         RakelRotation = 0;
         RakelRotationLocked = true;
         RakelLength = 2f;
-        RakelWidth = 0.2f;
+        RakelWidth = 0.5f;
         TextureResolution = 80;
 
-        FillMode = FillMode.Perlin;
+        FillMode = FillMode.PerlinColored;
 
         RakelYPositionLocked = false;
     }
@@ -316,16 +316,20 @@ public class OilPaintEngine : MonoBehaviour
         FillMode = fillMode;
 
         ReservoirFiller filler;
-        switch (FillMode) {
+        switch (FillMode)
+        {
             case FillMode.Perlin:
                 filler = new PerlinNoiseFiller();
                 break;
             case FillMode.Flat:
                 filler = new FlatFiller();
                 break;
-            //case FillMode.FlatColored:
-            //    filler = new PerlinNoiseFiller();
-            //    break;
+            case FillMode.PerlinColored:
+                filler = new PerlinNoiseFiller(true);
+                break;
+            case FillMode.FlatColored:
+                filler = new FlatFiller(true);
+                break;
             default:
                 filler = new FlatFiller();
                 break;

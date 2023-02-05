@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class PerlinNoiseFiller : ReservoirFiller
 {
+    public PerlinNoiseFiller(bool colorGradient = false) : base(colorGradient) { }
+
     // Adds some perlin noised volume to the desired volume
     public override void Fill(Paint paint, Paint[] target, Vector2Int targetSize)
     {
@@ -50,6 +52,7 @@ public class PerlinNoiseFiller : ReservoirFiller
             }
         }
 
+        AddColorGradient(target, targetSize);
 
         //int max_added_volume = paint.Volume * 100;
 

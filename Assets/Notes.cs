@@ -1648,7 +1648,8 @@ public class Notes : MonoBehaviour
  * - Prüfen: Farbabgabe sollte sich nach einem Klick in allen Variationen von Rotation, Abmessungen und Auflösung verbrauchen
  * 
  * 04.02.2023
- * 20:45 - 0:45?
+ * 20:45 - 1:00
+ * -> 4,25h
  * - Algorithmus führt zu schlechter Laufzeit
  *   - compute_intersection könnte man evtl. noch optimieren
  * - 45° funktioniert - Ich musste noch mal richtig verstehen, was reservoir_pixel eigentlich für eine Bedeutung hat und wie man das berechnet
@@ -1663,6 +1664,7 @@ public class Notes : MonoBehaviour
  *                  && f2_eq(reservoir_pixel, float2(0.0, 0.5));
  *                  
  * TODO compute_intersection optimieren
+ * TODO Ternärer Operator möglicherweise auch ineffizient?
  * TODO Tilted
  * TODO senkrechte Streifen sind wieder da
  * TODO Winkel != 45° sehen teils noch mit hohen Auflösungen komisch aus
@@ -1672,4 +1674,6 @@ public class Notes : MonoBehaviour
  * 
  * TODO Farbmenge durch Config konfigugierbar
  * TODO Positionen außerhalb
+ * 
+ * TODO Benchmark: float vs integer addition
  */

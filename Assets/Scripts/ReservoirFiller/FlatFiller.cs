@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class FlatFiller : ReservoirFiller
 {
+    public FlatFiller(bool colorGradient = false) : base(colorGradient) { }
+
     public override void Fill(Paint paint, Paint[] target, Vector2Int targetSize)
     {
         // HACK multiply volume by 100, because the shader sees 100 as 1 unit of paint
@@ -19,5 +21,7 @@ public class FlatFiller : ReservoirFiller
             }
         }
         //Debug.Log("Filled with " + sum);
+
+        AddColorGradient(target, targetSize);
     }
 }

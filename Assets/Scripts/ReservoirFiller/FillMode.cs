@@ -2,6 +2,7 @@
 public enum FillMode
 {
     Perlin,
+    PerlinColored,
     Flat,
     FlatColored
 }
