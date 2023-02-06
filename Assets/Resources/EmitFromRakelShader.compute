@@ -207,14 +207,17 @@ float2 compute_intersection(float2 a, float2 b, float2 p, float2 q) {
             return float2(a.x, max(p.y, q.y));
         }
     } else {
-        float m1 = (b.y - a.y) / (b.x - a.x);
-        float k1 = a.y - m1 * a.x;
+        float A1 = b.y - a.y;
+        float B1 = a.x - b.x;
+        float C1 = A1 * a.x + B1 * a.y;
 
-        float m2 = (q.y - p.y) / (q.x - p.x);
-        float k2 = p.y - m2 * p.x;
+        float A2 = q.y - p.y;
+        float B2 = p.x - q.x;
+        float C2 = A2 * p.x + B2 * p.y;
 
-        float x = (k2 - k1) / (m1 - m2);
-        float y = m1 * x + k1;
+        float det = A1 * B2 - A2 * B1;
+        float x = (B2 * C1 - B1 * C2) / det;
+        float y = (A1 * C2 - A2 * C1) / det;
 
         return float2(x, y);
     }
