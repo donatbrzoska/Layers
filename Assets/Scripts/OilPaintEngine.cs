@@ -92,11 +92,11 @@ public class OilPaintEngine : MonoBehaviour
 
     void LoadDebugConfig()
     {
-        RakelRotation = 12;
+        RakelRotation = 30;
         RakelRotationLocked = true;
-        RakelLength = 2f;
-        RakelWidth = 0.2f;
-        TextureResolution = 40;
+        RakelLength = 1;
+        RakelWidth = 1;
+        TextureResolution = 2;
 
         FillMode = FillMode.Flat;
 

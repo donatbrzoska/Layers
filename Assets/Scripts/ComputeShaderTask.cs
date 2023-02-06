@@ -223,7 +223,7 @@ public struct ComputeShaderTask {
             LogUtil.Log(debugValues, DebugBufferSize[1], "debug");
 
             //int sum = 0;
-            //for (int i=0; i<debugValues.GetLength(0); i++)
+            //for (int i = 0; i < debugValues.GetLength(0); i++)
             //{
             //    sum += (int)debugValues[i].x;
             //}

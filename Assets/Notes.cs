@@ -1663,17 +1663,25 @@ public class Notes : MonoBehaviour
  *   bool debug_this = adjacent_reservoir_pixel.x == 0 && adjacent_reservoir_pixel.y == 0
  *                  && f2_eq(reservoir_pixel, float2(0.0, 0.5));
  *                  
- * TODO compute_intersection optimieren
- * TODO Ternärer Operator möglicherweise auch ineffizient?
+ * DONE compute_intersection optimieren
+ * - ist vermutlich gar nicht das Problem, eher die vielen Schritte des Algorithmus
+ * DONE Ternärer Operator möglicherweise auch ineffizient?
  * TODO Tilted
- * TODO senkrechte Streifen sind wieder da
- * TODO Winkel != 45° sehen teils noch mit hohen Auflösungen komisch aus
+ * LATER senkrechte Streifen sind wieder da
+ * DONE Winkel != 45° sehen teils noch mit hohen Auflösungen komisch aus
  *      - könnte an Resten durch Integers liegen, weil dann krummere Werte rauskommen
  * TODO Teils erwischt man bei einer leeren Rakel mit einem anderem Winkel doch noch bisschen Farbe, könnte an dem Rest 1-2 liegen
  *      - könnte an Resten durch Integers liegen
+ *      
+ * TODO Kreisschnittfläche
+ * TODO Bilinear und nearest neighbour zurückbringen für Benchmarks
  * 
- * TODO Farbmenge durch Config konfigugierbar
+ * TODO Farbmenge durch Config konfigurierbar
  * TODO Positionen außerhalb
  * 
  * TODO Benchmark: float vs integer addition
+ * 
+ * 06.02.2023
+ * 15:30 - 18:45
+ * 19:15 - 
  */

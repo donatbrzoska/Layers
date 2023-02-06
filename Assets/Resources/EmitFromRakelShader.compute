@@ -226,6 +226,12 @@ float2 compute_intersection(float2 a, float2 b, float2 p, float2 q) {
 // inspired by Java implementation from https://rosettacode.org/wiki/Sutherland-Hodgman_polygon_clipping
 float calculate_overlap_(int2 adjacent_reservoir_pixel, float2 reservoir_pixel)
 {
+    // bool debug_this = adjacent_reservoir_pixel.x == 0 && adjacent_reservoir_pixel.y == 1
+    //                && f2_eq(reservoir_pixel, float2(0.13, 0.87));
+    // if (debug_this){
+    //     Debug[XY(id.x, id.y, CalculationSize.x)] = float2(7,7);
+    // }
+
     // 1. calculate clip and subject polygon -> adjacent_reservoir_pixel is clipping reservoir_pixel (back translated and rotated from canvas pixel)
     // vertices are stored in counter clockwise order
     float2 clip_poly[8];
@@ -246,10 +252,10 @@ float calculate_overlap_(int2 adjacent_reservoir_pixel, float2 reservoir_pixel)
     clip_len = 4;
 
     // TODO this doesn't work for a curved or tilted rakel
-    subj_poly[0] = reservoir_pixel + rotate(ll, RakelRotation, float2(0,0));
-    subj_poly[1] = reservoir_pixel + rotate(lr, RakelRotation, float2(0,0));
-    subj_poly[2] = reservoir_pixel + rotate(ur, RakelRotation, float2(0,0));
-    subj_poly[3] = reservoir_pixel + rotate(ul, RakelRotation, float2(0,0));
+    subj_poly[0] = reservoir_pixel + rotate(ll, -RakelRotation, float2(0,0));
+    subj_poly[1] = reservoir_pixel + rotate(lr, -RakelRotation, float2(0,0));
+    subj_poly[2] = reservoir_pixel + rotate(ur, -RakelRotation, float2(0,0));
+    subj_poly[3] = reservoir_pixel + rotate(ul, -RakelRotation, float2(0,0));
     subj_poly[4] = float2(0,0);
     subj_poly[5] = float2(0,0);
     subj_poly[6] = float2(0,0);
