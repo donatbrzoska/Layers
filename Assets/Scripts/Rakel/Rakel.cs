@@ -5,6 +5,7 @@ using System.Threading;
 public class Rakel : IRakel
 {
     private const bool DEBUG = false;
+
     public Vector3 Anchor { get; private set; }
     public float Length { get; private set; } // world space
     public float Width { get; private set; } // world space

@@ -20,12 +20,6 @@ public class RakelRotationLockedController : MonoBehaviour
         Toggle.SetIsOnWithoutNotify(OilPaintEngine.RakelRotationLocked);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
     public void OnValueChanged(bool locked)
     {
         OilPaintEngine.UpdateRakelRotationLocked(locked);
