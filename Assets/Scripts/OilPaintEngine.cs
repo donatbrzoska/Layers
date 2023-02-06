@@ -12,6 +12,7 @@ public class OilPaintEngine : MonoBehaviour
     private RenderTexture Texture;
     private RenderTexture NormalMap;
 
+    private int WallColliderID;
     private int CanvasColliderID;
     private Renderer CanvasRenderer;
     private float CanvasWidth; // world space
@@ -34,6 +35,7 @@ public class OilPaintEngine : MonoBehaviour
     public float RakelLength { get; private set; } // world space
     public float RakelWidth { get; private set; } // world space
     public bool RakelYPositionLocked { get; private set; }
+    private Vector3 RakelPosition;
     private IRakel Rakel;
 
     private RakelInterpolator RakelInterpolator;
@@ -45,6 +47,7 @@ public class OilPaintEngine : MonoBehaviour
     {
         Camera = GameObject.Find("Main Camera").GetComponent<Camera>();
 
+        WallColliderID = GameObject.Find("Wall").GetComponent<MeshCollider>().GetInstanceID();
         CanvasColliderID = GameObject.Find("Canvas").GetComponent<MeshCollider>().GetInstanceID();
         CanvasRenderer = GameObject.Find("Canvas").GetComponent<Renderer>();
         CanvasWidth = GameObject.Find("Canvas").GetComponent<Transform>().localScale.x * 10; // convert scale attribute to world space
@@ -237,19 +240,25 @@ public class OilPaintEngine : MonoBehaviour
                 }
             }
 
-            Vector3 worldSpaceHit = InputUtil.GetMouseHit(Camera, CanvasColliderID);
-            if (!worldSpaceHit.Equals(Vector3.negativeInfinity))
+
+            // Rakel has to be over wall or canvas
+            // TODO block for any UI element, text also ...
+            RakelPosition = InputUtil.GetMouseHit(Camera, WallColliderID);
+            if (RakelPosition.Equals(Vector3.negativeInfinity))
             {
-                //Debug.Log("world space hit at " + worldSpaceHit);
+                RakelPosition = InputUtil.GetMouseHit(Camera, CanvasColliderID);
+            }
+            if (!RakelPosition.Equals(Vector3.negativeInfinity))
+            {
                 if (Input.GetMouseButtonDown(0))
                 {
                     RakelInterpolator.NewStroke();
                 }
                 if (RakelYPositionLocked)
                 {
-                    worldSpaceHit.y = 0;
+                    RakelPosition.y = 0;
                 }
-                RakelInterpolator.AddNode(worldSpaceHit, RakelRotation, 0, TextureResolution);
+                RakelInterpolator.AddNode(RakelPosition, RakelRotation, 0, TextureResolution);
             }
         }
 
