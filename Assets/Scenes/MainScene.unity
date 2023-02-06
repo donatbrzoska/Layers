@@ -5575,7 +5575,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Titan White
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -6690,57 +6690,7 @@ MonoBehaviour:
   m_ItemImage: {fileID: 0}
   m_Value: 0
   m_Options:
-    m_Options:
-    - m_Text: Titan White
-      m_Image: {fileID: 0}
-    - m_Text: Ivory Black
-      m_Image: {fileID: 0}
-    - m_Text: Red
-      m_Image: {fileID: 0}
-    - m_Text: Ultramarine Blue
-      m_Image: {fileID: 0}
-    - m_Text: Ultramarine Blue (RAL)
-      m_Image: {fileID: 0}
-    - m_Text: Lemon Yellow
-      m_Image: {fileID: 0}
-    - m_Text: Cadmium Yellow
-      m_Image: {fileID: 0}
-    - m_Text: Cadmium Orange
-      m_Image: {fileID: 0}
-    - m_Text: Cadmium Red
-      m_Image: {fileID: 0}
-    - m_Text: Cadmium Green
-      m_Image: {fileID: 0}
-    - m_Text: Cadmium Green Light
-      m_Image: {fileID: 0}
-    - m_Text: Anthracite
-      m_Image: {fileID: 0}
-    - m_Text: Red
-      m_Image: {fileID: 0}
-    - m_Text: Dark Red
-      m_Image: {fileID: 0}
-    - m_Text: Green
-      m_Image: {fileID: 0}
-    - m_Text: Blue
-      m_Image: {fileID: 0}
-    - m_Text: Dark Blue
-      m_Image: {fileID: 0}
-    - m_Text: Yellow
-      m_Image: {fileID: 0}
-    - m_Text: Orange
-      m_Image: {fileID: 0}
-    - m_Text: Purple
-      m_Image: {fileID: 0}
-    - m_Text: Red Red
-      m_Image: {fileID: 0}
-    - m_Text: Green Green
-      m_Image: {fileID: 0}
-    - m_Text: Blue Blue
-      m_Image: {fileID: 0}
-    - m_Text: White
-      m_Image: {fileID: 0}
-    - m_Text: Black
-      m_Image: {fileID: 0}
+    m_Options: []
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []

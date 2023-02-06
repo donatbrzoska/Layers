@@ -22,6 +22,7 @@ public class OilPaintEngine : MonoBehaviour
 
     //private IRakelPaintReservoir RakelPaintReservoir;
     //public Paint RakelPaint { get; private set; }
+    public Paint FillPaint { get; private set; }
     public FillMode FillMode { get; private set; }
 
     private static Vector2 NO_VECTOR2 = new Vector2(float.NaN, float.NaN);
@@ -59,6 +60,7 @@ public class OilPaintEngine : MonoBehaviour
         RakelWidth = 0.3f;
         TextureResolution = 100;
 
+        FillPaint = new Paint(Colors.GetColor(_Color.CadmiumGreen), 240);
         FillMode = FillMode.Perlin;
 
         RakelYPositionLocked = false;
@@ -311,8 +313,9 @@ public class OilPaintEngine : MonoBehaviour
     // ***                                     TOP RIGHT                                    ***
     // ****************************************************************************************
 
-    public void UpdateRakelPaint(Paint paint, FillMode fillMode)
+    public void UpdateRakelPaint(_Color color, int volume, FillMode fillMode)
     {
+        FillPaint = new Paint(Colors.GetColor(color), volume);
         FillMode = fillMode;
 
         ReservoirFiller filler;
@@ -334,8 +337,7 @@ public class OilPaintEngine : MonoBehaviour
                 filler = new FlatFiller();
                 break;
         }
-        //    RakelPaint = paint;
-        Rakel.Fill(paint, filler);
+        Rakel.Fill(FillPaint, filler);
     }
 
     // ****************************************************************************************

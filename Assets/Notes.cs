@@ -1676,7 +1676,7 @@ public class Notes : MonoBehaviour
  * TODO Kreisschnittfläche
  * TODO Bilinear und nearest neighbour zurückbringen für Benchmarks
  * 
- * TODO Farbmenge durch Config konfigurierbar
+ * DONE Farbmenge durch Config konfigurierbar
  * TODO Positionen außerhalb
  * 
  * TODO Benchmark: float vs integer addition
