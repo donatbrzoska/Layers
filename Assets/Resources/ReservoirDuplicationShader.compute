@@ -2,7 +2,7 @@
 
 // RWStructuredBuffer<float2> Debug;
 
-uint2 CalculationSize;
+uint2 CalculationSize; // == ReservoirSize in this case
 
 struct Paint {
     float4 color;
@@ -57,8 +57,12 @@ void main (uint3 id : SV_DispatchThreadID)
 
         // Debug[XY(id.x, id.y, CalculationSize.x)] = float2(Reservoir[XYZ(id.x, id.y, 0, CalculationSize)].volume, 0);
 
-        // In this case CalculationSize == ReservoirSize
-        Reservoir[XYZ(id.x, id.y, 1, CalculationSize)] = Reservoir[XYZ(id.x, id.y, 0, CalculationSize)];
+        // delete leftover volume due to integer rounding
+        Paint available = Reservoir[XYZ(id.x, id.y, 0, CalculationSize)];
+        if (available.volume < 10) {
+            available.volume = 0;
+        }
+        Reservoir[XYZ(id.x, id.y, 1, CalculationSize)] = available;
     }
     // if (id.x == 0 && id.y == 0)
     // {

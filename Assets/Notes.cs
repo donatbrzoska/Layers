@@ -1670,18 +1670,25 @@ public class Notes : MonoBehaviour
  * LATER senkrechte Streifen sind wieder da
  * DONE Winkel != 45° sehen teils noch mit hohen Auflösungen komisch aus
  *      - könnte an Resten durch Integers liegen, weil dann krummere Werte rauskommen
- * TODO Teils erwischt man bei einer leeren Rakel mit einem anderem Winkel doch noch bisschen Farbe, könnte an dem Rest 1-2 liegen
+ * DONE Teils erwischt man bei einer leeren Rakel mit einem anderem Winkel doch noch bisschen Farbe, könnte an dem Rest 1-2 liegen
  *      - könnte an Resten durch Integers liegen
  *      
  * TODO Kreisschnittfläche
  * TODO Bilinear und nearest neighbour zurückbringen für Benchmarks
  * 
  * DONE Farbmenge durch Config konfigurierbar
- * TODO Positionen außerhalb
+ * DONE Positionen außerhalb
  * 
  * TODO Benchmark: float vs integer addition
  * 
  * 06.02.2023
- * 15:30 - 18:45
- * 19:15 - 
+ * 15:30 - 18:45 3.25h
+ * 19:15 - 22:00 2.75h
+ * -> 6h
+ * aufgehört bei:
+ * - ReservoirDuplication-Shader: durch Integer-Rundung verbleibende Farbreste aus Rakel löschen
+ * 
+ * 
+ * 10.02.2023
+ * 16:30 - 
  */
