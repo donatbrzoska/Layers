@@ -146,6 +146,8 @@ public class Rakel : IRakel
 
         attributes.Add(new CSComputeBuffer("RakelApplicationReservoir", RakelApplicationReservoir));
         ComputeBuffer RakelEmittedPaint = new ComputeBuffer(emitSR.CalculationSize.x * emitSR.CalculationSize.y, 4 * sizeof(float) + sizeof(int));
+        Paint[] initPaint = new Paint[emitSR.CalculationSize.x * emitSR.CalculationSize.y];
+        RakelEmittedPaint.SetData(initPaint);
         attributes.Add(new CSComputeBuffer("RakelEmittedPaint", RakelEmittedPaint));
         attributes.Add(new CSInts2("RakelReservoirSize", RakelReservoirSize));
         attributes.Add(new CSInt("RakelReservoirResolution", ReservoirResolution));
