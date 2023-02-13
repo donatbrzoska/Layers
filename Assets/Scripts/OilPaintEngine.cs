@@ -31,7 +31,6 @@ public class OilPaintEngine : MonoBehaviour
     public EmitMode RakelEmitMode { get; private set; }
     public int ReservoirSmoothingKernelSize { get; private set; }
     public int ReservoirDiscardVolumeThreshold { get; private set; }
-    public bool RakelYPositionLocked { get; private set; }
     private Vector3 RakelPosition;
     private IRakel Rakel;
 
@@ -72,7 +71,6 @@ public class OilPaintEngine : MonoBehaviour
         ReservoirSmoothingKernelSize = 1;
         ReservoirDiscardVolumeThreshold = 10;
         RakelEmitMode = EmitMode.PolygonClipping;
-        RakelYPositionLocked = false;
     }
 
     void LoadDefaultConfig2()
@@ -87,7 +85,6 @@ public class OilPaintEngine : MonoBehaviour
         FillMode = FillMode.PerlinColored;
 
         RakelEmitMode = EmitMode.Bilinear;
-        RakelYPositionLocked = false;
     }
 
     void LoadDefaultConfig_SmallRakel()
@@ -102,7 +99,6 @@ public class OilPaintEngine : MonoBehaviour
         FillMode = FillMode.PerlinColored;
 
         RakelEmitMode = EmitMode.PolygonClipping;
-        RakelYPositionLocked = false;
     }
 
     void LoadDebugConfig()
@@ -117,7 +113,6 @@ public class OilPaintEngine : MonoBehaviour
         FillMode = FillMode.Flat;
 
         RakelEmitMode = EmitMode.NearestNeighbour;
-        RakelYPositionLocked = false;
     }
 
     void LoadDebugConfig2()
@@ -133,7 +128,6 @@ public class OilPaintEngine : MonoBehaviour
         FillPaint = new Paint(Colors.GetColor(_Color.CadmiumGreen), 50);
 
         RakelEmitMode = EmitMode.NearestNeighbour;
-        RakelYPositionLocked = false;
     }
 
     void Start()
@@ -239,10 +233,6 @@ public class OilPaintEngine : MonoBehaviour
                 if (Input.GetMouseButtonDown(0))
                 {
                     RakelInterpolator.NewStroke();
-                }
-                if (RakelYPositionLocked)
-                {
-                    RakelPosition.y = 0;
                 }
                 RakelInterpolator.AddNode(RakelPosition, RakelRotation, 0, RakelEmitMode, ReservoirDiscardVolumeThreshold, ReservoirSmoothingKernelSize, TextureResolution);
             }
@@ -392,7 +382,7 @@ public class OilPaintEngine : MonoBehaviour
 
     public void UpdateRakelYPositionLocked(bool locked)
     {
-        RakelYPositionLocked = locked;
+        RakelInputManager.YPositionLocked = locked;
     }
 
     public void DoMacroAction()

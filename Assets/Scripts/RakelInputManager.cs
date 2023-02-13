@@ -3,6 +3,8 @@
 public class RakelInputManager
 {
     // Position attributes
+    public bool YPositionLocked { get; set; }
+
     private Camera Camera;
     private GraphicsRaycaster GraphicsRaycaster;
 
@@ -25,6 +27,7 @@ public class RakelInputManager
 
     public Vector3 GetPosition()
     {
+        Vector3 result = Vector3.negativeInfinity;
         if (!GraphicsRaycaster.UIBlocking() && Input.GetMouseButton(0))
         {
             RaycastHit hit;
@@ -34,10 +37,17 @@ public class RakelInputManager
             foreach (int id in ColliderIDs)
             {
                 if (hit.colliderInstanceID == id)
-                    return hit.point;
+                {
+                    result = hit.point;
+                    if (YPositionLocked)
+                    {
+                        result.y = 0;
+                    }
+                    break;
+                }
             }
         }
-        return Vector3.negativeInfinity;
+        return result;
     }
 
     public float GetRotation()

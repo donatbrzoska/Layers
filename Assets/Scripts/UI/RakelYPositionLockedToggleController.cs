@@ -17,7 +17,7 @@ public class RakelYPositionLockedToggleController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Toggle.SetIsOnWithoutNotify(OilPaintEngine.RakelYPositionLocked);
+        Toggle.SetIsOnWithoutNotify(OilPaintEngine.RakelInputManager.YPositionLocked);
     }
 
     // Update is called once per frame
