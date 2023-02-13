@@ -6,6 +6,9 @@ using System.Threading;
 public class OilPaintEngine : MonoBehaviour
 {
     public bool BENCHMARK = false;
+
+    private GraphicsRaycaster GraphicsRaycaster;
+
     private Camera Camera;
 
     public int TextureResolution { get; private set; } // texture space pixels per 1 world space
@@ -49,6 +52,8 @@ public class OilPaintEngine : MonoBehaviour
 
     void Awake()
     {
+        GraphicsRaycaster = GameObject.Find("UI").GetComponent<GraphicsRaycaster>();
+
         Camera = GameObject.Find("Main Camera").GetComponent<Camera>();
 
         WallColliderID = GameObject.Find("Wall").GetComponent<MeshCollider>().GetInstanceID();
@@ -263,24 +268,26 @@ public class OilPaintEngine : MonoBehaviour
             }
 
 
-            // Rakel has to be over wall or canvas
-            // TODO block for any UI element, text also ...
-            RakelPosition = InputUtil.GetMouseHit(Camera, WallColliderID);
-            if (RakelPosition.Equals(Vector3.negativeInfinity))
+            if (!GraphicsRaycaster.UIBlocking())
             {
-                RakelPosition = InputUtil.GetMouseHit(Camera, CanvasColliderID);
-            }
-            if (!RakelPosition.Equals(Vector3.negativeInfinity))
-            {
-                if (Input.GetMouseButtonDown(0))
+                // Rakel has to be over wall or canvas
+                RakelPosition = InputUtil.GetMouseHit(Camera, WallColliderID);
+                if (RakelPosition.Equals(Vector3.negativeInfinity))
                 {
-                    RakelInterpolator.NewStroke();
+                    RakelPosition = InputUtil.GetMouseHit(Camera, CanvasColliderID);
                 }
-                if (RakelYPositionLocked)
+                if (!RakelPosition.Equals(Vector3.negativeInfinity))
                 {
-                    RakelPosition.y = 0;
+                    if (Input.GetMouseButtonDown(0))
+                    {
+                        RakelInterpolator.NewStroke();
+                    }
+                    if (RakelYPositionLocked)
+                    {
+                        RakelPosition.y = 0;
+                    }
+                    RakelInterpolator.AddNode(RakelPosition, RakelRotation, 0, RakelEmitMode, ReservoirDiscardVolumeThreshold, ReservoirSmoothingKernelSize, TextureResolution);
                 }
-                RakelInterpolator.AddNode(RakelPosition, RakelRotation, 0, RakelEmitMode, ReservoirDiscardVolumeThreshold, ReservoirSmoothingKernelSize, TextureResolution);
             }
         }
 

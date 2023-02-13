@@ -1679,7 +1679,7 @@ public class Notes : MonoBehaviour
  * DONE Farbmenge durch Config konfigurierbar
  * DONE Positionen außerhalb
  * 
- * TODO Benchmark: float vs integer addition
+ * MAYBE LATER Benchmark: float vs integer addition
  * 
  * 06.02.2023
  * 15:30 - 18:45 3.25h
@@ -1704,8 +1704,8 @@ public class Notes : MonoBehaviour
  * 
  * TODO Architektur überdenken
  * DONE RakelResolution in die GUI
- * TODO GUI Elemente müssen Apply blockieren
- * TODO Jitter in die Rotation einbauen?
+ * DONE GUI Elemente müssen Apply blockieren
+ * MAYBE LATER Jitter in die Rotation einbauen?
  * TODO Perlin Noise auf übertragenem Volumen wäre interessant
  * - Shader Model > 1 unterstützt kein noise(), also selbst implementieren
  * - https://fancyfennec.medium.com/perlin-noise-and-untiy-compute-shaders-f00736a002a4
@@ -1715,4 +1715,7 @@ public class Notes : MonoBehaviour
  * - niedrige, hohe Textur-Auflösung
  * - Rotation fest, Rotation wackelig
  * - Smoothing, Discard und Reservoir-Auflösung
+ * 
+ * 13.02.2023
+ * 13:15 - 
  */
