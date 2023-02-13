@@ -1,27 +1,20 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using System.Threading;
 
 public class Rakel : IRakel
 {
-    private const bool DEBUG = false;
-
     public Vector3 Anchor { get; private set; }
-    public float Length { get; private set; } // world space
-    public float Width { get; private set; } // world space
-    private int ReservoirResolution; // pixels per 1 world space
+    public float Length { get; private set; }
+    public float Width { get; private set; }
+    private int ReservoirResolution;
 
     Vector2Int RakelReservoirSize;
     Paint[] RakelApplicationReservoirData;
     ComputeBuffer RakelApplicationReservoir; // 3D array, z=1 is for duplication for correct interpolation
-    // Paint[] RakelEmittedPaintData;
-    //ComputeBuffer RakelPickupReservoir;
-    ComputeBuffer Canvas;
 
     Queue<ComputeShaderTask> ComputeShaderTasks;
 
     Vector2Int PreviousApplyPosition = new Vector2Int(int.MinValue, int.MinValue);
-    Vector3 PreviousApplyPosition_ = new Vector3(int.MinValue, int.MinValue);
 
     public Rakel(RakelConfiguration config, Queue<ComputeShaderTask> computeShaderTasks)
     {
@@ -36,16 +29,9 @@ public class Rakel : IRakel
 
         ComputeShaderTasks = computeShaderTasks;
         
-        RakelApplicationReservoir = new ComputeBuffer(RakelReservoirSize.y * RakelReservoirSize.x * 2, 4 * sizeof(float) + sizeof(int)); // sizeof(Paint)
+        RakelApplicationReservoir = new ComputeBuffer(RakelReservoirSize.y * RakelReservoirSize.x * 2, 4 * sizeof(float) + sizeof(int));
         RakelApplicationReservoirData = new Paint[RakelReservoirSize.y * RakelReservoirSize.x * 2];
         RakelApplicationReservoir.SetData(RakelApplicationReservoirData);
-
-        // RakelEmittedPaintData = new Paint[RakelReservoirSize.y*RakelReservoirSize.x];
-        // RakelEmittedPaint.SetData(RakelEmittedPaintData);
-
-        // TODO add layers
-         //Canvas = new ComputeBuffer(wsc.TextureSize.x * wsc.TextureSize.y * 3, sizeof(float));
-
     }
 
     public void Fill(_Color color, int volume, ReservoirFiller filler)
@@ -78,8 +64,8 @@ public class Rakel : IRakel
     {
         WorldSpaceCanvas wsc = oilPaintCanvas.WorldSpaceCanvas;
 
-        rakelPosition = wsc.AlignToPixelGrid(rakelPosition);// + new Vector3(0.2f, 0.2f, 0);
-        // this is needed to prevent double application on the same pixel
+        // prevent double application on the same pixel
+        rakelPosition = wsc.AlignToPixelGrid(rakelPosition);
         if (wsc.MapToPixel(rakelPosition).Equals(PreviousApplyPosition))
         {
             return;
@@ -88,18 +74,6 @@ public class Rakel : IRakel
         {
             PreviousApplyPosition = wsc.MapToPixel(rakelPosition);
         }
-
-        // this is needed to prevent double application on the same pixel
-        //float pixelSize = 1 / (float)Resolution;
-        //float requiredDistanceBetweenApplications = 1 * pixelSize;
-        //if ((rakelPosition - PreviousApplyPosition_).magnitude < requiredDistanceBetweenApplications)
-        //{
-        //    return;
-        //}
-        //else
-        //{
-        //    PreviousApplyPosition_ = rakelPosition;
-        //}
 
         //Debug.Log("Applying at x=" + wsc.MapToPixel(rakelPosition));
 
@@ -118,15 +92,12 @@ public class Rakel : IRakel
         attributes.Add(new CSComputeBuffer("Reservoir", RakelApplicationReservoir));
         attributes.Add(new CSInt("DiscardVolumeThreshhold", transferConfiguration.ReservoirDiscardVolumeThreshold));
         attributes.Add(new CSInt("SmoothingKernelSize", transferConfiguration.ReservoirSmoothingKernelSize));
-        //ComputeBuffer finishedBuffer = new ComputeBuffer(1, sizeof(int));
-        //attributes.Add(new CSComputeBuffer("Finished", finishedBuffer));
 
         ComputeShaderTask cst = new ComputeShaderTask(
             "ReservoirDuplicationShader",
             reservoirDuplicationShader,
             attributes,
             duplicateSR.ThreadGroups,
-            //finishedBuffer,
             null,
             new List<ComputeBuffer>(),
             null
@@ -177,9 +148,6 @@ public class Rakel : IRakel
             //new List<int>() { emitSR.CalculationSize.x, emitSR.CalculationSize.y }
         );
         EnqueueOrRun(cst);
-
-        //RakelApplicationReservoir.GetData(RakelApplicationReservoirData);
-        //LogUtil.Log(RakelApplicationReservoirData, RakelReservoirSize.y);
 
 
 
