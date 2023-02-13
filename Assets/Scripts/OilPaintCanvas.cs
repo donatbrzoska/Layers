@@ -48,13 +48,11 @@ public class OilPaintCanvas
 
         ComputeShaderTask cst = new ComputeShaderTask(
             "SetTextureShader",
-            ComputeShaderUtil.LoadComputeShader("SetTextureShader"),
+            sr,
             new List<CSAttribute>() {
-                new CSInts2("CalculationSize", new Vector2Int(texture.width, texture.height)),
                 new CSFloats4("Value", value),
                 new CSTexture("Target", texture)
             },
-            sr.ThreadGroups,
             null,
             new List<ComputeBuffer>(),
             null

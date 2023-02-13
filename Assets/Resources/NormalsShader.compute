@@ -10,10 +10,10 @@ struct Paint {
     float4 color;
     int volume;
 };
-RWStructuredBuffer<Paint> Canvas;
-uint2 CanvasSize; // == TextureWidth
+RWStructuredBuffer<Paint> CanvasReservoir;
 
 RWTexture2D<float4> NormalMap;
+uint2 TextureSize;
 
 
 // RWStructuredBuffer<int> Finished;
@@ -27,9 +27,9 @@ bool is_relevant_thread(uint3 id)
 bool pixel_in_canvas_range(int2 pixel)
 {
     return pixel.x >= 0
-        && pixel.x < (int)CanvasSize.x
+        && pixel.x < (int)TextureSize.x
         && pixel.y >= 0
-        && pixel.y < (int)CanvasSize.y;
+        && pixel.y < (int)TextureSize.y;
 }
 
 uint XY(uint x, uint y, uint width)
@@ -50,21 +50,21 @@ void main (uint3 id : SV_DispatchThreadID)
 
             // calculate normal
             // ... ... deal with oob access
-            uint left = clamp(canvas_pixel.x-1, 0, CanvasSize.x-1);
-            uint right = clamp(canvas_pixel.x+1, 0, CanvasSize.x-1);
-            uint up = clamp(canvas_pixel.y+1, 0, CanvasSize.y-1);
-            uint bot = clamp(canvas_pixel.y-1, 0, CanvasSize.y-1);
+            uint left = clamp(canvas_pixel.x-1, 0, TextureSize.x-1);
+            uint right = clamp(canvas_pixel.x+1, 0, TextureSize.x-1);
+            uint up = clamp(canvas_pixel.y+1, 0, TextureSize.y-1);
+            uint bot = clamp(canvas_pixel.y-1, 0, TextureSize.y-1);
             
             // ... ... get volumes
-            uint vol_ul = Canvas[XY(left,           up,             CanvasSize.x)].volume;
-            uint vol_u =  Canvas[XY(canvas_pixel.x, up,             CanvasSize.x)].volume;
-            uint vol_ur = Canvas[XY(right,          up,             CanvasSize.x)].volume;
-            uint vol_l =  Canvas[XY(left,           canvas_pixel.y, CanvasSize.x)].volume;
-            // uint vol_m =  Canvas[XY(canvas_pixel.x, canvas_pixel.y, CanvasSize.x)].volume;
-            uint vol_r =  Canvas[XY(right,          canvas_pixel.y, CanvasSize.x)].volume;
-            uint vol_ll = Canvas[XY(left,           bot,            CanvasSize.x)].volume;
-            uint vol_b =  Canvas[XY(canvas_pixel.x, bot,            CanvasSize.x)].volume;
-            uint vol_lr = Canvas[XY(right,          bot,            CanvasSize.x)].volume;
+            uint vol_ul = CanvasReservoir[XY(left,           up,             TextureSize.x)].volume;
+            uint vol_u =  CanvasReservoir[XY(canvas_pixel.x, up,             TextureSize.x)].volume;
+            uint vol_ur = CanvasReservoir[XY(right,          up,             TextureSize.x)].volume;
+            uint vol_l =  CanvasReservoir[XY(left,           canvas_pixel.y, TextureSize.x)].volume;
+            // uint vol_m =  CanvasReservoir[XY(canvas_pixel.x, canvas_pixel.y, TextureSize.x)].volume;
+            uint vol_r =  CanvasReservoir[XY(right,          canvas_pixel.y, TextureSize.x)].volume;
+            uint vol_ll = CanvasReservoir[XY(left,           bot,            TextureSize.x)].volume;
+            uint vol_b =  CanvasReservoir[XY(canvas_pixel.x, bot,            TextureSize.x)].volume;
+            uint vol_lr = CanvasReservoir[XY(right,          bot,            TextureSize.x)].volume;
 
             // ... ... sobel calculation
             int normal_x = -1 * vol_ul            + 1 * vol_ur

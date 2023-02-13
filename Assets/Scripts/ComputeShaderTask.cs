@@ -134,7 +134,7 @@ public class CSFloats4 : CSAttribute
     }
 }
 
-public struct ComputeShaderTask {
+public class ComputeShaderTask {
     public string Name;
     public ComputeShader ComputeShader;
     public List<CSAttribute> Attributes;
@@ -145,20 +145,21 @@ public struct ComputeShaderTask {
 
     public ComputeShaderTask(
         string name,
-        ComputeShader computeShader,
+        IntelGPUShaderRegion shaderRegion,
         List<CSAttribute> attributes,
-        Vector2Int threadGroups,
         ComputeBuffer finishedMarkerBuffer,
         List<ComputeBuffer> buffersToDispose,
         List<int> debugBufferSize)
     {
         Name = name;
-        ComputeShader = computeShader;
         Attributes = attributes;
-        ThreadGroups = threadGroups;
         FinishedMarkerBuffer = finishedMarkerBuffer;
         BuffersToDispose = buffersToDispose;
         DebugBufferSize = debugBufferSize;
+
+        ComputeShader = (ComputeShader)Resources.Load(name);
+        ThreadGroups = shaderRegion.ThreadGroups;
+        Attributes.Add(new CSInts2("CalculationSize", shaderRegion.CalculationSize));
     }
 
     public void Run()

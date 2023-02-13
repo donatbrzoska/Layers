@@ -10,10 +10,10 @@ struct Paint {
     float4 color;
     int volume;
 };
-RWStructuredBuffer<Paint> Canvas;
-uint2 CanvasSize; // == TextureWidth
+RWStructuredBuffer<Paint> CanvasReservoir;
 
-RWTexture2D<float4> Texture;
+RWTexture2D<float4> CanvasTexture;
+uint2 TextureSize;
 
 
 // RWStructuredBuffer<int> Finished;
@@ -27,9 +27,9 @@ bool is_relevant_thread(uint3 id)
 bool pixel_in_canvas_range(int2 pixel)
 {
     return pixel.x >= 0
-        && pixel.x < (int)CanvasSize.x
+        && pixel.x < (int)TextureSize.x
         && pixel.y >= 0
-        && pixel.y < (int)CanvasSize.y;
+        && pixel.y < (int)TextureSize.y;
 }
 
 uint XY(uint x, uint y, uint width)
@@ -49,12 +49,12 @@ void main (uint3 id : SV_DispatchThreadID)
         {
 
             // get paint from canvas
-            Paint p = Canvas[XY(canvas_pixel.x, canvas_pixel.y, CanvasSize.x)];
+            Paint p = CanvasReservoir[XY(canvas_pixel.x, canvas_pixel.y, TextureSize.x)];
 
             // set color
             if (p.volume > 0)
             {
-                Texture[canvas_pixel] = p.color;
+                CanvasTexture[canvas_pixel] = p.color;
             }
         }
     }
