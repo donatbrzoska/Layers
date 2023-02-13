@@ -24,7 +24,25 @@ public class OilPaintEngine : MonoBehaviour
     public FillMode FillMode { get; private set; }
 
     public RakelInputManager RakelInputManager { get; private set; }
-    public float RakelRotation { get; private set; }
+    private float _rakelRotation;
+    public float RakelRotation {
+        get
+        {
+            if (!RakelInputManager.RotationLocked)
+            {
+                return RakelInputManager.GetRotation();
+            }
+            else
+            {
+                return _rakelRotation;
+            }
+        }
+
+        private set
+        {
+            _rakelRotation = value;
+        }
+    }
     public float RakelLength { get; private set; } // world space
     public float RakelWidth { get; private set; } // world space
     public int RakelResolution { get; private set; }
@@ -89,11 +107,11 @@ public class OilPaintEngine : MonoBehaviour
 
     void LoadDefaultConfig_SmallRakel()
     {
-        RakelRotation = 0;
+        RakelRotation = 20;
         RakelInputManager.RotationLocked = true;
         RakelLength = 2f;
         RakelWidth = 0.5f;
-        TextureResolution = 80;
+        TextureResolution = 60;
         RakelResolution = TextureResolution;
 
         FillMode = FillMode.PerlinColored;
@@ -225,9 +243,12 @@ public class OilPaintEngine : MonoBehaviour
                 Rakel.Apply(new Vector3(x,y,0), 0, 0, RakelEmitMode, ReservoirDiscardVolumeThreshold, ReservoirSmoothingKernelSize, WorldSpaceCanvas, Canvas, Texture, NormalMap);
             }
         } else {
-            RakelRotation = RakelInputManager.GetRotation();
-            RakelPosition = RakelInputManager.GetPosition();
+            if (!RakelInputManager.RotationLocked)
+            {
+                RakelRotation = RakelInputManager.GetRotation();
+            }
 
+            RakelPosition = RakelInputManager.GetPosition();
             if (!RakelPosition.Equals(Vector3.negativeInfinity))
             {
                 if (Input.GetMouseButtonDown(0))
