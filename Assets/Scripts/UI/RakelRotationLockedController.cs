@@ -17,7 +17,7 @@ public class RakelRotationLockedController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Toggle.SetIsOnWithoutNotify(OilPaintEngine.RakelRotationLocked);
+        Toggle.SetIsOnWithoutNotify(OilPaintEngine.RakelRotationManager.RotationLocked);
     }
 
     public void OnValueChanged(bool locked)

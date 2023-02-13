@@ -29,12 +29,8 @@ public class OilPaintEngine : MonoBehaviour
     public Paint FillPaint { get; private set; }
     public FillMode FillMode { get; private set; }
 
-    private static Vector2 NO_VECTOR2 = new Vector2(float.NaN, float.NaN);
-    private bool PreviousMousePositionInitialized = false;
-    private Vector2 PreviousMousePosition = NO_VECTOR2;
-
     public float RakelRotation { get; private set; }
-    public bool RakelRotationLocked { get; private set; }
+    public RakelRotationManager RakelRotationManager { get; private set; }
     public float RakelLength { get; private set; } // world space
     public float RakelWidth { get; private set; } // world space
     public int RakelResolution { get; private set; }
@@ -63,6 +59,8 @@ public class OilPaintEngine : MonoBehaviour
         CanvasHeight = GameObject.Find("Canvas").GetComponent<Transform>().localScale.y * 10; // convert scale attribute to world space
         CanvasPosition = GameObject.Find("Canvas").GetComponent<Transform>().position;
 
+        RakelRotationManager = new RakelRotationManager();
+
         LoadDefaultConfig();
         LoadDefaultConfig2();
         //LoadDefaultConfig_SmallRakel();
@@ -73,7 +71,6 @@ public class OilPaintEngine : MonoBehaviour
     void LoadDefaultConfig()
     {
         RakelRotation = 0;
-        RakelRotationLocked = false;
         RakelLength = 8f;
         RakelWidth = 0.3f;
         TextureResolution = 100;
@@ -91,7 +88,6 @@ public class OilPaintEngine : MonoBehaviour
     void LoadDefaultConfig2()
     {
         RakelRotation = 0;
-        RakelRotationLocked = false;
         RakelLength = 4f;
         RakelWidth = 0.5f;
         TextureResolution = 60;
@@ -107,7 +103,7 @@ public class OilPaintEngine : MonoBehaviour
     void LoadDefaultConfig_SmallRakel()
     {
         RakelRotation = 0;
-        RakelRotationLocked = true;
+        RakelRotationManager.RotationLocked = true;
         RakelLength = 2f;
         RakelWidth = 0.5f;
         TextureResolution = 80;
@@ -122,7 +118,7 @@ public class OilPaintEngine : MonoBehaviour
     void LoadDebugConfig()
     {
         RakelRotation = 45;
-        RakelRotationLocked = true;
+        RakelRotationManager.RotationLocked = true;
         RakelLength = 4;
         RakelWidth = 1;
         TextureResolution = 1;
@@ -137,7 +133,7 @@ public class OilPaintEngine : MonoBehaviour
     void LoadDebugConfig2()
     {
         RakelRotation = 45;
-        RakelRotationLocked = true;
+        RakelRotationManager.RotationLocked = true;
         RakelLength = 2f;
         RakelWidth = 0.5f;
         TextureResolution = 20;
@@ -245,27 +241,7 @@ public class OilPaintEngine : MonoBehaviour
                 Rakel.Apply(new Vector3(x,y,0), 0, 0, RakelEmitMode, ReservoirDiscardVolumeThreshold, ReservoirSmoothingKernelSize, WorldSpaceCanvas, Canvas, Texture, NormalMap);
             }
         } else {
-            if (!RakelRotationLocked)
-            {
-                Vector2 currentMousePosition = Input.mousePosition;
-                if (!PreviousMousePositionInitialized)
-                {
-                    PreviousMousePosition = currentMousePosition;
-                    PreviousMousePositionInitialized = true;
-                }
-                else
-                {
-                    Vector2 direction = currentMousePosition - PreviousMousePosition;
-
-                    if (direction.magnitude > 8)
-                    {
-                        float angle = MathUtil.Angle360(Vector2.right, direction);
-                        RakelRotation = angle;
-
-                        PreviousMousePosition = currentMousePosition;
-                    }
-                }
-            }
+            RakelRotation = RakelRotationManager.GetRotation();
 
 
             if (!GraphicsRaycaster.UIBlocking())
@@ -335,7 +311,7 @@ public class OilPaintEngine : MonoBehaviour
 
     public void UpdateRakelRotationLocked(bool locked)
     {
-        RakelRotationLocked = locked;
+        RakelRotationManager.RotationLocked = locked;
     }
 
     public void UpdateRakelLength(float worldSpaceLength)
