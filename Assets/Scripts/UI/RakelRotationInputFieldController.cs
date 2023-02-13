@@ -6,7 +6,7 @@ public class RakelRotationInputFieldController : InputFieldController
 {
     public void Update()
     {
-        InputField.SetTextWithoutNotify("" + OilPaintEngine.RakelRotation);
+        InputField.SetTextWithoutNotify("" + OilPaintEngine.RakelInputManager.Rotation);
     }
 
     override public void OnValueChanged(string arg0)

@@ -15,7 +15,6 @@ public class RakelInputManager
 
     private bool PreviousMousePositionInitialized;
     private Vector2 PreviousMousePosition;
-    private float CurrentRotation;
 
     public RakelInputManager(params int[] colliderIDs)
     {
@@ -25,54 +24,66 @@ public class RakelInputManager
         ColliderIDs = colliderIDs;
     }
 
-    public Vector3 GetPosition()
+    public Vector3 Position
     {
-        Vector3 result = Vector3.negativeInfinity;
-        if (!GraphicsRaycaster.UIBlocking() && Input.GetMouseButton(0))
+        get
         {
-            RaycastHit hit;
-            Ray ray = Camera.ScreenPointToRay(Input.mousePosition);
-            Physics.Raycast(ray, out hit);
-
-            foreach (int id in ColliderIDs)
+            Vector3 result = Vector3.negativeInfinity;
+            if (!GraphicsRaycaster.UIBlocking() && Input.GetMouseButton(0))
             {
-                if (hit.colliderInstanceID == id)
+                RaycastHit hit;
+                Ray ray = Camera.ScreenPointToRay(Input.mousePosition);
+                Physics.Raycast(ray, out hit);
+
+                foreach (int id in ColliderIDs)
                 {
-                    result = hit.point;
-                    if (YPositionLocked)
+                    if (hit.colliderInstanceID == id)
                     {
-                        result.y = 0;
+                        result = hit.point;
+                        if (YPositionLocked)
+                        {
+                            result.y = 0;
+                        }
+                        break;
                     }
-                    break;
                 }
             }
+            return result;
         }
-        return result;
     }
 
-    public float GetRotation()
+    private float _rotation;
+    public float Rotation
     {
-        if (!RotationLocked)
+        get
         {
-            Vector2 currentMousePosition = Input.mousePosition;
-            if (!PreviousMousePositionInitialized)
+            if (!RotationLocked)
             {
-                PreviousMousePosition = currentMousePosition;
-                PreviousMousePositionInitialized = true;
-            }
-            else
-            {
-                Vector2 direction = currentMousePosition - PreviousMousePosition;
-
-                if (direction.magnitude > 8)
+                Vector2 currentMousePosition = Input.mousePosition;
+                if (!PreviousMousePositionInitialized)
                 {
-                    float angle = MathUtil.Angle360(Vector2.right, direction);
-                    CurrentRotation = angle;
-
                     PreviousMousePosition = currentMousePosition;
+                    PreviousMousePositionInitialized = true;
+                }
+                else
+                {
+                    Vector2 direction = currentMousePosition - PreviousMousePosition;
+
+                    if (direction.magnitude > 8)
+                    {
+                        float angle = MathUtil.Angle360(Vector2.right, direction);
+                        _rotation = angle;
+
+                        PreviousMousePosition = currentMousePosition;
+                    }
                 }
             }
+            return _rotation;
         }
-        return CurrentRotation;
+
+        set
+        {
+            _rotation = value;
+        }
     }
 }
