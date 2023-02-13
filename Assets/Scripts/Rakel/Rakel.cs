@@ -82,35 +82,6 @@ public class Rakel : IRakel
 
         //Debug.Log("Applying at x=" + wsc.MapToPixel(rakelPosition));
 
-        DuplicateReservoir(transferConfiguration.ReservoirDiscardVolumeThreshold,
-                           transferConfiguration.ReservoirSmoothingKernelSize);
-
-        ComputeBuffer RakelEmittedPaint = EmitFromRakel(
-            wsc,
-            rakelPosition, rakelRotation, rakelTilt,
-            transferConfiguration.MapMode);
-
-        ApplyToCanvas(
-            wsc,
-            rakelPosition, rakelRotation, rakelTilt,
-            RakelEmittedPaint,
-            oilPaintCanvas.Reservoir);
-
-        UpdateColorTexture(
-            wsc,
-            rakelPosition, rakelRotation, rakelTilt,
-            oilPaintCanvas.Reservoir,
-            oilPaintCanvas.Texture);
-
-        UpdateNormalMap(
-            wsc,
-            rakelPosition, rakelRotation, rakelTilt,
-            oilPaintCanvas.Reservoir,
-            oilPaintCanvas.NormalMap);
-    }
-
-    private void DuplicateReservoir(int discardVolumeThreshold, int smoothingKernelSize)
-    {
         IntelGPUShaderRegion duplicateSR = new IntelGPUShaderRegion(
             new Vector2Int(0, RakelReservoirSize.y - 1),
             new Vector2Int(RakelReservoirSize.x - 1, RakelReservoirSize.y - 1),
@@ -118,30 +89,6 @@ public class Rakel : IRakel
             new Vector2Int(RakelReservoirSize.x - 1, 0)
         );
 
-        List<CSAttribute> attributes = new List<CSAttribute>()
-        {
-            new CSComputeBuffer("Reservoir", RakelApplicationReservoir),
-            new CSInt("DiscardVolumeThreshhold", discardVolumeThreshold),
-            new CSInt("SmoothingKernelSize", smoothingKernelSize)
-        };
-
-        ComputeShaderTask cst = new ComputeShaderTask(
-            "ReservoirDuplicationShader",
-            duplicateSR,
-            attributes,
-            null,
-            new List<ComputeBuffer>(),
-            null
-        //new List<int>() { duplicateSR.CalculationSize.x, duplicateSR.CalculationSize.y }
-        );
-        EnqueueOrRun(cst);
-    }
-
-    private ComputeBuffer EmitFromRakel(
-        WorldSpaceCanvas wsc,
-        Vector3 rakelPosition, float rakelRotation, float rakelTilt,
-        TransferMapMode transferMapMode)
-    {
         RakelSnapshot rakelSnapshot = new RakelSnapshot(Length, Width, Anchor, rakelPosition, rakelRotation, rakelTilt);
         IntelGPUShaderRegion emitSR = new IntelGPUShaderRegion(
             wsc.MapToPixelInRange(rakelSnapshot.UpperLeft),
@@ -151,15 +98,81 @@ public class Rakel : IRakel
             1 // Padding because interpolation reaches pixels that are not directly under the rakel
         );
 
-        ComputeBuffer RakelEmittedPaint = new ComputeBuffer(emitSR.CalculationSize.x * emitSR.CalculationSize.y,
+        IntelGPUShaderRegion normalsSR = new IntelGPUShaderRegion(
+            wsc.MapToPixelInRange(rakelSnapshot.UpperLeft),
+            wsc.MapToPixelInRange(rakelSnapshot.UpperRight),
+            wsc.MapToPixelInRange(rakelSnapshot.LowerLeft),
+            wsc.MapToPixelInRange(rakelSnapshot.LowerRight),
+            2 // Padding of 2 because normals of the previously set pixels around also have to be recalculated
+        );
+
+        DuplicateReservoir(duplicateSR,
+                           transferConfiguration.ReservoirDiscardVolumeThreshold,
+                           transferConfiguration.ReservoirSmoothingKernelSize);
+
+        ComputeBuffer RakelEmittedPaint = EmitFromRakel(
+            rakelSnapshot,
+            emitSR,
+            wsc,
+            transferConfiguration.MapMode);
+
+        ApplyToCanvas(
+            emitSR,
+            wsc.TextureSize.x,
+            RakelEmittedPaint,
+            oilPaintCanvas.Reservoir);
+
+        UpdateColorTexture(
+            emitSR,
+            wsc.TextureSize,
+            oilPaintCanvas.Reservoir,
+            oilPaintCanvas.Texture);
+
+        UpdateNormalMap(
+            normalsSR,
+            wsc.TextureSize,
+            oilPaintCanvas.Reservoir,
+            oilPaintCanvas.NormalMap);
+    }
+
+    private void DuplicateReservoir(IntelGPUShaderRegion shaderRegion, int discardVolumeThreshold, int smoothingKernelSize)
+    {
+        List<CSAttribute> attributes = new List<CSAttribute>()
+        {
+            new CSComputeBuffer("Reservoir", RakelApplicationReservoir),
+            new CSInt("DiscardVolumeThreshhold", discardVolumeThreshold),
+            new CSInt("SmoothingKernelSize", smoothingKernelSize)
+        };
+
+        ComputeShaderTask cst = new ComputeShaderTask(
+            "ReservoirDuplicationShader",
+            shaderRegion,
+            attributes,
+            null,
+            new List<ComputeBuffer>(),
+            null
+        //new List<int>() { duplicateSR.CalculationSize.x, duplicateSR.CalculationSize.y }
+        );
+
+        EnqueueOrRun(cst);
+    }
+
+    private ComputeBuffer EmitFromRakel(
+        RakelSnapshot rakelSnapshot,
+        IntelGPUShaderRegion shaderRegion,
+        WorldSpaceCanvas wsc,
+        TransferMapMode transferMapMode)
+    {
+
+        ComputeBuffer RakelEmittedPaint = new ComputeBuffer(shaderRegion.CalculationSize.x * shaderRegion.CalculationSize.y,
                                                             4 * sizeof(float) + sizeof(int));
         // initialize buffer to empty values (Intel does this for you, nvidia doesn't)
-        Paint[] initPaint = new Paint[emitSR.CalculationSize.x * emitSR.CalculationSize.y];
+        Paint[] initPaint = new Paint[shaderRegion.CalculationSize.x * shaderRegion.CalculationSize.y];
         RakelEmittedPaint.SetData(initPaint);
 
         List<CSAttribute> attributes = new List<CSAttribute>()
         {
-            new CSInts2("CalculationPosition", emitSR.CalculationPosition),
+            new CSInts2("CalculationPosition", shaderRegion.CalculationPosition),
             new CSInts2("TextureSize", wsc.TextureSize),
             new CSInt("TextureResolution", wsc.Resolution),
             new CSFloats3("CanvasPosition", wsc.Position),
@@ -182,118 +195,95 @@ public class Rakel : IRakel
 
         ComputeShaderTask cst = new ComputeShaderTask(
             "EmitFromRakelShader",
-            emitSR,
+            shaderRegion,
             attributes,
             null,
             new List<ComputeBuffer>(),
             null
         //new List<int>() { emitSR.CalculationSize.x, emitSR.CalculationSize.y }
         );
+
         EnqueueOrRun(cst);
 
         return RakelEmittedPaint;
     }
 
     private void ApplyToCanvas(
-        WorldSpaceCanvas wsc,
-        Vector3 rakelPosition, float rakelRotation, float rakelTilt,
+        IntelGPUShaderRegion shaderRegion,
+        int textureWidth,
         ComputeBuffer rakelEmittedPaint,
         ComputeBuffer canvasReservoir)
     {
-        RakelSnapshot rakelSnapshot = new RakelSnapshot(Length, Width, Anchor, rakelPosition, rakelRotation, rakelTilt);
-        IntelGPUShaderRegion applySR = new IntelGPUShaderRegion(
-            wsc.MapToPixelInRange(rakelSnapshot.UpperLeft),
-            wsc.MapToPixelInRange(rakelSnapshot.UpperRight),
-            wsc.MapToPixelInRange(rakelSnapshot.LowerLeft),
-            wsc.MapToPixelInRange(rakelSnapshot.LowerRight),
-            1 // Padding because interpolation reaches pixels that are not directly under the rakel
-        );
-
         List<CSAttribute> attributes = new List<CSAttribute>()
         {
-            new CSInts2("CalculationPosition", applySR.CalculationPosition),
+            new CSInts2("CalculationPosition", shaderRegion.CalculationPosition),
             new CSComputeBuffer("RakelEmittedPaint", rakelEmittedPaint),
             new CSComputeBuffer("CanvasReservoir", canvasReservoir),
-            new CSInt("TextureWidth", wsc.TextureSize.x)
+            new CSInt("TextureWidth", textureWidth)
         };
 
         ComputeShaderTask cst = new ComputeShaderTask(
             "CopyBufferToCanvasShader",
-            applySR,
+            shaderRegion,
             attributes,
             null,
             new List<ComputeBuffer>() { rakelEmittedPaint },
             null
         );
+
         EnqueueOrRun(cst);
     }
 
     private void UpdateColorTexture(
-        WorldSpaceCanvas wsc,
-        Vector3 rakelPosition, float rakelRotation, float rakelTilt,
+        IntelGPUShaderRegion shaderRegion,
+        Vector2Int textureSize,
         ComputeBuffer CanvasReservoir,
         RenderTexture CanvasTexture
         )
     {
-        RakelSnapshot rakelSnapshot = new RakelSnapshot(Length, Width, Anchor, rakelPosition, rakelRotation, rakelTilt);
-        IntelGPUShaderRegion colorsSR = new IntelGPUShaderRegion(
-            wsc.MapToPixelInRange(rakelSnapshot.UpperLeft),
-            wsc.MapToPixelInRange(rakelSnapshot.UpperRight),
-            wsc.MapToPixelInRange(rakelSnapshot.LowerLeft),
-            wsc.MapToPixelInRange(rakelSnapshot.LowerRight),
-            1 // Padding because interpolation reaches pixels that are not directly under the rakel
-        );
-
         List<CSAttribute> attributes = new List<CSAttribute>()
         {
-            new CSInts2("CalculationPosition", colorsSR.CalculationPosition),
+            new CSInts2("CalculationPosition", shaderRegion.CalculationPosition),
             new CSComputeBuffer("CanvasReservoir", CanvasReservoir),
-            new CSInts2("TextureSize", wsc.TextureSize),
+            new CSInts2("TextureSize", textureSize),
             new CSTexture("CanvasTexture", CanvasTexture)
         };
         
         ComputeShaderTask cst = new ComputeShaderTask(
             "ColorsShader",
-            colorsSR,
+            shaderRegion,
             attributes,
             null,
             new List<ComputeBuffer>(),
             null
         );
+
         EnqueueOrRun(cst);
     }
 
     private void UpdateNormalMap(
-        WorldSpaceCanvas wsc,
-        Vector3 rakelPosition, float rakelRotation, float rakelTilt,
+        IntelGPUShaderRegion shaderRegion,
+        Vector2Int textureSize,
         ComputeBuffer canvasReservoir,
         RenderTexture canvasNormalMap)
     {
-        RakelSnapshot rakelSnapshot = new RakelSnapshot(Length, Width, Anchor, rakelPosition, rakelRotation, rakelTilt);
-        IntelGPUShaderRegion normalsSR = new IntelGPUShaderRegion(
-            wsc.MapToPixelInRange(rakelSnapshot.UpperLeft),
-            wsc.MapToPixelInRange(rakelSnapshot.UpperRight),
-            wsc.MapToPixelInRange(rakelSnapshot.LowerLeft),
-            wsc.MapToPixelInRange(rakelSnapshot.LowerRight),
-            2 // Padding of 2 because normals of the previously set pixels around also have to be recalculated
-        );
-
         List<CSAttribute> attributes = new List<CSAttribute>()
         {
-            new CSInts2("CalculationPosition", normalsSR.CalculationPosition),
+            new CSInts2("CalculationPosition", shaderRegion.CalculationPosition),
             new CSComputeBuffer("CanvasReservoir", canvasReservoir),
-            new CSInts2("TextureSize", wsc.TextureSize),
+            new CSInts2("TextureSize", textureSize),
             new CSTexture("NormalMap", canvasNormalMap)
         };
 
         ComputeShaderTask cst = new ComputeShaderTask(
             "NormalsShader",
-            normalsSR,
+            shaderRegion,
             attributes,
             null,
             new List<ComputeBuffer>(),
             null
         );
+
         EnqueueOrRun(cst);
     }
 
