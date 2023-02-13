@@ -11,8 +11,6 @@ public class OilPaintEngine : MonoBehaviour
     private RenderTexture Texture;
     private RenderTexture NormalMap;
 
-    private int WallColliderID;
-    private int CanvasColliderID;
     private Renderer CanvasRenderer;
     private float CanvasWidth; // world space
     private float CanvasHeight; // world space
@@ -44,14 +42,14 @@ public class OilPaintEngine : MonoBehaviour
 
     void Awake()
     {
-        WallColliderID = GameObject.Find("Wall").GetComponent<MeshCollider>().GetInstanceID();
-        CanvasColliderID = GameObject.Find("Canvas").GetComponent<MeshCollider>().GetInstanceID();
         CanvasRenderer = GameObject.Find("Canvas").GetComponent<Renderer>();
         CanvasWidth = GameObject.Find("Canvas").GetComponent<Transform>().localScale.x * 10; // convert scale attribute to world space
         CanvasHeight = GameObject.Find("Canvas").GetComponent<Transform>().localScale.y * 10; // convert scale attribute to world space
         CanvasPosition = GameObject.Find("Canvas").GetComponent<Transform>().position;
 
-        RakelInputManager = new RakelInputManager(WallColliderID, CanvasColliderID);
+        int wallColliderID = GameObject.Find("Wall").GetComponent<MeshCollider>().GetInstanceID();
+        int canvasColliderID = GameObject.Find("Canvas").GetComponent<MeshCollider>().GetInstanceID();
+        RakelInputManager = new RakelInputManager(wallColliderID, canvasColliderID);
 
         LoadDefaultConfig();
         LoadDefaultConfig2();
