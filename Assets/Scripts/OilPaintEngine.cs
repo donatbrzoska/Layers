@@ -20,7 +20,6 @@ public class OilPaintEngine : MonoBehaviour
     public EmitMode RakelEmitMode { get; private set; }
     public int ReservoirSmoothingKernelSize { get; private set; }
     public int ReservoirDiscardVolumeThreshold { get; private set; }
-    private Vector3 RakelPosition;
     private IRakel Rakel;
 
     private RakelInterpolator RakelInterpolator;
@@ -155,14 +154,14 @@ public class OilPaintEngine : MonoBehaviour
         } else {
             float rotation = RakelInputManager.Rotation;
 
-            RakelPosition = RakelInputManager.Position;
-            if (!RakelPosition.Equals(Vector3.negativeInfinity))
+            Vector3 position = RakelInputManager.Position;
+            if (!position.Equals(Vector3.negativeInfinity))
             {
                 if (Input.GetMouseButtonDown(0))
                 {
                     RakelInterpolator.NewStroke();
                 }
-                RakelInterpolator.AddNode(RakelPosition, rotation, 0, RakelEmitMode, ReservoirDiscardVolumeThreshold, ReservoirSmoothingKernelSize, TextureResolution);
+                RakelInterpolator.AddNode(position, rotation, 0, RakelEmitMode, ReservoirDiscardVolumeThreshold, ReservoirSmoothingKernelSize, TextureResolution);
             }
         }
 
