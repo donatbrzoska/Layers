@@ -8,7 +8,7 @@ public class FillColorController : DropdownController
         base.Awake();
         //InitializeElements(typeof(_Color));
         List<string> colorNames = new List<string>();
-        foreach (_Color c in Enum.GetValues(typeof(_Color)))
+        foreach (Color_ c in Enum.GetValues(typeof(Color_)))
         {
             colorNames.Add(Colors.GetName(c));
         }
@@ -22,6 +22,6 @@ public class FillColorController : DropdownController
 
     override public void OnValueChanged(int value)
     {
-        OilPaintEngine.UpdateFillColor((_Color)value);
+        OilPaintEngine.UpdateFillColor((Color_)value);
     }
 }

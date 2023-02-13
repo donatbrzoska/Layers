@@ -5,7 +5,7 @@ public class FlatFiller : ReservoirFiller
 {
     public FlatFiller(bool colorGradient = false) : base(colorGradient) { }
 
-    public override void Fill(_Color color, int volume, Paint[] target, Vector2Int targetSize)
+    public override void Fill(Color_ color, int volume, Paint[] target, Vector2Int targetSize)
     {
         // HACK multiply volume by 100, because the shader sees 100 as 1 unit of paint
         volume *= 1000;

@@ -200,7 +200,7 @@ public class OilPaintEngine : MonoBehaviour
     // ***                                     TOP RIGHT                                    ***
     // ****************************************************************************************
 
-    public void UpdateFillColor(_Color color)
+    public void UpdateFillColor(Color_ color)
     {
         Configuration.FillConfiguration.Color = color;
     }
@@ -277,7 +277,7 @@ public class OilPaintEngine : MonoBehaviour
     public void DoMacroAction()
     {
         //Rakel.Fill(new Paint(new Color(0 / 255f, 107 / 255f, 60 / 255f), 240), new PerlinNoiseFiller());
-        Rakel.Fill(_Color.CadmiumGreen, 240, new FlatFiller());
+        Rakel.Fill(Color_.CadmiumGreen, 240, new FlatFiller());
 
         RakelInterpolator.NewStroke();
         RakelInterpolator.AddNode(
@@ -314,7 +314,7 @@ public class OilPaintEngine : MonoBehaviour
         //RakelInterpolator.NewStroke();
         //RakelInterpolator.AddNode(new Vector3(-5, 0, -0.10f), 45, 0, TextureResolution);
 
-        Rakel.Fill(_Color.CadmiumGreen, 240, new FlatFiller());
+        Rakel.Fill(Color_.CadmiumGreen, 240, new FlatFiller());
         RakelInterpolator.NewStroke();
         RakelInterpolator.AddNode(
             new Vector3(-5, 0, -0.10f),

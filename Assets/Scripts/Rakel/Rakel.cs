@@ -34,7 +34,7 @@ public class Rakel : IRakel
         RakelApplicationReservoir.SetData(RakelApplicationReservoirData);
     }
 
-    public void Fill(_Color color, int volume, ReservoirFiller filler)
+    public void Fill(Color_ color, int volume, ReservoirFiller filler)
     {
         filler.Fill(color, volume, RakelApplicationReservoirData, RakelReservoirSize);
         RakelApplicationReservoir.SetData(RakelApplicationReservoirData);

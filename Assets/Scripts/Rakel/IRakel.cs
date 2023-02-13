@@ -10,6 +10,6 @@ public interface IRakel
         float rakelTilt,
         TransferConfiguration transferConfiguration,
         OilPaintCanvas oilPaintCanvas);
-    public void Fill(_Color color, int volume, ReservoirFiller filler);
+    public void Fill(Color_ color, int volume, ReservoirFiller filler);
     public void Dispose();
 }

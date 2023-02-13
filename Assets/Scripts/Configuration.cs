@@ -40,13 +40,13 @@ public class RakelConfiguration
 
 public class FillConfiguration
 {
-    public _Color Color;
+    public Color_ Color;
     public int Volume;
     public FillMode Mode;
 
     public FillConfiguration()
     {
-        Color = _Color.CadmiumGreen;
+        Color = Color_.CadmiumGreen;
         Volume = 240;
         Mode = FillMode.PerlinColored;
     }
