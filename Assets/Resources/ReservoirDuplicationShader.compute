@@ -3,6 +3,8 @@
 // RWStructuredBuffer<float2> Debug;
 
 uint2 CalculationSize; // == ReservoirSize in this case
+uint SmoothingKernelSize;
+int DiscardVolumeThreshhold;
 
 struct Paint {
     float4 color;
@@ -32,36 +34,36 @@ void main (uint3 id : SV_DispatchThreadID)
 {
     if (is_relevant_thread(id))
     {
-        // uint kernel_size = 5;
-        // int radius = (kernel_size-1)/2;
+        Paint available;
+        if (SmoothingKernelSize > 1) {
+            int radius = (SmoothingKernelSize-1)/2;
 
-        // int volume = 0;
-        // for (int i=-radius; i<=radius; i++) {
-        //     for (int j=-radius; j<=radius; j++) {
-        //         // ... deal with oob access // TODO this generates volume at the borders, doesn't it?
-        //         uint x = clamp(id.x + i, 0, CalculationSize.x-1);
-        //         uint y = clamp(id.y + j, 0, CalculationSize.y-1);
-        //         volume += Reservoir[XYZ(x, y, 0, CalculationSize)].volume;
-        //     }
-        // }
-        // // volume = volume * 0.04; // == /25
-        // volume = int(float(volume) / float(kernel_size*kernel_size));
+            int volume = 0;
+            for (int i=-radius; i<=radius; i++) {
+                for (int j=-radius; j<=radius; j++) {
+                    // ... deal with oob access // TODO this generates volume at the borders, doesn't it?
+                    uint x = clamp(id.x + i, 0, CalculationSize.x-1);
+                    uint y = clamp(id.y + j, 0, CalculationSize.y-1);
+                    volume += Reservoir[XYZ(x, y, 0, CalculationSize)].volume;
+                }
+            }
+            // volume = volume * 0.04; // == /25
+            volume = int(float(volume) / float(SmoothingKernelSize*SmoothingKernelSize));
 
-        // // Create and put smoothed volume to z=1
-        // Paint paint;
-        // paint.color = Reservoir[XYZ(id.x, id.y, 0, CalculationSize)].color;
-        // paint.volume = volume;
-
-        // // In this case CalculationSize == ReservoirSize
-        // Reservoir[XYZ(id.x, id.y, 1, CalculationSize)] = paint;
+            // Create and put smoothed volume to z=1
+            available.color = Reservoir[XYZ(id.x, id.y, 0, CalculationSize)].color;
+            available.volume = volume;
+        } else {
+            available = Reservoir[XYZ(id.x, id.y, 0, CalculationSize)];
+        }
 
         // Debug[XY(id.x, id.y, CalculationSize.x)] = float2(Reservoir[XYZ(id.x, id.y, 0, CalculationSize)].volume, 0);
 
         // delete leftover volume due to integer rounding
-        Paint available = Reservoir[XYZ(id.x, id.y, 0, CalculationSize)];
-        if (available.volume < 10) {
+        if (available.volume < DiscardVolumeThreshhold) {
             available.volume = 0;
         }
+        
         Reservoir[XYZ(id.x, id.y, 1, CalculationSize)] = available;
     }
     // if (id.x == 0 && id.y == 0)

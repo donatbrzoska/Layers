@@ -31,7 +31,7 @@ public class RakelInterpolator
         PreviousRakelTilt = NO_ANGLE;
     }
 
-    public void AddNode(Vector3 rakelPosition, float rakelRotation, float rakelTilt, int interpolationResolution)
+    public void AddNode(Vector3 rakelPosition, float rakelRotation, float rakelTilt, EmitMode rakelEmitMode, int discardReservoirVolumeThreshhold, int reservoirSmoothingKernelSize, int interpolationResolution)
     {
         // only reapply if there are changes
         if (!rakelPosition.Equals(PreviousRakelPosition)
@@ -49,6 +49,9 @@ public class RakelInterpolator
                     rakelPosition,
                     rakelRotation,
                     rakelTilt,
+                    rakelEmitMode,
+                    discardReservoirVolumeThreshhold,
+                    reservoirSmoothingKernelSize,
                     WorldSpaceCanvas,
                     Canvas,
                     DrawingTarget,
@@ -114,6 +117,9 @@ public class RakelInterpolator
                         currentPosition,
                         currentRotation,
                         currentTilt,
+                        rakelEmitMode,
+                        discardReservoirVolumeThreshhold,
+                        reservoirSmoothingKernelSize,
                         WorldSpaceCanvas,
                         Canvas,
                         DrawingTarget,

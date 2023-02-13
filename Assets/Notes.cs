@@ -1674,7 +1674,7 @@ public class Notes : MonoBehaviour
  *      - könnte an Resten durch Integers liegen
  *      
  * TODO Kreisschnittfläche
- * TODO Bilinear und nearest neighbour zurückbringen für Benchmarks
+ * DONE Bilinear und nearest neighbour zurückbringen für Benchmarks
  * 
  * DONE Farbmenge durch Config konfigurierbar
  * DONE Positionen außerhalb
@@ -1690,5 +1690,29 @@ public class Notes : MonoBehaviour
  * 
  * 
  * 10.02.2023
- * 16:30 - 
+ * 16:30 - 17:00
+ * - Mapping bei tilted Rakeln wahrscheinlich extrem unperformant
+ * 
+ * 12.02.2023
+ * 13:30 - 15:15 1,75h
+ * 17:30 - 19:45 2,25h
+ * 00:00 - 1:45 1,75h
+ * 5,75h
+ * 
+ * DONE RotationLocked Property wird am Anfang nicht richtig angezeigt
+ * DONE Simple Overlap funktioniert nur bei Resolution 1
+ * 
+ * TODO Architektur überdenken
+ * DONE RakelResolution in die GUI
+ * TODO GUI Elemente müssen Apply blockieren
+ * TODO Jitter in die Rotation einbauen?
+ * TODO Perlin Noise auf übertragenem Volumen wäre interessant
+ * - Shader Model > 1 unterstützt kein noise(), also selbst implementieren
+ * - https://fancyfennec.medium.com/perlin-noise-and-untiy-compute-shaders-f00736a002a4
+ * - https://github.com/z4gon/cg-perlin-noise-shader-unity
+ * 
+ * Testplan:
+ * - niedrige, hohe Textur-Auflösung
+ * - Rotation fest, Rotation wackelig
+ * - Smoothing, Discard und Reservoir-Auflösung
  */

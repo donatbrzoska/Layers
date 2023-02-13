@@ -54,6 +54,18 @@ public class Rakel : IRakel
         RakelApplicationReservoir.SetData(RakelApplicationReservoirData);
     }
 
+    private void EnqueueOrRun(ComputeShaderTask cst)
+    {
+        if (ComputeShaderTasks != null)
+        {
+            ComputeShaderTasks.Enqueue(cst);
+        }
+        else
+        {
+            cst.Run();
+        }
+    }
+
     // Position is located at Anchor
     // Rotation 0 means Rakel is directed to the right
     // Tilt 0 means Rakel is flat on canvas
@@ -61,6 +73,9 @@ public class Rakel : IRakel
         Vector3 rakelPosition,
         float rakelRotation,
         float rakelTilt,
+        EmitMode rakelEmitMode,
+        int discardReservoirVolumeThreshhold,
+        int reservoirSmoothingKernelSize,
         WorldSpaceCanvas wsc,
         ComputeBuffer Canvas,
         RenderTexture canvasTexture,
@@ -104,6 +119,8 @@ public class Rakel : IRakel
 
         List<CSAttribute> attributes = ComputeShaderUtil.GenerateReservoirRegionShaderAttributes(duplicateSR);
         attributes.Add(new CSComputeBuffer("Reservoir", RakelApplicationReservoir));
+        attributes.Add(new CSInt("DiscardVolumeThreshhold", discardReservoirVolumeThreshhold));
+        attributes.Add(new CSInt("SmoothingKernelSize", reservoirSmoothingKernelSize));
         //ComputeBuffer finishedBuffer = new ComputeBuffer(1, sizeof(int));
         //attributes.Add(new CSComputeBuffer("Finished", finishedBuffer));
 
@@ -118,8 +135,7 @@ public class Rakel : IRakel
             null
             //new List<int>() { duplicateSR.CalculationSize.x, duplicateSR.CalculationSize.y }
         );
-        ComputeShaderTasks.Enqueue(cst);
-        //cst.Run();
+        EnqueueOrRun(cst);
 
         // ... EMIT: Calculate interpolated volumes and resulting color from duplicate and delete from original
         RakelSnapshot rakelSnapshot = new RakelSnapshot(Length, Width, Anchor, rakelPosition, rakelRotation, rakelTilt);
@@ -151,6 +167,7 @@ public class Rakel : IRakel
         attributes.Add(new CSComputeBuffer("RakelEmittedPaint", RakelEmittedPaint));
         attributes.Add(new CSInts2("RakelReservoirSize", RakelReservoirSize));
         attributes.Add(new CSInt("RakelReservoirResolution", ReservoirResolution));
+        attributes.Add(new CSInt("EmitMode", (int)rakelEmitMode));
 
         cst = new ComputeShaderTask(
             "EmitFromRakelShader",
@@ -162,8 +179,7 @@ public class Rakel : IRakel
             null
             //new List<int>() { emitSR.CalculationSize.x, emitSR.CalculationSize.y }
         );
-        ComputeShaderTasks.Enqueue(cst);
-        //cst.Run();
+        EnqueueOrRun(cst);
 
         //RakelApplicationReservoir.GetData(RakelApplicationReservoirData);
         //LogUtil.Log(RakelApplicationReservoirData, RakelReservoirSize.y);
@@ -187,7 +203,6 @@ public class Rakel : IRakel
         // ComputeShader pickupToRakelShader = (ComputeShader)Resources.Load("PickupToRakelShader");
 
 
-
         // STEP 3
         // ... PUT TO CANVAS
         ComputeShader copyBufferToCanvasShader = ComputeShaderUtil.LoadComputeShader("CopyBufferToCanvasShader");
@@ -204,8 +219,7 @@ public class Rakel : IRakel
             new List<ComputeBuffer>() { RakelEmittedPaint },
             null
         );
-        ComputeShaderTasks.Enqueue(cst);
-        //cst.Run();
+        EnqueueOrRun(cst);
 
 
 
@@ -225,8 +239,7 @@ public class Rakel : IRakel
             new List<ComputeBuffer>(),
             null
         );
-        ComputeShaderTasks.Enqueue(cst);
-        //cst.Run();
+        EnqueueOrRun(cst);
 
 
         // STEP 4.2
@@ -254,8 +267,7 @@ public class Rakel : IRakel
             new List<ComputeBuffer>(),
             null
         );
-        ComputeShaderTasks.Enqueue(cst);
-        //cst.Run();
+        EnqueueOrRun(cst);
     }
 
     public void Dispose()

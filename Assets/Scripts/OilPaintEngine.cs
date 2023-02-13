@@ -34,6 +34,10 @@ public class OilPaintEngine : MonoBehaviour
     public bool RakelRotationLocked { get; private set; }
     public float RakelLength { get; private set; } // world space
     public float RakelWidth { get; private set; } // world space
+    public int RakelResolution { get; private set; }
+    public EmitMode RakelEmitMode { get; private set; }
+    public int ReservoirSmoothingKernelSize { get; private set; }
+    public int ReservoirDiscardVolumeThreshold { get; private set; }
     public bool RakelYPositionLocked { get; private set; }
     private Vector3 RakelPosition;
     private IRakel Rakel;
@@ -53,6 +57,12 @@ public class OilPaintEngine : MonoBehaviour
         CanvasWidth = GameObject.Find("Canvas").GetComponent<Transform>().localScale.x * 10; // convert scale attribute to world space
         CanvasHeight = GameObject.Find("Canvas").GetComponent<Transform>().localScale.y * 10; // convert scale attribute to world space
         CanvasPosition = GameObject.Find("Canvas").GetComponent<Transform>().position;
+
+        LoadDefaultConfig();
+        LoadDefaultConfig2();
+        //LoadDefaultConfig_SmallRakel();
+        //LoadDebugConfig();
+        //LoadDebugConfig2();
     }
 
     void LoadDefaultConfig()
@@ -62,23 +72,30 @@ public class OilPaintEngine : MonoBehaviour
         RakelLength = 8f;
         RakelWidth = 0.3f;
         TextureResolution = 100;
+        RakelResolution = TextureResolution;
 
         FillPaint = new Paint(Colors.GetColor(_Color.CadmiumGreen), 240);
         FillMode = FillMode.Perlin;
 
+        ReservoirSmoothingKernelSize = 1;
+        ReservoirDiscardVolumeThreshold = 10;
+        RakelEmitMode = EmitMode.PolygonClipping;
         RakelYPositionLocked = false;
     }
 
     void LoadDefaultConfig2()
     {
         RakelRotation = 0;
-        RakelRotationLocked = true;
-        RakelLength = 5f;
-        RakelWidth = 2f;
-        TextureResolution = 40;
+        RakelRotationLocked = false;
+        RakelLength = 4f;
+        RakelWidth = 0.5f;
+        TextureResolution = 60;
+        RakelResolution = TextureResolution;
 
-        FillMode = FillMode.Perlin;
+        FillPaint = new Paint(Colors.GetColor(_Color.CadmiumGreen), 600);
+        FillMode = FillMode.PerlinColored;
 
+        RakelEmitMode = EmitMode.Bilinear;
         RakelYPositionLocked = false;
     }
 
@@ -89,22 +106,26 @@ public class OilPaintEngine : MonoBehaviour
         RakelLength = 2f;
         RakelWidth = 0.5f;
         TextureResolution = 80;
+        RakelResolution = TextureResolution;
 
         FillMode = FillMode.PerlinColored;
 
+        RakelEmitMode = EmitMode.PolygonClipping;
         RakelYPositionLocked = false;
     }
 
     void LoadDebugConfig()
     {
-        RakelRotation = 30;
+        RakelRotation = 45;
         RakelRotationLocked = true;
-        RakelLength = 1;
+        RakelLength = 4;
         RakelWidth = 1;
-        TextureResolution = 2;
+        TextureResolution = 1;
+        RakelResolution = TextureResolution;
 
         FillMode = FillMode.Flat;
 
+        RakelEmitMode = EmitMode.NearestNeighbour;
         RakelYPositionLocked = false;
     }
 
@@ -112,30 +133,29 @@ public class OilPaintEngine : MonoBehaviour
     {
         RakelRotation = 45;
         RakelRotationLocked = true;
-        RakelLength = 5f;
-        RakelWidth = 2f;
-        TextureResolution = 5;
+        RakelLength = 2f;
+        RakelWidth = 0.5f;
+        TextureResolution = 20;
+        RakelResolution = TextureResolution;
 
-        FillMode = FillMode.Perlin;
+        FillMode = FillMode.FlatColored;
+        FillPaint = new Paint(Colors.GetColor(_Color.CadmiumGreen), 50);
 
+        RakelEmitMode = EmitMode.NearestNeighbour;
         RakelYPositionLocked = false;
     }
 
     void Start()
     {
-        LoadDefaultConfig();
-        LoadDefaultConfig2();
-        LoadDefaultConfig_SmallRakel();
-        //LoadDebugConfig();
-        //LoadDebugConfig2();
-
         CreateCanvas();
+        CreateRakel();
         CreateRakelDrawer();
     }
 
     void CreateCanvas()
     {
         WorldSpaceCanvas = new WorldSpaceCanvas(CanvasHeight, CanvasWidth, TextureResolution, CanvasPosition);
+        DisposeCanvas();
         Canvas = new ComputeBuffer(WorldSpaceCanvas.TextureSize.x * WorldSpaceCanvas.TextureSize.y, sizeof(float) * 4 + sizeof(int));
         Debug.Log("Texture is " + WorldSpaceCanvas.TextureSize.x + "x" + WorldSpaceCanvas.TextureSize.y + " = " + WorldSpaceCanvas.TextureSize.x * WorldSpaceCanvas.TextureSize.y);
 
@@ -193,19 +213,21 @@ public class OilPaintEngine : MonoBehaviour
         cst.Run();
     }
 
-    void CreateRakelDrawer()
+    void CreateRakel()
     {
         //RakelPaintReservoir = new RakelPaintReservoir(
         //    WorldSpaceLengthToTextureSpaceLength(RakelLength, TextureResolution),
         //    WorldSpaceLengthToTextureSpaceLength(RakelWidth, TextureResolution));
-        if (Rakel != null)
-            Rakel.Dispose();
-                    
-        Rakel = new Rakel(RakelLength, RakelWidth, TextureResolution, ComputeShaderTasks);
-        int rakelPixelsLength = MathUtil.ToTextureSpaceLength(RakelLength, TextureResolution);
-        int rakelPixelsWidth = MathUtil.ToTextureSpaceLength(RakelWidth, TextureResolution);
-        Debug.Log("Rakel is " + rakelPixelsLength + "x" + rakelPixelsWidth + " = " + rakelPixelsLength * rakelPixelsWidth);
+        DisposeRakel();
 
+        Rakel = new Rakel(RakelLength, RakelWidth, RakelResolution, ComputeShaderTasks);
+        int rakelPixelsLength = MathUtil.ToTextureSpaceLength(RakelLength, RakelResolution);
+        int rakelPixelsWidth = MathUtil.ToTextureSpaceLength(RakelWidth, RakelResolution);
+        Debug.Log("Rakel is " + rakelPixelsLength + "x" + rakelPixelsWidth + " = " + rakelPixelsLength * rakelPixelsWidth);
+    }
+
+    void CreateRakelDrawer()
+    {
         RakelInterpolator = new RakelInterpolator(Rakel, WorldSpaceCanvas, Canvas, Texture, NormalMap);
     }
 
@@ -215,7 +237,7 @@ public class OilPaintEngine : MonoBehaviour
             for (int i=0; i<50; i++){
                 float x = Random.Range(-5f, 5f);
                 float y = Random.Range(-3f, 3f);
-                Rakel.Apply(new Vector3(x,y,0), 0, 0, WorldSpaceCanvas, Canvas, Texture, NormalMap);
+                Rakel.Apply(new Vector3(x,y,0), 0, 0, RakelEmitMode, ReservoirDiscardVolumeThreshold, ReservoirSmoothingKernelSize, WorldSpaceCanvas, Canvas, Texture, NormalMap);
             }
         } else {
             if (!RakelRotationLocked)
@@ -258,7 +280,7 @@ public class OilPaintEngine : MonoBehaviour
                 {
                     RakelPosition.y = 0;
                 }
-                RakelInterpolator.AddNode(RakelPosition, RakelRotation, 0, TextureResolution);
+                RakelInterpolator.AddNode(RakelPosition, RakelRotation, 0, RakelEmitMode, ReservoirDiscardVolumeThreshold, ReservoirSmoothingKernelSize, TextureResolution);
             }
         }
 
@@ -267,18 +289,30 @@ public class OilPaintEngine : MonoBehaviour
 
     private void processComputeShaderTasks(int n=int.MaxValue)
     {
-        while (ComputeShaderTasks.Count > 0 && n-- >= 0)
+        if (ComputeShaderTasks != null)
         {
-            ComputeShaderTask cst = ComputeShaderTasks.Dequeue();
-            cst.Run();
+            while (ComputeShaderTasks.Count > 0 && n-- >= 0)
+            {
+                ComputeShaderTask cst = ComputeShaderTasks.Dequeue();
+                cst.Run();
+            }
         }
     }
     
     private void OnDestroy()
     {
+        DisposeRakel();
+        DisposeCanvas();
+    }
+
+    private void DisposeRakel()
+    {
         if (Rakel != null)
             Rakel.Dispose();
+    }
 
+    private void DisposeCanvas()
+    {
         if (Canvas != null)
             Canvas.Dispose();
     }
@@ -300,21 +334,32 @@ public class OilPaintEngine : MonoBehaviour
     public void UpdateRakelLength(float worldSpaceLength)
     {
         RakelLength = worldSpaceLength;
+        CreateRakel();
         CreateRakelDrawer();
     }
 
     public void UpdateRakelWidth(float worldSpaceWidth)
     {
         RakelWidth = worldSpaceWidth;
+        CreateRakel();
         CreateRakelDrawer();
     }
 
     public void UpdateTextureResolution(int pixelsPerWorldSpaceUnit)
     {
-        OnDestroy();
+        DisposeCanvas();
 
         TextureResolution = pixelsPerWorldSpaceUnit;
         CreateCanvas();
+        CreateRakelDrawer();
+    }
+
+    public void UpdateRakelResolution(int pixelsPerWorldSpaceUnit)
+    {
+        DisposeRakel();
+
+        RakelResolution = pixelsPerWorldSpaceUnit;
+        CreateRakel();
         CreateRakelDrawer();
     }
 
@@ -358,12 +403,28 @@ public class OilPaintEngine : MonoBehaviour
         OnDestroy();
 
         CreateCanvas();
+        CreateRakel();
         CreateRakelDrawer(); // TODO make Rakelinterpolator not dependent on only one canvas
     }
 
     // ****************************************************************************************
     // ***                                   BOTTOM RIGHT                                   ***
     // ****************************************************************************************
+
+    public void UpdateReservoirSmoothingKernelSize(int value)
+    {
+        ReservoirSmoothingKernelSize = value;
+    }
+
+    public void UpdateReservoirDiscardVolumeThreshold(int value)
+    {
+        ReservoirDiscardVolumeThreshold = value;
+    }
+
+    public void UpdateRakelEmitMode(EmitMode emitMode)
+    {
+        RakelEmitMode = emitMode;
+    }
 
     public void UpdateRakelYPositionLocked(bool locked)
     {
@@ -376,7 +437,7 @@ public class OilPaintEngine : MonoBehaviour
         Rakel.Fill(new Paint(new Color(0 / 255f, 107 / 255f, 60 / 255f), 240), new FlatFiller());
 
         RakelInterpolator.NewStroke();
-        RakelInterpolator.AddNode(new Vector3(-5, 0, -0.10f), 0, 0, TextureResolution);
+        RakelInterpolator.AddNode(new Vector3(-5, 0, -0.10f), 0, 0, RakelEmitMode, ReservoirDiscardVolumeThreshold, ReservoirSmoothingKernelSize, TextureResolution);
 
         //RakelInterpolator.AddNode(new Vector3(-4, 0, -0.10f), 0, 0, TextureResolution);
         //RakelInterpolator.AddNode(new Vector3(-3, 0, -0.10f), 0, 0, TextureResolution);
@@ -391,7 +452,7 @@ public class OilPaintEngine : MonoBehaviour
 
         //RakelInterpolator.AddNode(new Vector3(6, 3, -0.10f), 0, 0, TextureResolution);
 
-        RakelInterpolator.AddNode(new Vector3(6, 0, -0.10f), 0, 0, TextureResolution);
+        RakelInterpolator.AddNode(new Vector3(6, 0, -0.10f), 0, 0, RakelEmitMode, ReservoirDiscardVolumeThreshold, ReservoirSmoothingKernelSize, TextureResolution);
     }
 
     public void DoMacro2Action()
@@ -402,6 +463,6 @@ public class OilPaintEngine : MonoBehaviour
 
         Rakel.Fill(new Paint(new Color(0 / 255f, 107 / 255f, 60 / 255f), 1), new FlatFiller());
         RakelInterpolator.NewStroke();
-        RakelInterpolator.AddNode(new Vector3(-5, 0, -0.10f), 30, 0, TextureResolution);
+        RakelInterpolator.AddNode(new Vector3(-5, 0, -0.10f), 0, 0, RakelEmitMode, ReservoirDiscardVolumeThreshold, ReservoirSmoothingKernelSize, TextureResolution);
     }
 }

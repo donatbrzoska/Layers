@@ -6,7 +6,7 @@ public class TextureResolutionInputFieldController : InputFieldController
 {
     public void Start()
     {
-        InputField.text = "" + OilPaintEngine.TextureResolution;
+        InputField.SetTextWithoutNotify("" + OilPaintEngine.TextureResolution);
     }
 
     override public void OnValueChanged(string arg0)
