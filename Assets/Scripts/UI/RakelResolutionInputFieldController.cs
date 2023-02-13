@@ -6,7 +6,7 @@ public class RakelResolutionInputFieldController : InputFieldController
 {
     public void Start()
     {
-        InputField.SetTextWithoutNotify("" + OilPaintEngine.Configuration.RakelResolution);
+        InputField.SetTextWithoutNotify("" + OilPaintEngine.Configuration.RakelConfiguration.Resolution);
     }
 
     override public void OnValueChanged(string arg0)

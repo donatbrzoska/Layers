@@ -25,7 +25,7 @@ public class RakelInterpolator
         PreviousRakelTilt = NO_ANGLE;
     }
 
-    public void AddNode(Vector3 rakelPosition, float rakelRotation, float rakelTilt, TransferMapMode rakelTransferMapMode, int discardReservoirVolumeThreshhold, int reservoirSmoothingKernelSize, int interpolationResolution)
+    public void AddNode(Vector3 rakelPosition, float rakelRotation, float rakelTilt, TransferConfiguration transferConfiguration, int interpolationResolution)
     {
         // only reapply if there are changes
         if (!rakelPosition.Equals(PreviousRakelPosition)
@@ -43,9 +43,7 @@ public class RakelInterpolator
                     rakelPosition,
                     rakelRotation,
                     rakelTilt,
-                    rakelTransferMapMode,
-                    discardReservoirVolumeThreshhold,
-                    reservoirSmoothingKernelSize,
+                    transferConfiguration,
                     OilPaintCanvas
                 );
             }
@@ -108,9 +106,7 @@ public class RakelInterpolator
                         currentPosition,
                         currentRotation,
                         currentTilt,
-                        rakelTransferMapMode,
-                        discardReservoirVolumeThreshhold,
-                        reservoirSmoothingKernelSize,
+                        transferConfiguration,
                         OilPaintCanvas
                     );
 

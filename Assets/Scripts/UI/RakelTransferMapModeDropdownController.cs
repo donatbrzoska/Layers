@@ -21,7 +21,7 @@ public class RakelTransferMapModeDropdownController : MonoBehaviour
 
     public void Start()
     {
-        EmitModeDropdown.SetValueWithoutNotify((int)OilPaintEngine.Configuration.TransferMapMode);
+        EmitModeDropdown.SetValueWithoutNotify((int)OilPaintEngine.Configuration.TransferConfiguration.MapMode);
     }
 
     public void OnValueChanged(int value)

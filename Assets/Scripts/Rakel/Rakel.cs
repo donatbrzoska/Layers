@@ -23,15 +23,15 @@ public class Rakel : IRakel
     Vector2Int PreviousApplyPosition = new Vector2Int(int.MinValue, int.MinValue);
     Vector3 PreviousApplyPosition_ = new Vector3(int.MinValue, int.MinValue);
 
-    public Rakel(float length, float width, int reservoirResolution, Queue<ComputeShaderTask> computeShaderTasks)
+    public Rakel(RakelConfiguration config, Queue<ComputeShaderTask> computeShaderTasks)
     {
-        RakelReservoirSize.x = (int)(width * reservoirResolution);
-        RakelReservoirSize.y = (int)(length * reservoirResolution);
+        RakelReservoirSize.x = (int)(config.Width * config.Resolution);
+        RakelReservoirSize.y = (int)(config.Length * config.Resolution);
 
-        float reservoirPixelSize = 1 / (float)reservoirResolution;
+        float reservoirPixelSize = 1 / (float)config.Resolution;
         Length = RakelReservoirSize.y * reservoirPixelSize; // make sure Rakel is not bigger than its reservoir
         Width = RakelReservoirSize.x * reservoirPixelSize; // make sure Rakel is not bigger than its reservoir
-        ReservoirResolution = reservoirResolution;
+        ReservoirResolution = config.Resolution;
         Anchor = new Vector3(Width, Length / 2, 0);
 
         ComputeShaderTasks = computeShaderTasks;
@@ -73,9 +73,7 @@ public class Rakel : IRakel
         Vector3 rakelPosition,
         float rakelRotation,
         float rakelTilt,
-        TransferMapMode rakelTransferMapMode,
-        int discardReservoirVolumeThreshhold,
-        int reservoirSmoothingKernelSize,
+        TransferConfiguration transferConfiguration,
         OilPaintCanvas oilPaintCanvas)
     {
         WorldSpaceCanvas wsc = oilPaintCanvas.WorldSpaceCanvas;
@@ -118,8 +116,8 @@ public class Rakel : IRakel
 
         List<CSAttribute> attributes = ComputeShaderUtil.GenerateReservoirRegionShaderAttributes(duplicateSR);
         attributes.Add(new CSComputeBuffer("Reservoir", RakelApplicationReservoir));
-        attributes.Add(new CSInt("DiscardVolumeThreshhold", discardReservoirVolumeThreshhold));
-        attributes.Add(new CSInt("SmoothingKernelSize", reservoirSmoothingKernelSize));
+        attributes.Add(new CSInt("DiscardVolumeThreshhold", transferConfiguration.ReservoirDiscardVolumeThreshold));
+        attributes.Add(new CSInt("SmoothingKernelSize", transferConfiguration.ReservoirSmoothingKernelSize));
         //ComputeBuffer finishedBuffer = new ComputeBuffer(1, sizeof(int));
         //attributes.Add(new CSComputeBuffer("Finished", finishedBuffer));
 
@@ -166,7 +164,7 @@ public class Rakel : IRakel
         attributes.Add(new CSComputeBuffer("RakelEmittedPaint", RakelEmittedPaint));
         attributes.Add(new CSInts2("RakelReservoirSize", RakelReservoirSize));
         attributes.Add(new CSInt("RakelReservoirResolution", ReservoirResolution));
-        attributes.Add(new CSInt("TransferMapMode", (int)rakelTransferMapMode));
+        attributes.Add(new CSInt("TransferMapMode", (int)transferConfiguration.MapMode));
 
         cst = new ComputeShaderTask(
             "EmitFromRakelShader",

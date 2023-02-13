@@ -6,7 +6,7 @@ public class DiscardVolumeInputFieldController : InputFieldController
 {
     public void Start()
     {
-        InputField.SetTextWithoutNotify("" + OilPaintEngine.Configuration.ReservoirDiscardVolumeThreshold);
+        InputField.SetTextWithoutNotify("" + OilPaintEngine.Configuration.TransferConfiguration.ReservoirDiscardVolumeThreshold);
     }
 
     override public void OnValueChanged(string arg0)

@@ -63,15 +63,11 @@ public class OilPaintEngine : MonoBehaviour
     {
         DisposeRakel();
 
-        Rakel = new Rakel(
-            Configuration.RakelLength,
-            Configuration.RakelWidth,
-            Configuration.RakelResolution,
-            ComputeShaderTasks);
+        Rakel = new Rakel(Configuration.RakelConfiguration, ComputeShaderTasks);
 
         Debug.Log("Rakel is "
-                  + Configuration.RakelLength * Configuration.RakelResolution + "x" + Configuration.RakelWidth * Configuration.RakelResolution
-                  + " = " + Configuration.RakelLength * Configuration.RakelResolution * Configuration.RakelWidth * Configuration.RakelResolution);
+                  + Configuration.RakelConfiguration.Length * Configuration.RakelConfiguration.Resolution + "x" + Configuration.RakelConfiguration.Width * Configuration.RakelConfiguration.Resolution
+                  + " = " + Configuration.RakelConfiguration.Length * Configuration.RakelConfiguration.Resolution * Configuration.RakelConfiguration.Width * Configuration.RakelConfiguration.Resolution);
     }
 
     void CreateRakelDrawer()
@@ -89,9 +85,7 @@ public class OilPaintEngine : MonoBehaviour
                     new Vector3(x,y,0),
                     0,
                     0,
-                    Configuration.TransferMapMode,
-                    Configuration.ReservoirDiscardVolumeThreshold,
-                    Configuration.ReservoirSmoothingKernelSize,
+                    Configuration.TransferConfiguration,
                     OilPaintCanvas);
             }
         } else {
@@ -116,9 +110,7 @@ public class OilPaintEngine : MonoBehaviour
                     position,
                     rotation,
                     0,
-                    Configuration.TransferMapMode,
-                    Configuration.ReservoirDiscardVolumeThreshold,
-                    Configuration.ReservoirSmoothingKernelSize,
+                    Configuration.TransferConfiguration,
                     Configuration.CanvasResolution);
             }
         }
@@ -178,14 +170,14 @@ public class OilPaintEngine : MonoBehaviour
 
     public void UpdateRakelLength(float worldSpaceLength)
     {
-        Configuration.RakelLength = worldSpaceLength;
+        Configuration.RakelConfiguration.Length = worldSpaceLength;
         CreateRakel();
         CreateRakelDrawer();
     }
 
     public void UpdateRakelWidth(float worldSpaceWidth)
     {
-        Configuration.RakelWidth = worldSpaceWidth;
+        Configuration.RakelConfiguration.Width = worldSpaceWidth;
         CreateRakel();
         CreateRakelDrawer();
     }
@@ -199,7 +191,7 @@ public class OilPaintEngine : MonoBehaviour
 
     public void UpdateRakelResolution(int pixelsPerWorldSpaceUnit)
     {
-        Configuration.RakelResolution = pixelsPerWorldSpaceUnit;
+        Configuration.RakelConfiguration.Resolution = pixelsPerWorldSpaceUnit;
         CreateRakel();
         CreateRakelDrawer();
     }
@@ -252,17 +244,17 @@ public class OilPaintEngine : MonoBehaviour
 
     public void UpdateReservoirSmoothingKernelSize(int value)
     {
-        Configuration.ReservoirSmoothingKernelSize = value;
+        Configuration.TransferConfiguration.ReservoirSmoothingKernelSize = value;
     }
 
     public void UpdateReservoirDiscardVolumeThreshold(int value)
     {
-        Configuration.ReservoirDiscardVolumeThreshold = value;
+        Configuration.TransferConfiguration.ReservoirDiscardVolumeThreshold = value;
     }
 
-    public void UpdateRakelEmitMode(TransferMapMode emitMode)
+    public void UpdateRakelEmitMode(TransferMapMode transferMapMode)
     {
-        Configuration.TransferMapMode = emitMode;
+        Configuration.TransferConfiguration.MapMode = transferMapMode;
     }
 
     public void UpdateRakelYPositionLocked(bool locked)
@@ -280,9 +272,7 @@ public class OilPaintEngine : MonoBehaviour
             new Vector3(-5, 0, -0.10f),
             0,
             0,
-            Configuration.TransferMapMode,
-            Configuration.ReservoirDiscardVolumeThreshold,
-            Configuration.ReservoirSmoothingKernelSize,
+            Configuration.TransferConfiguration,
             Configuration.CanvasResolution);
 
         //RakelInterpolator.AddNode(new Vector3(-4, 0, -0.10f), 0, 0, TextureResolution);
@@ -302,9 +292,7 @@ public class OilPaintEngine : MonoBehaviour
             new Vector3(6, 0, -0.10f),
             0,
             0,
-            Configuration.TransferMapMode,
-            Configuration.ReservoirDiscardVolumeThreshold,
-            Configuration.ReservoirSmoothingKernelSize,
+            Configuration.TransferConfiguration,
             Configuration.CanvasResolution);
     }
 
@@ -320,9 +308,7 @@ public class OilPaintEngine : MonoBehaviour
             new Vector3(-5, 0, -0.10f),
             0,
             0,
-            Configuration.TransferMapMode,
-            Configuration.ReservoirDiscardVolumeThreshold,
-            Configuration.ReservoirSmoothingKernelSize,
+            Configuration.TransferConfiguration,
             Configuration.CanvasResolution);
     }
 }
