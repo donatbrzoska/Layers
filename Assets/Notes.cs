@@ -1714,7 +1714,7 @@ public class Notes : MonoBehaviour
  * Testplan:
  * - niedrige, hohe Textur-Auflösung
  * - Rotation fest, Rotation wackelig
- * - Smoothing, Discard und Reservoir-Auflösung
+ * - Smoothing mit verschiedenen Kernelgrößen, Discard und Reservoir-Auflösung
  * 
  * 13.02.2023
  * 13:15 - 16:00

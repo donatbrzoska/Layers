@@ -7,110 +7,36 @@ public class OilPaintEngine : MonoBehaviour
 {
     public bool BENCHMARK = false;
 
-    public int TextureResolution { get; private set; } // texture space pixels per 1 world space
+    public Configuration Configuration { get; private set; }
+    public RakelInputManager RakelMouseInputManager { get; private set; }
+    public float RakelRotation // used only for UI fetching
+    {
+        get
+        {
+            if (Configuration.RakelRotationLocked)
+            {
+                return Configuration.RakelRotation;
+            }
+            else
+            {
+                return RakelMouseInputManager.Rotation;
+            }
+        }
+    }
+
     private OilPaintCanvas OilPaintCanvas;
-
-    public Paint FillPaint { get; private set; }
-    public FillMode FillMode { get; private set; }
-
-    public RakelInputManager RakelInputManager { get; private set; }
-    public float RakelLength { get; private set; } // world space
-    public float RakelWidth { get; private set; } // world space
-    public int RakelResolution { get; private set; }
-    public TransferMapMode RakelTransferMapMode { get; private set; }
-    public int ReservoirSmoothingKernelSize { get; private set; }
-    public int ReservoirDiscardVolumeThreshold { get; private set; }
     private IRakel Rakel;
-
     private RakelInterpolator RakelInterpolator;
 
-
-    private Queue<ComputeShaderTask> ComputeShaderTasks = new Queue<ComputeShaderTask>();
+    private Queue<ComputeShaderTask> ComputeShaderTasks;
 
     void Awake()
     {
+        Configuration = new Configuration();
+
         int wallColliderID = GameObject.Find("Wall").GetComponent<MeshCollider>().GetInstanceID();
         int canvasColliderID = GameObject.Find("Canvas").GetComponent<MeshCollider>().GetInstanceID();
-        RakelInputManager = new RakelInputManager(wallColliderID, canvasColliderID);
-
-        LoadDefaultConfig();
-        LoadDefaultConfig2();
-        LoadDefaultConfig_SmallRakel();
-        //LoadDebugConfig();
-        //LoadDebugConfig2();
-    }
-
-    void LoadDefaultConfig()
-    {
-        RakelInputManager.Rotation = 0;
-        RakelLength = 8f;
-        RakelWidth = 0.3f;
-        TextureResolution = 100;
-        RakelResolution = TextureResolution;
-
-        FillPaint = new Paint(Colors.GetColor(_Color.CadmiumGreen), 240);
-        FillMode = FillMode.Perlin;
-
-        ReservoirSmoothingKernelSize = 1;
-        ReservoirDiscardVolumeThreshold = 10;
-        RakelTransferMapMode = TransferMapMode.PolygonClipping;
-    }
-
-    void LoadDefaultConfig2()
-    {
-        RakelInputManager.Rotation = 0;
-        RakelLength = 4f;
-        RakelWidth = 0.5f;
-        TextureResolution = 60;
-        RakelResolution = TextureResolution;
-
-        FillPaint = new Paint(Colors.GetColor(_Color.CadmiumGreen), 600);
-        FillMode = FillMode.PerlinColored;
-
-        RakelTransferMapMode = TransferMapMode.Bilinear;
-    }
-
-    void LoadDefaultConfig_SmallRakel()
-    {
-        RakelInputManager.Rotation = 20;
-        RakelInputManager.RotationLocked = true;
-        RakelLength = 2f;
-        RakelWidth = 0.5f;
-        TextureResolution = 60;
-        RakelResolution = TextureResolution;
-
-        FillMode = FillMode.PerlinColored;
-
-        RakelTransferMapMode = TransferMapMode.Bilinear;
-    }
-
-    void LoadDebugConfig()
-    {
-        RakelInputManager.Rotation = 45;
-        RakelInputManager.RotationLocked = true;
-        RakelLength = 4;
-        RakelWidth = 1;
-        TextureResolution = 1;
-        RakelResolution = TextureResolution;
-
-        FillMode = FillMode.Flat;
-
-        RakelTransferMapMode = TransferMapMode.NearestNeighbour;
-    }
-
-    void LoadDebugConfig2()
-    {
-        RakelInputManager.Rotation = 45;
-        RakelInputManager.RotationLocked = true;
-        RakelLength = 2f;
-        RakelWidth = 0.5f;
-        TextureResolution = 20;
-        RakelResolution = TextureResolution;
-
-        FillMode = FillMode.FlatColored;
-        FillPaint = new Paint(Colors.GetColor(_Color.CadmiumGreen), 50);
-
-        RakelTransferMapMode = TransferMapMode.NearestNeighbour;
+        RakelMouseInputManager = new RakelInputManager(wallColliderID, canvasColliderID);
     }
 
     void Start()
@@ -118,24 +44,34 @@ public class OilPaintEngine : MonoBehaviour
         CreateCanvas();
         CreateRakel();
         CreateRakelDrawer();
+
+        ComputeShaderTasks = new Queue<ComputeShaderTask>();
     }
 
     void CreateCanvas()
     {
         DisposeCanvas();
 
-        OilPaintCanvas = new OilPaintCanvas(TextureResolution);
+        OilPaintCanvas = new OilPaintCanvas(Configuration.CanvasResolution);
 
-        Debug.Log("Texture is " + OilPaintCanvas.Texture.width + "x" + OilPaintCanvas.Texture.height + " = " + OilPaintCanvas.Texture.width * OilPaintCanvas.Texture.height);
+        Debug.Log("Texture is "
+                  + OilPaintCanvas.Texture.width + "x" + OilPaintCanvas.Texture.height
+                  + " = " + OilPaintCanvas.Texture.width * OilPaintCanvas.Texture.height);
     }
 
     void CreateRakel()
     {
         DisposeRakel();
 
-        Rakel = new Rakel(RakelLength, RakelWidth, RakelResolution, ComputeShaderTasks);
+        Rakel = new Rakel(
+            Configuration.RakelLength,
+            Configuration.RakelWidth,
+            Configuration.RakelResolution,
+            ComputeShaderTasks);
 
-        Debug.Log("Rakel is " + RakelLength * RakelResolution + "x" + RakelWidth * RakelResolution + " = " + RakelLength * RakelResolution * RakelWidth * RakelResolution);
+        Debug.Log("Rakel is "
+                  + Configuration.RakelLength * Configuration.RakelResolution + "x" + Configuration.RakelWidth * Configuration.RakelResolution
+                  + " = " + Configuration.RakelLength * Configuration.RakelResolution * Configuration.RakelWidth * Configuration.RakelResolution);
     }
 
     void CreateRakelDrawer()
@@ -149,19 +85,41 @@ public class OilPaintEngine : MonoBehaviour
             for (int i=0; i<50; i++){
                 float x = Random.Range(-5f, 5f);
                 float y = Random.Range(-3f, 3f);
-                Rakel.Apply(new Vector3(x,y,0), 0, 0, RakelTransferMapMode, ReservoirDiscardVolumeThreshold, ReservoirSmoothingKernelSize, OilPaintCanvas);
+                Rakel.Apply(
+                    new Vector3(x,y,0),
+                    0,
+                    0,
+                    Configuration.TransferMapMode,
+                    Configuration.ReservoirDiscardVolumeThreshold,
+                    Configuration.ReservoirSmoothingKernelSize,
+                    OilPaintCanvas);
             }
         } else {
-            float rotation = RakelInputManager.Rotation;
+            float rotation;
+            if (Configuration.RakelRotationLocked)
+            {
+                rotation = Configuration.RakelRotation;
+            }
+            else
+            {
+                rotation = RakelMouseInputManager.Rotation;
+            }
 
-            Vector3 position = RakelInputManager.Position;
+            Vector3 position = RakelMouseInputManager.Position;
             if (!position.Equals(Vector3.negativeInfinity))
             {
                 if (Input.GetMouseButtonDown(0))
                 {
                     RakelInterpolator.NewStroke();
                 }
-                RakelInterpolator.AddNode(position, rotation, 0, RakelTransferMapMode, ReservoirDiscardVolumeThreshold, ReservoirSmoothingKernelSize, TextureResolution);
+                RakelInterpolator.AddNode(
+                    position,
+                    rotation,
+                    0,
+                    Configuration.TransferMapMode,
+                    Configuration.ReservoirDiscardVolumeThreshold,
+                    Configuration.ReservoirSmoothingKernelSize,
+                    Configuration.CanvasResolution);
             }
         }
 
@@ -210,38 +168,38 @@ public class OilPaintEngine : MonoBehaviour
 
     public void UpdateRakelRotation(float rotation)
     {
-        RakelInputManager.Rotation = rotation;
+        Configuration.RakelRotation = rotation;
     }
 
     public void UpdateRakelRotationLocked(bool locked)
     {
-        RakelInputManager.RotationLocked = locked;
+        Configuration.RakelRotationLocked = locked;
     }
 
     public void UpdateRakelLength(float worldSpaceLength)
     {
-        RakelLength = worldSpaceLength;
+        Configuration.RakelLength = worldSpaceLength;
         CreateRakel();
         CreateRakelDrawer();
     }
 
     public void UpdateRakelWidth(float worldSpaceWidth)
     {
-        RakelWidth = worldSpaceWidth;
+        Configuration.RakelWidth = worldSpaceWidth;
         CreateRakel();
         CreateRakelDrawer();
     }
 
     public void UpdateTextureResolution(int pixelsPerWorldSpaceUnit)
     {
-        TextureResolution = pixelsPerWorldSpaceUnit;
+        Configuration.CanvasResolution = pixelsPerWorldSpaceUnit;
         CreateCanvas();
         CreateRakelDrawer();
     }
 
     public void UpdateRakelResolution(int pixelsPerWorldSpaceUnit)
     {
-        RakelResolution = pixelsPerWorldSpaceUnit;
+        Configuration.RakelResolution = pixelsPerWorldSpaceUnit;
         CreateRakel();
         CreateRakelDrawer();
     }
@@ -252,11 +210,11 @@ public class OilPaintEngine : MonoBehaviour
 
     public void UpdateRakelPaint(_Color color, int volume, FillMode fillMode)
     {
-        FillPaint = new Paint(Colors.GetColor(color), volume);
-        FillMode = fillMode;
+        Configuration.FillPaint = new Paint(Colors.GetColor(color), volume);
+        Configuration.FillMode = fillMode;
 
         ReservoirFiller filler;
-        switch (FillMode)
+        switch (Configuration.FillMode)
         {
             case FillMode.Perlin:
                 filler = new PerlinNoiseFiller();
@@ -274,7 +232,7 @@ public class OilPaintEngine : MonoBehaviour
                 filler = new FlatFiller();
                 break;
         }
-        Rakel.Fill(FillPaint, filler);
+        Rakel.Fill(Configuration.FillPaint, filler);
     }
 
     // ****************************************************************************************
@@ -294,22 +252,22 @@ public class OilPaintEngine : MonoBehaviour
 
     public void UpdateReservoirSmoothingKernelSize(int value)
     {
-        ReservoirSmoothingKernelSize = value;
+        Configuration.ReservoirSmoothingKernelSize = value;
     }
 
     public void UpdateReservoirDiscardVolumeThreshold(int value)
     {
-        ReservoirDiscardVolumeThreshold = value;
+        Configuration.ReservoirDiscardVolumeThreshold = value;
     }
 
     public void UpdateRakelEmitMode(TransferMapMode emitMode)
     {
-        RakelTransferMapMode = emitMode;
+        Configuration.TransferMapMode = emitMode;
     }
 
     public void UpdateRakelYPositionLocked(bool locked)
     {
-        RakelInputManager.YPositionLocked = locked;
+        RakelMouseInputManager.YPositionLocked = locked;
     }
 
     public void DoMacroAction()
@@ -318,7 +276,14 @@ public class OilPaintEngine : MonoBehaviour
         Rakel.Fill(new Paint(new Color(0 / 255f, 107 / 255f, 60 / 255f), 240), new FlatFiller());
 
         RakelInterpolator.NewStroke();
-        RakelInterpolator.AddNode(new Vector3(-5, 0, -0.10f), 0, 0, RakelTransferMapMode, ReservoirDiscardVolumeThreshold, ReservoirSmoothingKernelSize, TextureResolution);
+        RakelInterpolator.AddNode(
+            new Vector3(-5, 0, -0.10f),
+            0,
+            0,
+            Configuration.TransferMapMode,
+            Configuration.ReservoirDiscardVolumeThreshold,
+            Configuration.ReservoirSmoothingKernelSize,
+            Configuration.CanvasResolution);
 
         //RakelInterpolator.AddNode(new Vector3(-4, 0, -0.10f), 0, 0, TextureResolution);
         //RakelInterpolator.AddNode(new Vector3(-3, 0, -0.10f), 0, 0, TextureResolution);
@@ -333,7 +298,14 @@ public class OilPaintEngine : MonoBehaviour
 
         //RakelInterpolator.AddNode(new Vector3(6, 3, -0.10f), 0, 0, TextureResolution);
 
-        RakelInterpolator.AddNode(new Vector3(6, 0, -0.10f), 0, 0, RakelTransferMapMode, ReservoirDiscardVolumeThreshold, ReservoirSmoothingKernelSize, TextureResolution);
+        RakelInterpolator.AddNode(
+            new Vector3(6, 0, -0.10f),
+            0,
+            0,
+            Configuration.TransferMapMode,
+            Configuration.ReservoirDiscardVolumeThreshold,
+            Configuration.ReservoirSmoothingKernelSize,
+            Configuration.CanvasResolution);
     }
 
     public void DoMacro2Action()
@@ -344,6 +316,13 @@ public class OilPaintEngine : MonoBehaviour
 
         Rakel.Fill(new Paint(new Color(0 / 255f, 107 / 255f, 60 / 255f), 1), new FlatFiller());
         RakelInterpolator.NewStroke();
-        RakelInterpolator.AddNode(new Vector3(-5, 0, -0.10f), 0, 0, RakelTransferMapMode, ReservoirDiscardVolumeThreshold, ReservoirSmoothingKernelSize, TextureResolution);
+        RakelInterpolator.AddNode(
+            new Vector3(-5, 0, -0.10f),
+            0,
+            0,
+            Configuration.TransferMapMode,
+            Configuration.ReservoirDiscardVolumeThreshold,
+            Configuration.ReservoirSmoothingKernelSize,
+            Configuration.CanvasResolution);
     }
 }

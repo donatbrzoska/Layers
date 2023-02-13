@@ -38,9 +38,9 @@ public class RakelPaintApplyButtonController : MonoBehaviour
 
     public void Start()
     {
-        ColorDropdown.SetValueWithoutNotify((int)Colors.Get_Color(OilPaintEngine.FillPaint.Color));
-        VolumeInputField.SetTextWithoutNotify("" + OilPaintEngine.FillPaint.Volume);
-        FillModeDropdown.SetValueWithoutNotify((int)OilPaintEngine.FillMode);
+        ColorDropdown.SetValueWithoutNotify((int)Colors.Get_Color(OilPaintEngine.Configuration.FillPaint.Color));
+        VolumeInputField.SetTextWithoutNotify("" + OilPaintEngine.Configuration.FillPaint.Volume);
+        FillModeDropdown.SetValueWithoutNotify((int)OilPaintEngine.Configuration.FillMode);
     }
 
     public void OnClick()

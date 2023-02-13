@@ -6,7 +6,7 @@ public class SmoothingKernelSizeInputFieldController : InputFieldController
 {
     public void Start()
     {
-        InputField.SetTextWithoutNotify("" + OilPaintEngine.ReservoirSmoothingKernelSize);
+        InputField.SetTextWithoutNotify("" + OilPaintEngine.Configuration.ReservoirSmoothingKernelSize);
     }
 
     override public void OnValueChanged(string arg0)
