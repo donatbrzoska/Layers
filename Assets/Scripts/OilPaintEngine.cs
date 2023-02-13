@@ -1,7 +1,5 @@
 using UnityEngine;
 using System.Collections.Generic;
-using UnityEngine.Rendering;
-using System.Threading;
 
 public class OilPaintEngine : MonoBehaviour
 {
@@ -88,7 +86,9 @@ public class OilPaintEngine : MonoBehaviour
                     Configuration.TransferConfiguration,
                     OilPaintCanvas);
             }
-        } else {
+        }
+        else
+        {
             float rotation;
             if (Configuration.RakelRotationLocked)
             {
