@@ -10,8 +10,6 @@ public class OilPaintEngine : MonoBehaviour
     public int TextureResolution { get; private set; } // texture space pixels per 1 world space
     private OilPaintCanvas OilPaintCanvas;
 
-    //private IRakelPaintReservoir RakelPaintReservoir;
-    //public Paint RakelPaint { get; private set; }
     public Paint FillPaint { get; private set; }
     public FillMode FillMode { get; private set; }
 
@@ -134,15 +132,11 @@ public class OilPaintEngine : MonoBehaviour
 
     void CreateRakel()
     {
-        //RakelPaintReservoir = new RakelPaintReservoir(
-        //    WorldSpaceLengthToTextureSpaceLength(RakelLength, TextureResolution),
-        //    WorldSpaceLengthToTextureSpaceLength(RakelWidth, TextureResolution));
         DisposeRakel();
 
         Rakel = new Rakel(RakelLength, RakelWidth, RakelResolution, ComputeShaderTasks);
-        int rakelPixelsLength = MathUtil.ToTextureSpaceLength(RakelLength, RakelResolution);
-        int rakelPixelsWidth = MathUtil.ToTextureSpaceLength(RakelWidth, RakelResolution);
-        Debug.Log("Rakel is " + rakelPixelsLength + "x" + rakelPixelsWidth + " = " + rakelPixelsLength * rakelPixelsWidth);
+
+        Debug.Log("Rakel is " + RakelLength * RakelResolution + "x" + RakelWidth * RakelResolution + " = " + RakelLength * RakelResolution * RakelWidth * RakelResolution);
     }
 
     void CreateRakelDrawer()
@@ -197,7 +191,7 @@ public class OilPaintEngine : MonoBehaviour
     {
         if (Rakel != null)
         {
-            Debug.Log("Disposing Rakel");
+            //Debug.Log("Disposing Rakel");
             Rakel.Dispose();
         }
     }
@@ -206,7 +200,7 @@ public class OilPaintEngine : MonoBehaviour
     {
         if (OilPaintCanvas != null)
         {
-            Debug.Log("Disposing Canvas");
+            //Debug.Log("Disposing Canvas");
             OilPaintCanvas.Dispose();
         }
     }
@@ -248,8 +242,6 @@ public class OilPaintEngine : MonoBehaviour
 
     public void UpdateRakelResolution(int pixelsPerWorldSpaceUnit)
     {
-        DisposeRakel();
-
         RakelResolution = pixelsPerWorldSpaceUnit;
         CreateRakel();
         CreateRakelDrawer();
@@ -292,8 +284,6 @@ public class OilPaintEngine : MonoBehaviour
 
     public void ClearCanvas()
     {
-        OnDestroy();
-
         CreateCanvas();
         CreateRakel();
         CreateRakelDrawer(); // TODO make Rakelinterpolator not dependent on only one canvas
