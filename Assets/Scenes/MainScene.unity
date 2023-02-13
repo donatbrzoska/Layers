@@ -135,6 +135,7 @@ GameObject:
   - component: {fileID: 10876318}
   - component: {fileID: 10876317}
   - component: {fileID: 10876316}
+  - component: {fileID: 10876319}
   m_Layer: 5
   m_Name: Fill Mode Dropdown
   m_TagString: Untagged
@@ -257,6 +258,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 10876314}
   m_CullTransparentMesh: 1
+--- !u!114 &10876319
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 10876314}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 429343883fe83477b8bfc8057714fa0d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &23527432
 GameObject:
   m_ObjectHideFlags: 0
@@ -481,6 +494,7 @@ GameObject:
   - component: {fileID: 62534906}
   - component: {fileID: 62534905}
   - component: {fileID: 62534908}
+  - component: {fileID: 62534909}
   m_Layer: 5
   m_Name: Clear Canvas Button
   m_TagString: Untagged
@@ -600,7 +614,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 62534903}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 50a13fe05d10c4b1481a8dd7269f41a5, type: 3}
+  m_Script: {fileID: 11500000, guid: 44658a55933794899903352ecdfc13fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &62534909
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 62534903}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44658a55933794899903352ecdfc13fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &89287093
@@ -1108,7 +1134,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 251952529}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8149523b14c0a4518ae65be9bee64cde, type: 3}
+  m_Script: {fileID: 11500000, guid: 823301d2ee4c5472c8c8e134a67d6005, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &300423310
@@ -1297,7 +1323,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 300423310}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7b207f5479e574b439de08032429425a, type: 3}
+  m_Script: {fileID: 11500000, guid: beec702daaaa842d7bc474e88df63582, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &313453470
@@ -1397,7 +1423,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 313453470}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2ef16261c90ee45c6a909803617e525e, type: 3}
+  m_Script: {fileID: 11500000, guid: f32a8b0b2838b45b9993a30cf9fed2b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &354934987
@@ -3080,7 +3106,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1008279796}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 60d21db5363e745778514516e8bf8838, type: 3}
+  m_Script: {fileID: 11500000, guid: c60173eb749314fd1b9cd51fe2e1a291, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1022527869
@@ -3689,7 +3715,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1205977346}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 47c2ff1d76e3149fe8ad4616a241d96e, type: 3}
+  m_Script: {fileID: 11500000, guid: 408d42493a9c44d76aa2491a74d9c54b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1268874639
@@ -3743,7 +3769,7 @@ GameObject:
   - component: {fileID: 1294332752}
   - component: {fileID: 1294332755}
   m_Layer: 5
-  m_Name: Rakel Transfer Map Mode Dropdown
+  m_Name: Transfer Map Mode Dropdown
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3873,7 +3899,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1294332750}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: faf504abcf84c4d50a90914c1e85a7c0, type: 3}
+  m_Script: {fileID: 11500000, guid: 0897675ce0e914c8ebd399eb0fa2f132, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1316860794
@@ -4586,7 +4612,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1432667816}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a89599599ece0448b9d635b396809af9, type: 3}
+  m_Script: {fileID: 11500000, guid: 3867cc3adf1f840469ef109d456d8218, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1478285718
@@ -4686,7 +4712,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1478285718}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 21eb40e6f5c6c442098a9cc0fd581eca, type: 3}
+  m_Script: {fileID: 11500000, guid: 991c4905a30e74092b2a7a86988945b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1512795040
@@ -6894,7 +6920,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8405833245626089773}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8b58ed9a2e53f42a2b0f48d576ed7191, type: 3}
+  m_Script: {fileID: 11500000, guid: cd5b1ba8f2b654603a19a46827a12e5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!224 &8405833245626089772
@@ -6932,7 +6958,7 @@ GameObject:
   - component: {fileID: 8405833245626089770}
   - component: {fileID: 8405833245626089771}
   m_Layer: 5
-  m_Name: Texture Resolution Value
+  m_Name: Canvas Resolution Value
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7493,7 +7519,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8405833246100988793}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 907f608014de941a7b2b9e18ae994d35, type: 3}
+  m_Script: {fileID: 11500000, guid: 455820e580b4d4372bc904e3fb8f6f95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!224 &8405833246100988792
@@ -8216,7 +8242,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8405833246419612565}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8f14f2809f07b4a33b85e28335812d8f, type: 3}
+  m_Script: {fileID: 11500000, guid: 73e299ddb80a143bf83b872b77c695ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!222 &8405833246419612561
@@ -8335,13 +8361,26 @@ GameObject:
   - component: {fileID: 8405833246419612562}
   - component: {fileID: 8405833246419612563}
   - component: {fileID: 8405833246419612560}
+  - component: {fileID: 8405833246419612566}
   m_Layer: 5
-  m_Name: Paint Apply Button
+  m_Name: Fill Apply Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &8405833246419612566
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8405833246419612565}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73e299ddb80a143bf83b872b77c695ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &8405833246436995456
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9415,7 +9454,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8405833246755529975}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fb73812ab9fd440c192f08defe29f2c8, type: 3}
+  m_Script: {fileID: 11500000, guid: d79cf580fb8c343fa93e91ef042cbbcf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!224 &8405833246755529974
@@ -9828,8 +9867,9 @@ GameObject:
   - component: {fileID: 8405833246993683287}
   - component: {fileID: 8405833246993683272}
   - component: {fileID: 8405833246993683273}
+  - component: {fileID: 8405833246993683288}
   m_Layer: 5
-  m_Name: Predefined Colors Dropdown
+  m_Name: Fill Color Dropdown
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9843,6 +9883,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8405833246993683275}
   m_CullTransparentMesh: 1
+--- !u!114 &8405833246993683288
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8405833246993683275}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d44389b0c4fb48d09698d7f45e2e269, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8405833247007468944
 GameObject:
   m_ObjectHideFlags: 0
@@ -10265,8 +10317,9 @@ GameObject:
   - component: {fileID: 8405833247088856174}
   - component: {fileID: 8405833247088856175}
   - component: {fileID: 8405833247088856160}
+  - component: {fileID: 8405833247088856176}
   m_Layer: 5
-  m_Name: Paint Volume Value
+  m_Name: Fill Volume Value
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10310,6 +10363,18 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &8405833247088856176
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8405833247088856162}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 191da975487f749a6bb56c803023a848, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &8405833247116583680
 RectTransform:
   m_ObjectHideFlags: 0
@@ -10445,7 +10510,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8405833247280157080}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 21703a6f81bc54ea28f134568a3b7d6d, type: 3}
+  m_Script: {fileID: 11500000, guid: d6445b077a4814f85a0f947c3da85430, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!222 &8405833247280157156

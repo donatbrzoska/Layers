@@ -200,13 +200,25 @@ public class OilPaintEngine : MonoBehaviour
     // ***                                     TOP RIGHT                                    ***
     // ****************************************************************************************
 
-    public void UpdateRakelPaint(_Color color, int volume, FillMode fillMode)
+    public void UpdateFillColor(_Color color)
     {
-        Configuration.FillPaint = new Paint(Colors.GetColor(color), volume);
-        Configuration.FillMode = fillMode;
+        Configuration.FillConfiguration.Color = color;
+    }
 
+    public void UpdateFillVolume(int volume)
+    {
+        Configuration.FillConfiguration.Volume = volume;
+    }
+
+    public void UpdateFillMode(FillMode mode)
+    {
+        Configuration.FillConfiguration.Mode = mode;
+    }
+
+    public void FillApply()
+    {
         ReservoirFiller filler;
-        switch (Configuration.FillMode)
+        switch (Configuration.FillConfiguration.Mode)
         {
             case FillMode.Perlin:
                 filler = new PerlinNoiseFiller();
@@ -224,7 +236,7 @@ public class OilPaintEngine : MonoBehaviour
                 filler = new FlatFiller();
                 break;
         }
-        Rakel.Fill(Configuration.FillPaint, filler);
+        Rakel.Fill(Configuration.FillConfiguration.Color, Configuration.FillConfiguration.Volume, filler);
     }
 
     // ****************************************************************************************
@@ -265,7 +277,7 @@ public class OilPaintEngine : MonoBehaviour
     public void DoMacroAction()
     {
         //Rakel.Fill(new Paint(new Color(0 / 255f, 107 / 255f, 60 / 255f), 240), new PerlinNoiseFiller());
-        Rakel.Fill(new Paint(new Color(0 / 255f, 107 / 255f, 60 / 255f), 240), new FlatFiller());
+        Rakel.Fill(_Color.CadmiumGreen, 240, new FlatFiller());
 
         RakelInterpolator.NewStroke();
         RakelInterpolator.AddNode(
@@ -302,7 +314,7 @@ public class OilPaintEngine : MonoBehaviour
         //RakelInterpolator.NewStroke();
         //RakelInterpolator.AddNode(new Vector3(-5, 0, -0.10f), 45, 0, TextureResolution);
 
-        Rakel.Fill(new Paint(new Color(0 / 255f, 107 / 255f, 60 / 255f), 1), new FlatFiller());
+        Rakel.Fill(_Color.CadmiumGreen, 240, new FlatFiller());
         RakelInterpolator.NewStroke();
         RakelInterpolator.AddNode(
             new Vector3(-5, 0, -0.10f),

@@ -1717,5 +1717,5 @@ public class Notes : MonoBehaviour
  * - Smoothing mit verschiedenen Kernelgrößen, Discard und Reservoir-Auflösung
  * 
  * 13.02.2023
- * 13:15 - 16:00
+ * 13:15 - 19:30 6,25h
  */

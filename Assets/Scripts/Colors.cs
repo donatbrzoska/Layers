@@ -64,7 +64,7 @@ public class Colors
         return 0;
     }
 
-    public static Dictionary<_Color, ColorInfo> ColorMapper = new Dictionary<_Color, ColorInfo>()
+    private static Dictionary<_Color, ColorInfo> ColorMapper = new Dictionary<_Color, ColorInfo>()
     {
         // https://www.color-name.com/titanium-white.color
         { _Color.TitanWhite, new ColorInfo() { Name = "Titan White", Color = new Color(243/255.0f, 244/255.0f, 247/255.0f) } },

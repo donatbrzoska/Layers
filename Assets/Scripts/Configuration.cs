@@ -1,14 +1,14 @@
-﻿public class Configuration
+﻿using UnityEngine;
+
+public class Configuration
 {
     public int CanvasResolution;
 
     public float RakelRotation;
     public bool RakelRotationLocked;
+
     public RakelConfiguration RakelConfiguration;
-
-    public Paint FillPaint;
-    public FillMode FillMode;
-
+    public FillConfiguration FillConfiguration;
     public TransferConfiguration TransferConfiguration;
 
     public Configuration()
@@ -17,11 +17,9 @@
 
         RakelRotation = 0;
         RakelRotationLocked = true;
+
         RakelConfiguration = new RakelConfiguration();
-
-        FillPaint = new Paint(Colors.GetColor(_Color.CadmiumGreen), 240);
-        FillMode = FillMode.PerlinColored;
-
+        FillConfiguration = new FillConfiguration();
         TransferConfiguration = new TransferConfiguration();
     }
 }
@@ -38,6 +36,21 @@ public class RakelConfiguration
         Width = 0.5f;
         Resolution = 80;
     }
+}
+
+public class FillConfiguration
+{
+    public _Color Color;
+    public int Volume;
+    public FillMode Mode;
+
+    public FillConfiguration()
+    {
+        Color = _Color.CadmiumGreen;
+        Volume = 240;
+        Mode = FillMode.PerlinColored;
+    }
+
 }
 
 public class TransferConfiguration

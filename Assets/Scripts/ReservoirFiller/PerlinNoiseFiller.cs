@@ -5,13 +5,13 @@ public class PerlinNoiseFiller : ReservoirFiller
     public PerlinNoiseFiller(bool colorGradient = false) : base(colorGradient) { }
 
     // Adds some perlin noised volume to the desired volume
-    public override void Fill(Paint paint, Paint[] target, Vector2Int targetSize)
+    public override void Fill(_Color color, int volume, Paint[] target, Vector2Int targetSize)
     {
         // HACK multiply volume by 100, because the shader sees 100 as 1 unit of paint
-        paint.Volume *= 1000;
+        volume *= 1000;
 
         // determine added volume
-        int max_added_volume = paint.Volume;
+        int max_added_volume = volume;
 
         float scale = 5f; // bigger values == larger areas of the perlin noise terrain == more frequent noise
         float offset_x = Random.Range(0f, 1000f);
@@ -43,7 +43,7 @@ public class PerlinNoiseFiller : ReservoirFiller
         {
             for (int j = 0; j < targetSize.x; j++)
             {
-                Paint actual = new Paint(paint);
+                Paint actual = new Paint(Colors.GetColor(color), volume);
                 actual.Volume += (int)(added_volumes[i, j] - added_volumes_min);
                 //actual.Volume += (int)Mathf.Pow(added_volumes[i, j] - added_volumes_min, 2);
                 //actual.Volume += (int)(Mathf.Pow(added_volumes[i, j] - added_volumes_min, 2) / 2);
