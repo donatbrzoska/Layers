@@ -163,8 +163,10 @@ public struct ComputeShaderTask {
 
     public void Run()
     {
+        //Debug.Log("Processing " + Name);
         foreach (CSAttribute ca in Attributes)
         {
+            //Debug.Log("Processing " + ca);
             ca.ApplyTo(ComputeShader);
         }
 

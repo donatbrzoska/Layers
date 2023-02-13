@@ -76,11 +76,10 @@ public class Rakel : IRakel
         EmitMode rakelEmitMode,
         int discardReservoirVolumeThreshhold,
         int reservoirSmoothingKernelSize,
-        WorldSpaceCanvas wsc,
-        ComputeBuffer Canvas,
-        RenderTexture canvasTexture,
-        RenderTexture canvasNormalMap)
+        OilPaintCanvas oilPaintCanvas)
     {
+        WorldSpaceCanvas wsc = oilPaintCanvas.WorldSpaceCanvas;
+
         rakelPosition = wsc.AlignToPixelGrid(rakelPosition);// + new Vector3(0.2f, 0.2f, 0);
         // this is needed to prevent double application on the same pixel
         if (wsc.MapToPixel(rakelPosition).Equals(PreviousApplyPosition))
@@ -208,8 +207,8 @@ public class Rakel : IRakel
         ComputeShader copyBufferToCanvasShader = ComputeShaderUtil.LoadComputeShader("CopyBufferToCanvasShader");
         attributes = ComputeShaderUtil.GenerateCopyBufferToCanvasShaderAttributes(emitSR);
         attributes.Add(new CSComputeBuffer("RakelEmittedPaint", RakelEmittedPaint));
-        attributes.Add(new CSComputeBuffer("Canvas", Canvas));
-        attributes.Add(new CSInt("CanvasWidth", canvasTexture.width));
+        attributes.Add(new CSComputeBuffer("Canvas", oilPaintCanvas.Reservoir));
+        attributes.Add(new CSInt("CanvasWidth", oilPaintCanvas.Texture.width));
         cst = new ComputeShaderTask(
             "CopyBufferToCanvasShader",
             copyBufferToCanvasShader,
@@ -227,9 +226,9 @@ public class Rakel : IRakel
         // ... COLORS
         ComputeShader colorsShader = ComputeShaderUtil.LoadComputeShader("ColorsShader");
         attributes = ComputeShaderUtil.GenerateCopyBufferToCanvasShaderAttributes(emitSR);
-        attributes.Add(new CSComputeBuffer("Canvas", Canvas));
+        attributes.Add(new CSComputeBuffer("Canvas", oilPaintCanvas.Reservoir));
         attributes.Add(new CSInts2("CanvasSize", wsc.TextureSize));
-        attributes.Add(new CSTexture("Texture", canvasTexture));
+        attributes.Add(new CSTexture("Texture", oilPaintCanvas.Texture));
         cst = new ComputeShaderTask(
             "ColorsShader",
             colorsShader,
@@ -255,9 +254,9 @@ public class Rakel : IRakel
 
         ComputeShader normalsShader = ComputeShaderUtil.LoadComputeShader("NormalsShader");
         attributes = ComputeShaderUtil.GenerateCopyBufferToCanvasShaderAttributes(paddedEmitSR);
-        attributes.Add(new CSComputeBuffer("Canvas", Canvas));
+        attributes.Add(new CSComputeBuffer("Canvas", oilPaintCanvas.Reservoir));
         attributes.Add(new CSInts2("CanvasSize", wsc.TextureSize));
-        attributes.Add(new CSTexture("NormalMap", canvasNormalMap));
+        attributes.Add(new CSTexture("NormalMap", oilPaintCanvas.NormalMap));
         cst = new ComputeShaderTask(
             "NormalsShader",
             normalsShader,

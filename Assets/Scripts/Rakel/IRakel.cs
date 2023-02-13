@@ -11,10 +11,7 @@ public interface IRakel
         EmitMode rakelEmitMode,
         int discardReservoirVolumeThreshhold,
         int reservoirSmoothingKernelSize,
-        WorldSpaceCanvas wsc,
-        ComputeBuffer Canvas,
-        RenderTexture canvasTexture,
-        RenderTexture canvasNormalMap);
+        OilPaintCanvas oilPaintCanvas);
     public void Fill(Paint paint, ReservoirFiller filler);
     public void Dispose();
 }

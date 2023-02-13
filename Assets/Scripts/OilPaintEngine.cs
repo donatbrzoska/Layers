@@ -8,15 +8,7 @@ public class OilPaintEngine : MonoBehaviour
     public bool BENCHMARK = false;
 
     public int TextureResolution { get; private set; } // texture space pixels per 1 world space
-    private RenderTexture Texture;
-    private RenderTexture NormalMap;
-
-    private Renderer CanvasRenderer;
-    private float CanvasWidth; // world space
-    private float CanvasHeight; // world space
-    private Vector3 CanvasPosition; // world space
-    private WorldSpaceCanvas WorldSpaceCanvas;
-    private ComputeBuffer Canvas;
+    private OilPaintCanvas OilPaintCanvas;
 
     //private IRakelPaintReservoir RakelPaintReservoir;
     //public Paint RakelPaint { get; private set; }
@@ -40,11 +32,6 @@ public class OilPaintEngine : MonoBehaviour
 
     void Awake()
     {
-        CanvasRenderer = GameObject.Find("Canvas").GetComponent<Renderer>();
-        CanvasWidth = GameObject.Find("Canvas").GetComponent<Transform>().localScale.x * 10; // convert scale attribute to world space
-        CanvasHeight = GameObject.Find("Canvas").GetComponent<Transform>().localScale.y * 10; // convert scale attribute to world space
-        CanvasPosition = GameObject.Find("Canvas").GetComponent<Transform>().position;
-
         int wallColliderID = GameObject.Find("Wall").GetComponent<MeshCollider>().GetInstanceID();
         int canvasColliderID = GameObject.Find("Canvas").GetComponent<MeshCollider>().GetInstanceID();
         RakelInputManager = new RakelInputManager(wallColliderID, canvasColliderID);
@@ -138,63 +125,11 @@ public class OilPaintEngine : MonoBehaviour
 
     void CreateCanvas()
     {
-        WorldSpaceCanvas = new WorldSpaceCanvas(CanvasHeight, CanvasWidth, TextureResolution, CanvasPosition);
         DisposeCanvas();
-        Canvas = new ComputeBuffer(WorldSpaceCanvas.TextureSize.x * WorldSpaceCanvas.TextureSize.y, sizeof(float) * 4 + sizeof(int));
-        Debug.Log("Texture is " + WorldSpaceCanvas.TextureSize.x + "x" + WorldSpaceCanvas.TextureSize.y + " = " + WorldSpaceCanvas.TextureSize.x * WorldSpaceCanvas.TextureSize.y);
 
+        OilPaintCanvas = new OilPaintCanvas(TextureResolution);
 
-        Texture = new RenderTexture(WorldSpaceCanvas.TextureSize.x, WorldSpaceCanvas.TextureSize.y, 1);
-        Texture.filterMode = FilterMode.Point;
-        Texture.enableRandomWrite = true;
-        Texture.Create();
-        CanvasRenderer.material.SetTexture("_MainTex", Texture);
-
-        // set colors to white
-        IntelGPUShaderRegion sr = new IntelGPUShaderRegion(
-            new Vector2Int(Texture.height, 0),
-            new Vector2Int(Texture.height, Texture.width),
-            new Vector2Int(0, 0),
-            new Vector2Int(Texture.width, 0)
-        );
-        ComputeShaderTask cst = new ComputeShaderTask(
-            "SetTextureShader",
-            ComputeShaderUtil.LoadComputeShader("SetTextureShader"),
-            new List<CSAttribute>() {
-                new CSInts2("CalculationSize", WorldSpaceCanvas.TextureSize),
-                new CSFloats4("Value", Vector4.one),
-                new CSTexture("Target", Texture)
-            },
-            sr.ThreadGroups,
-            null,
-            new List<ComputeBuffer>(),
-            null
-        );
-        cst.Run();
-
-
-        NormalMap = new RenderTexture(WorldSpaceCanvas.TextureSize.x, WorldSpaceCanvas.TextureSize.y, 1);
-        NormalMap.filterMode = FilterMode.Point;
-        NormalMap.enableRandomWrite = true;
-        NormalMap.Create();
-        CanvasRenderer.material.EnableKeyword("_NORMALMAP");
-        CanvasRenderer.material.SetTexture("_BumpMap", NormalMap);
-
-        // set normals to up
-        cst = new ComputeShaderTask(
-            "SetTextureShader",
-            ComputeShaderUtil.LoadComputeShader("SetTextureShader"),
-            new List<CSAttribute>() {
-                new CSInts2("CalculationSize", WorldSpaceCanvas.TextureSize),
-                new CSFloats4("Value", (new Vector4(0, 0, 1, 0) + Vector4.one) / 2),
-                new CSTexture("Target", NormalMap)
-            },
-            sr.ThreadGroups,
-            null,
-            new List<ComputeBuffer>(),
-            null
-        );
-        cst.Run();
+        Debug.Log("Texture is " + OilPaintCanvas.Texture.width + "x" + OilPaintCanvas.Texture.height + " = " + OilPaintCanvas.Texture.width * OilPaintCanvas.Texture.height);
     }
 
     void CreateRakel()
@@ -212,7 +147,7 @@ public class OilPaintEngine : MonoBehaviour
 
     void CreateRakelDrawer()
     {
-        RakelInterpolator = new RakelInterpolator(Rakel, WorldSpaceCanvas, Canvas, Texture, NormalMap);
+        RakelInterpolator = new RakelInterpolator(Rakel, OilPaintCanvas);
     }
 
     void Update()
@@ -221,7 +156,7 @@ public class OilPaintEngine : MonoBehaviour
             for (int i=0; i<50; i++){
                 float x = Random.Range(-5f, 5f);
                 float y = Random.Range(-3f, 3f);
-                Rakel.Apply(new Vector3(x,y,0), 0, 0, RakelEmitMode, ReservoirDiscardVolumeThreshold, ReservoirSmoothingKernelSize, WorldSpaceCanvas, Canvas, Texture, NormalMap);
+                Rakel.Apply(new Vector3(x,y,0), 0, 0, RakelEmitMode, ReservoirDiscardVolumeThreshold, ReservoirSmoothingKernelSize, OilPaintCanvas);
             }
         } else {
             float rotation = RakelInputManager.Rotation;
@@ -261,13 +196,19 @@ public class OilPaintEngine : MonoBehaviour
     private void DisposeRakel()
     {
         if (Rakel != null)
+        {
+            Debug.Log("Disposing Rakel");
             Rakel.Dispose();
+        }
     }
 
     private void DisposeCanvas()
     {
-        if (Canvas != null)
-            Canvas.Dispose();
+        if (OilPaintCanvas != null)
+        {
+            Debug.Log("Disposing Canvas");
+            OilPaintCanvas.Dispose();
+        }
     }
 
     // ****************************************************************************************
@@ -300,8 +241,6 @@ public class OilPaintEngine : MonoBehaviour
 
     public void UpdateTextureResolution(int pixelsPerWorldSpaceUnit)
     {
-        DisposeCanvas();
-
         TextureResolution = pixelsPerWorldSpaceUnit;
         CreateCanvas();
         CreateRakelDrawer();

@@ -3,10 +3,7 @@
 public class RakelInterpolator
 {
     private IRakel Rakel;
-    private WorldSpaceCanvas WorldSpaceCanvas;
-    private ComputeBuffer Canvas;
-    private RenderTexture DrawingTarget;
-    private RenderTexture NormalMapTarget;
+    private OilPaintCanvas OilPaintCanvas;
 
     private Vector3 PreviousRakelPosition;
     private float PreviousRakelRotation;
@@ -15,13 +12,10 @@ public class RakelInterpolator
     private float NO_ANGLE = float.NaN;
     private Vector3 NO_POSITION = Vector3.negativeInfinity;
 
-    public RakelInterpolator(IRakel rakel, WorldSpaceCanvas wsc, ComputeBuffer canvas, RenderTexture drawingTarget, RenderTexture normalMapTarget)
+    public RakelInterpolator(IRakel rakel, OilPaintCanvas oilPaintCanvas)
     {
         Rakel = rakel;
-        WorldSpaceCanvas = wsc;
-        Canvas = canvas;
-        DrawingTarget = drawingTarget;
-        NormalMapTarget = normalMapTarget;
+        OilPaintCanvas = oilPaintCanvas;
     }
 
     public void NewStroke()
@@ -52,10 +46,7 @@ public class RakelInterpolator
                     rakelEmitMode,
                     discardReservoirVolumeThreshhold,
                     reservoirSmoothingKernelSize,
-                    WorldSpaceCanvas,
-                    Canvas,
-                    DrawingTarget,
-                    NormalMapTarget
+                    OilPaintCanvas
                 );
             }
             else
@@ -63,7 +54,7 @@ public class RakelInterpolator
                 // 1. determine differences and steps
                 Vector3 dp = rakelPosition - PreviousRakelPosition;
                 //float dpLength = dp.magnitude;
-                Vector2 dp_ = WorldSpaceCanvas.MapToPixel(rakelPosition) - WorldSpaceCanvas.MapToPixel(PreviousRakelPosition);
+                Vector2 dp_ = OilPaintCanvas.WorldSpaceCanvas.MapToPixel(rakelPosition) - OilPaintCanvas.WorldSpaceCanvas.MapToPixel(PreviousRakelPosition);
                 float dpLength = dp_.magnitude;
                 int positionSteps = (int)(dpLength * interpolationResolution); // don't add 1 because the first one is already done when isFirstNodeOfStroke
 
@@ -120,10 +111,7 @@ public class RakelInterpolator
                         rakelEmitMode,
                         discardReservoirVolumeThreshhold,
                         reservoirSmoothingKernelSize,
-                        WorldSpaceCanvas,
-                        Canvas,
-                        DrawingTarget,
-                        NormalMapTarget
+                        OilPaintCanvas
                     );
 
                     previousPosition = currentPosition;
