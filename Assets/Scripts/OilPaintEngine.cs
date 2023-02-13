@@ -7,10 +7,6 @@ public class OilPaintEngine : MonoBehaviour
 {
     public bool BENCHMARK = false;
 
-    private GraphicsRaycaster GraphicsRaycaster;
-
-    private Camera Camera;
-
     public int TextureResolution { get; private set; } // texture space pixels per 1 world space
     private RenderTexture Texture;
     private RenderTexture NormalMap;
@@ -29,6 +25,7 @@ public class OilPaintEngine : MonoBehaviour
     public Paint FillPaint { get; private set; }
     public FillMode FillMode { get; private set; }
 
+    public RakelInputManager RakelInputManager;
     public float RakelRotation { get; private set; }
     public RakelRotationManager RakelRotationManager { get; private set; }
     public float RakelLength { get; private set; } // world space
@@ -48,10 +45,6 @@ public class OilPaintEngine : MonoBehaviour
 
     void Awake()
     {
-        GraphicsRaycaster = GameObject.Find("UI").GetComponent<GraphicsRaycaster>();
-
-        Camera = GameObject.Find("Main Camera").GetComponent<Camera>();
-
         WallColliderID = GameObject.Find("Wall").GetComponent<MeshCollider>().GetInstanceID();
         CanvasColliderID = GameObject.Find("Canvas").GetComponent<MeshCollider>().GetInstanceID();
         CanvasRenderer = GameObject.Find("Canvas").GetComponent<Renderer>();
@@ -59,6 +52,7 @@ public class OilPaintEngine : MonoBehaviour
         CanvasHeight = GameObject.Find("Canvas").GetComponent<Transform>().localScale.y * 10; // convert scale attribute to world space
         CanvasPosition = GameObject.Find("Canvas").GetComponent<Transform>().position;
 
+        RakelInputManager = new RakelInputManager(WallColliderID, CanvasColliderID);
         RakelRotationManager = new RakelRotationManager();
 
         LoadDefaultConfig();
@@ -243,27 +237,18 @@ public class OilPaintEngine : MonoBehaviour
         } else {
             RakelRotation = RakelRotationManager.GetRotation();
 
-
-            if (!GraphicsRaycaster.UIBlocking())
+            RakelPosition = RakelInputManager.GetPosition();
+            if (!RakelPosition.Equals(Vector3.negativeInfinity))
             {
-                // Rakel has to be over wall or canvas
-                RakelPosition = InputUtil.GetMouseHit(Camera, WallColliderID);
-                if (RakelPosition.Equals(Vector3.negativeInfinity))
+                if (Input.GetMouseButtonDown(0))
                 {
-                    RakelPosition = InputUtil.GetMouseHit(Camera, CanvasColliderID);
+                    RakelInterpolator.NewStroke();
                 }
-                if (!RakelPosition.Equals(Vector3.negativeInfinity))
+                if (RakelYPositionLocked)
                 {
-                    if (Input.GetMouseButtonDown(0))
-                    {
-                        RakelInterpolator.NewStroke();
-                    }
-                    if (RakelYPositionLocked)
-                    {
-                        RakelPosition.y = 0;
-                    }
-                    RakelInterpolator.AddNode(RakelPosition, RakelRotation, 0, RakelEmitMode, ReservoirDiscardVolumeThreshold, ReservoirSmoothingKernelSize, TextureResolution);
+                    RakelPosition.y = 0;
                 }
+                RakelInterpolator.AddNode(RakelPosition, RakelRotation, 0, RakelEmitMode, ReservoirDiscardVolumeThreshold, ReservoirSmoothingKernelSize, TextureResolution);
             }
         }
 
