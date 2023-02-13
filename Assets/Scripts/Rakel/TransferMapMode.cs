@@ -1,4 +1,4 @@
-﻿public enum EmitMode
+﻿public enum TransferMapMode
 {
     NearestNeighbour,
     Bilinear,

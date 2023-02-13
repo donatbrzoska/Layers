@@ -8,7 +8,7 @@ public interface IRakel
         Vector3 rakelPosition,
         float rakelRotation,
         float rakelTilt,
-        EmitMode rakelEmitMode,
+        TransferMapMode rakelEmitMode,
         int discardReservoirVolumeThreshhold,
         int reservoirSmoothingKernelSize,
         OilPaintCanvas oilPaintCanvas);

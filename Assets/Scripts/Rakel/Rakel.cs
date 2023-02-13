@@ -73,7 +73,7 @@ public class Rakel : IRakel
         Vector3 rakelPosition,
         float rakelRotation,
         float rakelTilt,
-        EmitMode rakelEmitMode,
+        TransferMapMode rakelTransferMapMode,
         int discardReservoirVolumeThreshhold,
         int reservoirSmoothingKernelSize,
         OilPaintCanvas oilPaintCanvas)
@@ -166,7 +166,7 @@ public class Rakel : IRakel
         attributes.Add(new CSComputeBuffer("RakelEmittedPaint", RakelEmittedPaint));
         attributes.Add(new CSInts2("RakelReservoirSize", RakelReservoirSize));
         attributes.Add(new CSInt("RakelReservoirResolution", ReservoirResolution));
-        attributes.Add(new CSInt("EmitMode", (int)rakelEmitMode));
+        attributes.Add(new CSInt("TransferMapMode", (int)rakelTransferMapMode));
 
         cst = new ComputeShaderTask(
             "EmitFromRakelShader",

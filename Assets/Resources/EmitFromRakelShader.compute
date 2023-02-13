@@ -29,7 +29,7 @@ float3 RakelLLTilted;
 float3 RakelLRTilted;
 
 // Emitting
-uint EmitMode;
+uint TransferMapMode;
 
 struct Paint {
     float4 color;
@@ -524,9 +524,9 @@ void do_polygon_clipping_emit(float2 reservoir_pixel)
 
 void do_emit(float2 reservoir_pixel)
 {
-    if (EmitMode == 0) {
+    if (TransferMapMode == 0) {
         do_nearest_neighbour_emit(reservoir_pixel);
-    } else if (EmitMode == 1) {
+    } else if (TransferMapMode == 1) {
         do_bilinear_interpolation_emit(reservoir_pixel);
     } else {
         do_polygon_clipping_emit(reservoir_pixel);

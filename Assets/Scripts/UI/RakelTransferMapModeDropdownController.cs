@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 
 [RequireComponent(typeof(TMP_Dropdown))]
-public class RakelEmitModeDropdownController : MonoBehaviour
+public class RakelTransferMapModeDropdownController : MonoBehaviour
 {
     OilPaintEngine OilPaintEngine;
 
@@ -14,18 +14,18 @@ public class RakelEmitModeDropdownController : MonoBehaviour
     {
         OilPaintEngine = GameObject.Find("OilPaintEngine").GetComponent<OilPaintEngine>();
 
-        EmitModeDropdown = GameObject.Find("Rakel Emit Mode Dropdown").GetComponent<TMP_Dropdown>();
-        EmitModeDropdown.AddOptions(Enum.GetNames(typeof(EmitMode)).ToList());
+        EmitModeDropdown = GameObject.Find("Rakel Transfer Map Mode Dropdown").GetComponent<TMP_Dropdown>();
+        EmitModeDropdown.AddOptions(Enum.GetNames(typeof(TransferMapMode)).ToList());
         EmitModeDropdown.onValueChanged.AddListener(OnValueChanged);
     }
 
     public void Start()
     {
-        EmitModeDropdown.SetValueWithoutNotify((int)OilPaintEngine.RakelEmitMode);
+        EmitModeDropdown.SetValueWithoutNotify((int)OilPaintEngine.RakelTransferMapMode);
     }
 
     public void OnValueChanged(int value)
     {
-        OilPaintEngine.UpdateRakelEmitMode((EmitMode)value);
+        OilPaintEngine.UpdateRakelEmitMode((TransferMapMode)value);
     }
 }
