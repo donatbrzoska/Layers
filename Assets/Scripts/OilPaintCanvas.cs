@@ -9,7 +9,9 @@ public class OilPaintCanvas
     public RenderTexture Texture { get; private set; }
     public RenderTexture NormalMap { get; private set; }
 
-    public OilPaintCanvas(int textureResolution)
+    private ShaderRegionFactory ShaderRegionFactory;
+
+    public OilPaintCanvas(ShaderRegionFactory shaderRegionFactory, int textureResolution)
     {
         Renderer renderer = GameObject.Find("Canvas").GetComponent<Renderer>();
         float width = GameObject.Find("Canvas").GetComponent<Transform>().localScale.x * 10; // convert scale attribute to world space
@@ -33,17 +35,18 @@ public class OilPaintCanvas
         renderer.material.EnableKeyword("_NORMALMAP");
         renderer.material.SetTexture("_BumpMap", NormalMap);
 
+        ShaderRegionFactory = shaderRegionFactory;
         InitializeTexture(Texture, Vector4.one);
         InitializeTexture(NormalMap, (new Vector4(0, 0, 1, 0) + Vector4.one) / 2);
     }
 
     private void InitializeTexture(RenderTexture texture, Vector4 value)
     {
-        IntelGPUShaderRegion sr = new IntelGPUShaderRegion(
-            new Vector2Int(texture.height, 0),
-            new Vector2Int(texture.height, texture.width),
+        ShaderRegion sr = ShaderRegionFactory.Create(
+            new Vector2Int(texture.height-1, 0),
+            new Vector2Int(texture.height-1, texture.width-1),
             new Vector2Int(0, 0),
-            new Vector2Int(texture.width, 0)
+            new Vector2Int(texture.width-1, 0)
         );
 
         ComputeShaderTask cst = new ComputeShaderTask(

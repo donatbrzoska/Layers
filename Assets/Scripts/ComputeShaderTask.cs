@@ -145,7 +145,7 @@ public class ComputeShaderTask {
 
     public ComputeShaderTask(
         string name,
-        IntelGPUShaderRegion shaderRegion,
+        ShaderRegion shaderRegion,
         List<CSAttribute> attributes,
         ComputeBuffer finishedMarkerBuffer,
         List<ComputeBuffer> buffersToDispose,

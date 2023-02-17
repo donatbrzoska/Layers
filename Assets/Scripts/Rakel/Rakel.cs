@@ -15,9 +15,10 @@ public class Rakel : IRakel
 
     private Vector2Int PreviousApplyPosition = new Vector2Int(int.MinValue, int.MinValue);
 
+    private ShaderRegionFactory ShaderRegionFactory;
     private Queue<ComputeShaderTask> ComputeShaderTasks;
 
-    public Rakel(RakelConfiguration config, Queue<ComputeShaderTask> computeShaderTasks)
+    public Rakel(RakelConfiguration config, ShaderRegionFactory shaderRegionFactory, Queue<ComputeShaderTask> computeShaderTasks)
     {
         ReservoirResolution = config.Resolution;
         RakelReservoirSize.x = (int)(config.Width * config.Resolution);
@@ -38,6 +39,7 @@ public class Rakel : IRakel
         // NOTE this has to be set after Width and Length were corrected
         Anchor = new Vector3(Width, Length / 2, 0);
 
+        ShaderRegionFactory = shaderRegionFactory;
         ComputeShaderTasks = computeShaderTasks;
     }
 
@@ -82,7 +84,7 @@ public class Rakel : IRakel
 
         //Debug.Log("Applying at x=" + wsc.MapToPixel(rakelPosition));
 
-        IntelGPUShaderRegion duplicateSR = new IntelGPUShaderRegion(
+        ShaderRegion duplicateSR = ShaderRegionFactory.Create(
             new Vector2Int(0, RakelReservoirSize.y - 1),
             new Vector2Int(RakelReservoirSize.x - 1, RakelReservoirSize.y - 1),
             new Vector2Int(0, 0),
@@ -90,7 +92,7 @@ public class Rakel : IRakel
         );
 
         RakelSnapshot rakelSnapshot = new RakelSnapshot(Length, Width, Anchor, rakelPosition, rakelRotation, rakelTilt);
-        IntelGPUShaderRegion emitSR = new IntelGPUShaderRegion(
+        ShaderRegion emitSR = ShaderRegionFactory.Create(
             wsc.MapToPixelInRange(rakelSnapshot.UpperLeft),
             wsc.MapToPixelInRange(rakelSnapshot.UpperRight),
             wsc.MapToPixelInRange(rakelSnapshot.LowerLeft),
@@ -98,7 +100,7 @@ public class Rakel : IRakel
             1 // Padding because interpolation reaches pixels that are not directly under the rakel
         );
 
-        IntelGPUShaderRegion normalsSR = new IntelGPUShaderRegion(
+        ShaderRegion normalsSR = ShaderRegionFactory.Create(
             wsc.MapToPixelInRange(rakelSnapshot.UpperLeft),
             wsc.MapToPixelInRange(rakelSnapshot.UpperRight),
             wsc.MapToPixelInRange(rakelSnapshot.LowerLeft),
@@ -135,7 +137,7 @@ public class Rakel : IRakel
             oilPaintCanvas.NormalMap);
     }
 
-    private void DuplicateReservoir(IntelGPUShaderRegion shaderRegion, int discardVolumeThreshold, int smoothingKernelSize)
+    private void DuplicateReservoir(ShaderRegion shaderRegion, int discardVolumeThreshold, int smoothingKernelSize)
     {
         List<CSAttribute> attributes = new List<CSAttribute>()
         {
@@ -159,7 +161,7 @@ public class Rakel : IRakel
 
     private ComputeBuffer EmitFromRakel(
         RakelSnapshot rakelSnapshot,
-        IntelGPUShaderRegion shaderRegion,
+        ShaderRegion shaderRegion,
         WorldSpaceCanvas wsc,
         TransferMapMode transferMapMode)
     {
@@ -209,7 +211,7 @@ public class Rakel : IRakel
     }
 
     private void ApplyToCanvas(
-        IntelGPUShaderRegion shaderRegion,
+        ShaderRegion shaderRegion,
         int textureWidth,
         ComputeBuffer rakelEmittedPaint,
         ComputeBuffer canvasReservoir)
@@ -235,7 +237,7 @@ public class Rakel : IRakel
     }
 
     private void UpdateColorTexture(
-        IntelGPUShaderRegion shaderRegion,
+        ShaderRegion shaderRegion,
         Vector2Int textureSize,
         ComputeBuffer CanvasReservoir,
         RenderTexture CanvasTexture
@@ -262,7 +264,7 @@ public class Rakel : IRakel
     }
 
     private void UpdateNormalMap(
-        IntelGPUShaderRegion shaderRegion,
+        ShaderRegion shaderRegion,
         Vector2Int textureSize,
         ComputeBuffer canvasReservoir,
         RenderTexture canvasNormalMap)

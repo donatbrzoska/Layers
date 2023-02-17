@@ -4,8 +4,11 @@ using System.Collections.Generic;
 public class OilPaintEngine : MonoBehaviour
 {
     public bool BENCHMARK = false;
-
+    public int TH_GROUP_SIZE_X = 1;
+    public int TH_GROUP_SIZE_Y = 8;
+    
     public Configuration Configuration { get; private set; }
+    private ShaderRegionFactory ShaderRegionFactory;
     public RakelInputManager RakelMouseInputManager { get; private set; }
     public float RakelRotation // used only for UI fetching
     {
@@ -39,6 +42,8 @@ public class OilPaintEngine : MonoBehaviour
 
     void Start()
     {
+        ShaderRegionFactory = new ShaderRegionFactory(new Vector2Int(TH_GROUP_SIZE_X, TH_GROUP_SIZE_Y));
+
         CreateCanvas();
         CreateRakel();
         CreateRakelDrawer();
@@ -50,7 +55,7 @@ public class OilPaintEngine : MonoBehaviour
     {
         DisposeCanvas();
 
-        OilPaintCanvas = new OilPaintCanvas(Configuration.CanvasResolution);
+        OilPaintCanvas = new OilPaintCanvas(ShaderRegionFactory, Configuration.CanvasResolution);
 
         Debug.Log("Texture is "
                   + OilPaintCanvas.Texture.width + "x" + OilPaintCanvas.Texture.height
@@ -61,7 +66,7 @@ public class OilPaintEngine : MonoBehaviour
     {
         DisposeRakel();
 
-        Rakel = new Rakel(Configuration.RakelConfiguration, ComputeShaderTasks);
+        Rakel = new Rakel(Configuration.RakelConfiguration, ShaderRegionFactory, ComputeShaderTasks);
 
         Debug.Log("Rakel is "
                   + Configuration.RakelConfiguration.Length * Configuration.RakelConfiguration.Resolution + "x" + Configuration.RakelConfiguration.Width * Configuration.RakelConfiguration.Resolution

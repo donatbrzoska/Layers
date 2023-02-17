@@ -1,9 +1,7 @@
 ﻿using UnityEngine;
 
-public class IntelGPUShaderRegion
+public class ShaderRegion
 {
-    private const int GROUP_SIZE = 8;
-
     public Vector2Int ThreadGroups;
 
     // Number of columns and rows the shader needs to be active in
@@ -12,8 +10,8 @@ public class IntelGPUShaderRegion
     // Pixel coordinates on canvas of lower left pixel of calculation
     public Vector2Int CalculationPosition;
 
-    // Given are four pixel coordinates on the canvas and an optional padding
-    public IntelGPUShaderRegion(Vector2Int a, Vector2Int b, Vector2Int c, Vector2Int d, int padding)
+    // Given are four pixel coordinates on the canvas, the thread group sizes and an optional padding
+    public ShaderRegion(Vector2Int a, Vector2Int b, Vector2Int c, Vector2Int d, Vector2Int groupSize, int padding)
     {
         int minX = Mathf.Min(Mathf.Min(Mathf.Min(a.x, b.x), c.x), d.x) - padding;
         int maxX = Mathf.Max(Mathf.Max(Mathf.Max(a.x, b.x), c.x), d.x) + padding;
@@ -22,13 +20,16 @@ public class IntelGPUShaderRegion
 
         int dx = maxX - minX;
         int cols = dx + 1;
-        ThreadGroups.x = cols;
+        ThreadGroups.x = cols / groupSize.x;
+        if (ThreadGroups.x * groupSize.x < cols)
+        {
+            ThreadGroups.x++;
+        }
 
         int dy = maxY - minY;
         int rows = dy + 1;
-
-        ThreadGroups.y = rows / GROUP_SIZE;
-        if (rows % GROUP_SIZE > 0)
+        ThreadGroups.y = rows / groupSize.y;
+        if (ThreadGroups.y * groupSize.y < rows)
         {
             ThreadGroups.y++;
         }
@@ -40,5 +41,5 @@ public class IntelGPUShaderRegion
         CalculationPosition.y = minY;
     }
 
-    public IntelGPUShaderRegion(Vector2Int a, Vector2Int b, Vector2Int c, Vector2Int d) : this(a, b, c, d, 0) { }
+    public ShaderRegion(Vector2Int a, Vector2Int b, Vector2Int c, Vector2Int d, Vector2Int groupSize) : this(a, b, c, d, groupSize, 0) { }
 }

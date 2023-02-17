@@ -1725,4 +1725,6 @@ public class Notes : MonoBehaviour
  *   - IntelGPUShaderRegion
  *   - Anchor in Config setzbar machen? Muss aber auf Enums basieren, weil Width und Length unbedingt in der Rakel korrigiert werden müssen
  * 
+ * 17.02.2023
+ * 12:45 - 
  */

@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
 using UnityEngine;
 
-public class TestIntelGPUShaderRegion
+public class TestShaderRegion
 {
     [Test]
     public void Point()
@@ -10,7 +10,9 @@ public class TestIntelGPUShaderRegion
         Vector2Int b = a;
         Vector2Int c = a;
         Vector2Int d = a;
-        IntelGPUShaderRegion sr = new IntelGPUShaderRegion(a, b, c, d);
+        Vector2Int groupSize = new Vector2Int(8, 1);
+
+        ShaderRegion sr = new ShaderRegion(a, b, c, d, groupSize);
 
         Assert.AreEqual(
             1,
@@ -50,15 +52,17 @@ public class TestIntelGPUShaderRegion
         Vector2Int b = a;
         Vector2Int c = a;
         Vector2Int d = a;
-        IntelGPUShaderRegion sr = new IntelGPUShaderRegion(a, b, c, d, 1);
+        Vector2Int groupSize = new Vector2Int(8, 1);
+
+        ShaderRegion sr = new ShaderRegion(a, b, c, d, groupSize, 1);
 
         Assert.AreEqual(
-            3,
+            1,
             sr.ThreadGroups.x
         );
 
         Assert.AreEqual(
-            1,
+            3,
             sr.ThreadGroups.y
         );
 
@@ -84,56 +88,15 @@ public class TestIntelGPUShaderRegion
     }
 
     [Test]
-    public void LineHorizontal_SmallerThanGroupSize()
+    public void Rectangle_SmallerThanGroupSize()
     {
-        Vector2Int a = new Vector2Int(0, 0);
-        Vector2Int b = a;
-        Vector2Int c = new Vector2Int(1, 0);
-        Vector2Int d = c;
-
-        IntelGPUShaderRegion sr = new IntelGPUShaderRegion(a, b, c, d);
-
-        Assert.AreEqual(
-            2,
-            sr.ThreadGroups.x
-        );
-
-        Assert.AreEqual(
-            1,
-            sr.ThreadGroups.y
-        );
-    }
-
-    [Test]
-    public void LineHorizontal_BiggerThanGroupSize()
-    {
-        Vector2Int a = new Vector2Int(0, 0);
-        Vector2Int b = a;
-        Vector2Int c = new Vector2Int(9, 0);
-        Vector2Int d = c;
-
-        IntelGPUShaderRegion sr = new IntelGPUShaderRegion(a, b, c, d);
-
-        Assert.AreEqual(
-            10,
-            sr.ThreadGroups.x
-        );
-
-        Assert.AreEqual(
-            1,
-            sr.ThreadGroups.y
-        );
-    }
-
-    [Test]
-    public void LineVertical_SmallerThanGroupSize()
-    {
-        Vector2Int a = new Vector2Int(0, 1);
-        Vector2Int b = a;
+        Vector2Int a = new Vector2Int(0, 2);
+        Vector2Int b = new Vector2Int(6, 2);
         Vector2Int c = new Vector2Int(0, 0);
-        Vector2Int d = c;
+        Vector2Int d = new Vector2Int(6, 0);
+        Vector2Int groupSize = new Vector2Int(8, 4);
 
-        IntelGPUShaderRegion sr = new IntelGPUShaderRegion(a, b, c, d);
+        ShaderRegion sr = new ShaderRegion(a, b, c, d, groupSize);
 
         Assert.AreEqual(
             1,
@@ -144,56 +107,98 @@ public class TestIntelGPUShaderRegion
             1,
             sr.ThreadGroups.y
         );
-    }
-
-    [Test]
-    public void LineVertical_BiggerThanGroupSize()
-    {
-        Vector2Int a = new Vector2Int(0, 8);
-        Vector2Int b = a;
-        Vector2Int c = new Vector2Int(0, 0);
-        Vector2Int d = c;
-
-        IntelGPUShaderRegion sr = new IntelGPUShaderRegion(a, b, c, d);
 
         Assert.AreEqual(
-            1,
-            sr.ThreadGroups.x
-        );
-
-        Assert.AreEqual(
-            2,
-            sr.ThreadGroups.y
-        );
-    }
-
-    [Test]
-    public void Rectangle()
-    {
-        Vector2Int a = new Vector2Int(0, 16);
-        Vector2Int b = new Vector2Int(8, 16);
-        Vector2Int c = new Vector2Int(0, 0);
-        Vector2Int d = new Vector2Int(8, 0);
-
-        IntelGPUShaderRegion sr = new IntelGPUShaderRegion(a, b, c, d);
-
-        Assert.AreEqual(
-            9,
-            sr.ThreadGroups.x
-        );
-
-        Assert.AreEqual(
-            3,
-            sr.ThreadGroups.y
-        );
-
-        Assert.AreEqual(
-            9,
+            7,
             sr.CalculationSize.x
         );
 
         Assert.AreEqual(
+            3,
+            sr.CalculationSize.y
+        );
+
+        Assert.AreEqual(
+            0,
+            sr.CalculationPosition.x
+        );
+
+        Assert.AreEqual(
+            0,
+            sr.CalculationPosition.y
+        );
+    }
+
+    [Test]
+    public void Rectangle_ExactlyGroupSize()
+    {
+        Vector2Int a = new Vector2Int(0, 3);
+        Vector2Int b = new Vector2Int(7, 3);
+        Vector2Int c = new Vector2Int(0, 0);
+        Vector2Int d = new Vector2Int(7, 0);
+        Vector2Int groupSize = new Vector2Int(8, 4);
+
+        ShaderRegion sr = new ShaderRegion(a, b, c, d, groupSize);
+
+        Assert.AreEqual(
+            1,
+            sr.ThreadGroups.x
+        );
+
+        Assert.AreEqual(
+            1,
+            sr.ThreadGroups.y
+        );
+
+        Assert.AreEqual(
+            8,
+            sr.CalculationSize.x
+        );
+
+        Assert.AreEqual(
+            4,
+            sr.CalculationSize.y
+        );
+
+        Assert.AreEqual(
+            0,
+            sr.CalculationPosition.x
+        );
+
+        Assert.AreEqual(
+            0,
+            sr.CalculationPosition.y
+        );
+    }
+
+    [Test]
+    public void Rectangle_BiggerThanGroupSize()
+    {
+        Vector2Int a = new Vector2Int(0, 4);
+        Vector2Int b = new Vector2Int(16, 4);
+        Vector2Int c = new Vector2Int(0, 0);
+        Vector2Int d = new Vector2Int(16, 0);
+        Vector2Int groupSize = new Vector2Int(8, 4);
+
+        ShaderRegion sr = new ShaderRegion(a, b, c, d, groupSize);
+
+        Assert.AreEqual(
+            3,
+            sr.ThreadGroups.x
+        );
+
+        Assert.AreEqual(
+            2,
+            sr.ThreadGroups.y
+        );
+
+        Assert.AreEqual(
             17,
+            sr.CalculationSize.x
+        );
+
+        Assert.AreEqual(
+            5,
             sr.CalculationSize.y
         );
 

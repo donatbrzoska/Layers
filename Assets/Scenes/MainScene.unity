@@ -5229,6 +5229,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   BENCHMARK: 0
+  TH_GROUP_SIZE_X: 1
+  TH_GROUP_SIZE_Y: 8
 --- !u!114 &1643505815
 MonoBehaviour:
   m_ObjectHideFlags: 0
