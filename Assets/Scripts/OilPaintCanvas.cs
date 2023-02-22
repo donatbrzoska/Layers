@@ -58,7 +58,7 @@ public class OilPaintCanvas
             },
             null,
             new List<ComputeBuffer>(),
-            null
+            false
         );
 
         cst.Run();

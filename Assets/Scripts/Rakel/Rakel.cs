@@ -137,7 +137,7 @@ public class Rakel : IRakel
             oilPaintCanvas.NormalMap);
     }
 
-    private void DuplicateReservoir(ShaderRegion shaderRegion, int discardVolumeThreshold, int smoothingKernelSize)
+    private void DuplicateReservoir(ShaderRegion shaderRegion, int discardVolumeThreshold, int smoothingKernelSize, bool debugEnabled=false)
     {
         List<CSAttribute> attributes = new List<CSAttribute>()
         {
@@ -152,8 +152,7 @@ public class Rakel : IRakel
             attributes,
             null,
             new List<ComputeBuffer>(),
-            null
-        //new List<int>() { duplicateSR.CalculationSize.x, duplicateSR.CalculationSize.y }
+            debugEnabled
         );
 
         EnqueueOrRun(cst);
@@ -163,7 +162,8 @@ public class Rakel : IRakel
         RakelSnapshot rakelSnapshot,
         ShaderRegion shaderRegion,
         WorldSpaceCanvas wsc,
-        TransferMapMode transferMapMode)
+        TransferMapMode transferMapMode,
+        bool debugEnabled = false)
     {
 
         ComputeBuffer RakelEmittedPaint = new ComputeBuffer(shaderRegion.CalculationSize.x * shaderRegion.CalculationSize.y,
@@ -201,8 +201,7 @@ public class Rakel : IRakel
             attributes,
             null,
             new List<ComputeBuffer>(),
-            null
-        //new List<int>() { emitSR.CalculationSize.x, emitSR.CalculationSize.y }
+            debugEnabled
         );
 
         EnqueueOrRun(cst);
@@ -214,7 +213,8 @@ public class Rakel : IRakel
         ShaderRegion shaderRegion,
         int textureWidth,
         ComputeBuffer rakelEmittedPaint,
-        ComputeBuffer canvasReservoir)
+        ComputeBuffer canvasReservoir,
+        bool debugEnabled = false)
     {
         List<CSAttribute> attributes = new List<CSAttribute>()
         {
@@ -230,7 +230,7 @@ public class Rakel : IRakel
             attributes,
             null,
             new List<ComputeBuffer>() { rakelEmittedPaint },
-            null
+            debugEnabled
         );
 
         EnqueueOrRun(cst);
@@ -240,8 +240,8 @@ public class Rakel : IRakel
         ShaderRegion shaderRegion,
         Vector2Int textureSize,
         ComputeBuffer CanvasReservoir,
-        RenderTexture CanvasTexture
-        )
+        RenderTexture CanvasTexture,
+        bool debugEnabled = false)
     {
         List<CSAttribute> attributes = new List<CSAttribute>()
         {
@@ -257,7 +257,7 @@ public class Rakel : IRakel
             attributes,
             null,
             new List<ComputeBuffer>(),
-            null
+            debugEnabled
         );
 
         EnqueueOrRun(cst);
@@ -267,7 +267,8 @@ public class Rakel : IRakel
         ShaderRegion shaderRegion,
         Vector2Int textureSize,
         ComputeBuffer canvasReservoir,
-        RenderTexture canvasNormalMap)
+        RenderTexture canvasNormalMap,
+        bool debugEnabled = false)
     {
         List<CSAttribute> attributes = new List<CSAttribute>()
         {
@@ -283,7 +284,7 @@ public class Rakel : IRakel
             attributes,
             null,
             new List<ComputeBuffer>(),
-            null
+            debugEnabled
         );
 
         EnqueueOrRun(cst);

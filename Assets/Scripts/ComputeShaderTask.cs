@@ -136,12 +136,13 @@ public class CSFloats4 : CSAttribute
 
 public class ComputeShaderTask {
     public string Name;
+    private ShaderRegion ShaderRegion;
     public ComputeShader ComputeShader;
     public List<CSAttribute> Attributes;
     public Vector2Int ThreadGroups;
     public ComputeBuffer FinishedMarkerBuffer;
     public List<ComputeBuffer> BuffersToDispose;
-    public List<int> DebugBufferSize;
+    public bool DebugEnabled;
 
     public ComputeShaderTask(
         string name,
@@ -149,13 +150,14 @@ public class ComputeShaderTask {
         List<CSAttribute> attributes,
         ComputeBuffer finishedMarkerBuffer,
         List<ComputeBuffer> buffersToDispose,
-        List<int> debugBufferSize)
+        bool debugEnabled)
     {
         Name = name;
+        ShaderRegion = shaderRegion;
         Attributes = attributes;
         FinishedMarkerBuffer = finishedMarkerBuffer;
         BuffersToDispose = buffersToDispose;
-        DebugBufferSize = debugBufferSize;
+        DebugEnabled = debugEnabled;
 
         ComputeShader = (ComputeShader)Resources.Load(name);
         ThreadGroups = shaderRegion.ThreadGroups;
@@ -179,16 +181,17 @@ public class ComputeShaderTask {
         //Vector2Int[] debugValues = new Vector2Int[1]; // just for C#
         //Vector3[] debugValues = new Vector3[1]; // just for C#
         //Color[] debugValues = new Color[1]; // just for C#
-        if (DebugBufferSize != null)
+        if (DebugEnabled)
         {
             debugBuffer.Dispose();
-            debugBuffer = new ComputeBuffer(DebugBufferSize[0] * DebugBufferSize[1] * 4, sizeof(float));
-            //debugValues = new float[DebugBufferSize[0] * DebugBufferSize[1]];
-            //debugValues = new int[DebugBufferSize[0] * DebugBufferSize[1]];
-            debugValues = new Vector2[DebugBufferSize[0] * DebugBufferSize[1]];
-            //debugValues = new Vector2Int[DebugBufferSize[0] * DebugBufferSize[1]];
-            //debugValues = new Vector3[DebugBufferSize[0] * DebugBufferSize[1]];
-            //debugValues = new Color[DebugBufferSize[0] * DebugBufferSize[1]];
+            int debugBufferSize = ShaderRegion.CalculationSize.x * ShaderRegion.CalculationSize.y;
+            debugBuffer = new ComputeBuffer(debugBufferSize * 4, sizeof(float));
+            //debugValues = new float[debugBufferSize];
+            //debugValues = new int[debugBufferSize];
+            debugValues = new Vector2[debugBufferSize];
+            //debugValues = new Vector2Int[debugBufferSize];
+            //debugValues = new Vector3[debugBufferSize];
+            //debugValues = new Color[debugBufferSize];
             debugBuffer.SetData(debugValues);
             ComputeShader.SetBuffer(0, "Debug", debugBuffer);
         }
@@ -220,10 +223,10 @@ public class ComputeShaderTask {
         //}
 
 
-        if (DebugBufferSize != null)
+        if (DebugEnabled)
         {
             debugBuffer.GetData(debugValues);
-            LogUtil.Log(debugValues, DebugBufferSize[1], "debug");
+            LogUtil.Log(debugValues, ShaderRegion.CalculationSize.y, "debug");
 
             //int sum = 0;
             //for (int i = 0; i < debugValues.GetLength(0); i++)
