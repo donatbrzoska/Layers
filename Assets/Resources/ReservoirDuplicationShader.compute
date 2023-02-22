@@ -1,38 +1,45 @@
+// ######################################## SHADER BASE ########################################
+
 #pragma kernel main
 
-// RWStructuredBuffer<float2> Debug;
+#include "basic_util.hlsl"
+#include "index_util.hlsl"
+#include "log_util.hlsl"
 
-uint2 CalculationSize; // == ReservoirSize in this case
+uint3 id;
+
+// Filter #1
+uint2 CalculationSize;
+
+RWStructuredBuffer<float4> Debug;
+RWStructuredBuffer<int> DebugType;
+
+void set_debug_type(int t)
+{
+    DebugType[0] = t;
+}
+
+void log_(float4 f)
+{
+    Debug[XY(id.x, id.y, CalculationSize.x)] = f;
+}
+
+// ###################################### SHADER BASE END ######################################
+
+#include "paint.hlsl"
+
 uint SmoothingKernelSize;
 int DiscardVolumeThreshhold;
 
-struct Paint {
-    float4 color;
-    int volume;
-};
 RWStructuredBuffer<Paint> Reservoir;
 
 // RWStructuredBuffer<int> Finished;
 
-bool is_relevant_thread(uint3 id)
-{
-    return all(id.xy < CalculationSize);
-}
-
-uint XY(uint x, uint y, uint width)
-{
-    return y * width + x;
-}
-
-uint XYZ(uint x, uint y, uint z, uint2 dimensions)
-{
-    return z * dimensions.y * dimensions.x + y * dimensions.x + x;
-}
 
 [numthreads(1,8,1)]
 void main (uint3 id : SV_DispatchThreadID)
 {
-    if (is_relevant_thread(id))
+    if (is_relevant_thread(id, CalculationSize))
     {
         Paint available;
         if (SmoothingKernelSize > 1) {

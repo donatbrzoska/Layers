@@ -1,15 +1,35 @@
+// ######################################## SHADER BASE ########################################
+
 #pragma kernel main
 
-// RWStructuredBuffer<float3> Debug;
+#include "basic_util.hlsl"
+#include "index_util.hlsl"
+#include "log_util.hlsl"
 
+uint3 id;
+
+// Filter #1
 uint2 CalculationSize;
+
+RWStructuredBuffer<float4> Debug;
+RWStructuredBuffer<int> DebugType;
+
+void set_debug_type(int t)
+{
+    DebugType[0] = t;
+}
+
+void log_(float4 f)
+{
+    Debug[XY(id.x, id.y, CalculationSize.x)] = f;
+}
+
+// ###################################### SHADER BASE END ######################################
+
+#include "paint.hlsl"
 
 int2 CalculationPosition;
 
-struct Paint {
-    float4 color;
-    int volume;
-};
 RWStructuredBuffer<Paint> CanvasReservoir;
 
 RWTexture2D<float4> CanvasTexture;
@@ -19,11 +39,6 @@ uint2 TextureSize;
 // RWStructuredBuffer<int> Finished;
 
 
-bool is_relevant_thread(uint3 id)
-{
-    return all(id.xy < CalculationSize);
-}
-
 bool pixel_in_canvas_range(int2 pixel)
 {
     return pixel.x >= 0
@@ -32,16 +47,11 @@ bool pixel_in_canvas_range(int2 pixel)
         && pixel.y < (int)TextureSize.y;
 }
 
-uint XY(uint x, uint y, uint width)
-{
-    return y * width + x;
-}
-
 [numthreads(1,8,1)]
 void main (uint3 id : SV_DispatchThreadID)
 {
     // Filter #1
-    if (is_relevant_thread(id))
+    if (is_relevant_thread(id, CalculationSize))
     {
         // calculate pixel position on canvas
         int2 canvas_pixel = id.xy + CalculationPosition;

@@ -1,21 +1,41 @@
+// ######################################## SHADER BASE ########################################
+
 #pragma kernel main
 
+#include "basic_util.hlsl"
+#include "index_util.hlsl"
+#include "log_util.hlsl"
+
+uint3 id;
+
+// Filter #1
 uint2 CalculationSize;
+
+RWStructuredBuffer<float4> Debug;
+RWStructuredBuffer<int> DebugType;
+
+void set_debug_type(int t)
+{
+    DebugType[0] = t;
+}
+
+void log_(float4 f)
+{
+    Debug[XY(id.x, id.y, CalculationSize.x)] = f;
+}
+
+// ###################################### SHADER BASE END ######################################
 
 float4 Value;
 RWTexture2D<float4> Target;
 
 // RWStructuredBuffer<int> Finished;
 
-bool is_relevant_thread(uint3 id)
-{
-    return all(id.xy < CalculationSize);
-}
 
 [numthreads(1,8,1)]
 void main (uint3 id : SV_DispatchThreadID)
 {
-    if (is_relevant_thread(id))
+    if (is_relevant_thread(id, CalculationSize))
     {
         Target[id.xy] = Value;
     }

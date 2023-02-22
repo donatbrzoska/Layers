@@ -1,6 +1,10 @@
+// ######################################## SHADER BASE ########################################
+
 #pragma kernel main
-// https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-intrinsic-functions
-// https://learn.microsoft.com/en-us/windows/win32/direct3d11/direct3d-11-advanced-stages-cs-atomic-functions
+
+#include "basic_util.hlsl"
+#include "index_util.hlsl"
+#include "log_util.hlsl"
 
 uint3 id;
 
@@ -9,11 +13,6 @@ uint2 CalculationSize;
 
 RWStructuredBuffer<float4> Debug;
 RWStructuredBuffer<int> DebugType;
-
-uint XY(uint x, uint y, uint width)
-{
-    return y * width + x;
-}
 
 void set_debug_type(int t)
 {
@@ -25,32 +24,11 @@ void log_(float4 f)
     Debug[XY(id.x, id.y, CalculationSize.x)] = f;
 }
 
-void log_float(float f)
-{
-    log_(float4(f,0,0,0));
-    set_debug_type(1);
-}
+// ###################################### SHADER BASE END ######################################
 
-void log_float2(float2 f)
-{
-    log_(float4(f.x,f.y,0,0));
-    set_debug_type(2);
-}
+#include "paint.hlsl"
+#include "math_util.hlsl"
 
-void log_float3(float3 f)
-{
-    log_(float4(f.x,f.y,f.z,0));
-    set_debug_type(3);
-}
-
-void log_float4(float4 f)
-{
-    log_(f);
-    set_debug_type(4);
-}
-
-
-// Filter #2
 uint2 CalculationPosition;
 
 uint2 TextureSize;
@@ -73,10 +51,6 @@ float3 RakelLRTilted;
 // Emitting
 uint TransferMapMode;
 
-struct Paint {
-    float4 color;
-    int volume;
-};
 uint2 RakelReservoirSize;
 uint RakelReservoirResolution;
 // uint2 RakelLowerLeftRounded;
@@ -87,33 +61,6 @@ RWStructuredBuffer<Paint> RakelEmittedPaint;
 
 // RWStructuredBuffer<int> Finished;
 
-
-bool f2_eq(float2 a, float2 b){
-    float err = 0.01;
-    return abs(a.x - b.x) < err
-        && abs(a.y - b.y) < err;
-}
-
-uint IJ(uint i, uint j)
-{
-    return i * 2 + j;
-}
-
-uint XYZ(uint x, uint y, uint z, uint2 dimensions)
-{
-    return z * dimensions.y * dimensions.x + y * dimensions.x + x;
-}
-
-// // b is right from a
-// float angle_between(float3 a, float3 b)
-// {
-//     return acos(dot(a,b)/(length(a)*length(b))); // TODO MAYBE THIS IS BUGGY BECAUSE OF RADS/DEGREES
-// }
-
-bool is_relevant_thread(uint3 id)
-{
-    return all(id.xy < CalculationSize);
-}
 
 float3 map_to_world_space(int2 pixel, uint texture_resolution, float3 canvas_position, float2 canvas_size)
 {
@@ -128,55 +75,6 @@ float3 map_to_world_space(int2 pixel, uint texture_resolution, float3 canvas_pos
     return canvas_aligned;
 }
 
-// rotates clockwise
-float3 rotate_by_z(float3 vec, float angle, float3 around)
-{
-    float3 vec_ = vec - around;
-
-    float rad = radians(angle);
-    float s = sin(rad);
-    float c = cos(rad);
-    float3x3 rotation = {
-        c, -s, 0,
-        s,  c, 0,
-        0,  0, 1
-    };
-    
-    float3 result = mul(vec_, rotation);
-    return result + around;
-
-
-    // float3 origin_aligned = vec - around;
-    // float2 vec_ = float2(origin_aligned.x, origin_aligned.y);
-
-    // float rad = radians(angle);
-    // float s = sin(rad);
-    // float c = cos(rad);
-    // float2x2 rotation = {
-    //     c, -s,
-    //     s,  c,
-    // };
-    
-    // float2 result = mul(vec_, rotation);
-    // return float3(result.x, result.y, vec.z) + around;
-}
-
-// rotates clockwise
-float2 rotate(float2 vec, float angle, float2 around)
-{
-    float2 vec_ = vec - around;
-
-    float rad = radians(angle);
-    float s = sin(rad);
-    float c = cos(rad);
-    float2x2 rotation = {
-        c, -s,
-        s,  c,
-    };
-
-    float2 result = mul(vec_, rotation);
-    return result + around;
-}
 
 // returns:
 // - x: part of dx of rakel, 0-err..1+err would mean pixel is under rakel
@@ -207,18 +105,6 @@ float3 rakel_mapped(int2 pos_pixel)
 
     return float3(part_x, part_y, dist);
 }
-
-// float2 rotate_around_origin(int2 vec, float angle)
-// {
-//     float rad = radians(angle);
-//     float s = sin(rad);
-//     float c = cos(rad);
-//     float2x2 mat = {
-//         c, -s,
-//         s,  c
-//     };
-//     return mul(vec, mat);
-// }
 
 bool pixel_in_reservoir_range(int2 pixel)
 {
@@ -575,7 +461,7 @@ void main (uint3 id_ : SV_DispatchThreadID)
 {
     id = id_;
     // Filter #1
-    if (is_relevant_thread(id))
+    if (is_relevant_thread(id, CalculationSize))
     {
         // calculate pixel position on canvas
         // was uint2 before, but negative values are possible due to padding and no prevention of that because it should not cause any more problems
@@ -591,6 +477,7 @@ void main (uint3 id_ : SV_DispatchThreadID)
                                         rakel_mapped_info.y * RakelReservoirSize.y - 0.5);
         
         do_emit(reservoir_pixel);
+        // log_float(2);
     }
     // if (id.x == 0 && id.y == 0)
     // {

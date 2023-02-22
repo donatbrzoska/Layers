@@ -1,13 +1,33 @@
-#pragma kernel main
-// https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-intrinsic-functions
-// https://learn.microsoft.com/en-us/windows/win32/direct3d11/direct3d-11-advanced-stages-cs-atomic-functions
+// ######################################## SHADER BASE ########################################
 
-// RWStructuredBuffer<float3> Debug;
+#pragma kernel main
+
+#include "basic_util.hlsl"
+#include "index_util.hlsl"
+#include "log_util.hlsl"
+
+uint3 id;
 
 // Filter #1
 uint2 CalculationSize;
 
-// Filter #2
+RWStructuredBuffer<float4> Debug;
+RWStructuredBuffer<int> DebugType;
+
+void set_debug_type(int t)
+{
+    DebugType[0] = t;
+}
+
+void log_(float4 f)
+{
+    Debug[XY(id.x, id.y, CalculationSize.x)] = f;
+}
+
+// ###################################### SHADER BASE END ######################################
+
+#include "math_util.hlsl"
+
 uint2 CalculationPosition;
 
 uint2 TextureSize;
@@ -26,26 +46,6 @@ float2 RakelOriginBoundaries;
 
 RWTexture2D<float4> Texture;
 
-uint IJ(uint i, uint j)
-{
-    return i * 2 + j;
-}
-
-uint XY(uint x, uint y, uint width)
-{
-    return y * width + x;
-}
-
-// // b is right from a
-// float angle_between(float3 a, float3 b)
-// {
-//     return acos(dot(a,b)/(length(a)*length(b))); // TODO MAYBE THIS IS BUGGY BECAUSE OF RADS/DEGREES
-// }
-
-bool is_relevant_thread(uint3 id)
-{
-    return id.x < CalculationSize.x && id.y < CalculationSize.y;
-}
 
 float3 map_to_world_space(uint2 pixel, uint2 texture_size, float3 canvas_position, float2 canvas_size)
 {
@@ -58,21 +58,6 @@ float3 map_to_world_space(uint2 pixel, uint2 texture_size, float3 canvas_positio
     float3 canvas_aligned = positive_canvas_aligned + canvas_lower_left;
 
     return canvas_aligned;
-}
-
-float3 rotate_by_z(float3 vec, float angle, float3 around)
-{
-    float3 vec_ = vec - around;
-
-    float rad = radians(angle);
-    float s = sin(rad);
-    float c = cos(rad);
-    float3 result = float3(
-        vec_.x * c + vec_.y * s,
-        vec_.y * c - vec_.x * s,
-        vec_.z
-    );
-    return result + around;
 }
 
 bool pixel_is_under_rakel(uint2 pos_pixel)
@@ -102,7 +87,7 @@ bool pixel_is_under_rakel(uint2 pos_pixel)
 void main (uint3 id : SV_DispatchThreadID)
 {
     // Filter #1
-    if (is_relevant_thread(id)) {
+    if (is_relevant_thread(id, CalculationSize)) {
         // calculate pixel position on canvas
         uint2 pos_pixel = id.xy + uint2(CalculationPosition.x, CalculationPosition.y);
 
