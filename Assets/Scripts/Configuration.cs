@@ -22,6 +22,18 @@ public class Configuration
         FillConfiguration = new FillConfiguration();
         TransferConfiguration = new TransferConfiguration();
     }
+
+    public void LoadDebug()
+    {
+        CanvasResolution = 1;
+
+        RakelConfiguration.Resolution = 1;
+        RakelConfiguration.Length = 2;
+        RakelConfiguration.Width = 1;
+
+        FillConfiguration.Volume = 1;
+        FillConfiguration.Mode = FillMode.FlatColored;
+    }
 }
 
 public class RakelConfiguration

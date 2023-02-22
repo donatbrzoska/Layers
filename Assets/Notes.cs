@@ -1726,5 +1726,53 @@ public class Notes : MonoBehaviour
  *   - Anchor in Config setzbar machen? Muss aber auf Enums basieren, weil Width und Length unbedingt in der Rakel korrigiert werden müssen
  * 
  * 17.02.2023
- * 12:45 - 
+ * 12:45 - 14:00 1,25h
+ * 15:15 - 16:30 1,25h
+ * 2,5h
+ * - CanvasReservoir müsste dupliziert werden für Emit von dort
+ * -> spätestens mit mehreren Farbschichten extrem Speicheraufwändig
+ * 
+ * - Kann man einen generischen Shader schreiben für das Emit aus Canvas- und Rakel-Reservoir?
+ * 
+ * Plan für dieses Semester:
+ * - bidirektionaler Farbaustausch
+ *   - Reservoir-Duplication <-> Doppelt Sampeln
+ *   - Doppelt Sampeln: Integer vs Float
+ * - tilted Rakeln wären echt gut
+ * 
+ * 19.02.2023
+ * 17:15 - 18:00 0,75h
+ * 20:00 - 21:00 1h
+ * 22:00 - 23:15 1,25h
+ * 3h
+ * 
+ * - Interpolation ins PickupReservoir sicht nicht 100% sauber aus
+ * - 3D-Effekt verschwunden
+ *   -> vermutlich weil ja auch wieder Farbe mitgenommen wird
+ * - CopyBufferToBufferShader macht die Farben komplett Schwarz
+ *   - evtl. macht es doch Sinn, CopyBufferToBuffer aufzuteilen
+ *   
+ * 20.02.2023
+ * 14:15 - 14:45 0.5h
+ * 15:45 - 16:00 0.25h
+ * 18:30 - 21:30 3h
+ * 3,75h
+ * 
+ * TODO Enable Debug in ComputeShaderTask kann auch einfach ein bool sein
+ * -> Buffergröße ist sowieso immer gleich der ShaderRegion-Größe
+ * TODO Klammern für Funktionen in den Shadern vereinheitlichen
+ * 
+ * Dadurch dass die Farbe sich beim Übertragen auf den Canvas im Pixel verteilt,
+ * kann man nicht davon ausgehen, dass beim abnehmen an der selben Stelle wieder
+ * genau gleich viel Farbe mitgenommen wird. Denn die Farbe ist sozusagen über den
+ * Rand der Rakel hinaus auf der Leinwand.
+ * 
+ * - aufgehört bei:
+ *   - ApplyCanvasInputBuffer debuggen -> immer noch herausfinden wieso da alles schwarz wird
+ * - Zwischenbuffer evtl. entfernen?
+ * 
+ * 22.02.2023
+ * 11:00 - 11:45 0,75h
+ * 12:15 - 12:30 0,25h
+ * 13:30 - 
  */
