@@ -34,6 +34,7 @@ public class OilPaintEngine : MonoBehaviour
     void Awake()
     {
         Configuration = new Configuration();
+        //Configuration.LoadDebug();
 
         int wallColliderID = GameObject.Find("Wall").GetComponent<MeshCollider>().GetInstanceID();
         int canvasColliderID = GameObject.Find("Canvas").GetComponent<MeshCollider>().GetInstanceID();

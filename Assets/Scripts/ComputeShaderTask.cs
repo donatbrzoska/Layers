@@ -175,25 +175,18 @@ public class ComputeShaderTask {
 
 
         ComputeBuffer debugBuffer = new ComputeBuffer(1, sizeof(float)); // just for C#
-        //float[] debugValues = new float[1]; // just for C#
-        //int[] debugValues = new int[1]; // just for C#
-        Vector2[] debugValues = new Vector2[1]; // just for C#
-        //Vector2Int[] debugValues = new Vector2Int[1]; // just for C#
-        //Vector3[] debugValues = new Vector3[1]; // just for C#
-        //Color[] debugValues = new Color[1]; // just for C#
+        Color[] debugValues = new Color[1]; // just for C#
+        ComputeBuffer debugTypeBuffer = new ComputeBuffer(1, sizeof(int));
+        int[] debugTypeValue = new int[] { 0 };
         if (DebugEnabled)
         {
             debugBuffer.Dispose();
             int debugBufferSize = ShaderRegion.CalculationSize.x * ShaderRegion.CalculationSize.y;
             debugBuffer = new ComputeBuffer(debugBufferSize * 4, sizeof(float));
-            //debugValues = new float[debugBufferSize];
-            //debugValues = new int[debugBufferSize];
-            debugValues = new Vector2[debugBufferSize];
-            //debugValues = new Vector2Int[debugBufferSize];
-            //debugValues = new Vector3[debugBufferSize];
-            //debugValues = new Color[debugBufferSize];
+            debugValues = new Color[debugBufferSize];
             debugBuffer.SetData(debugValues);
             ComputeShader.SetBuffer(0, "Debug", debugBuffer);
+            ComputeShader.SetBuffer(0, "DebugType", debugTypeBuffer);
         }
 
 
@@ -226,7 +219,10 @@ public class ComputeShaderTask {
         if (DebugEnabled)
         {
             debugBuffer.GetData(debugValues);
-            LogUtil.Log(debugValues, ShaderRegion.CalculationSize.y, "debug");
+            debugTypeBuffer.GetData(debugTypeValue);
+            DebugType debugType = (DebugType) debugTypeValue[0];
+
+            LogUtil.Log(debugValues, ShaderRegion.CalculationSize.y, Name, debugType);
 
             //int sum = 0;
             //for (int i = 0; i < debugValues.GetLength(0); i++)
@@ -236,6 +232,7 @@ public class ComputeShaderTask {
             //Debug.Log("Sum is " + sum);
         }
         debugBuffer.Dispose();
+        debugTypeBuffer.Dispose();
 
 
         foreach (ComputeBuffer c in BuffersToDispose)

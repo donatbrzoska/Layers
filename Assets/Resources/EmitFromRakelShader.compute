@@ -2,11 +2,53 @@
 // https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-intrinsic-functions
 // https://learn.microsoft.com/en-us/windows/win32/direct3d11/direct3d-11-advanced-stages-cs-atomic-functions
 
-// RWStructuredBuffer<float2> Debug;
 uint3 id;
 
 // Filter #1
 uint2 CalculationSize;
+
+RWStructuredBuffer<float4> Debug;
+RWStructuredBuffer<int> DebugType;
+
+uint XY(uint x, uint y, uint width)
+{
+    return y * width + x;
+}
+
+void set_debug_type(int t)
+{
+    DebugType[0] = t;
+}
+
+void log_(float4 f)
+{
+    Debug[XY(id.x, id.y, CalculationSize.x)] = f;
+}
+
+void log_float(float f)
+{
+    log_(float4(f,0,0,0));
+    set_debug_type(1);
+}
+
+void log_float2(float2 f)
+{
+    log_(float4(f.x,f.y,0,0));
+    set_debug_type(2);
+}
+
+void log_float3(float3 f)
+{
+    log_(float4(f.x,f.y,f.z,0));
+    set_debug_type(3);
+}
+
+void log_float4(float4 f)
+{
+    log_(f);
+    set_debug_type(4);
+}
+
 
 // Filter #2
 uint2 CalculationPosition;
@@ -55,11 +97,6 @@ bool f2_eq(float2 a, float2 b){
 uint IJ(uint i, uint j)
 {
     return i * 2 + j;
-}
-
-uint XY(uint x, uint y, uint width)
-{
-    return y * width + x;
 }
 
 uint XYZ(uint x, uint y, uint z, uint2 dimensions)

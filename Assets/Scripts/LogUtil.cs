@@ -1,6 +1,15 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
+public enum DebugType
+{
+    None,
+    Float,
+    Float2,
+    Float3,
+    Float4
+}
+
 public class LogUtil
 {
     private LogUtil(){ }
@@ -76,7 +85,7 @@ public class LogUtil
         Debug.Log(result);
     }
 
-    public static void Log(Color[] colors, int rows = 1, string descr = "")
+    public static void Log(Color[] colors, int rows = 1, string descr = "", DebugType debugType = DebugType.Float4)
     {
 
         if (descr != "")
@@ -91,12 +100,27 @@ public class LogUtil
             for (int j = 0; j < cols; j++)
             {
                 //string color_str = colors[i * cols + j].rToString();
-                string color_str = colors[i * cols + j].ToString();
+                string color_str = ColorToString(colors[i * cols + j], debugType);
                 result += color_str + " ";
             }
             result += "\n";
         }
         Debug.Log(result);
+    }
+
+    private static string ColorToString(Color color, DebugType debugType)
+    {
+        string result = "(";
+        for (int i=0; i<(int)debugType; i++)
+        {
+            result += color[i];
+            if (i<(int)debugType - 1)
+            {
+                result += ", ";
+            }
+        }
+        result += ")";
+        return result;
     }
 
     public static void Log(Vector3[] vecs, int rows = 1, string descr = "")
