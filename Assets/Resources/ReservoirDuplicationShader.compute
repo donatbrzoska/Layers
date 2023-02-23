@@ -8,11 +8,11 @@
 
 uint3 id;
 
-// Filter #1
 uint2 CalculationSize;
 
 RWStructuredBuffer<float4> Debug;
 RWStructuredBuffer<int> DebugType;
+// RWStructuredBuffer<int> Finished;
 
 void set_debug_type(int t)
 {
@@ -32,8 +32,6 @@ uint SmoothingKernelSize;
 int DiscardVolumeThreshhold;
 
 RWStructuredBuffer<Paint> Reservoir;
-
-// RWStructuredBuffer<int> Finished;
 
 
 [numthreads(1,8,1)]
@@ -63,8 +61,6 @@ void main (uint3 id : SV_DispatchThreadID)
         } else {
             available = Reservoir[XYZ(id.x, id.y, 0, CalculationSize)];
         }
-
-        // Debug[XY(id.x, id.y, CalculationSize.x)] = float2(Reservoir[XYZ(id.x, id.y, 0, CalculationSize)].volume, 0);
 
         // delete leftover volume due to integer rounding
         if (available.volume < DiscardVolumeThreshhold) {

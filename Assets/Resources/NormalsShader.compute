@@ -8,11 +8,11 @@
 
 uint3 id;
 
-// Filter #1
 uint2 CalculationSize;
 
 RWStructuredBuffer<float4> Debug;
 RWStructuredBuffer<int> DebugType;
+// RWStructuredBuffer<int> Finished;
 
 void set_debug_type(int t)
 {
@@ -36,9 +36,6 @@ RWTexture2D<float4> NormalMap;
 uint2 TextureSize;
 
 
-// RWStructuredBuffer<int> Finished;
-
-
 bool pixel_in_canvas_range(int2 pixel)
 {
     return pixel.x >= 0
@@ -50,14 +47,12 @@ bool pixel_in_canvas_range(int2 pixel)
 [numthreads(1,8,1)]
 void main (uint3 id : SV_DispatchThreadID)
 {
-    // Filter #1
     if (is_relevant_thread(id, CalculationSize))
     {
         // calculate pixel position on canvas
         int2 canvas_pixel = id.xy + CalculationPosition;
         if (pixel_in_canvas_range(canvas_pixel))
         {
-
             // calculate normal
             // ... ... deal with oob access
             uint left = clamp(canvas_pixel.x-1, 0, TextureSize.x-1);

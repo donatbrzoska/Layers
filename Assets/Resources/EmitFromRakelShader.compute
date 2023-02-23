@@ -8,11 +8,11 @@
 
 uint3 id;
 
-// Filter #1
 uint2 CalculationSize;
 
 RWStructuredBuffer<float4> Debug;
 RWStructuredBuffer<int> DebugType;
+// RWStructuredBuffer<int> Finished;
 
 void set_debug_type(int t)
 {
@@ -60,9 +60,6 @@ RWStructuredBuffer<Paint> RakelApplicationReservoir;
 RWStructuredBuffer<Paint> RakelPickupReservoir;
 
 RWStructuredBuffer<Paint> RakelEmittedPaint;
-
-
-// RWStructuredBuffer<int> Finished;
 
 
 float3 map_to_world_space(int2 pixel, uint texture_resolution, float3 canvas_position, float2 canvas_size)
@@ -120,11 +117,8 @@ bool pixel_in_reservoir_range(int2 pixel)
 // radius of 1 does an emit on a 3x3 area from emit source grid, based on the rounded reservoir_pixel
 void emit(float2 reservoir_pixel, int2 radius)
 {
-    // Debug[XY(id.x, id.y, CalculationSize.x)] = reservoir_pixel;
     int2 reservoir_pixel_nearest = round(reservoir_pixel);
 
-    // 1000 volume is one unit of paint, since it doesnt make sense to
-    // calculate parts of smaller integers and we have to use integers because of InterlockedAdd
     // TODO ratio of application and pickup reservoir
     int VOLUME_TO_EMIT_TARGET = PAINT_UNIT();
 
@@ -195,7 +189,6 @@ void emit(float2 reservoir_pixel, int2 radius)
     Paint result_paint = mix(result_paint_app, result_paint_pu);
 
     // delete amount of taken volume from reservoir (z=0)
-    // int deleted = 0;
     for (int y=-radius.y; y<=radius.y; y++) {
         for (int x=-radius.x; x<=radius.x; x++) {
             int2 coord = reservoir_pixel_nearest + int2(x, y);
@@ -208,11 +201,9 @@ void emit(float2 reservoir_pixel, int2 radius)
                 uint2 coord_ = uint2(coord.x, coord.y);
                 InterlockedAdd(RakelApplicationReservoir[XYZ(coord_.x, coord_.y, 0, RakelReservoirSize)].volume, -to_be_deleted_app);
                 InterlockedAdd(RakelPickupReservoir[XYZ(coord_.x, coord_.y, 0, RakelReservoirSize)].volume, -to_be_deleted_pu);
-                // deleted += to_be_deleted;
             }
         }
     }
-    // Debug[XY(id.x, id.y, CalculationSize.x)] = float2(deleted, 0);
 
     RakelEmittedPaint[XY(id.x, id.y, CalculationSize.x)] = result_paint;
 }
@@ -230,24 +221,20 @@ void do_emit(float2 reservoir_pixel)
 void main (uint3 id_ : SV_DispatchThreadID)
 {
     id = id_;
-    // Filter #1
     if (is_relevant_thread(id, CalculationSize))
     {
         // calculate pixel position on canvas
         // was uint2 before, but negative values are possible due to padding and no prevention of that because it should not cause any more problems
         int2 canvas_pixel = id.xy + CalculationPosition;
-        // Filter #2
         float3 rakel_mapped_info = rakel_mapped(canvas_pixel);
 
         // NOTE: this calculation does not work for a curved rakel
-        float reservoir_pixel_size = 1/float(RakelReservoirResolution);
-            // rakel_mapped_info.x 0 means actually left from the pixel, because the part_ info is about world space
-            // reservoir_pixel is -0.5 for part_k == 0 and RakelReservoirSize.k - 1 + 0.5 for part_k == 1
+        // rakel_mapped_info.x 0 means actually left from the pixel center, because the part_ info is about world space
+        // reservoir_pixel is -0.5 for part_k == 0 and RakelReservoirSize.k - 1 + 0.5 for part_k == 1
         float2 reservoir_pixel = float2(rakel_mapped_info.x * RakelReservoirSize.x - 0.5,
                                         rakel_mapped_info.y * RakelReservoirSize.y - 0.5);
         
         do_emit(reservoir_pixel);
-        // log_float(2);
     }
     // if (id.x == 0 && id.y == 0)
     // {

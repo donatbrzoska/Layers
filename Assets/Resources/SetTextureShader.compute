@@ -8,11 +8,11 @@
 
 uint3 id;
 
-// Filter #1
 uint2 CalculationSize;
 
 RWStructuredBuffer<float4> Debug;
 RWStructuredBuffer<int> DebugType;
+// RWStructuredBuffer<int> Finished;
 
 void set_debug_type(int t)
 {
@@ -28,8 +28,6 @@ void log_(float4 f)
 
 float4 Value;
 RWTexture2D<float4> Target;
-
-// RWStructuredBuffer<int> Finished;
 
 
 [numthreads(1,8,1)]
