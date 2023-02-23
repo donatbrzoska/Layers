@@ -9,7 +9,7 @@ public class Rakel : IRakel
     private Vector3 Anchor { get; }
     private int ReservoirResolution;
 
-    private Vector2Int RservoirSize;
+    private Vector2Int ReservoirSize;
     private Paint[] ApplicationReservoirData;
     private ComputeBuffer ApplicationReservoir; // 3D array, z=1 is for duplication for correct interpolation
     private Paint[] PickupReservoirData;
@@ -23,26 +23,26 @@ public class Rakel : IRakel
     public Rakel(RakelConfiguration config, ShaderRegionFactory shaderRegionFactory, Queue<ComputeShaderTask> computeShaderTasks)
     {
         ReservoirResolution = config.Resolution;
-        RservoirSize.x = (int)(config.Width * config.Resolution);
-        RservoirSize.y = (int)(config.Length * config.Resolution);
+        ReservoirSize.x = (int)(config.Width * config.Resolution);
+        ReservoirSize.y = (int)(config.Length * config.Resolution);
 
-        ApplicationReservoir = new ComputeBuffer(RservoirSize.y * RservoirSize.x * 2,
+        ApplicationReservoir = new ComputeBuffer(ReservoirSize.y * ReservoirSize.x * 2,
                                                       4 * sizeof(float) + sizeof(int));
         // initialize buffer to empty values (Intel does this for you, nvidia doesn't)
-        ApplicationReservoirData = new Paint[RservoirSize.y * RservoirSize.x * 2];
+        ApplicationReservoirData = new Paint[ReservoirSize.y * ReservoirSize.x * 2];
         ApplicationReservoir.SetData(ApplicationReservoirData);
 
-        PickupReservoir = new ComputeBuffer(RservoirSize.y * RservoirSize.x * 2,
+        PickupReservoir = new ComputeBuffer(ReservoirSize.y * ReservoirSize.x * 2,
                                                       4 * sizeof(float) + sizeof(int));
         // initialize buffer to empty values (Intel does this for you, nvidia doesn't)
-        PickupReservoirData = new Paint[RservoirSize.y * RservoirSize.x * 2];
+        PickupReservoirData = new Paint[ReservoirSize.y * ReservoirSize.x * 2];
         PickupReservoir.SetData(PickupReservoirData);
 
 
         // make sure Rakel is not bigger than its reservoir
         float reservoirPixelSize = 1 / (float)config.Resolution;
-        Length = RservoirSize.y * reservoirPixelSize;
-        Width = RservoirSize.x * reservoirPixelSize;
+        Length = ReservoirSize.y * reservoirPixelSize;
+        Width = ReservoirSize.x * reservoirPixelSize;
 
         // NOTE this has to be set after Width and Length were corrected
         Anchor = new Vector3(Width, Length / 2, 0);
@@ -53,7 +53,7 @@ public class Rakel : IRakel
 
     public void Fill(Color_ color, int volume, ReservoirFiller filler)
     {
-        filler.Fill(color, volume, ApplicationReservoirData, RservoirSize);
+        filler.Fill(color, volume, ApplicationReservoirData, ReservoirSize);
         ApplicationReservoir.SetData(ApplicationReservoirData);
 
         //new FlatFiller().Fill(Color_.CadmiumRed, volume / 2, PickupReservoirData, ReservoirSize);
@@ -96,10 +96,10 @@ public class Rakel : IRakel
         //Debug.Log("Applying at x=" + wsc.MapToPixel(rakelPosition));
 
         ShaderRegion duplicateSR = ShaderRegionFactory.Create(
-            new Vector2Int(0, RservoirSize.y - 1),
-            new Vector2Int(RservoirSize.x - 1, RservoirSize.y - 1),
+            new Vector2Int(0, ReservoirSize.y - 1),
+            new Vector2Int(ReservoirSize.x - 1, ReservoirSize.y - 1),
             new Vector2Int(0, 0),
-            new Vector2Int(RservoirSize.x - 1, 0)
+            new Vector2Int(ReservoirSize.x - 1, 0)
         );
 
         RakelSnapshot rakelSnapshot = new RakelSnapshot(Length, Width, Anchor, rakelPosition, rakelRotation, rakelTilt);
@@ -212,7 +212,7 @@ public class Rakel : IRakel
             new CSComputeBuffer("RakelApplicationReservoir", ApplicationReservoir),
             new CSComputeBuffer("RakelPickupReservoir", PickupReservoir),
             new CSComputeBuffer("RakelEmittedPaint", RakelEmittedPaint),
-            new CSInts2("RakelReservoirSize", RservoirSize),
+            new CSInts2("RakelReservoirSize", ReservoirSize),
             new CSInt("RakelReservoirResolution", ReservoirResolution),
             new CSInt("TransferMapMode", (int)transferMapMode)
         };
