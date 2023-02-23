@@ -62,7 +62,7 @@ void main (uint3 id : SV_DispatchThreadID)
             Paint p = CanvasReservoir[XY(canvas_pixel.x, canvas_pixel.y, TextureSize.x)];
 
             // set color
-            if (p.volume > 0)
+            if (!is_empty(p)) // don't render empty paint
             {
                 CanvasTexture[canvas_pixel] = p.color;
             }

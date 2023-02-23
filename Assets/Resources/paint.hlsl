@@ -21,3 +21,8 @@ Paint mix(Paint a, Paint b)
 
     return result;
 }
+
+bool is_empty(Paint p)
+{
+    return p.volume <= 0;
+}

@@ -194,30 +194,27 @@ void emit(float2 reservoir_pixel, int2 radius)
 
     Paint result_paint = mix(result_paint_app, result_paint_pu);
 
-    if (result_paint.volume > 0)
-    {
-        // delete amount of taken volume from reservoir (z=0)
-        // int deleted = 0;
-        for (int y=-radius.y; y<=radius.y; y++) {
-            for (int x=-radius.x; x<=radius.x; x++) {
-                int2 coord = reservoir_pixel_nearest + int2(x, y);
-                if (pixel_in_reservoir_range(coord)) {
-                    uint i = y + radius.y;
-                    uint j = x + radius.x;
-                    int to_be_deleted_app = volume_to_emit_app[i][j];
-                    int to_be_deleted_pu = volume_to_emit_pu[i][j];
+    // delete amount of taken volume from reservoir (z=0)
+    // int deleted = 0;
+    for (int y=-radius.y; y<=radius.y; y++) {
+        for (int x=-radius.x; x<=radius.x; x++) {
+            int2 coord = reservoir_pixel_nearest + int2(x, y);
+            if (pixel_in_reservoir_range(coord)) {
+                uint i = y + radius.y;
+                uint j = x + radius.x;
+                int to_be_deleted_app = volume_to_emit_app[i][j];
+                int to_be_deleted_pu = volume_to_emit_pu[i][j];
 
-                    uint2 coord_ = uint2(coord.x, coord.y);
-                    InterlockedAdd(RakelApplicationReservoir[XYZ(coord_.x, coord_.y, 0, RakelReservoirSize)].volume, -to_be_deleted_app);
-                    InterlockedAdd(RakelPickupReservoir[XYZ(coord_.x, coord_.y, 0, RakelReservoirSize)].volume, -to_be_deleted_pu);
-                    // deleted += to_be_deleted;
-                }
+                uint2 coord_ = uint2(coord.x, coord.y);
+                InterlockedAdd(RakelApplicationReservoir[XYZ(coord_.x, coord_.y, 0, RakelReservoirSize)].volume, -to_be_deleted_app);
+                InterlockedAdd(RakelPickupReservoir[XYZ(coord_.x, coord_.y, 0, RakelReservoirSize)].volume, -to_be_deleted_pu);
+                // deleted += to_be_deleted;
             }
         }
-        // Debug[XY(id.x, id.y, CalculationSize.x)] = float2(deleted, 0);
-
-        RakelEmittedPaint[XY(id.x, id.y, CalculationSize.x)] = result_paint;
     }
+    // Debug[XY(id.x, id.y, CalculationSize.x)] = float2(deleted, 0);
+
+    RakelEmittedPaint[XY(id.x, id.y, CalculationSize.x)] = result_paint;
 }
 
 void do_emit(float2 reservoir_pixel)

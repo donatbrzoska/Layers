@@ -77,10 +77,7 @@ void main (uint3 id : SV_DispatchThreadID)
         Paint on_canvas = CanvasReservoir[XY(canvas_pixel.x, canvas_pixel.y, TextureWidth)];
         Paint mixed = mix(emitted, on_canvas);
 
-        if (mixed.volume > 0)
-        {
-            CanvasReservoir[XY(canvas_pixel.x, canvas_pixel.y, TextureWidth)] = mixed;
-        }
+        CanvasReservoir[XY(canvas_pixel.x, canvas_pixel.y, TextureWidth)] = mixed;
     }
     // if (id.x == 0 && id.y == 0)
     // {
