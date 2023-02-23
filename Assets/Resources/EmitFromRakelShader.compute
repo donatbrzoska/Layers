@@ -116,127 +116,8 @@ bool pixel_in_reservoir_range(int2 pixel)
         && pixel.y < (int)RakelReservoirSize.y;
 }
 
-void do_bilinear_interpolation_emit(float2 reservoir_pixel)
-{
-    // Debug[XY(id.x, id.y, CalculationSize.x)] = reservoir_pixel;
-    // calculate involved reservoir pixels
-    int2 coord_ul = int2(floor(reservoir_pixel.x), ceil(reservoir_pixel.y));
-    int2 coord_ur = int2(ceil(reservoir_pixel.x), ceil(reservoir_pixel.y));
-    int2 coord_ll = int2(floor(reservoir_pixel.x), floor(reservoir_pixel.y));
-    int2 coord_lr = int2(ceil(reservoir_pixel.x), floor(reservoir_pixel.y));
-
-    uint coord_ul_in_range = uint(pixel_in_reservoir_range(coord_ul));
-    uint coord_ur_in_range = uint(pixel_in_reservoir_range(coord_ur));
-    uint coord_ll_in_range = uint(pixel_in_reservoir_range(coord_ll));
-    uint coord_lr_in_range = uint(pixel_in_reservoir_range(coord_lr));
-
-    // calculate parts for involved pixels
-    float ul_part_raw = calculate_unrotated_overlap(coord_ul, 1, reservoir_pixel, 1);
-    float ur_part_raw = calculate_unrotated_overlap(coord_ur, 1, reservoir_pixel, 1);
-    float ll_part_raw = calculate_unrotated_overlap(coord_ll, 1, reservoir_pixel, 1);
-    float lr_part_raw = calculate_unrotated_overlap(coord_lr, 1, reservoir_pixel, 1);
-
-    // delete influence from pixels, if they occur twice or fourfold for the interpolation
-    uint keep_left = coord_ul.x != coord_ur.x; // don't keep the left side, if left and right are identical
-    uint keep_lower = coord_ul.y != coord_ll.y; // don't keep the lower side, if upper and lower are identical
-
-    // make sure borders are handled correctly
-    // -> only keep values, if pixel that is interpolated from is in range
-    //   -> if not in range, set part to 0
-    // also delete influence from pixels, if they occur twice or fourfold for the interpolation
-    float ul_part = coord_ul_in_range * ul_part_raw * keep_left;
-    float ur_part = coord_ur_in_range * ur_part_raw;
-    float ll_part = coord_ll_in_range * ll_part_raw * keep_left * keep_lower;
-    float lr_part = coord_lr_in_range * lr_part_raw             * keep_lower;
-
-    float part_sum = ul_part + ur_part + ll_part + lr_part;
-
-    // interpolate
-    // ... lookup at duplicate (z=1)
-    // TODO completely prevent OOB access
-    Paint paint_ul = RakelApplicationReservoir[XYZ(coord_ul.x, coord_ul.y, 1, RakelReservoirSize)];
-    Paint paint_ur = RakelApplicationReservoir[XYZ(coord_ur.x, coord_ur.y, 1, RakelReservoirSize)];
-    Paint paint_ll = RakelApplicationReservoir[XYZ(coord_ll.x, coord_ll.y, 1, RakelReservoirSize)];
-    Paint paint_lr = RakelApplicationReservoir[XYZ(coord_lr.x, coord_lr.y, 1, RakelReservoirSize)];
-
-    // ... calculate volume
-    int volume = dot(float4(ul_part,         ur_part,         ll_part,         lr_part),
-                     float4(paint_ul.volume, paint_ur.volume, paint_ll.volume, paint_lr.volume));
-                    
-    // ... and color
-    //     -> mutiply result based on the "amount" of pixels that was interpolated from
-    //       -> for example: if color was only drawn from one pixel with part 0.1, then
-    //          this has to be multiplied by 10 to keep the brightness
-    float4 color = (  ul_part * paint_ul.color
-                    + ur_part * paint_ur.color
-                    + ll_part * paint_ll.color
-                    + lr_part * paint_lr.color)
-                    / part_sum;
-    Paint available_paint;
-    available_paint.color = color;
-    available_paint.volume = volume;
-
-    if (available_paint.volume > 0)
-    {
-        // delete amount of taken volume from reservoir (z=0)
-        // 1000 volume is one unit of paint, since it doesnt make sense to
-        // ... calculate parts of smaller integers and we have to use integers because of InterlockedAdd
-        // also make sure not to produce negative volume values
-        // also make sure to not take volume from pixels that are out of reservoir range and possibly deliver undefined values for volume
-        float VOLUME_TO_TAKE = 1000;
-        // int to_be_deleted_ul = min((int)(VOLUME_TO_TAKE*ul_part), paint_ul.volume * coord_ul_in_range);
-        // int to_be_deleted_ur = min((int)(VOLUME_TO_TAKE*ur_part), paint_ur.volume * coord_ur_in_range);
-        // int to_be_deleted_ll = min((int)(VOLUME_TO_TAKE*ll_part), paint_ll.volume * coord_ll_in_range);
-        // int to_be_deleted_lr = min((int)(VOLUME_TO_TAKE*lr_part), paint_lr.volume * coord_lr_in_range);
-        int to_be_deleted_ul = min((int)(VOLUME_TO_TAKE*ul_part), paint_ul.volume * ul_part);
-        int to_be_deleted_ur = min((int)(VOLUME_TO_TAKE*ur_part), paint_ur.volume * ur_part);
-        int to_be_deleted_ll = min((int)(VOLUME_TO_TAKE*ll_part), paint_ll.volume * ll_part);
-        int to_be_deleted_lr = min((int)(VOLUME_TO_TAKE*lr_part), paint_lr.volume * lr_part);
-        // Debug[XY(id.x, id.y, CalculationSize.x)] = float3(to_be_deleted_ul
-        //                                                 + to_be_deleted_ur
-        //                                                 + to_be_deleted_ll
-        //                                                 + to_be_deleted_lr,0,0);
-
-        InterlockedAdd(RakelApplicationReservoir[XYZ(coord_ul.x, coord_ul.y, 0, RakelReservoirSize)].volume, -(to_be_deleted_ul));
-        InterlockedAdd(RakelApplicationReservoir[XYZ(coord_ur.x, coord_ur.y, 0, RakelReservoirSize)].volume, -(to_be_deleted_ur));
-        InterlockedAdd(RakelApplicationReservoir[XYZ(coord_ll.x, coord_ll.y, 0, RakelReservoirSize)].volume, -(to_be_deleted_ll));
-        InterlockedAdd(RakelApplicationReservoir[XYZ(coord_lr.x, coord_lr.y, 0, RakelReservoirSize)].volume, -(to_be_deleted_lr));
-        
-        Paint emittedPaint;
-        emittedPaint.color = available_paint.color;
-        emittedPaint.volume = to_be_deleted_ul + to_be_deleted_ur + to_be_deleted_ll + to_be_deleted_lr;
-        RakelEmittedPaint[XY(id.x, id.y, CalculationSize.x)] = emittedPaint;
-        // Debug[XY(id.x, id.y, CalculationSize.x)] = float2(emittedPaint.volume, 0);
-    }
-}
-
-void do_nearest_neighbour_emit(float2 reservoir_pixel)
-{
-    float2 reservoir_pixel__ = round(reservoir_pixel);
-    if (pixel_in_reservoir_range(reservoir_pixel__)) { // use float reservoir_pixel because using the uint one would cause problems with implicit casting
-        uint2 reservoir_pixel_ = reservoir_pixel__;
-
-        // TODO Problem with this:
-        // - Paint is taken non uniformly from the reservoir
-        // - But this is assumed because otherwise we could see paint volume in z=1 which is not really there anymore
-        // -> For exact calculation, the pipeline had to be restructured
-        Paint available = RakelApplicationReservoir[XYZ(reservoir_pixel_.x, reservoir_pixel_.y, 1, RakelReservoirSize)];
-
-        if (available.volume > 0)
-        {
-            float VOLUME_TO_TAKE = 1000;
-            Paint emitted;
-            emitted.color = available.color;
-            emitted.volume = min(VOLUME_TO_TAKE, available.volume);
-
-            InterlockedAdd(RakelApplicationReservoir[XYZ(reservoir_pixel_.x, reservoir_pixel_.y, 0, RakelReservoirSize)].volume, -(emitted.volume));
-            RakelEmittedPaint[XY(id.x, id.y, CalculationSize.x)] = emitted;
-        }
-    }
-}
-
-// radius of 1 does an emit on a 3x3 area
-void do_polygon_clipping_emit(float2 reservoir_pixel, int2 radius)
+// radius of 1 does an emit on a 3x3 area from emit source grid, based on the rounded reservoir_pixel
+void emit(float2 reservoir_pixel, int2 radius)
 {
     // Debug[XY(id.x, id.y, CalculationSize.x)] = reservoir_pixel;
     int2 reservoir_pixel_nearest = round(reservoir_pixel);
@@ -245,8 +126,8 @@ void do_polygon_clipping_emit(float2 reservoir_pixel, int2 radius)
     // calculate parts of smaller integers and we have to use integers because of InterlockedAdd
     int VOLUME_TO_EMIT_TARGET = 1000;
 
-    // array size should really be [1+2*radius.y][1+2*radius.x] but can't make dynamic arrays
-    // in hlsl 9x9 should be enough though, since with 45° tilt we will probably use 6x6 and
+    // array size should really be [1+2*radius.y][1+2*radius.x] but we can't make dynamic arrays
+    // in HLSL. 9x9 should be enough though, since with 45° tilt we will probably use 6x6 and
     // more tilt probably won't emit anyways
     float volume_to_emit[9][9];
     float part_sum = 0;
@@ -262,7 +143,14 @@ void do_polygon_clipping_emit(float2 reservoir_pixel, int2 radius)
             // calculate part
             int2 coord = reservoir_pixel_nearest + int2(x, y);
             if (pixel_in_reservoir_range(coord)) { // Prevent out of bounds access to reservoir. Also, if it's not in range, this overlap part is not used anyways.
-                float overlap = calculate_exact_overlap(coord, reservoir_pixel, -RakelRotation);
+                float overlap = 0;
+                if (TransferMapMode == 0) { // nearest neighbour
+                    overlap = 1;
+                } else if (TransferMapMode == 1) { // bilinear interpolation
+                    overlap = calculate_unrotated_overlap(coord, 1, reservoir_pixel, 1);
+                } else if (TransferMapMode == 2) { // polygon clipping
+                    overlap = calculate_exact_overlap(coord, reservoir_pixel, -RakelRotation);
+                }
                 part_sum += overlap;
 
                 if (overlap > 0) {
@@ -284,7 +172,7 @@ void do_polygon_clipping_emit(float2 reservoir_pixel, int2 radius)
     }
 
     // make sure to keep color brightness for border cases
-    result_color /= part_sum;
+    result_color /= part_sum; // TODO what if part_sum is 0
     Paint result_paint;
     result_paint.color = result_color;
     result_paint.volume = result_volume;
@@ -316,11 +204,9 @@ void do_polygon_clipping_emit(float2 reservoir_pixel, int2 radius)
 void do_emit(float2 reservoir_pixel)
 {
     if (TransferMapMode == 0) {
-        do_nearest_neighbour_emit(reservoir_pixel);
-    } else if (TransferMapMode == 1) {
-        do_bilinear_interpolation_emit(reservoir_pixel);
+        emit(reservoir_pixel, 0);
     } else {
-        do_polygon_clipping_emit(reservoir_pixel, 1);
+        emit(reservoir_pixel, 1);
     }
 }
 
