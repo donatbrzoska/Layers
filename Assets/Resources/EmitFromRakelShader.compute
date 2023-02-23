@@ -28,6 +28,7 @@ void log_(float4 f)
 
 #include "paint.hlsl"
 #include "math_util.hlsl"
+#include "bilinear_interpolation_util.hlsl"
 #include "sutherland_hodgman.hlsl"
 
 uint2 CalculationPosition;
@@ -115,32 +116,6 @@ bool pixel_in_reservoir_range(int2 pixel)
         && pixel.y < (int)RakelReservoirSize.y;
 }
 
-// inspired by https://stackoverflow.com/a/27162334
-// returns the ratio of the max possible overlap
-// NOTE that this has to be adjusted for a curved rakel
-float calculate_unrotated_overlap(int2 adjacent_reservoir_pixel, float2 reservoir_pixel)
-{
-    float pixel_size_half = 0.5/float(RakelReservoirResolution);
-
-    float adj_square_x_min = (float)adjacent_reservoir_pixel.x - 0.5;
-    float adj_square_x_max = (float)adjacent_reservoir_pixel.x + 0.5;
-    float adj_square_y_min = (float)adjacent_reservoir_pixel.y - 0.5;
-    float adj_square_y_max = (float)adjacent_reservoir_pixel.y + 0.5;
-
-    float res_square_x_min = reservoir_pixel.x - 0.5;
-    float res_square_x_max = reservoir_pixel.x + 0.5;
-    float res_square_y_min = reservoir_pixel.y - 0.5;
-    float res_square_y_max = reservoir_pixel.y + 0.5;
-
-    float dx = min(adj_square_x_max, res_square_x_max) - max(adj_square_x_min, res_square_x_min);
-    float dy = min(adj_square_y_max, res_square_y_max) - max(adj_square_y_min, res_square_y_min);
-    dx = max(0, dx);
-    dy = max(0, dy);
-
-    float overlap = (dx*dy);
-    return overlap;
-}
-
 void do_bilinear_interpolation_emit(float2 reservoir_pixel)
 {
     // Debug[XY(id.x, id.y, CalculationSize.x)] = reservoir_pixel;
@@ -156,10 +131,10 @@ void do_bilinear_interpolation_emit(float2 reservoir_pixel)
     uint coord_lr_in_range = uint(pixel_in_reservoir_range(coord_lr));
 
     // calculate parts for involved pixels
-    float ul_part_raw = calculate_unrotated_overlap(coord_ul, reservoir_pixel);
-    float ur_part_raw = calculate_unrotated_overlap(coord_ur, reservoir_pixel);
-    float ll_part_raw = calculate_unrotated_overlap(coord_ll, reservoir_pixel);
-    float lr_part_raw = calculate_unrotated_overlap(coord_lr, reservoir_pixel);
+    float ul_part_raw = calculate_unrotated_overlap(coord_ul, 1, reservoir_pixel, 1);
+    float ur_part_raw = calculate_unrotated_overlap(coord_ur, 1, reservoir_pixel, 1);
+    float ll_part_raw = calculate_unrotated_overlap(coord_ll, 1, reservoir_pixel, 1);
+    float lr_part_raw = calculate_unrotated_overlap(coord_lr, 1, reservoir_pixel, 1);
 
     // delete influence from pixels, if they occur twice or fourfold for the interpolation
     uint keep_left = coord_ul.x != coord_ur.x; // don't keep the left side, if left and right are identical
