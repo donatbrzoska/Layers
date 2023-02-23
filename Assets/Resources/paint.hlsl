@@ -12,7 +12,7 @@ struct Paint {
 
 Paint mix(Paint a, Paint b)
 {
-    int volume = unzero(a.volume + b.volume); // prevent division by zero
+    float volume = unzero(a.volume + b.volume); // prevent division by zero
     float a_part = (float)a.volume / (float)volume;
     float b_part = (float)b.volume / (float)volume;
     Paint result;
