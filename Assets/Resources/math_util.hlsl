@@ -1,5 +1,5 @@
-
-bool f2_eq(float2 a, float2 b){
+bool f2_eq(float2 a, float2 b)
+{
     float err = 0.01;
     return abs(a.x - b.x) < err
         && abs(a.y - b.y) < err;

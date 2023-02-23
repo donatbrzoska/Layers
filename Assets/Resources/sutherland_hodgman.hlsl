@@ -1,8 +1,10 @@
-bool vertex_inside(float2 vertex, float2 edge_v1, float2 edge_v2) {
+bool vertex_inside(float2 vertex, float2 edge_v1, float2 edge_v2)
+{
     return (edge_v1.x - vertex.x) * (edge_v2.y - vertex.y) >= (edge_v1.y - vertex.y) * (edge_v2.x - vertex.x);
 }
 
-float2 compute_intersection(float2 a, float2 b, float2 p, float2 q) {
+float2 compute_intersection(float2 a, float2 b, float2 p, float2 q)
+{
     if (a.y == b.y && b.y == p.y && p.y == q.y) { // lines identical with same y
         if (a.x < p.x) {
             return float2(min(p.x, q.x), a.y);
