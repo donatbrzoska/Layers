@@ -247,7 +247,7 @@ public class Rakel : IRakel
         };
 
         ComputeShaderTask cst = new ComputeShaderTask(
-            "CopyBufferToCanvasShader",
+            "ApplyBufferToCanvasShader",
             shaderRegion,
             attributes,
             null,
