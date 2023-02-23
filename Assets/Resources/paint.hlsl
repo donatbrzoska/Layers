@@ -1,3 +1,10 @@
+float unzero(float f);
+
+int PAINT_UNIT()
+{
+    return 1000;
+}
+
 struct Paint {
     float4 color;
     int volume;
@@ -5,7 +12,7 @@ struct Paint {
 
 Paint mix(Paint a, Paint b)
 {
-    int volume = a.volume + b.volume + 0.000001; // prevent division by zero
+    int volume = unzero(a.volume + b.volume); // prevent division by zero
     float a_part = (float)a.volume / (float)volume;
     float b_part = (float)b.volume / (float)volume;
     Paint result;

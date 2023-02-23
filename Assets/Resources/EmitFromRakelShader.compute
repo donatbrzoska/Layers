@@ -126,7 +126,7 @@ void emit(float2 reservoir_pixel, int2 radius)
     // 1000 volume is one unit of paint, since it doesnt make sense to
     // calculate parts of smaller integers and we have to use integers because of InterlockedAdd
     // TODO ratio of application and pickup reservoir
-    int VOLUME_TO_EMIT_TARGET = 1000;
+    int VOLUME_TO_EMIT_TARGET = PAINT_UNIT();
 
     // array size should really be [1+2*radius.y][1+2*radius.x] but we can't make dynamic arrays
     // in HLSL. 9x9 should be enough though, since with 45° tilt we will probably use 6x6 and
@@ -183,8 +183,8 @@ void emit(float2 reservoir_pixel, int2 radius)
     }
 
     // make sure to keep color brightness for border cases
-    result_color_app /= part_sum + 0.000001; // prevent division by zero
-    result_color_pu /= part_sum + 0.000001; // prevent division by zero
+    result_color_app /= unzero(part_sum); // prevent division by zero
+    result_color_pu /= unzero(part_sum); // prevent division by zero
     Paint result_paint_app;
     Paint result_paint_pu;
     result_paint_app.color = result_color_app;
