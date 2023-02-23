@@ -222,14 +222,17 @@ public class ComputeShaderTask {
             debugTypeBuffer.GetData(debugTypeValue);
             DebugType debugType = (DebugType) debugTypeValue[0];
 
-            LogUtil.Log(debugValues, ShaderRegion.CalculationSize.y, Name, debugType);
+            if (debugType != DebugType.None)
+            {
+                LogUtil.Log(debugValues, ShaderRegion.CalculationSize.y, Name, debugType);
 
-            //int sum = 0;
-            //for (int i = 0; i < debugValues.GetLength(0); i++)
-            //{
-            //    sum += (int)debugValues[i].x;
-            //}
-            //Debug.Log("Sum is " + sum);
+                //int sum = 0;
+                //for (int i = 0; i < debugValues.GetLength(0); i++)
+                //{
+                //    sum += (int)debugValues[i].x;
+                //}
+                //Debug.Log("Sum is " + sum);
+            }
         }
         debugBuffer.Dispose();
         debugTypeBuffer.Dispose();
