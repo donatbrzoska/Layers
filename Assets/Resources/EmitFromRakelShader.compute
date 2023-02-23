@@ -235,7 +235,8 @@ void do_nearest_neighbour_emit(float2 reservoir_pixel)
     }
 }
 
-void do_polygon_clipping_emit(float2 reservoir_pixel)
+// radius of 1 does an emit on a 3x3 area
+void do_polygon_clipping_emit(float2 reservoir_pixel, int2 radius)
 {
     // Debug[XY(id.x, id.y, CalculationSize.x)] = reservoir_pixel;
     int2 reservoir_pixel_nearest = round(reservoir_pixel);
@@ -243,14 +244,20 @@ void do_polygon_clipping_emit(float2 reservoir_pixel)
     // 1000 volume is one unit of paint, since it doesnt make sense to
     // calculate parts of smaller integers and we have to use integers because of InterlockedAdd
     int VOLUME_TO_EMIT_TARGET = 1000;
-    float volume_to_emit[3][3];
+
+    // array size should really be [1+2*radius.y][1+2*radius.x] but can't make dynamic arrays
+    // in hlsl 9x9 should be enough though, since with 45° tilt we will probably use 6x6 and
+    // more tilt probably won't emit anyways
+    float volume_to_emit[9][9];
     float part_sum = 0;
     float4 result_color = float4(0,0,0,0);
     float result_volume = 0;
-    for (int y=-1; y<2; y++) {
-        for (int x=-1; x<2; x++) {
+    for (int y=-radius.y; y<=radius.y; y++) {
+        for (int x=-radius.x; x<=radius.y; x++) {
             // initialize array
-            volume_to_emit[y+1][x+1] = 0;
+            uint i = y + radius.y;
+            uint j = x + radius.x;
+            volume_to_emit[i][j] = 0;
 
             // calculate part
             int2 coord = reservoir_pixel_nearest + int2(x, y);
@@ -266,8 +273,8 @@ void do_polygon_clipping_emit(float2 reservoir_pixel)
                     // calculate volume
                     int target_volume = overlap * VOLUME_TO_EMIT_TARGET;
                     int really_available_volume = overlap * available.volume;
-                    volume_to_emit[y+1][x+1] = min(target_volume, really_available_volume);
-                    result_volume += volume_to_emit[y+1][x+1];
+                    volume_to_emit[i][j] = min(target_volume, really_available_volume);
+                    result_volume += volume_to_emit[i][j];
 
                     // add up color
                     result_color += (overlap * available.color);
@@ -286,12 +293,15 @@ void do_polygon_clipping_emit(float2 reservoir_pixel)
     {
         // delete amount of taken volume from reservoir (z=0)
         int deleted = 0;
-        for (int y=-1; y<2; y++) {
-            for (int x=-1; x<2; x++) {
+        for (int y=-radius.y; y<=radius.y; y++) {
+            for (int x=-radius.x; x<=radius.x; x++) {
                 int2 coord = reservoir_pixel_nearest + int2(x, y);
                 if (pixel_in_reservoir_range(coord)) {
+                    uint i = y + radius.y;
+                    uint j = x + radius.x;
+                    int to_be_deleted = volume_to_emit[i][j];
+
                     uint2 coord_ = uint2(coord.x, coord.y);
-                    int to_be_deleted = volume_to_emit[y+1][x+1];
                     InterlockedAdd(RakelApplicationReservoir[XYZ(coord_.x, coord_.y, 0, RakelReservoirSize)].volume, -to_be_deleted);
                     deleted += to_be_deleted;
                 }
@@ -310,7 +320,7 @@ void do_emit(float2 reservoir_pixel)
     } else if (TransferMapMode == 1) {
         do_bilinear_interpolation_emit(reservoir_pixel);
     } else {
-        do_polygon_clipping_emit(reservoir_pixel);
+        do_polygon_clipping_emit(reservoir_pixel, 1);
     }
 }
 
