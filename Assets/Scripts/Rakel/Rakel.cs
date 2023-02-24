@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-public class Rakel : ComputeShaderCreator, IRakel
+public class Rakel : ComputeShaderCreator
 {
     public float Length { get; private set; }
     public float Width { get; private set; }

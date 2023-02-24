@@ -2,7 +2,7 @@
 
 public class RakelInterpolator
 {
-    private IRakel Rakel;
+    private Rakel Rakel;
     private OilPaintCanvas OilPaintCanvas;
 
     private Vector3 PreviousRakelPosition;
@@ -12,7 +12,7 @@ public class RakelInterpolator
     private float NO_ANGLE = float.NaN;
     private Vector3 NO_POSITION = Vector3.negativeInfinity;
 
-    public RakelInterpolator(IRakel rakel, OilPaintCanvas oilPaintCanvas)
+    public RakelInterpolator(Rakel rakel, OilPaintCanvas oilPaintCanvas)
     {
         Rakel = rakel;
         OilPaintCanvas = oilPaintCanvas;

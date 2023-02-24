@@ -26,7 +26,7 @@ public class OilPaintEngine : MonoBehaviour
     }
 
     private OilPaintCanvas OilPaintCanvas;
-    private IRakel Rakel;
+    private Rakel Rakel;
     private RakelInterpolator RakelInterpolator;
 
     private ComputeShaderEngine ComputeShaderEngine;
