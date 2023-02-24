@@ -132,8 +132,9 @@ void emit(float2 reservoir_pixel, int2 radius)
     float4 result_color_pu = float4(0,0,0,0);
     float result_volume_app = 0;
     float result_volume_pu = 0;
-    for (int y=-radius.y; y<=radius.y; y++) {
-        for (int x=-radius.x; x<=radius.x; x++) {
+    int y, x; // declare loop variables here so the compiler won't complain about double declaration of y
+    for (y=-radius.y; y<=radius.y; y++) {
+        for (x=-radius.x; x<=radius.x; x++) {
             // initialize array
             uint i = y + radius.y;
             uint j = x + radius.x;
@@ -189,8 +190,8 @@ void emit(float2 reservoir_pixel, int2 radius)
     Paint result_paint = mix(result_paint_app, result_paint_pu);
 
     // delete amount of taken volume from reservoir (z=0)
-    for (int y=-radius.y; y<=radius.y; y++) {
-        for (int x=-radius.x; x<=radius.x; x++) {
+    for (y=-radius.y; y<=radius.y; y++) {
+        for (x=-radius.x; x<=radius.x; x++) {
             int2 coord = reservoir_pixel_nearest + int2(x, y);
             if (pixel_in_reservoir_range(coord)) {
                 uint i = y + radius.y;
