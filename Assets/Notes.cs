@@ -1758,9 +1758,9 @@ public class Notes : MonoBehaviour
  * 18:30 - 21:30 3h
  * 3,75h
  * 
- * TODO Enable Debug in ComputeShaderTask kann auch einfach ein bool sein
+ * DONE Enable Debug in ComputeShaderTask kann auch einfach ein bool sein
  * -> Buffergröße ist sowieso immer gleich der ShaderRegion-Größe
- * TODO Klammern für Funktionen in den Shadern vereinheitlichen
+ * DONE Klammern für Funktionen in den Shadern vereinheitlichen
  * 
  * Dadurch dass die Farbe sich beim Übertragen auf den Canvas im Pixel verteilt,
  * kann man nicht davon ausgehen, dass beim abnehmen an der selben Stelle wieder
@@ -1797,8 +1797,8 @@ public class Notes : MonoBehaviour
  * - Grundproblem dahinter: Verhindern, dass leere Farbe als schwarze Farbe interpretiert wird
  * 
  * DONE Parameter Einrückungen in Rakel.cs konsistent machen
- * TODO RakelEmittedPaint -> rakelEmittedPaint
- * TODO newline unter map_to_world_space in EmitFromRakelShader
+ * DONE RakelEmittedPaint -> rakelEmittedPaint
+ * DONE newline unter map_to_world_space in EmitFromRakelShader
  * DONE double declaration warning
  * 
  * aufgehört bei:
@@ -1812,9 +1812,9 @@ public class Notes : MonoBehaviour
  * 6,5h
  * 
  * TODO WorldSpaceCanvas umbennen / mit OilPaintCanvas vereinen?
- * TODO remove parameter oilPaintCanvas.Reservoir.Buffer);
- * TODO remove ReservoirFiller folder
- * TODO ShaderTools -> ComputeShaderTools
+ * DONE remove parameter oilPaintCanvas.Reservoir.Buffer);
+ * DONE remove ReservoirFiller folder
+ * DONE ShaderTools -> ComputeShaderTools
  * TODO ApplyBufferToRakel: Kommentar anpassen, CalculationPosition kann raus?
  *      // calculate pixel position on canvas
         int2 rakel_pixel = id.xy + CalculationPosition;

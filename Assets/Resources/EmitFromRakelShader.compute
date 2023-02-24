@@ -75,7 +75,6 @@ float3 map_to_world_space(int2 pixel, uint texture_resolution, float3 canvas_pos
     return canvas_aligned;
 }
 
-
 // returns:
 // - x: part of dx of rakel, 0-err..1+err would mean pixel is under rakel
 // - y: part of dy of rakel, 0-err..1+err would mean pixel is under rakel

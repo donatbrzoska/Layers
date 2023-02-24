@@ -61,15 +61,14 @@ public class OilPaintTransferEngine
             transferConfiguration.ReservoirDiscardVolumeThreshold,
             transferConfiguration.ReservoirSmoothingKernelSize);
 
-        ComputeBuffer RakelEmittedPaint = rakel.EmitPaint(
+        ComputeBuffer rakelEmittedPaint = rakel.EmitPaint(
             emitSR,
             wsc,
             transferConfiguration.MapMode);
 
         oilPaintCanvas.ApplyPaint(
             emitSR,
-            RakelEmittedPaint,
-            oilPaintCanvas.Reservoir.Buffer);
+            rakelEmittedPaint);
 
         oilPaintCanvas.UpdateColorTexture(emitSR);
         oilPaintCanvas.UpdateNormalMap(normalsSR);

@@ -64,14 +64,13 @@ public class OilPaintCanvas : ComputeShaderCreator
     public void ApplyPaint(
         ShaderRegion shaderRegion,
         ComputeBuffer rakelEmittedPaint,
-        ComputeBuffer canvasReservoir,
         bool debugEnabled = false)
     {
         List<CSAttribute> attributes = new List<CSAttribute>()
         {
             new CSInts2("CalculationPosition", shaderRegion.CalculationPosition),
             new CSComputeBuffer("RakelEmittedPaint", rakelEmittedPaint),
-            new CSComputeBuffer("CanvasReservoir", canvasReservoir),
+            new CSComputeBuffer("CanvasReservoir", Reservoir.Buffer),
             new CSInt("TextureWidth", Texture.width)
         };
 
