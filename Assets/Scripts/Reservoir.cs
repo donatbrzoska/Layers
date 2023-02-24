@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-public class Reservoir
+public class Reservoir : ComputeShaderCreator
 {
     public int Resolution;
     public Vector2Int Size;
@@ -10,10 +10,8 @@ public class Reservoir
 
     public float PixelSize { get { return 1 / (float) Resolution; } }
 
-    private ShaderRegionFactory ShaderRegionFactory;
-    private ComputeShaderEngine ComputeShaderEngine;
-
     public Reservoir(int resolution, int width, int height, ShaderRegionFactory shaderRegionFactory, ComputeShaderEngine computeShaderEngine)
+        : base(shaderRegionFactory, computeShaderEngine)
     {
         Resolution = resolution;
         Size = new Vector2Int(width, height);
@@ -22,9 +20,6 @@ public class Reservoir
         // initialize buffer to empty values (Intel does this for you, nvidia doesn't)
         BufferData = new Paint[width * height * 2];
         Buffer.SetData(BufferData);
-
-        ShaderRegionFactory = shaderRegionFactory;
-        ComputeShaderEngine = computeShaderEngine;
     }
 
     public void Fill(Color_ color, int volume, ReservoirFiller filler)

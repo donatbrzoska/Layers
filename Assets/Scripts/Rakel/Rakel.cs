@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-public class Rakel : IRakel
+public class Rakel : ComputeShaderCreator, IRakel
 {
     public float Length { get; private set; }
     public float Width { get; private set; }
@@ -13,10 +13,8 @@ public class Rakel : IRakel
 
     private Vector2Int PreviousApplyPosition = new Vector2Int(int.MinValue, int.MinValue);
 
-    private ShaderRegionFactory ShaderRegionFactory;
-    private ComputeShaderEngine ComputeShaderEngine;
-
     public Rakel(RakelConfiguration config, ShaderRegionFactory shaderRegionFactory, ComputeShaderEngine computeShaderEngine)
+        : base(shaderRegionFactory, computeShaderEngine)
     {
         ApplicationReservoir = new Reservoir(
             config.Resolution,
@@ -38,9 +36,6 @@ public class Rakel : IRakel
 
         // NOTE this has to be set after Width and Length were corrected
         Anchor = new Vector3(Width, Length / 2, 0);
-
-        ShaderRegionFactory = shaderRegionFactory;
-        ComputeShaderEngine = computeShaderEngine;
     }
 
     public void Fill(Color_ color, int volume, ReservoirFiller filler)
