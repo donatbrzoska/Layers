@@ -26,14 +26,12 @@ public class Rakel : IRakel
         ReservoirSize.x = (int)(config.Width * config.Resolution);
         ReservoirSize.y = (int)(config.Length * config.Resolution);
 
-        ApplicationReservoir = new ComputeBuffer(ReservoirSize.y * ReservoirSize.x * 2,
-                                                      4 * sizeof(float) + sizeof(int));
+        ApplicationReservoir = new ComputeBuffer(ReservoirSize.y * ReservoirSize.x * 2, Paint.SizeInBytes);
         // initialize buffer to empty values (Intel does this for you, nvidia doesn't)
         ApplicationReservoirData = new Paint[ReservoirSize.y * ReservoirSize.x * 2];
         ApplicationReservoir.SetData(ApplicationReservoirData);
 
-        PickupReservoir = new ComputeBuffer(ReservoirSize.y * ReservoirSize.x * 2,
-                                                      4 * sizeof(float) + sizeof(int));
+        PickupReservoir = new ComputeBuffer(ReservoirSize.y * ReservoirSize.x * 2, Paint.SizeInBytes);
         // initialize buffer to empty values (Intel does this for you, nvidia doesn't)
         PickupReservoirData = new Paint[ReservoirSize.y * ReservoirSize.x * 2];
         PickupReservoir.SetData(PickupReservoirData);
@@ -187,8 +185,7 @@ public class Rakel : IRakel
         TransferMapMode transferMapMode,
         bool debugEnabled = false)
     {
-        ComputeBuffer RakelEmittedPaint = new ComputeBuffer(shaderRegion.CalculationSize.x * shaderRegion.CalculationSize.y,
-                                                            4 * sizeof(float) + sizeof(int));
+        ComputeBuffer RakelEmittedPaint = new ComputeBuffer(shaderRegion.CalculationSize.x * shaderRegion.CalculationSize.y, Paint.SizeInBytes);
         // initialize buffer to empty values (Intel does this for you, nvidia doesn't)
         Paint[] initPaint = new Paint[shaderRegion.CalculationSize.x * shaderRegion.CalculationSize.y];
         RakelEmittedPaint.SetData(initPaint);

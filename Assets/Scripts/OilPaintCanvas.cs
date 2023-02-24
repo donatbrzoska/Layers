@@ -20,7 +20,7 @@ public class OilPaintCanvas
 
         WorldSpaceCanvas = new WorldSpaceCanvas(height, width, textureResolution, position);
 
-        Reservoir = new ComputeBuffer(WorldSpaceCanvas.TextureSize.x * WorldSpaceCanvas.TextureSize.y, sizeof(float) * 4 + sizeof(int));
+        Reservoir = new ComputeBuffer(WorldSpaceCanvas.TextureSize.x * WorldSpaceCanvas.TextureSize.y, Paint.SizeInBytes);
 
         Texture = new RenderTexture(WorldSpaceCanvas.TextureSize.x, WorldSpaceCanvas.TextureSize.y, 1);
         Texture.filterMode = FilterMode.Point;
