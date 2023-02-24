@@ -185,9 +185,9 @@ public class Rakel : IRakel
         TransferMapMode transferMapMode,
         bool debugEnabled = false)
     {
-        ComputeBuffer RakelEmittedPaint = new ComputeBuffer(shaderRegion.CalculationSize.x * shaderRegion.CalculationSize.y, Paint.SizeInBytes);
+        ComputeBuffer RakelEmittedPaint = new ComputeBuffer(shaderRegion.PixelCount, Paint.SizeInBytes);
         // initialize buffer to empty values (Intel does this for you, nvidia doesn't)
-        Paint[] initPaint = new Paint[shaderRegion.CalculationSize.x * shaderRegion.CalculationSize.y];
+        Paint[] initPaint = new Paint[shaderRegion.PixelCount];
         RakelEmittedPaint.SetData(initPaint);
 
         List<CSAttribute> attributes = new List<CSAttribute>()

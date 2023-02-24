@@ -181,9 +181,8 @@ public class ComputeShaderTask {
         if (DebugEnabled)
         {
             debugBuffer.Dispose();
-            int debugBufferSize = ShaderRegion.CalculationSize.x * ShaderRegion.CalculationSize.y;
-            debugBuffer = new ComputeBuffer(debugBufferSize * 4, sizeof(float));
-            debugValues = new Color[debugBufferSize];
+            debugBuffer = new ComputeBuffer(ShaderRegion.PixelCount, 4 * sizeof(float));
+            debugValues = new Color[ShaderRegion.PixelCount];
             debugBuffer.SetData(debugValues);
             ComputeShader.SetBuffer(0, "Debug", debugBuffer);
             ComputeShader.SetBuffer(0, "DebugType", debugTypeBuffer);

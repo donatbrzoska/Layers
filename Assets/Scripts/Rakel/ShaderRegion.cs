@@ -10,6 +10,8 @@ public class ShaderRegion
     // Pixel coordinates on canvas of lower left pixel of calculation
     public Vector2Int CalculationPosition;
 
+    public int PixelCount { get { return CalculationSize.x * CalculationSize.y; } }
+
     // Given are four pixel coordinates on the canvas, the thread group sizes and an optional padding
     public ShaderRegion(Vector2Int a, Vector2Int b, Vector2Int c, Vector2Int d, Vector2Int groupSize, int padding)
     {
