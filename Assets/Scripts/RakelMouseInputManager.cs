@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class RakelInputManager
+public class RakelMouseInputManager
 {
     // Position attributes
     public bool YPositionLocked { get; set; }
@@ -14,7 +14,7 @@ public class RakelInputManager
     private bool PreviousMousePositionInitialized;
     private Vector2 PreviousMousePosition;
 
-    public RakelInputManager(params int[] colliderIDs)
+    public RakelMouseInputManager(params int[] colliderIDs)
     {
         Camera = GameObject.Find("Main Camera").GetComponent<Camera>();
         GraphicsRaycaster = GameObject.Find("UI").GetComponent<GraphicsRaycaster>();

@@ -8,7 +8,7 @@ public class OilPaintEngine : MonoBehaviour
     
     public Configuration Configuration { get; private set; }
     private ShaderRegionFactory ShaderRegionFactory;
-    public RakelInputManager RakelMouseInputManager { get; private set; }
+    public RakelMouseInputManager RakelMouseInputManager { get; private set; }
     public float RakelRotation // used only for UI fetching
     {
         get
@@ -38,7 +38,7 @@ public class OilPaintEngine : MonoBehaviour
 
         int wallColliderID = GameObject.Find("Wall").GetComponent<MeshCollider>().GetInstanceID();
         int canvasColliderID = GameObject.Find("Canvas").GetComponent<MeshCollider>().GetInstanceID();
-        RakelMouseInputManager = new RakelInputManager(wallColliderID, canvasColliderID);
+        RakelMouseInputManager = new RakelMouseInputManager(wallColliderID, canvasColliderID);
     }
 
     void Start()
