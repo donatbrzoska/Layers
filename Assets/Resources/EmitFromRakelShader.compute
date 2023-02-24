@@ -133,7 +133,7 @@ void emit(float2 reservoir_pixel, int2 radius)
     float result_volume_app = 0;
     float result_volume_pu = 0;
     for (int y=-radius.y; y<=radius.y; y++) {
-        for (int x=-radius.x; x<=radius.y; x++) {
+        for (int x=-radius.x; x<=radius.x; x++) {
             // initialize array
             uint i = y + radius.y;
             uint j = x + radius.x;
@@ -211,9 +211,9 @@ void emit(float2 reservoir_pixel, int2 radius)
 void do_emit(float2 reservoir_pixel)
 {
     if (TransferMapMode == 0) {
-        emit(reservoir_pixel, 0);
+        emit(reservoir_pixel, uint2(0, 0));
     } else {
-        emit(reservoir_pixel, 1);
+        emit(reservoir_pixel, uint2(1, 1));
     }
 }
 
