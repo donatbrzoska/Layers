@@ -29,7 +29,7 @@ public class OilPaintEngine : MonoBehaviour
     private IRakel Rakel;
     private RakelInterpolator RakelInterpolator;
 
-    private Queue<ComputeShaderTask> ComputeShaderTasks;
+    private ComputeShaderEngine ComputeShaderEngine;
 
     void Awake()
     {
@@ -43,7 +43,7 @@ public class OilPaintEngine : MonoBehaviour
 
     void Start()
     {
-        ComputeShaderTasks = new Queue<ComputeShaderTask>();
+        ComputeShaderEngine = new ComputeShaderEngine();
 
         ShaderRegionFactory = new ShaderRegionFactory(new Vector2Int(TH_GROUP_SIZE_X, TH_GROUP_SIZE_Y));
 
@@ -67,7 +67,7 @@ public class OilPaintEngine : MonoBehaviour
     {
         DisposeRakel();
 
-        Rakel = new Rakel(Configuration.RakelConfiguration, ShaderRegionFactory, ComputeShaderTasks);
+        Rakel = new Rakel(Configuration.RakelConfiguration, ShaderRegionFactory, ComputeShaderEngine);
 
         Debug.Log("Rakel is "
                   + Configuration.RakelConfiguration.Length * Configuration.RakelConfiguration.Resolution + "x" + Configuration.RakelConfiguration.Width * Configuration.RakelConfiguration.Resolution
@@ -121,19 +121,7 @@ public class OilPaintEngine : MonoBehaviour
             }
         }
 
-        processComputeShaderTasks();
-    }
-
-    private void processComputeShaderTasks(int n=int.MaxValue)
-    {
-        if (ComputeShaderTasks != null)
-        {
-            while (ComputeShaderTasks.Count > 0 && n-- >= 0)
-            {
-                ComputeShaderTask cst = ComputeShaderTasks.Dequeue();
-                cst.Run();
-            }
-        }
+        ComputeShaderEngine.ProcessTasks();
     }
     
     private void OnDestroy()

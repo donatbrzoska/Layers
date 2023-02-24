@@ -11,9 +11,9 @@ public class Reservoir
     public float PixelSize { get { return 1 / (float) Resolution; } }
 
     private ShaderRegionFactory ShaderRegionFactory;
-    private Queue<ComputeShaderTask> ComputeShaderTasks;
+    private ComputeShaderEngine ComputeShaderEngine;
 
-    public Reservoir(int resolution, int width, int height, ShaderRegionFactory shaderRegionFactory, Queue<ComputeShaderTask> computeShaderTasks)
+    public Reservoir(int resolution, int width, int height, ShaderRegionFactory shaderRegionFactory, ComputeShaderEngine computeShaderEngine)
     {
         Resolution = resolution;
         Size = new Vector2Int(width, height);
@@ -24,25 +24,13 @@ public class Reservoir
         Buffer.SetData(BufferData);
 
         ShaderRegionFactory = shaderRegionFactory;
-        ComputeShaderTasks = computeShaderTasks;
+        ComputeShaderEngine = computeShaderEngine;
     }
 
     public void Fill(Color_ color, int volume, ReservoirFiller filler)
     {
         filler.Fill(color, volume, BufferData, Size);
         Buffer.SetData(BufferData);
-    }
-
-    private void EnqueueOrRun(ComputeShaderTask cst)
-    {
-        if (ComputeShaderTasks != null)
-        {
-            ComputeShaderTasks.Enqueue(cst);
-        }
-        else
-        {
-            cst.Run();
-        }
     }
 
     public void Duplicate(
@@ -73,7 +61,7 @@ public class Reservoir
             debugEnabled
         );
 
-        EnqueueOrRun(cst);
+        ComputeShaderEngine.EnqueueOrRun(cst);
     }
 
     public void Dispose()

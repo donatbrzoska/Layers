@@ -14,23 +14,23 @@ public class Rakel : IRakel
     private Vector2Int PreviousApplyPosition = new Vector2Int(int.MinValue, int.MinValue);
 
     private ShaderRegionFactory ShaderRegionFactory;
-    private Queue<ComputeShaderTask> ComputeShaderTasks;
+    private ComputeShaderEngine ComputeShaderEngine;
 
-    public Rakel(RakelConfiguration config, ShaderRegionFactory shaderRegionFactory, Queue<ComputeShaderTask> computeShaderTasks)
+    public Rakel(RakelConfiguration config, ShaderRegionFactory shaderRegionFactory, ComputeShaderEngine computeShaderEngine)
     {
         ApplicationReservoir = new Reservoir(
             config.Resolution,
             (int)(config.Width * config.Resolution),
             (int)(config.Length * config.Resolution),
             shaderRegionFactory,
-            computeShaderTasks);
+            computeShaderEngine);
 
         PickupReservoir = new Reservoir(
             config.Resolution,
             (int)(config.Width * config.Resolution),
             (int)(config.Length * config.Resolution),
             shaderRegionFactory,
-            computeShaderTasks);
+            computeShaderEngine);
 
         // make sure Rakel is not bigger than its reservoir
         Length = ApplicationReservoir.Size.y * ApplicationReservoir.PixelSize;
@@ -40,7 +40,7 @@ public class Rakel : IRakel
         Anchor = new Vector3(Width, Length / 2, 0);
 
         ShaderRegionFactory = shaderRegionFactory;
-        ComputeShaderTasks = computeShaderTasks;
+        ComputeShaderEngine = computeShaderEngine;
     }
 
     public void Fill(Color_ color, int volume, ReservoirFiller filler)
@@ -48,18 +48,6 @@ public class Rakel : IRakel
         ApplicationReservoir.Fill(color, volume, filler);
 
         //PickupReservoir.Fill(Color_.CadmiumRed, volume / 2, filler);
-    }
-
-    private void EnqueueOrRun(ComputeShaderTask cst)
-    {
-        if (ComputeShaderTasks != null)
-        {
-            ComputeShaderTasks.Enqueue(cst);
-        }
-        else
-        {
-            cst.Run();
-        }
     }
 
     // Position is located at Anchor
@@ -180,7 +168,7 @@ public class Rakel : IRakel
             debugEnabled
         );
 
-        EnqueueOrRun(cst);
+        ComputeShaderEngine.EnqueueOrRun(cst);
 
         return RakelEmittedPaint;
     }
@@ -209,7 +197,7 @@ public class Rakel : IRakel
             debugEnabled
         );
 
-        EnqueueOrRun(cst);
+        ComputeShaderEngine.EnqueueOrRun(cst);
     }
 
     private void UpdateColorTexture(
@@ -236,7 +224,7 @@ public class Rakel : IRakel
             debugEnabled
         );
 
-        EnqueueOrRun(cst);
+        ComputeShaderEngine.EnqueueOrRun(cst);
     }
 
     private void UpdateNormalMap(
@@ -263,7 +251,7 @@ public class Rakel : IRakel
             debugEnabled
         );
 
-        EnqueueOrRun(cst);
+        ComputeShaderEngine.EnqueueOrRun(cst);
     }
 
     public void Dispose()
