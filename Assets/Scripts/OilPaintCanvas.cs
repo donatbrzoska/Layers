@@ -2,16 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class OilPaintCanvas
+public class OilPaintCanvas : ComputeShaderCreator
 {
     public WorldSpaceCanvas WorldSpaceCanvas { get; private set; }
     public Reservoir Reservoir { get; private set; }
     public RenderTexture Texture { get; private set; }
     public RenderTexture NormalMap { get; private set; }
 
-    private ShaderRegionFactory ShaderRegionFactory;
-
-    public OilPaintCanvas(ShaderRegionFactory shaderRegionFactory, int textureResolution)
+    public OilPaintCanvas(int textureResolution, ShaderRegionFactory shaderRegionFactory, ComputeShaderEngine computeShaderEngine)
+        : base(shaderRegionFactory, computeShaderEngine)
     {
         Renderer renderer = GameObject.Find("Canvas").GetComponent<Renderer>();
         float width = GameObject.Find("Canvas").GetComponent<Transform>().localScale.x * 10; // convert scale attribute to world space
@@ -35,7 +34,6 @@ public class OilPaintCanvas
         renderer.material.EnableKeyword("_NORMALMAP");
         renderer.material.SetTexture("_BumpMap", NormalMap);
 
-        ShaderRegionFactory = shaderRegionFactory;
         InitializeTexture(Texture, Vector4.one);
         InitializeTexture(NormalMap, (new Vector4(0, 0, 1, 0) + Vector4.one) / 2);
     }
@@ -62,6 +60,80 @@ public class OilPaintCanvas
         );
 
         cst.Run();
+    }
+
+    public void ApplyPaint(
+        ShaderRegion shaderRegion,
+        ComputeBuffer rakelEmittedPaint,
+        ComputeBuffer canvasReservoir,
+        bool debugEnabled = false)
+    {
+        List<CSAttribute> attributes = new List<CSAttribute>()
+        {
+            new CSInts2("CalculationPosition", shaderRegion.CalculationPosition),
+            new CSComputeBuffer("RakelEmittedPaint", rakelEmittedPaint),
+            new CSComputeBuffer("CanvasReservoir", canvasReservoir),
+            new CSInt("TextureWidth", Texture.width)
+        };
+
+        ComputeShaderTask cst = new ComputeShaderTask(
+            "ApplyBufferToCanvasShader",
+            shaderRegion,
+            attributes,
+            null,
+            new List<ComputeBuffer>() { rakelEmittedPaint },
+            debugEnabled
+        );
+
+        ComputeShaderEngine.EnqueueOrRun(cst);
+    }
+
+    public void UpdateColorTexture(
+        ShaderRegion shaderRegion,
+        bool debugEnabled = false)
+    {
+        List<CSAttribute> attributes = new List<CSAttribute>()
+        {
+            new CSInts2("CalculationPosition", shaderRegion.CalculationPosition),
+            new CSComputeBuffer("CanvasReservoir", Reservoir.Buffer),
+            new CSInts2("TextureSize", WorldSpaceCanvas.TextureSize),
+            new CSTexture("CanvasTexture", Texture)
+        };
+
+        ComputeShaderTask cst = new ComputeShaderTask(
+            "ColorsShader",
+            shaderRegion,
+            attributes,
+            null,
+            new List<ComputeBuffer>(),
+            debugEnabled
+        );
+
+        ComputeShaderEngine.EnqueueOrRun(cst);
+    }
+
+    public void UpdateNormalMap(
+        ShaderRegion shaderRegion,
+        bool debugEnabled = false)
+    {
+        List<CSAttribute> attributes = new List<CSAttribute>()
+        {
+            new CSInts2("CalculationPosition", shaderRegion.CalculationPosition),
+            new CSComputeBuffer("CanvasReservoir", Reservoir.Buffer),
+            new CSInts2("TextureSize", WorldSpaceCanvas.TextureSize),
+            new CSTexture("NormalMap", NormalMap)
+        };
+
+        ComputeShaderTask cst = new ComputeShaderTask(
+            "NormalsShader",
+            shaderRegion,
+            attributes,
+            null,
+            new List<ComputeBuffer>(),
+            debugEnabled
+        );
+
+        ComputeShaderEngine.EnqueueOrRun(cst);
     }
 
     public void Dispose()

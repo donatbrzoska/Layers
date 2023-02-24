@@ -99,23 +99,13 @@ public class Rakel : ComputeShaderCreator, IRakel
             wsc,
             transferConfiguration.MapMode);
 
-        ApplyToCanvas(
+        oilPaintCanvas.ApplyPaint(
             emitSR,
-            wsc.TextureSize.x,
             RakelEmittedPaint,
             oilPaintCanvas.Reservoir.Buffer);
 
-        UpdateColorTexture(
-            emitSR,
-            wsc.TextureSize,
-            oilPaintCanvas.Reservoir.Buffer,
-            oilPaintCanvas.Texture);
-
-        UpdateNormalMap(
-            normalsSR,
-            wsc.TextureSize,
-            oilPaintCanvas.Reservoir.Buffer,
-            oilPaintCanvas.NormalMap);
+        oilPaintCanvas.UpdateColorTexture(emitSR);
+        oilPaintCanvas.UpdateNormalMap(normalsSR);
     }
 
     private ComputeBuffer EmitFromRakel(
@@ -166,87 +156,6 @@ public class Rakel : ComputeShaderCreator, IRakel
         ComputeShaderEngine.EnqueueOrRun(cst);
 
         return RakelEmittedPaint;
-    }
-
-    private void ApplyToCanvas(
-        ShaderRegion shaderRegion,
-        int textureWidth,
-        ComputeBuffer rakelEmittedPaint,
-        ComputeBuffer canvasReservoir,
-        bool debugEnabled = false)
-    {
-        List<CSAttribute> attributes = new List<CSAttribute>()
-        {
-            new CSInts2("CalculationPosition", shaderRegion.CalculationPosition),
-            new CSComputeBuffer("RakelEmittedPaint", rakelEmittedPaint),
-            new CSComputeBuffer("CanvasReservoir", canvasReservoir),
-            new CSInt("TextureWidth", textureWidth)
-        };
-
-        ComputeShaderTask cst = new ComputeShaderTask(
-            "ApplyBufferToCanvasShader",
-            shaderRegion,
-            attributes,
-            null,
-            new List<ComputeBuffer>() { rakelEmittedPaint },
-            debugEnabled
-        );
-
-        ComputeShaderEngine.EnqueueOrRun(cst);
-    }
-
-    private void UpdateColorTexture(
-        ShaderRegion shaderRegion,
-        Vector2Int textureSize,
-        ComputeBuffer CanvasReservoir,
-        RenderTexture CanvasTexture,
-        bool debugEnabled = false)
-    {
-        List<CSAttribute> attributes = new List<CSAttribute>()
-        {
-            new CSInts2("CalculationPosition", shaderRegion.CalculationPosition),
-            new CSComputeBuffer("CanvasReservoir", CanvasReservoir),
-            new CSInts2("TextureSize", textureSize),
-            new CSTexture("CanvasTexture", CanvasTexture)
-        };
-        
-        ComputeShaderTask cst = new ComputeShaderTask(
-            "ColorsShader",
-            shaderRegion,
-            attributes,
-            null,
-            new List<ComputeBuffer>(),
-            debugEnabled
-        );
-
-        ComputeShaderEngine.EnqueueOrRun(cst);
-    }
-
-    private void UpdateNormalMap(
-        ShaderRegion shaderRegion,
-        Vector2Int textureSize,
-        ComputeBuffer canvasReservoir,
-        RenderTexture canvasNormalMap,
-        bool debugEnabled = false)
-    {
-        List<CSAttribute> attributes = new List<CSAttribute>()
-        {
-            new CSInts2("CalculationPosition", shaderRegion.CalculationPosition),
-            new CSComputeBuffer("CanvasReservoir", canvasReservoir),
-            new CSInts2("TextureSize", textureSize),
-            new CSTexture("NormalMap", canvasNormalMap)
-        };
-
-        ComputeShaderTask cst = new ComputeShaderTask(
-            "NormalsShader",
-            shaderRegion,
-            attributes,
-            null,
-            new List<ComputeBuffer>(),
-            debugEnabled
-        );
-
-        ComputeShaderEngine.EnqueueOrRun(cst);
     }
 
     public void Dispose()

@@ -56,7 +56,7 @@ public class OilPaintEngine : MonoBehaviour
     {
         DisposeCanvas();
 
-        OilPaintCanvas = new OilPaintCanvas(ShaderRegionFactory, Configuration.CanvasResolution);
+        OilPaintCanvas = new OilPaintCanvas(Configuration.CanvasResolution, ShaderRegionFactory, ComputeShaderEngine);
 
         Debug.Log("Texture is "
                   + OilPaintCanvas.Texture.width + "x" + OilPaintCanvas.Texture.height
