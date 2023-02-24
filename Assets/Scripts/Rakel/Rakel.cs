@@ -8,10 +8,8 @@ public class Rakel : ComputeShaderCreator
 
     private Vector3 Anchor { get; }
 
-    private Reservoir ApplicationReservoir;
-    private Reservoir PickupReservoir;
-
-    private Vector2Int PreviousApplyPosition = new Vector2Int(int.MinValue, int.MinValue);
+    public Reservoir ApplicationReservoir;
+    public Reservoir PickupReservoir;
 
     public Rakel(RakelConfiguration config, ShaderRegionFactory shaderRegionFactory, ComputeShaderEngine computeShaderEngine)
         : base(shaderRegionFactory, computeShaderEngine)
@@ -38,6 +36,11 @@ public class Rakel : ComputeShaderCreator
         Anchor = new Vector3(Width, Length / 2, 0);
     }
 
+    public RakelSnapshot GetSnapshot(Vector3 rakelPosition, float rakelRotation, float rakelTilt)
+    {
+        return new RakelSnapshot(Length, Width, Anchor, rakelPosition, rakelRotation, rakelTilt);
+    }
+
     public void Fill(Color_ color, int volume, ReservoirFiller filler)
     {
         ApplicationReservoir.Fill(color, volume, filler);
@@ -45,70 +48,7 @@ public class Rakel : ComputeShaderCreator
         //PickupReservoir.Fill(Color_.CadmiumRed, volume / 2, filler);
     }
 
-    // Position is located at Anchor
-    // Rotation 0 means Rakel is directed to the right
-    // Tilt 0 means Rakel is flat on canvas
-    public void Apply(
-        Vector3 rakelPosition, float rakelRotation, float rakelTilt,
-        TransferConfiguration transferConfiguration,
-        OilPaintCanvas oilPaintCanvas)
-    {
-        WorldSpaceCanvas wsc = oilPaintCanvas.WorldSpaceCanvas;
-
-        // prevent double application on the same pixel
-        rakelPosition = wsc.AlignToPixelGrid(rakelPosition);
-        if (wsc.MapToPixel(rakelPosition).Equals(PreviousApplyPosition))
-        {
-            return;
-        }
-        else
-        {
-            PreviousApplyPosition = wsc.MapToPixel(rakelPosition);
-        }
-
-        //Debug.Log("Applying at x=" + wsc.MapToPixel(rakelPosition));
-
-        RakelSnapshot rakelSnapshot = new RakelSnapshot(Length, Width, Anchor, rakelPosition, rakelRotation, rakelTilt);
-        ShaderRegion emitSR = ShaderRegionFactory.Create(
-            wsc.MapToPixelInRange(rakelSnapshot.UpperLeft),
-            wsc.MapToPixelInRange(rakelSnapshot.UpperRight),
-            wsc.MapToPixelInRange(rakelSnapshot.LowerLeft),
-            wsc.MapToPixelInRange(rakelSnapshot.LowerRight),
-            1 // Padding because interpolation reaches pixels that are not directly under the rakel
-        );
-
-        ShaderRegion normalsSR = ShaderRegionFactory.Create(
-            wsc.MapToPixelInRange(rakelSnapshot.UpperLeft),
-            wsc.MapToPixelInRange(rakelSnapshot.UpperRight),
-            wsc.MapToPixelInRange(rakelSnapshot.LowerLeft),
-            wsc.MapToPixelInRange(rakelSnapshot.LowerRight),
-            2 // Padding of 2 because normals of the previously set pixels around also have to be recalculated
-        );
-
-        ApplicationReservoir.Duplicate(
-            transferConfiguration.ReservoirDiscardVolumeThreshold,
-            transferConfiguration.ReservoirSmoothingKernelSize);
-
-        PickupReservoir.Duplicate(
-            transferConfiguration.ReservoirDiscardVolumeThreshold,
-            transferConfiguration.ReservoirSmoothingKernelSize);
-
-        ComputeBuffer RakelEmittedPaint = EmitFromRakel(
-            rakelSnapshot,
-            emitSR,
-            wsc,
-            transferConfiguration.MapMode);
-
-        oilPaintCanvas.ApplyPaint(
-            emitSR,
-            RakelEmittedPaint,
-            oilPaintCanvas.Reservoir.Buffer);
-
-        oilPaintCanvas.UpdateColorTexture(emitSR);
-        oilPaintCanvas.UpdateNormalMap(normalsSR);
-    }
-
-    private ComputeBuffer EmitFromRakel(
+    public ComputeBuffer EmitPaint(
         RakelSnapshot rakelSnapshot,
         ShaderRegion shaderRegion,
         WorldSpaceCanvas wsc,

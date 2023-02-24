@@ -2,6 +2,7 @@
 
 public class InputInterpolator
 {
+    private OilPaintTransferEngine PaintTransferEngine;
     private Rakel Rakel;
     private OilPaintCanvas OilPaintCanvas;
 
@@ -12,8 +13,9 @@ public class InputInterpolator
     private float NO_ANGLE = float.NaN;
     private Vector3 NO_POSITION = Vector3.negativeInfinity;
 
-    public InputInterpolator(Rakel rakel, OilPaintCanvas oilPaintCanvas)
+    public InputInterpolator(OilPaintTransferEngine paintTransferEngine, Rakel rakel, OilPaintCanvas oilPaintCanvas)
     {
+        PaintTransferEngine = paintTransferEngine;
         Rakel = rakel;
         OilPaintCanvas = oilPaintCanvas;
     }
@@ -39,11 +41,12 @@ public class InputInterpolator
                 && PreviousRakelTilt.Equals(NO_ANGLE);
             if (isFirstNodeOfStroke)
             {
-                Rakel.Apply(
+                PaintTransferEngine.SimulateStep(
                     rakelPosition,
                     rakelRotation,
                     rakelTilt,
                     transferConfiguration,
+                    Rakel,
                     OilPaintCanvas
                 );
             }
@@ -102,11 +105,12 @@ public class InputInterpolator
 
                     float currentTilt = previousTilt + dt / steps;
 
-                    Rakel.Apply(
+                    PaintTransferEngine.SimulateStep(
                         currentPosition,
                         currentRotation,
                         currentTilt,
                         transferConfiguration,
+                        Rakel,
                         OilPaintCanvas
                     );
 
