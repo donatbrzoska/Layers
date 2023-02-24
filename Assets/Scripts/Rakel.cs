@@ -8,6 +8,20 @@ public class Rakel : ComputeShaderCreator
 
     private Vector3 Anchor { get; }
 
+    private Vector3 Position;
+    private float Rotation;
+    private float Tilt;
+
+    public Vector3 UpperLeft { get; private set; }
+    public Vector3 UpperRight { get; private set; }
+    public Vector3 LowerLeft { get; private set; }
+    public Vector3 LowerRight { get; private set; }
+
+    public Vector3 ulTilted { get; private set; }
+    public Vector3 urTilted { get; private set; }
+    public Vector3 llTilted { get; private set; }
+    public Vector3 lrTilted { get; private set; }
+
     public Reservoir ApplicationReservoir;
     public Reservoir PickupReservoir;
 
@@ -36,9 +50,34 @@ public class Rakel : ComputeShaderCreator
         Anchor = new Vector3(Width, Length / 2, 0);
     }
 
-    public RakelSnapshot GetSnapshot(Vector3 rakelPosition, float rakelRotation, float rakelTilt)
+    public void UpdateState(Vector3 position, float rotation, float tilt)
     {
-        return new RakelSnapshot(Length, Width, Anchor, rakelPosition, rakelRotation, rakelTilt);
+        Position = position;
+        Rotation = rotation;
+        Tilt = tilt;
+
+        Vector3 ulOrigin = new Vector3(0, Length, 0);
+        Vector3 urOrigin = new Vector3(Width, Length, 0);
+        Vector3 llOrigin = new Vector3(0, 0, 0);
+        Vector3 lrOrigin = new Vector3(Width, 0, 0);
+
+        Quaternion tiltQuaternion = Quaternion.AngleAxis(Tilt, Vector3.up);
+        ulTilted = tiltQuaternion * (ulOrigin - Anchor) + Anchor; // tilt around anchor
+        urTilted = tiltQuaternion * (urOrigin - Anchor) + Anchor; // tilt around anchor
+        llTilted = tiltQuaternion * (llOrigin - Anchor) + Anchor; // tilt around anchor
+        lrTilted = tiltQuaternion * (lrOrigin - Anchor) + Anchor; // tilt around anchor
+
+        Quaternion rotationQuaternion = Quaternion.AngleAxis(Rotation, Vector3.back);
+        Vector3 ulRotated = rotationQuaternion * (ulTilted - Anchor) + Anchor; // rotate around anchor
+        Vector3 urRotated = rotationQuaternion * (urTilted - Anchor) + Anchor; // rotate around anchor
+        Vector3 llRotated = rotationQuaternion * (llTilted - Anchor) + Anchor; // rotate around anchor
+        Vector3 lrRotated = rotationQuaternion * (lrTilted - Anchor) + Anchor; // rotate around anchor
+
+        Vector3 positionTranslation = Position - Anchor;
+        UpperLeft = ulRotated + positionTranslation;
+        UpperRight = urRotated + positionTranslation;
+        LowerLeft = llRotated + positionTranslation;
+        LowerRight = lrRotated + positionTranslation;
     }
 
     public void Fill(Color_ color, int volume, ReservoirFiller filler)
@@ -49,7 +88,6 @@ public class Rakel : ComputeShaderCreator
     }
 
     public ComputeBuffer EmitPaint(
-        RakelSnapshot rakelSnapshot,
         ShaderRegion shaderRegion,
         WorldSpaceCanvas wsc,
         TransferMapMode transferMapMode,
@@ -68,14 +106,14 @@ public class Rakel : ComputeShaderCreator
             new CSFloats3("CanvasPosition", wsc.Position),
             new CSFloats2("CanvasSize", wsc.Size),
             new CSFloats3("RakelAnchor", Anchor),
-            new CSFloats3("RakelPosition", rakelSnapshot.Position),
+            new CSFloats3("RakelPosition", Position),
             new CSFloat("RakelLength", Length),
             new CSFloat("RakelWidth", Width),
-            new CSFloat("RakelRotation", rakelSnapshot.Rotation),
-            new CSFloats3("RakelULTilted", rakelSnapshot.ulTilted),
-            new CSFloats3("RakelURTilted", rakelSnapshot.urTilted),
-            new CSFloats3("RakelLLTilted", rakelSnapshot.llTilted),
-            new CSFloats3("RakelLRTilted", rakelSnapshot.lrTilted),
+            new CSFloat("RakelRotation", Rotation),
+            new CSFloats3("RakelULTilted", ulTilted),
+            new CSFloats3("RakelURTilted", urTilted),
+            new CSFloats3("RakelLLTilted", llTilted),
+            new CSFloats3("RakelLRTilted", lrTilted),
             new CSComputeBuffer("RakelApplicationReservoir", ApplicationReservoir.Buffer),
             new CSComputeBuffer("RakelPickupReservoir", PickupReservoir.Buffer),
             new CSComputeBuffer("RakelEmittedPaint", RakelEmittedPaint),

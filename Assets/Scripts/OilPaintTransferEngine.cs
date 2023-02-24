@@ -35,20 +35,21 @@ public class OilPaintTransferEngine
 
         //Debug.Log("Applying at x=" + wsc.MapToPixel(rakelPosition));
 
-        RakelSnapshot rakelSnapshot = rakel.GetSnapshot(rakelPosition, rakelRotation, rakelTilt);
+        rakel.UpdateState(rakelPosition, rakelRotation, rakelTilt);
+
         ShaderRegion emitSR = ShaderRegionFactory.Create(
-            wsc.MapToPixelInRange(rakelSnapshot.UpperLeft),
-            wsc.MapToPixelInRange(rakelSnapshot.UpperRight),
-            wsc.MapToPixelInRange(rakelSnapshot.LowerLeft),
-            wsc.MapToPixelInRange(rakelSnapshot.LowerRight),
+            wsc.MapToPixelInRange(rakel.UpperLeft),
+            wsc.MapToPixelInRange(rakel.UpperRight),
+            wsc.MapToPixelInRange(rakel.LowerLeft),
+            wsc.MapToPixelInRange(rakel.LowerRight),
             1 // Padding because interpolation reaches pixels that are not directly under the rakel
         );
 
         ShaderRegion normalsSR = ShaderRegionFactory.Create(
-            wsc.MapToPixelInRange(rakelSnapshot.UpperLeft),
-            wsc.MapToPixelInRange(rakelSnapshot.UpperRight),
-            wsc.MapToPixelInRange(rakelSnapshot.LowerLeft),
-            wsc.MapToPixelInRange(rakelSnapshot.LowerRight),
+            wsc.MapToPixelInRange(rakel.UpperLeft),
+            wsc.MapToPixelInRange(rakel.UpperRight),
+            wsc.MapToPixelInRange(rakel.LowerLeft),
+            wsc.MapToPixelInRange(rakel.LowerRight),
             2 // Padding of 2 because normals of the previously set pixels around also have to be recalculated
         );
 
@@ -61,7 +62,6 @@ public class OilPaintTransferEngine
             transferConfiguration.ReservoirSmoothingKernelSize);
 
         ComputeBuffer RakelEmittedPaint = rakel.EmitPaint(
-            rakelSnapshot,
             emitSR,
             wsc,
             transferConfiguration.MapMode);
