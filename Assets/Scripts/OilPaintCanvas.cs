@@ -5,7 +5,7 @@ using UnityEngine;
 public class OilPaintCanvas
 {
     public WorldSpaceCanvas WorldSpaceCanvas { get; private set; }
-    public ComputeBuffer Reservoir { get; private set; }
+    public Reservoir Reservoir { get; private set; }
     public RenderTexture Texture { get; private set; }
     public RenderTexture NormalMap { get; private set; }
 
@@ -20,7 +20,7 @@ public class OilPaintCanvas
 
         WorldSpaceCanvas = new WorldSpaceCanvas(height, width, textureResolution, position);
 
-        Reservoir = new ComputeBuffer(WorldSpaceCanvas.TextureSize.x * WorldSpaceCanvas.TextureSize.y, Paint.SizeInBytes);
+        Reservoir = new Reservoir(textureResolution, WorldSpaceCanvas.TextureSize.x, WorldSpaceCanvas.TextureSize.y, shaderRegionFactory, null);
 
         Texture = new RenderTexture(WorldSpaceCanvas.TextureSize.x, WorldSpaceCanvas.TextureSize.y, 1);
         Texture.filterMode = FilterMode.Point;
