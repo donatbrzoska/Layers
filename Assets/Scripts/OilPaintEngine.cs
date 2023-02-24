@@ -43,13 +43,13 @@ public class OilPaintEngine : MonoBehaviour
 
     void Start()
     {
+        ComputeShaderTasks = new Queue<ComputeShaderTask>();
+
         ShaderRegionFactory = new ShaderRegionFactory(new Vector2Int(TH_GROUP_SIZE_X, TH_GROUP_SIZE_Y));
 
         CreateCanvas();
         CreateRakel();
         CreateRakelDrawer();
-
-        ComputeShaderTasks = new Queue<ComputeShaderTask>();
     }
 
     void CreateCanvas()
