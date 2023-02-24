@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class RakelInterpolator
+public class InputInterpolator
 {
     private Rakel Rakel;
     private OilPaintCanvas OilPaintCanvas;
@@ -12,7 +12,7 @@ public class RakelInterpolator
     private float NO_ANGLE = float.NaN;
     private Vector3 NO_POSITION = Vector3.negativeInfinity;
 
-    public RakelInterpolator(Rakel rakel, OilPaintCanvas oilPaintCanvas)
+    public InputInterpolator(Rakel rakel, OilPaintCanvas oilPaintCanvas)
     {
         Rakel = rakel;
         OilPaintCanvas = oilPaintCanvas;

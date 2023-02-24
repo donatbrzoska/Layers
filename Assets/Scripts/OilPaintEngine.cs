@@ -27,7 +27,7 @@ public class OilPaintEngine : MonoBehaviour
 
     private OilPaintCanvas OilPaintCanvas;
     private Rakel Rakel;
-    private RakelInterpolator RakelInterpolator;
+    private InputInterpolator RakelInterpolator;
 
     private ComputeShaderEngine ComputeShaderEngine;
 
@@ -76,7 +76,7 @@ public class OilPaintEngine : MonoBehaviour
 
     void CreateRakelDrawer()
     {
-        RakelInterpolator = new RakelInterpolator(Rakel, OilPaintCanvas);
+        RakelInterpolator = new InputInterpolator(Rakel, OilPaintCanvas);
     }
 
     void Update()
