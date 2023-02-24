@@ -1774,6 +1774,51 @@ public class Notes : MonoBehaviour
  * 22.02.2023
  * 11:00 - 11:45 0,75h
  * 12:15 - 12:30 0,25h
- * 13:30 - 16:30 3h
- * 17:15 - 
+ * 13:30 - 17:00 3,5h
+ * 4,5h
+ *
+ * - aufgehört bei:
+ *   - Zwischenstand für bidirektionalen Farbaustausch erstmal kopiert und neu angefangen
+ *   - Nutzung von include
+ *   - nächster Schritt: Interpolationen an der Basis vereinheitlichen wäre riiichtig gut
+ *      - Radius neben ReservoirPixelRounded angeben?
+ *   - Unterschiedliche Auflösungen auch für bilinear und polygon clipping zu implementieren
+ *     wird anstrengend und ist vermutlich nicht sinnvoll
+ *     - wäre ansonsten sehr schwierig mit dem Vereinheitlichen der Basis von bilinear und
+ *       polygon clipping
+ *
+ * 23.02.2023
+ * 16:45 - 19:45 3h
+ * 20:00 - 21:45 2,75h
+ * 5,75h
+ * 
+ * DONE RakelApplicationReservoir -> ApplicationReservoir
+ * DONE if (x.volume > 0 ) irgendwie ersetzen
+ * - Grundproblem dahinter: Verhindern, dass leere Farbe als schwarze Farbe interpretiert wird
+ * 
+ * DONE Parameter Einrückungen in Rakel.cs konsistent machen
+ * TODO RakelEmittedPaint -> rakelEmittedPaint
+ * TODO newline unter map_to_world_space in EmitFromRakelShader
+ * DONE double declaration warning
+ * 
+ * aufgehört bei:
+ * - EmitFromCanvas wieder angefangen
+ * - irgendein Buffer ist noch null
+ * 
+ * 24.02.2023
+ * 13:30 - 14:15 0,75h
+ * 14:30 - 16:30 2h
+ * 17:15 - 21:00 3,75h
+ * 6,5h
+ * 
+ * TODO WorldSpaceCanvas umbennen / mit OilPaintCanvas vereinen?
+ * TODO remove parameter oilPaintCanvas.Reservoir.Buffer);
+ * TODO remove ReservoirFiller folder
+ * TODO ShaderTools -> ComputeShaderTools
+ * TODO ApplyBufferToRakel: Kommentar anpassen, CalculationPosition kann raus?
+ *      // calculate pixel position on canvas
+        int2 rakel_pixel = id.xy + CalculationPosition;
+ * 
+ * aufgehört bei:
+ * - irgendwie wird schwarze Farbe erzeugt, wenn welche aufgenommen und wieder abgegeben wird
  */
