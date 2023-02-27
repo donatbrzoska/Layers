@@ -27,7 +27,7 @@ public class OilPaintEngine : MonoBehaviour
     private TransferEngine TransferEngine;
     private OilPaintCanvas OilPaintCanvas;
     private Rakel Rakel;
-    private InputInterpolator RakelInterpolator;
+    private InputInterpolator InputInterpolator;
 
     private ComputeShaderEngine ComputeShaderEngine;
 
@@ -55,7 +55,7 @@ public class OilPaintEngine : MonoBehaviour
         CreateCanvas();
         CreateRakel();
         CreateOilPaintTransferEngine();
-        CreateRakelDrawer();
+        CreateInputInterpolator();
     }
 
     void CreateCanvas()
@@ -85,9 +85,9 @@ public class OilPaintEngine : MonoBehaviour
         TransferEngine = new TransferEngine(ShaderRegionFactory);
     }
 
-    void CreateRakelDrawer()
+    void CreateInputInterpolator()
     {
-        RakelInterpolator = new InputInterpolator(TransferEngine, Rakel, OilPaintCanvas);
+        InputInterpolator = new InputInterpolator(TransferEngine, Rakel, OilPaintCanvas);
     }
 
     void Update()
@@ -122,9 +122,9 @@ public class OilPaintEngine : MonoBehaviour
             {
                 if (Input.GetMouseButtonDown(0))
                 {
-                    RakelInterpolator.NewStroke();
+                    InputInterpolator.NewStroke();
                 }
-                RakelInterpolator.AddNode(
+                InputInterpolator.AddNode(
                     position,
                     rotation,
                     0,
@@ -178,28 +178,28 @@ public class OilPaintEngine : MonoBehaviour
     {
         Configuration.RakelConfiguration.Length = worldSpaceLength;
         CreateRakel();
-        CreateRakelDrawer();
+        CreateInputInterpolator();
     }
 
     public void UpdateRakelWidth(float worldSpaceWidth)
     {
         Configuration.RakelConfiguration.Width = worldSpaceWidth;
         CreateRakel();
-        CreateRakelDrawer();
+        CreateInputInterpolator();
     }
 
     public void UpdateTextureResolution(int pixelsPerWorldSpaceUnit)
     {
         Configuration.CanvasResolution = pixelsPerWorldSpaceUnit;
         CreateCanvas();
-        CreateRakelDrawer();
+        CreateInputInterpolator();
     }
 
     public void UpdateRakelResolution(int pixelsPerWorldSpaceUnit)
     {
         Configuration.RakelConfiguration.Resolution = pixelsPerWorldSpaceUnit;
         CreateRakel();
-        CreateRakelDrawer();
+        CreateInputInterpolator();
     }
 
     // ****************************************************************************************
@@ -252,13 +252,13 @@ public class OilPaintEngine : MonoBehaviour
     public void ClearRakel()
     {
         CreateRakel();
-        CreateRakelDrawer();
+        CreateInputInterpolator();
     }
 
     public void ClearCanvas()
     {
         CreateCanvas();
-        CreateRakelDrawer();
+        CreateInputInterpolator();
     }
 
     // ****************************************************************************************
@@ -290,8 +290,8 @@ public class OilPaintEngine : MonoBehaviour
         //Rakel.Fill(new Paint(new Color(0 / 255f, 107 / 255f, 60 / 255f), 240), new PerlinNoiseFiller());
         Rakel.Fill(Color_.CadmiumGreen, 240, new FlatFiller());
 
-        RakelInterpolator.NewStroke();
-        RakelInterpolator.AddNode(
+        InputInterpolator.NewStroke();
+        InputInterpolator.AddNode(
             new Vector3(-5, 0, -0.10f),
             0,
             0,
@@ -311,7 +311,7 @@ public class OilPaintEngine : MonoBehaviour
 
         //RakelInterpolator.AddNode(new Vector3(6, 3, -0.10f), 0, 0, TextureResolution);
 
-        RakelInterpolator.AddNode(
+        InputInterpolator.AddNode(
             new Vector3(6, 0, -0.10f),
             0,
             0,
