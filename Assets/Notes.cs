@@ -1826,22 +1826,27 @@ public class Notes : MonoBehaviour
  * 13:15 - 13:45 0,5h
  * 14:00 - 16:15 2,25h
  * 16:30 - 16:45 0.25h
- * 17:15 - 18:45 1,5h
+ * 17:15 - 19:00 1,75h
+ * 19:45 - 21:45 2h
+ * 6,75h
  * 
  * Problem mit Farbverdunklung erstmal gefunden
  *- neue Probleme:
  *   - DONE Wenn einmal Farbe aufgetragen ist, wird sie zwar aufgenommen
  *     aber nicht gelöscht (Oberfläche/Schatten/Normalmap ändern sich kein bisschen)
  *     -> Problem gab es nicht wirklich, also es gab einen Bug aber nicht so signifikant wie erwartet
- *   - TODO wenn ich genau so viel Farbe auftrage wie ich lösche, dann reicht die Farbe ewig
+ *   - DONE wenn ich genau so viel Farbe auftrage wie ich lösche, dann reicht die Farbe ewig
  *     - es wird generell auch immer 3x so viel Farbe aufgetragen wie am Anfang in der Rakel ist
  *     -> das liegt teilweise am PerlinNoise
  *     -> aber kommt auch beim FlatFiller vor, da ist es 2x so viel Farbe
- *   - TODO wenn man in aufgetragene Farbe reinwischt, kommt dort am Rand manchmal eine
+ *     -> es ist nicht zwei mal so viel Farbe, die Summenbildung geht über z=0 und z=1
+ *     >> Da ist einfach viel Farbe im ApplicationReservoir die immer wieder abgegeben und
+ *        aufgenommen wird
+ *   - DONE wenn man in aufgetragene Farbe reinwischt, kommt dort am Rand manchmal eine
  *     Farbe die man nicht erwarten würde
  *   - DONE bei rotierten Rakeln kommt es bei der Farbaufnahme zur Bildung von grellen Farbflecken
  *   
  * TODO Farbabgabe konfigurierbar machen
- * TODO Clear Canvas <-> Clear Rakel Button
+ * DONE Clear Canvas <-> Clear Rakel Button
  * TODO Farbmischung bei Interpolation muss später auch eine mix-Funktion benutzen
  */

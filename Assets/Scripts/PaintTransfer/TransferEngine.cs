@@ -87,7 +87,5 @@ public class TransferEngine
 
         oilPaintCanvas.UpdateColorTexture(rakelEmitSR);
         oilPaintCanvas.UpdateNormalMap(normalsSR);
-
-        //oilPaintCanvas.Reservoir.PrintVolumesZ0();
     }
 }
