@@ -31,8 +31,9 @@ RWTexture2D<float4> Target;
 
 
 [numthreads(1,8,1)]
-void main (uint3 id : SV_DispatchThreadID)
+void main (uint3 id_ : SV_DispatchThreadID)
 {
+    id = id_;
     if (is_relevant_thread(id, CalculationSize))
     {
         Target[id.xy] = Value;

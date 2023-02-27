@@ -45,8 +45,9 @@ bool pixel_in_canvas_range(int2 pixel)
 }
 
 [numthreads(1,8,1)]
-void main (uint3 id : SV_DispatchThreadID)
+void main (uint3 id_ : SV_DispatchThreadID)
 {
+    id = id_;
     if (is_relevant_thread(id, CalculationSize))
     {
         // calculate pixel position on canvas
