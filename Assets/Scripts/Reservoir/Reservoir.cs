@@ -28,17 +28,22 @@ public class Reservoir : ComputeShaderCreator
         Buffer.SetData(BufferData);
     }
 
-    public void Duplicate(
-        int discardVolumeThreshold,
-        int smoothingKernelSize,
-        bool debugEnabled = false)
+    public ShaderRegion GetShaderRegion()
     {
-        ShaderRegion duplicateSR = ShaderRegionFactory.Create(
+        return ShaderRegionFactory.Create(
             new Vector2Int(0, Size.y - 1),
             new Vector2Int(Size.x - 1, Size.y - 1),
             new Vector2Int(0, 0),
             new Vector2Int(Size.x - 1, 0)
         );
+    }
+
+    public void Duplicate(
+        int discardVolumeThreshold,
+        int smoothingKernelSize,
+        bool debugEnabled = false)
+    {
+        ShaderRegion duplicateSR = GetShaderRegion();
 
         List<CSAttribute> attributes = new List<CSAttribute>()
         {
@@ -57,6 +62,12 @@ public class Reservoir : ComputeShaderCreator
         );
 
         ComputeShaderEngine.EnqueueOrRun(cst);
+    }
+
+    public void PrintVolumesZ0()
+    {
+        Buffer.GetData(BufferData);
+        LogUtil.LogVolumesZ0(BufferData, GetShaderRegion().CalculationSize.y, GetShaderRegion().CalculationSize.x);
     }
 
     public void Dispose()
