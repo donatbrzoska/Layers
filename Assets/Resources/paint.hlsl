@@ -1,5 +1,10 @@
 float unzero(float f);
 
+float4 EMPTY_PAINT_COLOR()
+{
+    return float4(1,1,1,1);
+}
+
 int PAINT_UNIT()
 {
     return 1000;
@@ -24,5 +29,5 @@ Paint mix(Paint a, Paint b)
 
 bool is_empty(Paint p)
 {
-    return p.volume <= 0;
+    return p.volume <= 10;
 }
