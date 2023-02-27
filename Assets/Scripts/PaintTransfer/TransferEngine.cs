@@ -1,12 +1,12 @@
 ﻿using System;
 using UnityEngine;
 
-public class OilPaintTransferEngine
+public class TransferEngine
 {
     private ShaderRegionFactory ShaderRegionFactory;
     private Vector2Int PreviousApplyPosition = new Vector2Int(int.MinValue, int.MinValue);
 
-    public OilPaintTransferEngine(ShaderRegionFactory shaderRegionFactory)
+    public TransferEngine(ShaderRegionFactory shaderRegionFactory)
     {
         ShaderRegionFactory = shaderRegionFactory;
     }

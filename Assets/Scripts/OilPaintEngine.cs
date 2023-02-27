@@ -24,7 +24,7 @@ public class OilPaintEngine : MonoBehaviour
         }
     }
 
-    private OilPaintTransferEngine OilPaintTransferEngine;
+    private TransferEngine TransferEngine;
     private OilPaintCanvas OilPaintCanvas;
     private Rakel Rakel;
     private InputInterpolator RakelInterpolator;
@@ -77,12 +77,12 @@ public class OilPaintEngine : MonoBehaviour
 
     void CreateOilPaintTransferEngine()
     {
-        OilPaintTransferEngine = new OilPaintTransferEngine(ShaderRegionFactory);
+        TransferEngine = new TransferEngine(ShaderRegionFactory);
     }
 
     void CreateRakelDrawer()
     {
-        RakelInterpolator = new InputInterpolator(OilPaintTransferEngine, Rakel, OilPaintCanvas);
+        RakelInterpolator = new InputInterpolator(TransferEngine, Rakel, OilPaintCanvas);
     }
 
     void Update()
@@ -91,7 +91,7 @@ public class OilPaintEngine : MonoBehaviour
             for (int i=0; i<50; i++){
                 float x = Random.Range(-5f, 5f);
                 float y = Random.Range(-3f, 3f);
-                OilPaintTransferEngine.SimulateStep(
+                TransferEngine.SimulateStep(
                     new Vector3(x,y,0),
                     0,
                     0,
