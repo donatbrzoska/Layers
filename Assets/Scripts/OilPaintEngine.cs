@@ -249,11 +249,16 @@ public class OilPaintEngine : MonoBehaviour
     // ***                                    BOTTOM LEFT                                   ***
     // ****************************************************************************************
 
+    public void ClearRakel()
+    {
+        CreateRakel();
+        CreateRakelDrawer();
+    }
+
     public void ClearCanvas()
     {
         CreateCanvas();
-        CreateRakel();
-        CreateRakelDrawer(); // TODO make Rakelinterpolator not dependent on only one canvas
+        CreateRakelDrawer();
     }
 
     // ****************************************************************************************
