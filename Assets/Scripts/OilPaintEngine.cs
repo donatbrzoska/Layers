@@ -35,6 +35,11 @@ public class OilPaintEngine : MonoBehaviour
     {
         Configuration = new Configuration();
         //Configuration.LoadDebug();
+        //Configuration.RakelRotation = 45;
+        //Configuration.FillConfiguration.Mode = FillMode.Flat;
+        //Configuration.FillConfiguration.Volume = 50;
+        //Configuration.CanvasResolution = 1;
+        //Configuration.RakelConfiguration.Resolution = 1;
 
         int wallColliderID = GameObject.Find("Wall").GetComponent<MeshCollider>().GetInstanceID();
         int canvasColliderID = GameObject.Find("Canvas").GetComponent<MeshCollider>().GetInstanceID();
@@ -315,13 +320,52 @@ public class OilPaintEngine : MonoBehaviour
         //RakelInterpolator.NewStroke();
         //RakelInterpolator.AddNode(new Vector3(-5, 0, -0.10f), 45, 0, TextureResolution);
 
-        Rakel.Fill(Color_.CadmiumGreen, 240, new FlatFiller());
-        RakelInterpolator.NewStroke();
-        RakelInterpolator.AddNode(
+
+        //Rakel.Fill(Color_.CadmiumGreen, 240, new FlatFiller());
+        //RakelInterpolator.NewStroke();
+        //RakelInterpolator.AddNode(
+        //    new Vector3(-5, 0, -0.10f),
+        //    0,
+        //    0,
+        //    Configuration.TransferConfiguration,
+        //    Configuration.CanvasResolution);
+
+
+        Rakel.Fill(Color_.CadmiumGreen, 1, new FlatFiller());
+
+        TransferEngine.SimulateStep(
             new Vector3(-5, 0, -0.10f),
             0,
             0,
             Configuration.TransferConfiguration,
-            Configuration.CanvasResolution);
+            Rakel,
+            OilPaintCanvas);
+
+        UpdateRakelWidth(3);
+        UpdateRakelLength(4);
+
+        TransferEngine.SimulateStep(
+            new Vector3(-4, 0, -0.10f),
+            0,
+            0,
+            Configuration.TransferConfiguration,
+            Rakel,
+            OilPaintCanvas);
+
+        //TransferEngine.SimulateStep(
+        //    new Vector3(-4, 0, -0.10f),
+        //    0,
+        //    0,
+        //    Configuration.TransferConfiguration,
+        //    Rakel,
+        //    OilPaintCanvas);
+
+        //TransferEngine.SimulateStep(
+        //    new Vector3(-4, 0, -0.10f),
+        //    0,
+        //    0,
+        //    Configuration.TransferConfiguration,
+        //    Rakel,
+        //    OilPaintCanvas);
     }
 }

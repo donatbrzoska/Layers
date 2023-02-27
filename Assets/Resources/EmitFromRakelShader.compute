@@ -142,7 +142,7 @@ void emit(float2 reservoir_pixel, int2 radius)
 
             // calculate part
             int2 coord = reservoir_pixel_nearest + int2(x, y);
-            if (pixel_in_reservoir_range(coord)) { // Prevent out of bounds access to reservoir. Also, if it's not in range, this overlap part is not used anyways.
+            if (pixel_in_reservoir_range(coord)) { // Prevent out of bounds access to reservoir. Also, if it's not in range, this overlap part is not (and must not be!) used anyways.
                 float overlap = 0;
                 if (TransferMapMode == 0) { // nearest neighbour
                     overlap = 1;
@@ -189,6 +189,7 @@ void emit(float2 reservoir_pixel, int2 radius)
     Paint result_paint = mix(result_paint_app, result_paint_pu);
 
     // delete amount of taken volume from reservoir (z=0)
+    int deleted = 0;
     for (y=-radius.y; y<=radius.y; y++) {
         for (x=-radius.x; x<=radius.x; x++) {
             int2 coord = reservoir_pixel_nearest + int2(x, y);
@@ -200,12 +201,14 @@ void emit(float2 reservoir_pixel, int2 radius)
 
                 uint2 coord_ = uint2(coord.x, coord.y);
                 InterlockedAdd(RakelApplicationReservoir[XYZ(coord_.x, coord_.y, 0, RakelReservoirSize)].volume, -to_be_deleted_app);
+                deleted += to_be_deleted_app;
                 InterlockedAdd(RakelPickupReservoir[XYZ(coord_.x, coord_.y, 0, RakelReservoirSize)].volume, -to_be_deleted_pu);
             }
         }
     }
 
     RakelEmittedPaint[XY(id.x, id.y, CalculationSize.x)] = result_paint;
+    // log_float(deleted);
 }
 
 void do_emit(float2 reservoir_pixel)

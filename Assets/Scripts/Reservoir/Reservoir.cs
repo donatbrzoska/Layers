@@ -68,6 +68,13 @@ public class Reservoir : ComputeShaderCreator
     {
         Buffer.GetData(BufferData);
         LogUtil.LogVolumesZ0(BufferData, GetShaderRegion().CalculationSize.y, GetShaderRegion().CalculationSize.x);
+
+        int sum = 0;
+        for (int i = 0; i < BufferData.GetLength(0); i++)
+        {
+            sum += (int)BufferData[i].Volume;
+        }
+        Debug.Log("Sum is " + sum);
     }
 
     public void Dispose()

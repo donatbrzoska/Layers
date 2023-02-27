@@ -18,7 +18,7 @@ public class OilPaintCanvas : ComputeShaderCreator
 
         WorldSpaceCanvas = new WorldSpaceCanvas(height, width, textureResolution, position);
 
-        Reservoir = new Reservoir(textureResolution, WorldSpaceCanvas.TextureSize.x, WorldSpaceCanvas.TextureSize.y, shaderRegionFactory, null);
+        Reservoir = new Reservoir(textureResolution, WorldSpaceCanvas.TextureSize.x, WorldSpaceCanvas.TextureSize.y, shaderRegionFactory, computeShaderEngine);
 
         Texture = new RenderTexture(WorldSpaceCanvas.TextureSize.x, WorldSpaceCanvas.TextureSize.y, 1);
         Texture.filterMode = FilterMode.Point;
@@ -59,6 +59,52 @@ public class OilPaintCanvas : ComputeShaderCreator
         );
 
         cst.Run();
+    }
+
+    public ComputeBuffer EmitPaint(
+        Rakel rakel,
+        ShaderRegion shaderRegion,
+        TransferMapMode transferMapMode,
+        bool debugEnabled = false)
+    {
+        ComputeBuffer canvasEmittedPaint = new ComputeBuffer(shaderRegion.PixelCount, Paint.SizeInBytes);
+        // initialize buffer to empty values (Intel does this for you, nvidia doesn't)
+        Paint[] initPaint = new Paint[shaderRegion.PixelCount];
+        canvasEmittedPaint.SetData(initPaint);
+
+        List<CSAttribute> attributes = new List<CSAttribute>()
+        {
+            new CSInts2("CalculationPosition", shaderRegion.CalculationPosition),
+            new CSInts2("CanvasReservoirSize", WorldSpaceCanvas.TextureSize),
+            new CSInt("CanvasResolution", WorldSpaceCanvas.Resolution),
+            new CSFloats3("CanvasPosition", WorldSpaceCanvas.Position),
+            new CSFloats2("CanvasSize", WorldSpaceCanvas.Size),
+            new CSFloats3("RakelAnchor", rakel.Anchor),
+            new CSFloats3("RakelPosition", rakel.Position),
+            new CSFloat("RakelRotation", rakel.Rotation),
+            new CSFloats3("RakelULTilted", rakel.ulTilted),
+            new CSFloats3("RakelURTilted", rakel.urTilted),
+            new CSFloats3("RakelLLTilted", rakel.llTilted),
+            new CSFloats3("RakelLRTilted", rakel.lrTilted),
+            new CSComputeBuffer("CanvasReservoir", Reservoir.Buffer),
+            new CSComputeBuffer("CanvasEmittedPaint", canvasEmittedPaint),
+            new CSInts2("RakelReservoirSize", rakel.ApplicationReservoir.Size),
+            new CSInt("RakelResolution", rakel.ApplicationReservoir.Resolution),
+            new CSInt("TransferMapMode", (int)transferMapMode)
+        };
+
+        ComputeShaderTask cst = new ComputeShaderTask(
+            "EmitFromCanvasShader",
+            shaderRegion,
+            attributes,
+            null,
+            new List<ComputeBuffer>(),
+            debugEnabled
+        );
+
+        ComputeShaderEngine.EnqueueOrRun(cst);
+
+        return canvasEmittedPaint;
     }
 
     public void ApplyPaint(

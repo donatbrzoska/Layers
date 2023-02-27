@@ -6,7 +6,7 @@ public class ComputeShaderEngine
 
     public ComputeShaderEngine()
     {
-        ComputeShaderTasks = new Queue<ComputeShaderTask>();
+        //ComputeShaderTasks = new Queue<ComputeShaderTask>();
     }
 
     public void EnqueueOrRun(ComputeShaderTask cst)

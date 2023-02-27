@@ -37,7 +37,9 @@ public class TransferEngine
 
         rakel.UpdateState(rakelPosition, rakelRotation, rakelTilt);
 
-        ShaderRegion emitSR = ShaderRegionFactory.Create(
+        ShaderRegion canvasEmitSR = rakel.ApplicationReservoir.GetShaderRegion();
+
+        ShaderRegion rakelEmitSR = ShaderRegionFactory.Create(
             wsc.MapToPixelInRange(rakel.UpperLeft),
             wsc.MapToPixelInRange(rakel.UpperRight),
             wsc.MapToPixelInRange(rakel.LowerLeft),
@@ -53,24 +55,37 @@ public class TransferEngine
             2 // Padding of 2 because normals of the previously set pixels around also have to be recalculated
         );
 
+        oilPaintCanvas.Reservoir.Duplicate(
+            transferConfiguration.ReservoirDiscardVolumeThreshold,
+            transferConfiguration.ReservoirSmoothingKernelSize, false);
+
+        ComputeBuffer canvasEmittedPaint = oilPaintCanvas.EmitPaint(
+            rakel,
+            canvasEmitSR,
+            transferConfiguration.MapMode, false);
+
         rakel.ApplicationReservoir.Duplicate(
             transferConfiguration.ReservoirDiscardVolumeThreshold,
-            transferConfiguration.ReservoirSmoothingKernelSize);
+            transferConfiguration.ReservoirSmoothingKernelSize, false);
 
         rakel.PickupReservoir.Duplicate(
             transferConfiguration.ReservoirDiscardVolumeThreshold,
-            transferConfiguration.ReservoirSmoothingKernelSize);
+            transferConfiguration.ReservoirSmoothingKernelSize, false);
 
         ComputeBuffer rakelEmittedPaint = rakel.EmitPaint(
-            emitSR,
+            rakelEmitSR,
             wsc,
-            transferConfiguration.MapMode);
+            transferConfiguration.MapMode, false);
 
         oilPaintCanvas.ApplyPaint(
-            emitSR,
+            rakelEmitSR,
             rakelEmittedPaint);
 
-        oilPaintCanvas.UpdateColorTexture(emitSR);
+        rakel.ApplyPaint(
+            canvasEmitSR,
+            canvasEmittedPaint);
+
+        oilPaintCanvas.UpdateColorTexture(rakelEmitSR);
         oilPaintCanvas.UpdateNormalMap(normalsSR);
     }
 }

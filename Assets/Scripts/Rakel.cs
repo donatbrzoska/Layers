@@ -6,11 +6,11 @@ public class Rakel : ComputeShaderCreator
     public float Length { get; private set; }
     public float Width { get; private set; }
 
-    private Vector3 Anchor { get; }
+    public Vector3 Anchor { get; }
 
-    private Vector3 Position;
-    private float Rotation;
-    private float Tilt;
+    public Vector3 Position;
+    public float Rotation;
+    public float Tilt;
 
     public Vector3 UpperLeft { get; private set; }
     public Vector3 UpperRight { get; private set; }
@@ -134,6 +134,31 @@ public class Rakel : ComputeShaderCreator
         ComputeShaderEngine.EnqueueOrRun(cst);
 
         return RakelEmittedPaint;
+    }
+
+    public void ApplyPaint(
+        ShaderRegion shaderRegion,
+        ComputeBuffer canvasEmittedPaint,
+        bool debugEnabled = false)
+    {
+        List<CSAttribute> attributes = new List<CSAttribute>()
+        {
+            new CSInts2("CalculationPosition", shaderRegion.CalculationPosition),
+            new CSComputeBuffer("CanvasEmittedPaint", canvasEmittedPaint),
+            new CSComputeBuffer("RakelPickupReservoir", PickupReservoir.Buffer),
+            new CSInt("RakelReservoirWidth", PickupReservoir.Size.x)
+        };
+
+        ComputeShaderTask cst = new ComputeShaderTask(
+            "ApplyBufferToRakelShader",
+            shaderRegion,
+            attributes,
+            null,
+            new List<ComputeBuffer>() { canvasEmittedPaint },
+            debugEnabled
+        );
+
+        ComputeShaderEngine.EnqueueOrRun(cst);
     }
 
     public void Dispose()
