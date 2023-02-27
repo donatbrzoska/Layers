@@ -124,9 +124,10 @@ void emit(float2 reservoir_pixel, int2 radius)
     // array size should really be [1+2*radius.y][1+2*radius.x] but we can't make dynamic arrays
     // in HLSL. 9x9 should be enough though, since with 45° tilt we will probably use 6x6 and
     // more tilt probably won't emit anyways
+    float4 color_to_emit_app[9][9];
+    float4 color_to_emit_pu[9][9];
     float volume_to_emit_app[9][9];
     float volume_to_emit_pu[9][9];
-    float part_sum = 0;
     float4 result_color_app = float4(0,0,0,0);
     float4 result_color_pu = float4(0,0,0,0);
     float result_volume_app = 0;
@@ -151,7 +152,6 @@ void emit(float2 reservoir_pixel, int2 radius)
                 } else if (TransferMapMode == 2) { // polygon clipping
                     overlap = calculate_exact_overlap(coord, reservoir_pixel, -RakelRotation);
                 }
-                part_sum += overlap;
 
                 if (overlap > 0) {
                     // get paint
@@ -168,17 +168,29 @@ void emit(float2 reservoir_pixel, int2 radius)
                     result_volume_app += volume_to_emit_app[i][j];
                     result_volume_pu += volume_to_emit_pu[i][j];
 
-                    // add up color
-                    result_color_app += (overlap * available_app.color);
-                    result_color_pu += (overlap * available_pu.color);
+                    color_to_emit_app[i][j] = available_app.color;
+                    color_to_emit_pu[i][j] = available_pu.color;
                 }
             }
         }
     }
 
-    // make sure to keep color brightness for border cases
-    result_color_app /= unzero(part_sum); // prevent division by zero
-    result_color_pu /= unzero(part_sum); // prevent division by zero
+    // determine color based on emitted volumes
+    // TODO use mix function
+    for (y=-radius.y; y<=radius.y; y++) {
+        for (x=-radius.x; x<=radius.x; x++) {
+            int2 coord = reservoir_pixel_nearest + int2(x, y);
+            if (pixel_in_reservoir_range(coord)) {
+                uint i = y + radius.y;
+                uint j = x + radius.x;
+                float volume_part_app = volume_to_emit_app[i][j] / unzero(result_volume_app);
+                float volume_part_pu = volume_to_emit_pu[i][j] / unzero(result_volume_pu);
+                result_color_app += volume_part_app * color_to_emit_app[i][j];
+                result_color_pu += volume_part_pu * color_to_emit_pu[i][j];
+            }
+        }
+    }
+
     Paint result_paint_app;
     Paint result_paint_pu;
     result_paint_app.color = result_color_app;

@@ -1839,8 +1839,9 @@ public class Notes : MonoBehaviour
  *     -> aber kommt auch beim FlatFiller vor, da ist es 2x so viel Farbe
  *   - TODO wenn man in aufgetragene Farbe reinwischt, kommt dort am Rand manchmal eine
  *     Farbe die man nicht erwarten würde
- *   - TODO bei rotierten Rakeln kommt es bei der Farbaufnahme zur Bildung von grellen Farbflecken
+ *   - DONE bei rotierten Rakeln kommt es bei der Farbaufnahme zur Bildung von grellen Farbflecken
  *   
  * TODO Farbabgabe konfigurierbar machen
  * TODO Clear Canvas <-> Clear Rakel Button
+ * TODO Farbmischung bei Interpolation muss später auch eine mix-Funktion benutzen
  */

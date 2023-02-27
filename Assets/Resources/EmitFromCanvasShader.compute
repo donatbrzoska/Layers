@@ -120,8 +120,8 @@ void emit(float2 reservoir_pixel, int2 radius)
     // array size should really be [1+2*radius.y][1+2*radius.x] but we can't make dynamic arrays
     // in HLSL. 9x9 should be enough though, since with 45° tilt we will probably use 6x6 and
     // more tilt probably won't emit anyways
+    float4 color_to_emit[9][9];
     float volume_to_emit[9][9];
-    float part_sum = 0;
     float4 result_color = float4(0,0,0,0);
     float result_volume = 0;
     int x, y;
@@ -149,28 +149,32 @@ void emit(float2 reservoir_pixel, int2 radius)
                     uint2 coord_ = uint2(coord.x, coord.y);
                     Paint available = CanvasReservoir[XYZ(coord_.x, coord_.y, 1, CanvasReservoirSize)];
 
-                    // The main reason for this check is, that we can't add overlap to part_sum
-                    // if there is not even paint there as this would falsely darken the color
-                    if (available.volume > 0) {
-                        part_sum += overlap;
+                    // calculate volume
+                    int target_volume = overlap * VOLUME_TO_EMIT_TARGET;
+                    int really_available_volume = overlap * available.volume;
+                    volume_to_emit[i][j] = min(target_volume, really_available_volume);
+                    result_volume += volume_to_emit[i][j];
 
-                        // calculate volume
-                        int target_volume = overlap * VOLUME_TO_EMIT_TARGET;
-                        int really_available_volume = overlap * available.volume;
-                        volume_to_emit[i][j] = min(target_volume, really_available_volume);
-
-                        result_volume += volume_to_emit[i][j];
-
-                        // add up color
-                        result_color += (overlap * available.color);
-                    }
+                    color_to_emit[i][j] = available.color;
                 }
             }
         }
     }
 
-    // make sure to keep color brightness for border cases
-    result_color /= unzero(part_sum); // prevent division by zero
+    // determine color based on emitted volumes
+    // TODO use mix function
+    for (y=-radius.y; y<=radius.y; y++) {
+        for (x=-radius.x; x<=radius.x; x++) {
+            int2 coord = reservoir_pixel_nearest + int2(x, y);
+            if (pixel_in_reservoir_range(coord)) {
+                uint i = y + radius.y;
+                uint j = x + radius.x;
+                float volume_part = volume_to_emit[i][j] / unzero(result_volume);
+                result_color += volume_part * color_to_emit[i][j];
+            }
+        }
+    }
+
     Paint result_paint;
     result_paint.color = result_color;
     result_paint.volume = result_volume;
