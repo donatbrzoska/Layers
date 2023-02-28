@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class OilPaintEngine : MonoBehaviour
 {
-    public bool BENCHMARK = false;
+    public int BENCHMARK_STEPS = 0;
     public int TH_GROUP_SIZE_X = 1;
     public int TH_GROUP_SIZE_Y = 8;
     
@@ -44,6 +44,11 @@ public class OilPaintEngine : MonoBehaviour
         int wallColliderID = GameObject.Find("Wall").GetComponent<MeshCollider>().GetInstanceID();
         int canvasColliderID = GameObject.Find("Canvas").GetComponent<MeshCollider>().GetInstanceID();
         RakelMouseInputManager = new RakelMouseInputManager(wallColliderID, canvasColliderID);
+
+        if (BENCHMARK_STEPS > 0)
+        {
+            Configuration.LoadBenchmark();
+        }
     }
 
     void Start()
@@ -92,8 +97,8 @@ public class OilPaintEngine : MonoBehaviour
 
     void Update()
     {
-        if (BENCHMARK){
-            for (int i=0; i<50; i++){
+        if (BENCHMARK_STEPS > 0){
+            for (int i = 0; i < BENCHMARK_STEPS; i++){
                 float x = Random.Range(-5f, 5f);
                 float y = Random.Range(-3f, 3f);
                 TransferEngine.SimulateStep(

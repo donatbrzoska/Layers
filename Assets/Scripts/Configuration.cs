@@ -34,6 +34,17 @@ public class Configuration
         FillConfiguration.Volume = 1;
         FillConfiguration.Mode = FillMode.FlatColored;
     }
+
+    public void LoadBenchmark()
+    {
+        CanvasResolution = 50;
+
+        RakelConfiguration.Resolution = 50;
+        RakelConfiguration.Length = 1;
+        RakelConfiguration.Width = 1;
+
+        TransferConfiguration.MapMode = TransferMapMode.NearestNeighbour;
+    }
 }
 
 public class RakelConfiguration
