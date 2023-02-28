@@ -63,9 +63,8 @@ void main (uint3 id_ : SV_DispatchThreadID)
                 p = simulate_alpha(p);
             }
 
-            // render empty paint as white
             if (is_empty(p)) {
-                p.color = EMPTY_PAINT_COLOR();
+                p.color = CANVAS_COLOR();
             }
 
             // set color

@@ -1,6 +1,6 @@
 float unzero(float f);
 
-float4 EMPTY_PAINT_COLOR()
+float4 CANVAS_COLOR()
 {
     return float4(1,1,1,1);
 }
@@ -35,7 +35,7 @@ bool is_empty(Paint p)
 Paint simulate_alpha(Paint p)
 {
     Paint canvas_paint;
-    canvas_paint.color = EMPTY_PAINT_COLOR();
+    canvas_paint.color = CANVAS_COLOR();
     canvas_paint.volume = max(PAINT_UNIT() - p.volume, 0);
 
     Paint mixed = mix(canvas_paint, p);
