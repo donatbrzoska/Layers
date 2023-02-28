@@ -1815,7 +1815,7 @@ public class Notes : MonoBehaviour
  * DONE remove parameter oilPaintCanvas.Reservoir.Buffer);
  * DONE remove ReservoirFiller folder
  * DONE ShaderTools -> ComputeShaderTools
- * TODO ApplyBufferToRakel: Kommentar anpassen, CalculationPosition kann raus?
+ * LATER ApplyBufferToRakel: Kommentar anpassen, CalculationPosition kann raus?
  *      // calculate pixel position on canvas
         int2 rakel_pixel = id.xy + CalculationPosition;
  * 
@@ -1846,7 +1846,31 @@ public class Notes : MonoBehaviour
  *     Farbe die man nicht erwarten würde
  *   - DONE bei rotierten Rakeln kommt es bei der Farbaufnahme zur Bildung von grellen Farbflecken
  *   
- * TODO Farbabgabe konfigurierbar machen
+ * DONE Farbabgabe konfigurierbar machen
  * DONE Clear Canvas <-> Clear Rakel Button
  * TODO Farbmischung bei Interpolation muss später auch eine mix-Funktion benutzen
+ * 
+ * 28.02.2023
+ * 11:00 - 12:15 1,25h
+ * 15:30 - 16:00 0.5h
+ * 17:00 - 18:15 1,25h
+ * 
+ * DONE Alpha für geringe Volumen
+ * TODO Debug-Werte über Inspector setzen
+ * DONE EMPTY_PAINT_COLOR -> CANVAS_COLOR
+ * LATER immer noch Streifen
+ * -> vermutlich z.b. wegen Unterschied in y-Richtung aber nicht in x-Richtung
+ * 
+ * Vergleich mit CPU-Performance: Messungen mit dem Benchmark-Flag schwierig
+ * -> Beim realen Verwenden bemerkt man einen Unterschied, an den FPS nicht wirklich
+ * 
+ * 19:15 - 20:45 1,5
+ * 
+ * 4,5h
+ * 
+ * aufgehört bei:
+ * - bidirektionaler Farbaustausch mit alpha für geringe Volumen funktioniert
+ * - TODO tilted
+ * - Paper angeschaut
+ * - bisherige Tools angeschaut
  */
