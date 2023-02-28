@@ -31,3 +31,15 @@ bool is_empty(Paint p)
 {
     return p.volume <= 10;
 }
+
+Paint simulate_alpha(Paint p)
+{
+    Paint canvas_paint;
+    canvas_paint.color = EMPTY_PAINT_COLOR();
+    canvas_paint.volume = max(PAINT_UNIT() - p.volume, 0);
+
+    Paint mixed = mix(canvas_paint, p);
+    mixed.volume = p.volume;
+
+    return mixed;
+}

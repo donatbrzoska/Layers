@@ -57,6 +57,12 @@ void main (uint3 id_ : SV_DispatchThreadID)
             // get paint from canvas
             Paint p = CanvasReservoir[XY(canvas_pixel.x, canvas_pixel.y, TextureSize.x)];
 
+            // blend little paint with canvas color
+            // we can't use alpha values, because there is nothing behind the paint - the paint is the texture
+            if (p.volume < 1000) {
+                p = simulate_alpha(p);
+            }
+
             // render empty paint as white
             if (is_empty(p)) {
                 p.color = EMPTY_PAINT_COLOR();
