@@ -65,6 +65,7 @@ public class OilPaintCanvas : ComputeShaderCreator
         Rakel rakel,
         ShaderRegion shaderRegion,
         TransferMapMode transferMapMode,
+        float emitVolume,
         bool debugEnabled = false)
     {
         ComputeBuffer canvasEmittedPaint = new ComputeBuffer(shaderRegion.PixelCount, Paint.SizeInBytes);
@@ -90,7 +91,8 @@ public class OilPaintCanvas : ComputeShaderCreator
             new CSComputeBuffer("CanvasEmittedPaint", canvasEmittedPaint),
             new CSInts2("RakelReservoirSize", rakel.ApplicationReservoir.Size),
             new CSInt("RakelResolution", rakel.ApplicationReservoir.Resolution),
-            new CSInt("TransferMapMode", (int)transferMapMode)
+            new CSInt("TransferMapMode", (int)transferMapMode),
+            new CSFloat("EmitVolume", emitVolume),
         };
 
         ComputeShaderTask cst = new ComputeShaderTask(

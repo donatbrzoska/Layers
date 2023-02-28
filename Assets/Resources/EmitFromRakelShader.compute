@@ -52,6 +52,7 @@ float3 RakelLRTilted;
 
 // Emitting
 uint TransferMapMode;
+float EmitVolume;
 
 uint2 RakelReservoirSize;
 uint RakelReservoirResolution;
@@ -119,7 +120,7 @@ void emit(float2 reservoir_pixel, int2 radius)
     int2 reservoir_pixel_nearest = round(reservoir_pixel);
 
     // TODO ratio of application and pickup reservoir
-    int VOLUME_TO_EMIT_TARGET = PAINT_UNIT();
+    int VOLUME_TO_EMIT_TARGET = EmitVolume * PAINT_UNIT();
 
     // array size should really be [1+2*radius.y][1+2*radius.x] but we can't make dynamic arrays
     // in HLSL. 9x9 should be enough though, since with 45° tilt we will probably use 6x6 and

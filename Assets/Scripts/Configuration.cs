@@ -70,11 +70,15 @@ public class TransferConfiguration
     public TransferMapMode MapMode;
     public int ReservoirSmoothingKernelSize;
     public int ReservoirDiscardVolumeThreshold;
+    public float ApplicationVolume;
+    public float PickupVolume;
 
     public TransferConfiguration()
     {
         MapMode = TransferMapMode.Bilinear;
         ReservoirSmoothingKernelSize = 1;
         ReservoirDiscardVolumeThreshold = 10;
+        ApplicationVolume = 1;
+        PickupVolume = 1;
     }
 }

@@ -91,6 +91,7 @@ public class Rakel : ComputeShaderCreator
         ShaderRegion shaderRegion,
         WorldSpaceCanvas wsc,
         TransferMapMode transferMapMode,
+        float emitVolume,
         bool debugEnabled = false)
     {
         ComputeBuffer RakelEmittedPaint = new ComputeBuffer(shaderRegion.PixelCount, Paint.SizeInBytes);
@@ -119,7 +120,8 @@ public class Rakel : ComputeShaderCreator
             new CSComputeBuffer("RakelEmittedPaint", RakelEmittedPaint),
             new CSInts2("RakelReservoirSize", ApplicationReservoir.Size),
             new CSInt("RakelReservoirResolution", ApplicationReservoir.Resolution),
-            new CSInt("TransferMapMode", (int)transferMapMode)
+            new CSInt("TransferMapMode", (int)transferMapMode),
+            new CSFloat("EmitVolume", emitVolume)
         };
 
         ComputeShaderTask cst = new ComputeShaderTask(

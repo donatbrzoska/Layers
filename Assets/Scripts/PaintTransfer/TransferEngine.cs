@@ -62,7 +62,8 @@ public class TransferEngine
         ComputeBuffer canvasEmittedPaint = oilPaintCanvas.EmitPaint(
             rakel,
             canvasEmitSR,
-            transferConfiguration.MapMode, false);
+            transferConfiguration.MapMode,
+            transferConfiguration.PickupVolume, false);
 
         rakel.ApplicationReservoir.Duplicate(
             transferConfiguration.ReservoirDiscardVolumeThreshold,
@@ -75,7 +76,8 @@ public class TransferEngine
         ComputeBuffer rakelEmittedPaint = rakel.EmitPaint(
             rakelEmitSR,
             wsc,
-            transferConfiguration.MapMode, false);
+            transferConfiguration.MapMode,
+            transferConfiguration.ApplicationVolume, false);
 
         oilPaintCanvas.ApplyPaint(
             rakelEmitSR,

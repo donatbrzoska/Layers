@@ -265,6 +265,16 @@ public class OilPaintEngine : MonoBehaviour
     // ***                                   BOTTOM RIGHT                                   ***
     // ****************************************************************************************
 
+    public void UpdateApplicationVolume(float value)
+    {
+        Configuration.TransferConfiguration.ApplicationVolume = value;
+    }
+
+    public void UpdatePickupVolume(float value)
+    {
+        Configuration.TransferConfiguration.PickupVolume = value;
+    }
+
     public void UpdateReservoirSmoothingKernelSize(int value)
     {
         Configuration.TransferConfiguration.ReservoirSmoothingKernelSize = value;
