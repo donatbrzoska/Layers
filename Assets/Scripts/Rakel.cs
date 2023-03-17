@@ -101,24 +101,24 @@ public class Rakel : ComputeShaderCreator
 
         List<CSAttribute> attributes = new List<CSAttribute>()
         {
-            new CSInts2("CalculationPosition", shaderRegion.CalculationPosition),
-            new CSInts2("TextureSize", wsc.TextureSize),
+            new CSInt2("CalculationPosition", shaderRegion.CalculationPosition),
+            new CSInt2("TextureSize", wsc.TextureSize),
             new CSInt("TextureResolution", wsc.Resolution),
-            new CSFloats3("CanvasPosition", wsc.Position),
-            new CSFloats2("CanvasSize", wsc.Size),
-            new CSFloats3("RakelAnchor", Anchor),
-            new CSFloats3("RakelPosition", Position),
+            new CSFloat3("CanvasPosition", wsc.Position),
+            new CSFloat2("CanvasSize", wsc.Size),
+            new CSFloat3("RakelAnchor", Anchor),
+            new CSFloat3("RakelPosition", Position),
             new CSFloat("RakelLength", Length),
             new CSFloat("RakelWidth", Width),
             new CSFloat("RakelRotation", Rotation),
-            new CSFloats3("RakelULTilted", ulTilted),
-            new CSFloats3("RakelURTilted", urTilted),
-            new CSFloats3("RakelLLTilted", llTilted),
-            new CSFloats3("RakelLRTilted", lrTilted),
+            new CSFloat3("RakelULTilted", ulTilted),
+            new CSFloat3("RakelURTilted", urTilted),
+            new CSFloat3("RakelLLTilted", llTilted),
+            new CSFloat3("RakelLRTilted", lrTilted),
             new CSComputeBuffer("RakelApplicationReservoir", ApplicationReservoir.Buffer),
             new CSComputeBuffer("RakelPickupReservoir", PickupReservoir.Buffer),
             new CSComputeBuffer("RakelEmittedPaint", RakelEmittedPaint),
-            new CSInts2("RakelReservoirSize", ApplicationReservoir.Size),
+            new CSInt2("RakelReservoirSize", ApplicationReservoir.Size),
             new CSInt("RakelReservoirResolution", ApplicationReservoir.Resolution),
             new CSInt("TransferMapMode", (int)transferMapMode),
             new CSFloat("EmitVolume", emitVolume)
@@ -145,7 +145,7 @@ public class Rakel : ComputeShaderCreator
     {
         List<CSAttribute> attributes = new List<CSAttribute>()
         {
-            new CSInts2("CalculationPosition", shaderRegion.CalculationPosition),
+            new CSInt2("CalculationPosition", shaderRegion.CalculationPosition),
             new CSComputeBuffer("CanvasEmittedPaint", canvasEmittedPaint),
             new CSComputeBuffer("RakelPickupReservoir", PickupReservoir.Buffer),
             new CSInt("RakelReservoirWidth", PickupReservoir.Size.x)

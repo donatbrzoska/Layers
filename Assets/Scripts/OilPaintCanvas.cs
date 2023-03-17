@@ -50,7 +50,7 @@ public class OilPaintCanvas : ComputeShaderCreator
             "SetTextureShader",
             sr,
             new List<CSAttribute>() {
-                new CSFloats4("Value", value),
+                new CSFloat4("Value", value),
                 new CSTexture("Target", texture)
             },
             null,
@@ -75,21 +75,21 @@ public class OilPaintCanvas : ComputeShaderCreator
 
         List<CSAttribute> attributes = new List<CSAttribute>()
         {
-            new CSInts2("CalculationPosition", shaderRegion.CalculationPosition),
-            new CSInts2("CanvasReservoirSize", WorldSpaceCanvas.TextureSize),
+            new CSInt2("CalculationPosition", shaderRegion.CalculationPosition),
+            new CSInt2("CanvasReservoirSize", WorldSpaceCanvas.TextureSize),
             new CSInt("CanvasResolution", WorldSpaceCanvas.Resolution),
-            new CSFloats3("CanvasPosition", WorldSpaceCanvas.Position),
-            new CSFloats2("CanvasSize", WorldSpaceCanvas.Size),
-            new CSFloats3("RakelAnchor", rakel.Anchor),
-            new CSFloats3("RakelPosition", rakel.Position),
+            new CSFloat3("CanvasPosition", WorldSpaceCanvas.Position),
+            new CSFloat2("CanvasSize", WorldSpaceCanvas.Size),
+            new CSFloat3("RakelAnchor", rakel.Anchor),
+            new CSFloat3("RakelPosition", rakel.Position),
             new CSFloat("RakelRotation", rakel.Rotation),
-            new CSFloats3("RakelULTilted", rakel.ulTilted),
-            new CSFloats3("RakelURTilted", rakel.urTilted),
-            new CSFloats3("RakelLLTilted", rakel.llTilted),
-            new CSFloats3("RakelLRTilted", rakel.lrTilted),
+            new CSFloat3("RakelULTilted", rakel.ulTilted),
+            new CSFloat3("RakelURTilted", rakel.urTilted),
+            new CSFloat3("RakelLLTilted", rakel.llTilted),
+            new CSFloat3("RakelLRTilted", rakel.lrTilted),
             new CSComputeBuffer("CanvasReservoir", Reservoir.Buffer),
             new CSComputeBuffer("CanvasEmittedPaint", canvasEmittedPaint),
-            new CSInts2("RakelReservoirSize", rakel.ApplicationReservoir.Size),
+            new CSInt2("RakelReservoirSize", rakel.ApplicationReservoir.Size),
             new CSInt("RakelResolution", rakel.ApplicationReservoir.Resolution),
             new CSInt("TransferMapMode", (int)transferMapMode),
             new CSFloat("EmitVolume", emitVolume),
@@ -116,7 +116,7 @@ public class OilPaintCanvas : ComputeShaderCreator
     {
         List<CSAttribute> attributes = new List<CSAttribute>()
         {
-            new CSInts2("CalculationPosition", shaderRegion.CalculationPosition),
+            new CSInt2("CalculationPosition", shaderRegion.CalculationPosition),
             new CSComputeBuffer("RakelEmittedPaint", rakelEmittedPaint),
             new CSComputeBuffer("CanvasReservoir", Reservoir.Buffer),
             new CSInt("TextureWidth", Texture.width)
@@ -140,9 +140,9 @@ public class OilPaintCanvas : ComputeShaderCreator
     {
         List<CSAttribute> attributes = new List<CSAttribute>()
         {
-            new CSInts2("CalculationPosition", shaderRegion.CalculationPosition),
+            new CSInt2("CalculationPosition", shaderRegion.CalculationPosition),
             new CSComputeBuffer("CanvasReservoir", Reservoir.Buffer),
-            new CSInts2("TextureSize", WorldSpaceCanvas.TextureSize),
+            new CSInt2("TextureSize", WorldSpaceCanvas.TextureSize),
             new CSTexture("CanvasTexture", Texture)
         };
 
@@ -164,9 +164,9 @@ public class OilPaintCanvas : ComputeShaderCreator
     {
         List<CSAttribute> attributes = new List<CSAttribute>()
         {
-            new CSInts2("CalculationPosition", shaderRegion.CalculationPosition),
+            new CSInt2("CalculationPosition", shaderRegion.CalculationPosition),
             new CSComputeBuffer("CanvasReservoir", Reservoir.Buffer),
-            new CSInts2("TextureSize", WorldSpaceCanvas.TextureSize),
+            new CSInt2("TextureSize", WorldSpaceCanvas.TextureSize),
             new CSTexture("NormalMap", NormalMap)
         };
 

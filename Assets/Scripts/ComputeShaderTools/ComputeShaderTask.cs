@@ -59,11 +59,11 @@ public class CSInt : CSAttribute
     }
 }
 
-public class CSInts2 : CSAttribute
+public class CSInt2 : CSAttribute
 {
     private Vector2Int Values;
 
-    public CSInts2(string key, Vector2Int values) : base(key)
+    public CSInt2(string key, Vector2Int values) : base(key)
     {
         Values = values;
     }
@@ -89,11 +89,11 @@ public class CSFloat : CSAttribute
     }
 }
 
-public class CSFloats2 : CSAttribute
+public class CSFloat2 : CSAttribute
 {
     private Vector2 Values;
 
-    public CSFloats2(string key, Vector2 values) : base(key)
+    public CSFloat2(string key, Vector2 values) : base(key)
     {
         Values = values;
     }
@@ -104,11 +104,11 @@ public class CSFloats2 : CSAttribute
     }
 }
 
-public class CSFloats3 : CSAttribute
+public class CSFloat3 : CSAttribute
 {
     private Vector3 Values;
 
-    public CSFloats3(string key, Vector3 values) : base(key)
+    public CSFloat3(string key, Vector3 values) : base(key)
     {
         Values = values;
     }
@@ -119,11 +119,11 @@ public class CSFloats3 : CSAttribute
     }
 }
 
-public class CSFloats4 : CSAttribute
+public class CSFloat4 : CSAttribute
 {
     private Vector4 Values;
 
-    public CSFloats4(string key, Vector4 values) : base(key)
+    public CSFloat4(string key, Vector4 values) : base(key)
     {
         Values = values;
     }
@@ -161,7 +161,7 @@ public class ComputeShaderTask {
 
         ComputeShader = (ComputeShader)Resources.Load(name);
         ThreadGroups = shaderRegion.ThreadGroups;
-        Attributes.Add(new CSInts2("CalculationSize", shaderRegion.CalculationSize));
+        Attributes.Add(new CSInt2("CalculationSize", shaderRegion.CalculationSize));
     }
 
     public void Run()
