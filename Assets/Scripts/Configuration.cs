@@ -13,7 +13,7 @@ public class Configuration
 
     public Configuration()
     {
-        CanvasResolution = 80;
+        CanvasResolution = 20;
 
         RakelRotation = 0;
         RakelRotationLocked = true;
@@ -57,7 +57,7 @@ public class RakelConfiguration
     {
         Length = 2.5f;
         Width = 0.5f;
-        Resolution = 80;
+        Resolution = 20;
     }
 }
 
@@ -70,7 +70,7 @@ public class FillConfiguration
     public FillConfiguration()
     {
         Color = Color_.CadmiumGreen;
-        Volume = 240;
+        Volume = 120;
         Mode = FillMode.PerlinColored;
     }
 
