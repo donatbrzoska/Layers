@@ -91,7 +91,7 @@ public class TransferConfiguration
         ReservoirSmoothingKernelSize = 1;
         ReservoirDiscardVolumeThreshold = 10;
         EmitVolumeApplicationReservoir = 1;
-        EmitVolumePickupReservoir = 1;
-        PickupVolume = 1;
+        EmitVolumePickupReservoir = 1.2f;
+        PickupVolume = 1.3f;
     }
 }
