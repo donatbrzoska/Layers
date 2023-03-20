@@ -35,7 +35,7 @@ public class OilPaintEngine : MonoBehaviour
     {
         Configuration = new Configuration();
         //Configuration.LoadDebug();
-        //Configuration.RakelRotation = 45;
+        //Configuration.RakelRotation = 22;
         //Configuration.FillConfiguration.Mode = FillMode.Flat;
         //Configuration.FillConfiguration.Volume = 10;
 
