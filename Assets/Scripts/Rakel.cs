@@ -91,7 +91,8 @@ public class Rakel : ComputeShaderCreator
         ShaderRegion shaderRegion,
         OilPaintCanvas oilPaintCanvas,
         TransferMapMode transferMapMode,
-        float emitVolume,
+        float emitVolumeApplicationReservoir,
+        float emitVolumePickupReservoir,
         bool debugEnabled = false)
     {
         List<CSAttribute> attributes = new List<CSAttribute>()
@@ -120,7 +121,8 @@ public class Rakel : ComputeShaderCreator
             new CSInt("RRReadIndex", ApplicationReservoir.ReadIndex),
             new CSInt("RRWriteIndex", ApplicationReservoir.WriteIndex),
             new CSInt("TransferMapMode", (int)transferMapMode),
-            new CSFloat("EmitVolume", emitVolume),
+            new CSFloat("EmitVolumeApplicationReservoir", emitVolumeApplicationReservoir),
+            new CSFloat("EmitVolumePickupReservoir", emitVolumePickupReservoir),
         };
 
         ComputeShaderTask cst = new ComputeShaderTask(

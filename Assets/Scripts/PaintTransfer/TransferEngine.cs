@@ -81,7 +81,8 @@ public class TransferEngine
             rakelEmitSR,
             oilPaintCanvas,
             transferConfiguration.MapMode,
-            transferConfiguration.ApplicationVolume, false);
+            transferConfiguration.EmitVolumeApplicationReservoir,
+            transferConfiguration.EmitVolumePickupReservoir, false);
 
         oilPaintCanvas.UpdateColorTexture(rakelEmitSR);
         oilPaintCanvas.UpdateNormalMap(normalsSR);

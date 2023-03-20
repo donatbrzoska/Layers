@@ -100,7 +100,7 @@ public class OilPaintEngine : MonoBehaviour
                 float x = Random.Range(-5f, 5f);
                 float y = Random.Range(-3f, 3f);
                 TransferEngine.SimulateStep(
-                    new Vector3(x,y,0),
+                    new Vector3(x, y, 0),
                     0,
                     0,
                     Configuration.TransferConfiguration,
@@ -268,9 +268,14 @@ public class OilPaintEngine : MonoBehaviour
     // ***                                   BOTTOM RIGHT                                   ***
     // ****************************************************************************************
 
-    public void UpdateApplicationVolume(float value)
+    public void UpdateEmitVolumeApplicationReservoir(float value)
     {
-        Configuration.TransferConfiguration.ApplicationVolume = value;
+        Configuration.TransferConfiguration.EmitVolumeApplicationReservoir = value;
+    }
+
+    public void UpdateEmitVolumePickupReservoir(float value)
+    {
+        Configuration.TransferConfiguration.EmitVolumePickupReservoir = value;
     }
 
     public void UpdatePickupVolume(float value)
