@@ -31,6 +31,7 @@ void log_(float4 f)
 int2 CalculationPosition;
 
 RWStructuredBuffer<Paint> CanvasReservoir;
+uint CRReadIndex;
 
 RWTexture2D<float4> NormalMap;
 uint2 TextureSize;
@@ -62,15 +63,15 @@ void main (uint3 id_ : SV_DispatchThreadID)
             uint bot = clamp(canvas_pixel.y-1, 0, TextureSize.y-1);
             
             // ... ... get volumes
-            uint vol_ul = CanvasReservoir[XY(left,           up,             TextureSize.x)].volume;
-            uint vol_u =  CanvasReservoir[XY(canvas_pixel.x, up,             TextureSize.x)].volume;
-            uint vol_ur = CanvasReservoir[XY(right,          up,             TextureSize.x)].volume;
-            uint vol_l =  CanvasReservoir[XY(left,           canvas_pixel.y, TextureSize.x)].volume;
-            // uint vol_m =  CanvasReservoir[XY(canvas_pixel.x, canvas_pixel.y, TextureSize.x)].volume;
-            uint vol_r =  CanvasReservoir[XY(right,          canvas_pixel.y, TextureSize.x)].volume;
-            uint vol_ll = CanvasReservoir[XY(left,           bot,            TextureSize.x)].volume;
-            uint vol_b =  CanvasReservoir[XY(canvas_pixel.x, bot,            TextureSize.x)].volume;
-            uint vol_lr = CanvasReservoir[XY(right,          bot,            TextureSize.x)].volume;
+            uint vol_ul = CanvasReservoir[XYZ(left,           up,             CRReadIndex, TextureSize)].volume;
+            uint vol_u =  CanvasReservoir[XYZ(canvas_pixel.x, up,             CRReadIndex, TextureSize)].volume;
+            uint vol_ur = CanvasReservoir[XYZ(right,          up,             CRReadIndex, TextureSize)].volume;
+            uint vol_l =  CanvasReservoir[XYZ(left,           canvas_pixel.y, CRReadIndex, TextureSize)].volume;
+            // uint vol_m =  CanvasReservoir[XY(canvas_pixel.x, canvas_pixel.y, CRReadIndex, TextureSize)].volume;
+            uint vol_r =  CanvasReservoir[XYZ(right,          canvas_pixel.y, CRReadIndex, TextureSize)].volume;
+            uint vol_ll = CanvasReservoir[XYZ(left,           bot,            CRReadIndex, TextureSize)].volume;
+            uint vol_b =  CanvasReservoir[XYZ(canvas_pixel.x, bot,            CRReadIndex, TextureSize)].volume;
+            uint vol_lr = CanvasReservoir[XYZ(right,          bot,            CRReadIndex, TextureSize)].volume;
 
             // ... ... sobel calculation
             int normal_x = -1 * vol_ul            + 1 * vol_ur

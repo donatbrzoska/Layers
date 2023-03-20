@@ -87,25 +87,23 @@ public class Rakel : ComputeShaderCreator
         //PickupReservoir.Fill(Color_.CadmiumRed, volume / 2, filler);
     }
 
-    public ComputeBuffer EmitPaint(
+    public void EmitPaint(
         ShaderRegion shaderRegion,
-        WorldSpaceCanvas wsc,
+        OilPaintCanvas oilPaintCanvas,
         TransferMapMode transferMapMode,
         float emitVolume,
         bool debugEnabled = false)
     {
-        ComputeBuffer RakelEmittedPaint = new ComputeBuffer(shaderRegion.PixelCount, Paint.SizeInBytes);
-        // initialize buffer to empty values (Intel does this for you, nvidia doesn't)
-        Paint[] initPaint = new Paint[shaderRegion.PixelCount];
-        RakelEmittedPaint.SetData(initPaint);
-
         List<CSAttribute> attributes = new List<CSAttribute>()
         {
             new CSInt2("CalculationPosition", shaderRegion.CalculationPosition),
-            new CSInt2("TextureSize", wsc.TextureSize),
-            new CSInt("TextureResolution", wsc.Resolution),
-            new CSFloat3("CanvasPosition", wsc.Position),
-            new CSFloat2("CanvasSize", wsc.Size),
+            new CSFloat3("CanvasPosition", oilPaintCanvas.WorldSpaceCanvas.Position),
+            new CSFloat2("CanvasSize", oilPaintCanvas.WorldSpaceCanvas.Size),
+            new CSComputeBuffer("CanvasReservoir", oilPaintCanvas.Reservoir.Buffer),
+            new CSInt2("CanvasReservoirSize", oilPaintCanvas.WorldSpaceCanvas.TextureSize),
+            new CSInt("CanvasReservoirResolution", oilPaintCanvas.WorldSpaceCanvas.Resolution),
+            new CSInt("CRReadIndex", oilPaintCanvas.Reservoir.ReadIndex),
+            new CSInt("CRWriteIndex", oilPaintCanvas.Reservoir.WriteIndex),
             new CSFloat3("RakelAnchor", Anchor),
             new CSFloat3("RakelPosition", Position),
             new CSFloat("RakelLength", Length),
@@ -117,11 +115,12 @@ public class Rakel : ComputeShaderCreator
             new CSFloat3("RakelLRTilted", lrTilted),
             new CSComputeBuffer("RakelApplicationReservoir", ApplicationReservoir.Buffer),
             new CSComputeBuffer("RakelPickupReservoir", PickupReservoir.Buffer),
-            new CSComputeBuffer("RakelEmittedPaint", RakelEmittedPaint),
             new CSInt2("RakelReservoirSize", ApplicationReservoir.Size),
             new CSInt("RakelReservoirResolution", ApplicationReservoir.Resolution),
+            new CSInt("RRReadIndex", ApplicationReservoir.ReadIndex),
+            new CSInt("RRWriteIndex", ApplicationReservoir.WriteIndex),
             new CSInt("TransferMapMode", (int)transferMapMode),
-            new CSFloat("EmitVolume", emitVolume)
+            new CSFloat("EmitVolume", emitVolume),
         };
 
         ComputeShaderTask cst = new ComputeShaderTask(
@@ -135,32 +134,9 @@ public class Rakel : ComputeShaderCreator
 
         ComputeShaderEngine.EnqueueOrRun(cst);
 
-        return RakelEmittedPaint;
-    }
-
-    public void ApplyPaint(
-        ShaderRegion shaderRegion,
-        ComputeBuffer canvasEmittedPaint,
-        bool debugEnabled = false)
-    {
-        List<CSAttribute> attributes = new List<CSAttribute>()
-        {
-            new CSInt2("CalculationPosition", shaderRegion.CalculationPosition),
-            new CSComputeBuffer("CanvasEmittedPaint", canvasEmittedPaint),
-            new CSComputeBuffer("RakelPickupReservoir", PickupReservoir.Buffer),
-            new CSInt("RakelReservoirWidth", PickupReservoir.Size.x)
-        };
-
-        ComputeShaderTask cst = new ComputeShaderTask(
-            "ApplyBufferToRakelShader",
-            shaderRegion,
-            attributes,
-            null,
-            new List<ComputeBuffer>() { canvasEmittedPaint },
-            debugEnabled
-        );
-
-        ComputeShaderEngine.EnqueueOrRun(cst);
+        oilPaintCanvas.Reservoir.ToggleDoubleBuffering();
+        ApplicationReservoir.ToggleDoubleBuffering();
+        PickupReservoir.ToggleDoubleBuffering(); // not really necessary but we better be future proof
     }
 
     public void Dispose()

@@ -33,10 +33,14 @@ void log_(float4 f)
 
 uint2 CalculationPosition;
 
-uint RakelResolution;
 float RakelRotation;
 float3 RakelAnchor;
 float3 RakelPosition;
+uint2 RakelReservoirSize;
+uint RakelReservoirResolution;
+RWStructuredBuffer<Paint> RakelPickupReservoir;
+uint RRReadIndex;
+uint RRWriteIndex;
 
 float3 RakelULTilted;
 float3 RakelURTilted;
@@ -45,7 +49,7 @@ float3 RakelLRTilted;
 
 float3 CanvasPosition;
 float2 CanvasSize;
-uint CanvasResolution;
+uint CanvasReservoirResolution;
 uint2 CanvasReservoirSize;
 
 // Emitting
@@ -53,13 +57,13 @@ uint TransferMapMode;
 float EmitVolume;
 
 RWStructuredBuffer<Paint> CanvasReservoir;
-
-RWStructuredBuffer<Paint> CanvasEmittedPaint;
+uint CRReadIndex;
+uint CRWriteIndex;
 
 
 float3 map_to_world_space(int2 pixel)
 {
-    float pixel_size = 1/float(RakelResolution);
+    float pixel_size = 1/float(RakelReservoirResolution);
     float3 positive_origin_aligned = float3(0.5*pixel_size + pixel.x*pixel_size,
                                             0.5*pixel_size + pixel.y*pixel_size,
                                             0);
@@ -112,7 +116,7 @@ bool pixel_in_reservoir_range(int2 pixel)
 }
 
 // radius of 1 does an emit on a 3x3 area from emit source grid, based on the rounded reservoir_pixel
-void emit(float2 reservoir_pixel, int2 radius)
+void emit(float2 reservoir_pixel, int2 radius, uint2 rakel_pixel)
 {
     int2 reservoir_pixel_nearest = round(reservoir_pixel);
 
@@ -148,7 +152,7 @@ void emit(float2 reservoir_pixel, int2 radius)
                 if (overlap > 0) {
                     // get paint
                     uint2 coord_ = uint2(coord.x, coord.y);
-                    Paint available = CanvasReservoir[XYZ(coord_.x, coord_.y, 1, CanvasReservoirSize)];
+                    Paint available = CanvasReservoir[XYZ(coord_.x, coord_.y, CRReadIndex, CanvasReservoirSize)];
 
                     // calculate volume
                     int target_volume = overlap * VOLUME_TO_EMIT_TARGET;
@@ -176,9 +180,9 @@ void emit(float2 reservoir_pixel, int2 radius)
         }
     }
 
-    Paint result_paint;
-    result_paint.color = result_color;
-    result_paint.volume = result_volume;
+    Paint emitted;
+    emitted.color = result_color;
+    emitted.volume = result_volume;
 
     int deleted = 0;
     // delete amount of taken volume from reservoir (z=0)
@@ -191,22 +195,24 @@ void emit(float2 reservoir_pixel, int2 radius)
                 int to_be_deleted = volume_to_emit[i][j];
 
                 uint2 coord_ = uint2(coord.x, coord.y);
-                InterlockedAdd(CanvasReservoir[XYZ(coord_.x, coord_.y, 0, CanvasReservoirSize)].volume, -to_be_deleted);
+                InterlockedAdd(CanvasReservoir[XYZ(coord_.x, coord_.y, CRWriteIndex, CanvasReservoirSize)].volume, -to_be_deleted);
                 deleted += to_be_deleted;
             }
         }
     }
 
-    CanvasEmittedPaint[XY(id.x, id.y, CalculationSize.x)] = result_paint;
+    Paint on_rakel = RakelPickupReservoir[XYZ(rakel_pixel.x, rakel_pixel.y, RRReadIndex, RakelReservoirSize)];
+    Paint mixed = mix(emitted, on_rakel);
+    RakelPickupReservoir[XYZ(rakel_pixel.x, rakel_pixel.y, RRWriteIndex, RakelReservoirSize)] = mixed;
     // log_float(deleted);
 }
 
-void do_emit(float2 reservoir_pixel)
+void do_emit(float2 reservoir_pixel, uint2 rakel_pixel)
 {
     if (TransferMapMode == 0) {
-        emit(reservoir_pixel, int2(0, 0));
+        emit(reservoir_pixel, int2(0, 0), rakel_pixel);
     } else {
-        emit(reservoir_pixel, int2(1, 1));
+        emit(reservoir_pixel, int2(1, 1), rakel_pixel);
     }
 }
 
@@ -226,7 +232,7 @@ void main(uint3 id_ : SV_DispatchThreadID)
         float2 canvas_reservoir_pixel = float2(canvas_mapped_info.x * CanvasReservoirSize.x - 0.5,
                                                canvas_mapped_info.y * CanvasReservoirSize.y - 0.5);
         
-        do_emit(canvas_reservoir_pixel);
+        do_emit(canvas_reservoir_pixel, rakel_pixel);
     }
     // if (id.x == 0 && id.y == 0)
     // {

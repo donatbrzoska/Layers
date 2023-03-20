@@ -55,39 +55,58 @@ public class TransferEngine
             2 // Padding of 2 because normals of the previously set pixels around also have to be recalculated
         );
 
-        oilPaintCanvas.Reservoir.Duplicate(
-            transferConfiguration.ReservoirDiscardVolumeThreshold,
-            transferConfiguration.ReservoirSmoothingKernelSize, false);
+        /*
+         * When using double buffering, a reservoir that is only partially written
+         * to needs to be duplicated before doing so.
+         */
+        oilPaintCanvas.Reservoir.Duplicate();
+        rakel.ApplicationReservoir.Duplicate();
+        rakel.PickupReservoir.Duplicate();
 
-        ComputeBuffer canvasEmittedPaint = oilPaintCanvas.EmitPaint(
+        oilPaintCanvas.EmitPaint(
             rakel,
             canvasEmitSR,
             transferConfiguration.MapMode,
             transferConfiguration.PickupVolume, false);
 
-        rakel.ApplicationReservoir.Duplicate(
-            transferConfiguration.ReservoirDiscardVolumeThreshold,
-            transferConfiguration.ReservoirSmoothingKernelSize, false);
+        /*
+         * When using double buffering, a reservoir that is only partially written
+         * to needs to be duplicated before doing so.
+         */
+        oilPaintCanvas.Reservoir.Duplicate();
+        rakel.ApplicationReservoir.Duplicate();
+        rakel.PickupReservoir.Duplicate();
 
-        rakel.PickupReservoir.Duplicate(
-            transferConfiguration.ReservoirDiscardVolumeThreshold,
-            transferConfiguration.ReservoirSmoothingKernelSize, false);
-
-        ComputeBuffer rakelEmittedPaint = rakel.EmitPaint(
+        rakel.EmitPaint(
             rakelEmitSR,
-            wsc,
+            oilPaintCanvas,
             transferConfiguration.MapMode,
             transferConfiguration.ApplicationVolume, false);
 
-        oilPaintCanvas.ApplyPaint(
-            rakelEmitSR,
-            rakelEmittedPaint);
-
-        rakel.ApplyPaint(
-            canvasEmitSR,
-            canvasEmittedPaint);
-
         oilPaintCanvas.UpdateColorTexture(rakelEmitSR);
         oilPaintCanvas.UpdateNormalMap(normalsSR);
+
+        /*
+         * This may be moved to the duplication shader for optimization but
+         * since the smoothing probably won't be used anyways we don't do that
+         * so the code is more readable
+         */
+        if (transferConfiguration.ReservoirSmoothingKernelSize > 1)
+        {
+            // probably only maybe needed for bilinear interpolation mapping
+            oilPaintCanvas.Reservoir.Smooth(
+                transferConfiguration.ReservoirDiscardVolumeThreshold,
+                transferConfiguration.ReservoirSmoothingKernelSize, false);
+
+            // probably only maybe needed for bilinear interpolation mapping
+            rakel.ApplicationReservoir.Smooth(
+            transferConfiguration.ReservoirDiscardVolumeThreshold,
+            transferConfiguration.ReservoirSmoothingKernelSize, false);
+
+            // probably only maybe needed for bilinear interpolation mapping
+            rakel.PickupReservoir.Smooth(
+                transferConfiguration.ReservoirDiscardVolumeThreshold,
+                transferConfiguration.ReservoirSmoothingKernelSize, false);
+        }
     }
 }

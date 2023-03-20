@@ -31,6 +31,7 @@ void log_(float4 f)
 int2 CalculationPosition;
 
 RWStructuredBuffer<Paint> CanvasReservoir;
+uint CRReadIndex;
 
 RWTexture2D<float4> CanvasTexture;
 uint2 TextureSize;
@@ -55,7 +56,7 @@ void main (uint3 id_ : SV_DispatchThreadID)
         if (pixel_in_canvas_range(canvas_pixel))
         {
             // get paint from canvas
-            Paint p = CanvasReservoir[XY(canvas_pixel.x, canvas_pixel.y, TextureSize.x)];
+            Paint p = CanvasReservoir[XYZ(canvas_pixel.x, canvas_pixel.y, CRReadIndex, TextureSize)];
 
             // blend little paint with canvas color
             // we can't use alpha values, because there is nothing behind the paint - the paint is the texture
