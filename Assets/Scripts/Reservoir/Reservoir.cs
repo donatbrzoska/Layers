@@ -64,10 +64,10 @@ public class Reservoir : ComputeShaderCreator
         ComputeShaderEngine.EnqueueOrRun(cst);
     }
 
-    public void PrintVolumesZ0()
+    public void PrintVolumes(int z)
     {
         Buffer.GetData(BufferData);
-        LogUtil.LogVolumesZ0(BufferData, GetShaderRegion().CalculationSize.y, GetShaderRegion().CalculationSize.x);
+        LogUtil.LogVolumes(BufferData, GetShaderRegion().CalculationSize.y, GetShaderRegion().CalculationSize.x, z, "z=" + z);
 
         //int sum = 0;
         //for (int i = 0; i < BufferData.GetLength(0) / 2; i++)

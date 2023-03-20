@@ -249,20 +249,8 @@ public class LogUtil
         Debug.Log(result);
     }
 
-    // This function is for printing 3D arrays with depth of 2
-    public static void LogVolumes(Paint[] paints, int rows, int cols, string descr = "")
-    {
-        if (descr != "")
-        {
-            Debug.Log(descr);
-        }
-
-        LogVolumesZ0(paints, rows, cols, "0");
-        LogVolumesZ1(paints, rows, cols, "1");
-    }
-
-    // This function is for printing z=0 for 3D arrays with depth of 2
-    public static void LogVolumesZ0(Paint[] paints, int rows, int cols, string descr = "")
+    // This function is for printing a specified z of a 3D array
+    public static void LogVolumes(Paint[] paints, int rows, int cols, int z, string descr = "")
     {
         if (descr != "")
         {
@@ -274,27 +262,7 @@ public class LogUtil
         {
             for (int j = 0; j < cols; j++)
             {
-                result += paints[i * cols + j].Volume + " ";
-            }
-            result += "\n";
-        }
-        Debug.Log(result);
-    }
-
-    // This function is for printing z=1 for 3D arrays with depth of 2
-    public static void LogVolumesZ1(Paint[] paints, int rows, int cols, string descr = "")
-    {
-        if (descr != "")
-        {
-            Debug.Log(descr);
-        }
-
-        string result = "";
-        for (int i = 0; i < rows; i++)
-        {
-            for (int j = 0; j < cols; j++)
-            {
-                result += paints[1 * rows * cols + i * cols + j].Volume + " ";
+                result += paints[z * rows * cols + i * cols + j].Volume + " ";
             }
             result += "\n";
         }
