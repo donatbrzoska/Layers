@@ -64,10 +64,10 @@ float calculate_exact_overlap(int2 adjacent_reservoir_pixel, float2 reservoir_pi
     clip_len = 4;
 
     // TODO this doesn't work for a curved or tilted rakel
-    subj_poly[0] = reservoir_pixel + rotate(ll, -reservoir_pixel_rotation, float2(0,0));
-    subj_poly[1] = reservoir_pixel + rotate(lr, -reservoir_pixel_rotation, float2(0,0));
-    subj_poly[2] = reservoir_pixel + rotate(ur, -reservoir_pixel_rotation, float2(0,0));
-    subj_poly[3] = reservoir_pixel + rotate(ul, -reservoir_pixel_rotation, float2(0,0));
+    subj_poly[0] = reservoir_pixel + rotate(ll, reservoir_pixel_rotation, float2(0,0));
+    subj_poly[1] = reservoir_pixel + rotate(lr, reservoir_pixel_rotation, float2(0,0));
+    subj_poly[2] = reservoir_pixel + rotate(ur, reservoir_pixel_rotation, float2(0,0));
+    subj_poly[3] = reservoir_pixel + rotate(ul, reservoir_pixel_rotation, float2(0,0));
     subj_poly[4] = float2(0,0);
     subj_poly[5] = float2(0,0);
     subj_poly[6] = float2(0,0);
