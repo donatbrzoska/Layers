@@ -30,19 +30,11 @@ void log_(float4 f)
 
 int2 CalculationPosition;
 
+RWStructuredBuffer<Paint> RakelEmittedPaint;
+
 RWStructuredBuffer<Paint> CanvasReservoir;
+uint TextureWidth;
 
-RWTexture2D<float4> CanvasTexture;
-uint2 TextureSize;
-
-
-bool pixel_in_canvas_range(int2 pixel)
-{
-    return pixel.x >= 0
-        && pixel.x < (int)TextureSize.x
-        && pixel.y >= 0
-        && pixel.y < (int)TextureSize.y;
-}
 
 [numthreads(1,8,1)]
 void main (uint3 id_ : SV_DispatchThreadID)
@@ -52,24 +44,12 @@ void main (uint3 id_ : SV_DispatchThreadID)
     {
         // calculate pixel position on canvas
         int2 canvas_pixel = id.xy + CalculationPosition;
-        if (pixel_in_canvas_range(canvas_pixel))
-        {
-            // get paint from canvas
-            Paint p = CanvasReservoir[XY(canvas_pixel.x, canvas_pixel.y, TextureSize.x)];
 
-            // blend little paint with canvas color
-            // we can't use alpha values, because there is nothing behind the paint - the paint is the texture
-            if (p.volume < 1000) {
-                p = simulate_alpha(p);
-            }
+        Paint emitted = RakelEmittedPaint[XY(id.x, id.y, CalculationSize.x)];
+        Paint on_canvas = CanvasReservoir[XY(canvas_pixel.x, canvas_pixel.y, TextureWidth)];
+        Paint mixed = mix(emitted, on_canvas);
 
-            if (is_empty(p)) {
-                p.color = CANVAS_COLOR();
-            }
-
-            // set color
-            CanvasTexture[canvas_pixel] = p.color;
-        }
+        CanvasReservoir[XY(canvas_pixel.x, canvas_pixel.y, TextureWidth)] = mixed;
     }
     // if (id.x == 0 && id.y == 0)
     // {

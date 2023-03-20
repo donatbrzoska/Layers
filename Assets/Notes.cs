@@ -1882,16 +1882,17 @@ public class Notes : MonoBehaviour
  * 
  * 20.03.2023
  * Double Buffering macht sogar einen 25-40% Performance-Boost
- * TODO Smoothing ist kaputt, irgendwo entsteht schwarze Farbe
+ * - aber macht auch alles kaputt
+ * DONE Smoothing ist kaputt, irgendwo entsteht schwarze Farbe
  * - vermutlich wenn nur sehr wenig Farbe von der Leinwand mitgenommen wird?
  * TODO manchmal kann man einfach nicht malen nach dem Apply
  * - irgendwas beim Double Buffering übersehen?
- * TODO Rakel mit Länge 10 und PerlinColored hat alles schwarz gemacht
+ * DONE Rakel mit Länge 10 und PerlinColored hat alles schwarz gemacht
  * - neue Rakel Rakel und Leindwand hat nicht mehr geholfen
  * - nur Unity Neustart hilft
  * - passiert, wenn ein Teil der Rakel OOB ist, aber nicht bei kleinen Rakeln
  * - evtl. Speicher voll? aber bei Auflösung 20? ...
- * TODO Nearest Neighbour ist auch kaputt
+ * DONE Nearest Neighbour ist auch kaputt
  * - vielleicht liegts auch nur am Rendering?
  * - Problem besteht nur bei rotierter Rakel
  */

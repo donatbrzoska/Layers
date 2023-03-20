@@ -10,10 +10,6 @@ public class Reservoir : ComputeShaderCreator
 
     public float PixelSize { get { return 1 / (float) Resolution; } }
 
-    // double buffering
-    public int ReadIndex;
-    public int WriteIndex;
-
     public Reservoir(int resolution, int width, int height, ShaderRegionFactory shaderRegionFactory, ComputeShaderEngine computeShaderEngine)
         : base(shaderRegionFactory, computeShaderEngine)
     {
@@ -24,15 +20,6 @@ public class Reservoir : ComputeShaderCreator
         // initialize buffer to empty values (Intel does this for you, nvidia doesn't)
         BufferData = new Paint[width * height * 2];
         Buffer.SetData(BufferData);
-
-        ReadIndex = 0;
-        WriteIndex = 1;
-    }
-
-    public void ToggleDoubleBuffering()
-    {
-        ReadIndex = ReadIndex == 0 ? 1 : 0;
-        WriteIndex = WriteIndex == 0 ? 1 : 0;
     }
 
     public void Fill(Color_ color, int volume, ReservoirFiller filler)
@@ -51,15 +38,18 @@ public class Reservoir : ComputeShaderCreator
         );
     }
 
-    public void Duplicate(bool debugEnabled = false)
+    public void Duplicate(
+        int discardVolumeThreshold,
+        int smoothingKernelSize,
+        bool debugEnabled = false)
     {
         ShaderRegion duplicateSR = GetShaderRegion();
 
         List<CSAttribute> attributes = new List<CSAttribute>()
         {
             new CSComputeBuffer("Reservoir", Buffer),
-            new CSInt("ReadIndex", ReadIndex),
-            new CSInt("WriteIndex", WriteIndex)
+            new CSInt("DiscardVolumeThreshhold", discardVolumeThreshold),
+            new CSInt("SmoothingKernelSize", smoothingKernelSize)
         };
 
         ComputeShaderTask cst = new ComputeShaderTask(
@@ -72,35 +62,6 @@ public class Reservoir : ComputeShaderCreator
         );
 
         ComputeShaderEngine.EnqueueOrRun(cst);
-    }
-
-    public void Smooth(
-        int discardVolumeThreshold,
-        int smoothingKernelSize,
-        bool debugEnabled = false)
-    {
-        ShaderRegion duplicateSR = GetShaderRegion();
-
-        List<CSAttribute> attributes = new List<CSAttribute>()
-        {
-            new CSComputeBuffer("Reservoir", Buffer),
-            new CSInt("DiscardVolumeThreshhold", discardVolumeThreshold),
-            new CSInt("SmoothingKernelSize", smoothingKernelSize),
-            new CSInt("ReadIndex", ReadIndex),
-            new CSInt("WriteIndex", WriteIndex)
-        };
-
-        ComputeShaderTask cst = new ComputeShaderTask(
-            "ReservoirSmoothingShader",
-            duplicateSR,
-            attributes,
-            null,
-            new List<ComputeBuffer>(),
-            debugEnabled
-        );
-
-        ComputeShaderEngine.EnqueueOrRun(cst);
-        ToggleDoubleBuffering();
     }
 
     public void PrintVolumes(int z)

@@ -28,10 +28,10 @@ void log_(float4 f)
 
 #include "paint.hlsl"
 
-RWStructuredBuffer<Paint> Reservoir;
+uint SmoothingKernelSize;
+int DiscardVolumeThreshhold;
 
-uint ReadIndex;
-uint WriteIndex;
+RWStructuredBuffer<Paint> Reservoir;
 
 
 [numthreads(1,8,1)]
@@ -40,8 +40,35 @@ void main (uint3 id_ : SV_DispatchThreadID)
     id = id_;
     if (is_relevant_thread(id, CalculationSize))
     {
-        Paint available = Reservoir[XYZ(id.x, id.y, ReadIndex, CalculationSize)];
-        Reservoir[XYZ(id.x, id.y, WriteIndex, CalculationSize)] = available;
+        Paint available;
+        if (SmoothingKernelSize > 1) {
+            int radius = (SmoothingKernelSize-1)/2;
+
+            int volume = 0;
+            for (int i=-radius; i<=radius; i++) {
+                for (int j=-radius; j<=radius; j++) {
+                    // ... deal with oob access // TODO this generates volume at the borders, doesn't it?
+                    uint x = clamp(id.x + i, 0, CalculationSize.x-1);
+                    uint y = clamp(id.y + j, 0, CalculationSize.y-1);
+                    volume += Reservoir[XYZ(x, y, 0, CalculationSize)].volume;
+                }
+            }
+            // volume = volume * 0.04; // == /25
+            volume = int(float(volume) / float(SmoothingKernelSize*SmoothingKernelSize));
+
+            // Create and put smoothed volume to z=1
+            available.color = Reservoir[XYZ(id.x, id.y, 0, CalculationSize)].color;
+            available.volume = volume;
+        } else {
+            available = Reservoir[XYZ(id.x, id.y, 0, CalculationSize)];
+        }
+
+        // delete leftover volume due to integer rounding
+        if (available.volume < DiscardVolumeThreshhold) {
+            available.volume = 0;
+        }
+        
+        Reservoir[XYZ(id.x, id.y, 1, CalculationSize)] = available;
     }
     // if (id.x == 0 && id.y == 0)
     // {

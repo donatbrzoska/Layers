@@ -61,21 +61,23 @@ public class OilPaintCanvas : ComputeShaderCreator
         cst.Run();
     }
 
-    public void EmitPaint(
+    public ComputeBuffer EmitPaint(
         Rakel rakel,
         ShaderRegion shaderRegion,
         TransferMapMode transferMapMode,
         float emitVolume,
         bool debugEnabled = false)
     {
+        ComputeBuffer canvasEmittedPaint = new ComputeBuffer(shaderRegion.PixelCount, Paint.SizeInBytes);
+        // initialize buffer to empty values (Intel does this for you, nvidia doesn't)
+        Paint[] initPaint = new Paint[shaderRegion.PixelCount];
+        canvasEmittedPaint.SetData(initPaint);
+
         List<CSAttribute> attributes = new List<CSAttribute>()
         {
             new CSInt2("CalculationPosition", shaderRegion.CalculationPosition),
             new CSInt2("CanvasReservoirSize", WorldSpaceCanvas.TextureSize),
-            new CSInt("CanvasReservoirResolution", WorldSpaceCanvas.Resolution),
-            new CSComputeBuffer("CanvasReservoir", Reservoir.Buffer),
-            new CSInt("CRReadIndex", Reservoir.ReadIndex),
-            new CSInt("CRWriteIndex", Reservoir.WriteIndex),
+            new CSInt("CanvasResolution", WorldSpaceCanvas.Resolution),
             new CSFloat3("CanvasPosition", WorldSpaceCanvas.Position),
             new CSFloat2("CanvasSize", WorldSpaceCanvas.Size),
             new CSFloat3("RakelAnchor", rakel.Anchor),
@@ -85,13 +87,12 @@ public class OilPaintCanvas : ComputeShaderCreator
             new CSFloat3("RakelURTilted", rakel.urTilted),
             new CSFloat3("RakelLLTilted", rakel.llTilted),
             new CSFloat3("RakelLRTilted", rakel.lrTilted),
+            new CSComputeBuffer("CanvasReservoir", Reservoir.Buffer),
+            new CSComputeBuffer("CanvasEmittedPaint", canvasEmittedPaint),
             new CSInt2("RakelReservoirSize", rakel.ApplicationReservoir.Size),
-            new CSInt("RakelReservoirResolution", rakel.ApplicationReservoir.Resolution),
-            new CSComputeBuffer("RakelPickupReservoir", rakel.PickupReservoir.Buffer),
-            new CSInt("RRReadIndex", rakel.ApplicationReservoir.ReadIndex),
-            new CSInt("RRWriteIndex", rakel.ApplicationReservoir.WriteIndex),
+            new CSInt("RakelResolution", rakel.ApplicationReservoir.Resolution),
             new CSInt("TransferMapMode", (int)transferMapMode),
-            new CSFloat("EmitVolume", emitVolume)
+            new CSFloat("EmitVolume", emitVolume),
         };
 
         ComputeShaderTask cst = new ComputeShaderTask(
@@ -105,9 +106,32 @@ public class OilPaintCanvas : ComputeShaderCreator
 
         ComputeShaderEngine.EnqueueOrRun(cst);
 
-        Reservoir.ToggleDoubleBuffering();
-        rakel.ApplicationReservoir.ToggleDoubleBuffering();
-        rakel.PickupReservoir.ToggleDoubleBuffering();
+        return canvasEmittedPaint;
+    }
+
+    public void ApplyPaint(
+        ShaderRegion shaderRegion,
+        ComputeBuffer rakelEmittedPaint,
+        bool debugEnabled = false)
+    {
+        List<CSAttribute> attributes = new List<CSAttribute>()
+        {
+            new CSInt2("CalculationPosition", shaderRegion.CalculationPosition),
+            new CSComputeBuffer("RakelEmittedPaint", rakelEmittedPaint),
+            new CSComputeBuffer("CanvasReservoir", Reservoir.Buffer),
+            new CSInt("TextureWidth", Texture.width)
+        };
+
+        ComputeShaderTask cst = new ComputeShaderTask(
+            "ApplyBufferToCanvasShader",
+            shaderRegion,
+            attributes,
+            null,
+            new List<ComputeBuffer>() { rakelEmittedPaint },
+            debugEnabled
+        );
+
+        ComputeShaderEngine.EnqueueOrRun(cst);
     }
 
     public void UpdateColorTexture(
@@ -118,7 +142,6 @@ public class OilPaintCanvas : ComputeShaderCreator
         {
             new CSInt2("CalculationPosition", shaderRegion.CalculationPosition),
             new CSComputeBuffer("CanvasReservoir", Reservoir.Buffer),
-            new CSInt("CRReadIndex", Reservoir.ReadIndex),
             new CSInt2("TextureSize", WorldSpaceCanvas.TextureSize),
             new CSTexture("CanvasTexture", Texture)
         };
@@ -143,7 +166,6 @@ public class OilPaintCanvas : ComputeShaderCreator
         {
             new CSInt2("CalculationPosition", shaderRegion.CalculationPosition),
             new CSComputeBuffer("CanvasReservoir", Reservoir.Buffer),
-            new CSInt("CRReadIndex", Reservoir.ReadIndex),
             new CSInt2("TextureSize", WorldSpaceCanvas.TextureSize),
             new CSTexture("NormalMap", NormalMap)
         };
