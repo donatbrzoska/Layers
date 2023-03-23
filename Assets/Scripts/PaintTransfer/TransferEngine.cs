@@ -47,7 +47,7 @@ public class TransferEngine
             1 // Padding because interpolation reaches pixels that are not directly under the rakel
         );
 
-        ShaderRegion normalsSR = ShaderRegionFactory.Create(
+        ShaderRegion rerenderSR = ShaderRegionFactory.Create(
             wsc.MapToPixelInRange(rakel.UpperLeft),
             wsc.MapToPixelInRange(rakel.UpperRight),
             wsc.MapToPixelInRange(rakel.LowerLeft),
@@ -88,7 +88,6 @@ public class TransferEngine
             canvasEmitSR,
             canvasEmittedPaint);
 
-        oilPaintCanvas.UpdateColorTexture(rakelEmitSR);
-        oilPaintCanvas.UpdateNormalMap(normalsSR);
+        oilPaintCanvas.Render(rerenderSR);
     }
 }

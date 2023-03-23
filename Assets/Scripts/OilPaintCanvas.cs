@@ -134,7 +134,7 @@ public class OilPaintCanvas : ComputeShaderCreator
         ComputeShaderEngine.EnqueueOrRun(cst);
     }
 
-    public void UpdateColorTexture(
+    public void Render(
         ShaderRegion shaderRegion,
         bool debugEnabled = false)
     {
@@ -143,35 +143,12 @@ public class OilPaintCanvas : ComputeShaderCreator
             new CSInt2("CalculationPosition", shaderRegion.CalculationPosition),
             new CSComputeBuffer("CanvasReservoir", Reservoir.Buffer),
             new CSInt2("TextureSize", WorldSpaceCanvas.TextureSize),
-            new CSTexture("CanvasTexture", Texture)
-        };
-
-        ComputeShaderTask cst = new ComputeShaderTask(
-            "ColorsShader",
-            shaderRegion,
-            attributes,
-            null,
-            new List<ComputeBuffer>(),
-            debugEnabled
-        );
-
-        ComputeShaderEngine.EnqueueOrRun(cst);
-    }
-
-    public void UpdateNormalMap(
-        ShaderRegion shaderRegion,
-        bool debugEnabled = false)
-    {
-        List<CSAttribute> attributes = new List<CSAttribute>()
-        {
-            new CSInt2("CalculationPosition", shaderRegion.CalculationPosition),
-            new CSComputeBuffer("CanvasReservoir", Reservoir.Buffer),
-            new CSInt2("TextureSize", WorldSpaceCanvas.TextureSize),
+            new CSTexture("CanvasTexture", Texture),
             new CSTexture("NormalMap", NormalMap)
         };
 
         ComputeShaderTask cst = new ComputeShaderTask(
-            "NormalsShader",
+            "RenderShader",
             shaderRegion,
             attributes,
             null,
