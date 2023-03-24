@@ -3,6 +3,7 @@ using UnityEngine;
 public class OilPaintEngine : MonoBehaviour
 {
     public int BENCHMARK_STEPS = 0;
+    public bool ENSURE_SEQUENTIAL = false;
     public int TH_GROUP_SIZE_X = 1;
     public int TH_GROUP_SIZE_Y = 8;
     
@@ -51,7 +52,7 @@ public class OilPaintEngine : MonoBehaviour
 
     void Start()
     {
-        ComputeShaderEngine = new ComputeShaderEngine();
+        ComputeShaderEngine = new ComputeShaderEngine(ENSURE_SEQUENTIAL);
 
         ShaderRegionFactory = new ShaderRegionFactory(new Vector2Int(TH_GROUP_SIZE_X, TH_GROUP_SIZE_Y));
 
@@ -136,7 +137,7 @@ public class OilPaintEngine : MonoBehaviour
             }
         }
 
-        ComputeShaderEngine.ProcessTasks();
+        ComputeShaderEngine.ProcessTasks(ENSURE_SEQUENTIAL ? 1 : 0);
     }
     
     private void OnDestroy()

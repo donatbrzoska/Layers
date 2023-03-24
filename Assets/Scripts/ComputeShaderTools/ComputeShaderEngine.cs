@@ -4,9 +4,12 @@ public class ComputeShaderEngine
 {
     private Queue<ComputeShaderTask> ComputeShaderTasks;
 
-    public ComputeShaderEngine()
+    public ComputeShaderEngine(bool ensureSequentialExecution)
     {
-        //ComputeShaderTasks = new Queue<ComputeShaderTask>();
+        if (ensureSequentialExecution)
+        {
+            ComputeShaderTasks = new Queue<ComputeShaderTask>();
+        }
     }
 
     public void EnqueueOrRun(ComputeShaderTask cst)

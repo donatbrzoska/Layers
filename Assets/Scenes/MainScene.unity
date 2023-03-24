@@ -6743,6 +6743,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   BENCHMARK_STEPS: 0
+  ENSURE_SEQUENTIAL: 0
   TH_GROUP_SIZE_X: 1
   TH_GROUP_SIZE_Y: 8
 --- !u!114 &1643505815
