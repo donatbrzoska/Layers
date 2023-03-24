@@ -128,10 +128,11 @@ void emit(float2 reservoir_pixel, int2 radius)
     int x, y;
     for (y=-radius.y; y<=radius.y; y++) {
         for (x=-radius.x; x<=radius.x; x++) {
-            // initialize array
+            // initialize arrays
             uint i = y + radius.y;
             uint j = x + radius.x;
             volume_to_emit[i][j] = 0;
+            color_to_emit[i][j] = float4(0,0,0,0);
 
             // calculate part
             int2 coord = reservoir_pixel_nearest + int2(x, y);
