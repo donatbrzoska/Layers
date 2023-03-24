@@ -45,6 +45,21 @@ public class Configuration
 
         TransferConfiguration.MapMode = TransferMapMode.NearestNeighbour;
     }
+
+    public void LoadPixelMapping()
+    {
+        CanvasResolution = 80;
+
+        RakelConfiguration.Resolution = 80;
+
+        TransferConfiguration.MapMode = TransferMapMode.NearestNeighbour;
+        TransferConfiguration.EmitVolumePickupReservoir = 0;
+        TransferConfiguration.PickupVolume = 0;
+
+        FillConfiguration.Color = Color_.CadmiumGreen;
+        FillConfiguration.Volume = 300;
+        FillConfiguration.Mode = FillMode.Flat;
+    }
 }
 
 public class RakelConfiguration
