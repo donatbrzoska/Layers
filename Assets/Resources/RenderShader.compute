@@ -106,7 +106,7 @@ void update_color(int2 canvas_pixel)
     CanvasTexture[canvas_pixel] = p.color;
 }
 
-[numthreads(1,8,1)]
+[numthreads(32,1,1)]
 void main (uint3 id_ : SV_DispatchThreadID)
 {
     id = id_;

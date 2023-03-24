@@ -211,7 +211,7 @@ void do_emit(float2 reservoir_pixel)
     }
 }
 
-[numthreads(1,8,1)]
+[numthreads(32,1,1)]
 void main(uint3 id_ : SV_DispatchThreadID)
 {
     id = id_;
