@@ -18,9 +18,9 @@ public class TransferEngine
         Vector3 rakelPosition, float rakelRotation, float rakelTilt,
         TransferConfiguration transferConfiguration,
         Rakel rakel,
-        OilPaintCanvas oilPaintCanvas)
+        Canvas_ canvas)
     {
-        WorldSpaceCanvas wsc = oilPaintCanvas.WorldSpaceCanvas;
+        WorldSpaceCanvas wsc = canvas.WorldSpaceCanvas;
 
         // prevent double application on the same pixel
         rakelPosition = wsc.AlignToPixelGrid(rakelPosition);
@@ -55,11 +55,11 @@ public class TransferEngine
             2 // Padding of 2 because normals of the previously set pixels around also have to be recalculated
         );
 
-        oilPaintCanvas.Reservoir.Duplicate(
+        canvas.Reservoir.Duplicate(
             transferConfiguration.ReservoirDiscardVolumeThreshold,
             transferConfiguration.ReservoirSmoothingKernelSize, false);
 
-        ComputeBuffer canvasEmittedPaint = oilPaintCanvas.EmitPaint(
+        ComputeBuffer canvasEmittedPaint = canvas.EmitPaint(
             rakel,
             canvasEmitSR,
             transferConfiguration.MapMode,
@@ -80,7 +80,7 @@ public class TransferEngine
             transferConfiguration.EmitVolumeApplicationReservoir,
             transferConfiguration.EmitVolumePickupReservoir, false);
 
-        oilPaintCanvas.ApplyPaint(
+        canvas.ApplyPaint(
             rakelEmitSR,
             rakelEmittedPaint);
 
@@ -88,6 +88,6 @@ public class TransferEngine
             canvasEmitSR,
             canvasEmittedPaint);
 
-        oilPaintCanvas.Render(rerenderSR);
+        canvas.Render(rerenderSR);
     }
 }

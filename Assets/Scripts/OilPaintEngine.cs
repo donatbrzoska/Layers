@@ -25,7 +25,7 @@ public class OilPaintEngine : MonoBehaviour
     }
 
     private TransferEngine TransferEngine;
-    private OilPaintCanvas OilPaintCanvas;
+    private Canvas_ Canvas;
     private Rakel Rakel;
     private InputInterpolator InputInterpolator;
 
@@ -65,11 +65,11 @@ public class OilPaintEngine : MonoBehaviour
     {
         DisposeCanvas();
 
-        OilPaintCanvas = new OilPaintCanvas(Configuration.CanvasResolution, ShaderRegionFactory, ComputeShaderEngine);
+        Canvas = new Canvas_(Configuration.CanvasResolution, ShaderRegionFactory, ComputeShaderEngine);
 
         Debug.Log("Texture is "
-                  + OilPaintCanvas.Texture.width + "x" + OilPaintCanvas.Texture.height
-                  + " = " + OilPaintCanvas.Texture.width * OilPaintCanvas.Texture.height);
+                  + Canvas.Texture.width + "x" + Canvas.Texture.height
+                  + " = " + Canvas.Texture.width * Canvas.Texture.height);
     }
 
     void CreateRakel()
@@ -90,7 +90,7 @@ public class OilPaintEngine : MonoBehaviour
 
     void CreateInputInterpolator()
     {
-        InputInterpolator = new InputInterpolator(TransferEngine, Rakel, OilPaintCanvas);
+        InputInterpolator = new InputInterpolator(TransferEngine, Rakel, Canvas);
     }
 
     void Update()
@@ -105,7 +105,7 @@ public class OilPaintEngine : MonoBehaviour
                     0,
                     Configuration.TransferConfiguration,
                     Rakel,
-                    OilPaintCanvas);
+                    Canvas);
             }
         }
         else
@@ -156,10 +156,10 @@ public class OilPaintEngine : MonoBehaviour
 
     private void DisposeCanvas()
     {
-        if (OilPaintCanvas != null)
+        if (Canvas != null)
         {
             //Debug.Log("Disposing Canvas");
-            OilPaintCanvas.Dispose();
+            Canvas.Dispose();
         }
     }
 
@@ -362,7 +362,7 @@ public class OilPaintEngine : MonoBehaviour
             0,
             Configuration.TransferConfiguration,
             Rakel,
-            OilPaintCanvas);
+            Canvas);
 
         UpdateRakelWidth(3);
         UpdateRakelLength(4);
@@ -373,7 +373,7 @@ public class OilPaintEngine : MonoBehaviour
             0,
             Configuration.TransferConfiguration,
             Rakel,
-            OilPaintCanvas);
+            Canvas);
 
         //TransferEngine.SimulateStep(
         //    new Vector3(-4, 0, -0.10f),

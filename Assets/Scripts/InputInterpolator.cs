@@ -4,7 +4,7 @@ public class InputInterpolator
 {
     private TransferEngine TransferEngine;
     private Rakel Rakel;
-    private OilPaintCanvas OilPaintCanvas;
+    private Canvas_ Canvas;
 
     private Vector3 PreviousRakelPosition;
     private float PreviousRakelRotation;
@@ -13,11 +13,11 @@ public class InputInterpolator
     private float NO_ANGLE = float.NaN;
     private Vector3 NO_POSITION = Vector3.negativeInfinity;
 
-    public InputInterpolator(TransferEngine transferEngine, Rakel rakel, OilPaintCanvas oilPaintCanvas)
+    public InputInterpolator(TransferEngine transferEngine, Rakel rakel, Canvas_ canvas)
     {
         TransferEngine = transferEngine;
         Rakel = rakel;
-        OilPaintCanvas = oilPaintCanvas;
+        Canvas = canvas;
     }
 
     public void NewStroke()
@@ -47,7 +47,7 @@ public class InputInterpolator
                     rakelTilt,
                     transferConfiguration,
                     Rakel,
-                    OilPaintCanvas
+                    Canvas
                 );
             }
             else
@@ -55,7 +55,7 @@ public class InputInterpolator
                 // 1. determine differences and steps
                 Vector3 dp = rakelPosition - PreviousRakelPosition;
                 //float dpLength = dp.magnitude;
-                Vector2 dp_ = OilPaintCanvas.WorldSpaceCanvas.MapToPixel(rakelPosition) - OilPaintCanvas.WorldSpaceCanvas.MapToPixel(PreviousRakelPosition);
+                Vector2 dp_ = Canvas.WorldSpaceCanvas.MapToPixel(rakelPosition) - Canvas.WorldSpaceCanvas.MapToPixel(PreviousRakelPosition);
                 float dpLength = dp_.magnitude;
                 int positionSteps = (int)(dpLength * interpolationResolution); // don't add 1 because the first one is already done when isFirstNodeOfStroke
 
@@ -111,7 +111,7 @@ public class InputInterpolator
                         currentTilt,
                         transferConfiguration,
                         Rakel,
-                        OilPaintCanvas
+                        Canvas
                     );
 
                     previousPosition = currentPosition;

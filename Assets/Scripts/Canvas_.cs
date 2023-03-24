@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class OilPaintCanvas : ComputeShaderCreator
+public class Canvas_ : ComputeShaderCreator
 {
     public WorldSpaceCanvas WorldSpaceCanvas { get; private set; }
     public Reservoir Reservoir { get; private set; }
     public RenderTexture Texture { get; private set; }
     public RenderTexture NormalMap { get; private set; }
 
-    public OilPaintCanvas(int textureResolution, ShaderRegionFactory shaderRegionFactory, ComputeShaderEngine computeShaderEngine)
+    public Canvas_(int textureResolution, ShaderRegionFactory shaderRegionFactory, ComputeShaderEngine computeShaderEngine)
         : base(shaderRegionFactory, computeShaderEngine)
     {
         Renderer renderer = GameObject.Find("Canvas").GetComponent<Renderer>();
