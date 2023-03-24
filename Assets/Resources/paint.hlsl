@@ -17,6 +17,11 @@ struct Paint {
 
 Paint mix(Paint a, Paint b)
 {
+    // TODO find real source of negative values
+    // ensure >= 0 values
+    a.volume = max(a.volume, 0);
+    b.volume = max(b.volume, 0);
+
     float volume = a.volume + b.volume;
     float a_part = (float)a.volume / unzero(volume);
     float b_part = (float)b.volume / unzero(volume);

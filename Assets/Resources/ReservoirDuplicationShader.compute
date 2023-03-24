@@ -69,6 +69,7 @@ void main (uint3 id_ : SV_DispatchThreadID)
         }
         
         Reservoir[XYZ(id.x, id.y, 1, CalculationSize)] = available;
+        Reservoir[XYZ(id.x, id.y, 0, CalculationSize)] = available; // also update source for corrections
     }
     // if (id.x == 0 && id.y == 0)
     // {
