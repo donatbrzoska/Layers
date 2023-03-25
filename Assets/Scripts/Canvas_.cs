@@ -65,6 +65,7 @@ public class Canvas_ : ComputeShaderCreator
         Rakel rakel,
         ShaderRegion shaderRegion,
         TransferMapMode transferMapMode,
+        int superSamplingSteps,
         float emitVolume,
         bool debugEnabled = false)
     {
@@ -92,6 +93,7 @@ public class Canvas_ : ComputeShaderCreator
             new CSInt2("RakelReservoirSize", rakel.ApplicationReservoir.Size),
             new CSInt("RakelResolution", rakel.ApplicationReservoir.Resolution),
             new CSInt("TransferMapMode", (int)transferMapMode),
+            new CSInt("SuperSamplingSteps", superSamplingSteps),
             new CSFloat("EmitVolume", emitVolume),
         };
 

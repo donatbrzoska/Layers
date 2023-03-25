@@ -94,6 +94,7 @@ public class FillConfiguration
 public class TransferConfiguration
 {
     public TransferMapMode MapMode;
+    public int SuperSamplingSteps;
     public int ReservoirSmoothingKernelSize;
     public int ReservoirDiscardVolumeThreshold;
     public float EmitVolumeApplicationReservoir;
@@ -103,6 +104,7 @@ public class TransferConfiguration
     public TransferConfiguration()
     {
         MapMode = TransferMapMode.Bilinear;
+        SuperSamplingSteps = 11;
         ReservoirSmoothingKernelSize = 1;
         ReservoirDiscardVolumeThreshold = 10;
         EmitVolumeApplicationReservoir = 1;

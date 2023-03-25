@@ -91,6 +91,7 @@ public class Rakel : ComputeShaderCreator
         ShaderRegion shaderRegion,
         WorldSpaceCanvas wsc,
         TransferMapMode transferMapMode,
+        int superSamplingSteps,
         float emitVolumeApplicationReservoir,
         float emitVolumePickupReservoir,
         bool debugEnabled = false)
@@ -122,6 +123,7 @@ public class Rakel : ComputeShaderCreator
             new CSInt2("RakelReservoirSize", ApplicationReservoir.Size),
             new CSInt("RakelReservoirResolution", ApplicationReservoir.Resolution),
             new CSInt("TransferMapMode", (int)transferMapMode),
+            new CSInt("SuperSamplingSteps", superSamplingSteps),
             new CSFloat("EmitVolumeApplicationReservoir", emitVolumeApplicationReservoir),
             new CSFloat("EmitVolumePickupReservoir", emitVolumePickupReservoir),
         };

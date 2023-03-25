@@ -50,6 +50,7 @@ uint2 CanvasReservoirSize;
 
 // Emitting
 uint TransferMapMode;
+uint SuperSamplingSteps;
 float EmitVolume;
 
 RWStructuredBuffer<Paint> CanvasReservoir;
@@ -134,28 +135,59 @@ void emit(float2 reservoir_pixel, int2 radius)
             volume_to_emit[i][j] = 0;
             color_to_emit[i][j] = float4(0,0,0,0);
 
-            // calculate part
-            int2 coord = reservoir_pixel_nearest + int2(x, y);
-            if (pixel_in_reservoir_range(coord)) { // Prevent out of bounds access to reservoir. Also, if it's not in range, this overlap part is not (and must not be!) used anyways.
-                float overlap = 0;
-                if (TransferMapMode == 0) { // nearest neighbour
-                    overlap = 1;
-                } else if (TransferMapMode == 1) { // bilinear interpolation
-                    overlap = calculate_unrotated_overlap(coord, 1, reservoir_pixel, 1);
-                } else if (TransferMapMode == 2) { // polygon clipping
-                    overlap = calculate_exact_overlap(coord, reservoir_pixel, RakelRotation);
+            if (TransferMapMode != 3) {
+                // calculate part
+                int2 coord = reservoir_pixel_nearest + int2(x, y);
+                if (pixel_in_reservoir_range(coord)) { // Prevent out of bounds access to reservoir. Also, if it's not in range, this overlap part is not (and must not be!) used anyways.
+                    float overlap = 0;
+                    if (TransferMapMode == 0) { // nearest neighbour
+                        overlap = 1;
+                    } else if (TransferMapMode == 1) { // bilinear interpolation
+                        overlap = calculate_unrotated_overlap(coord, 1, reservoir_pixel, 1);
+                    } else if (TransferMapMode == 2) { // polygon clipping
+                        overlap = calculate_exact_overlap(coord, reservoir_pixel, RakelRotation);
+                    }
+
+                    if (overlap > 0) {
+                        // get paint
+                        uint2 coord_ = uint2(coord.x, coord.y);
+                        Paint available = CanvasReservoir[XYZ(coord_.x, coord_.y, 1, CanvasReservoirSize)];
+
+                        // calculate volume
+                        int target_volume = overlap * VOLUME_TO_EMIT_TARGET;
+                        int really_available_volume = overlap * available.volume;
+                        volume_to_emit[i][j] = min(target_volume, really_available_volume);
+                        result_volume += volume_to_emit[i][j];
+
+                        color_to_emit[i][j] = available.color;
+                    }
                 }
-                
-                if (overlap > 0) {
-                    // get paint
-                    uint2 coord_ = uint2(coord.x, coord.y);
-                    Paint available = CanvasReservoir[XYZ(coord_.x, coord_.y, 1, CanvasReservoirSize)];
+            }
+        }
+    }
+
+    // super sampling
+    if (TransferMapMode == 3) {
+        int ss_radius = (SuperSamplingSteps - 1) / 2;
+        float ss_stepsize = 1/(float)SuperSamplingSteps;
+        float ss_part = 1/(float)pow(SuperSamplingSteps, 2);
+        for (y=-ss_radius; y<=ss_radius; y++) {
+            for (x=-ss_radius; x<=ss_radius; x++) {
+                float2 ss_pos_unrotated = reservoir_pixel + float2(x*ss_stepsize, y*ss_stepsize);
+                float2 ss_pos = rotate(ss_pos_unrotated, RakelRotation, reservoir_pixel);
+                int2 ss_reservoir_pixel_nearest = round(ss_pos);
+                if (pixel_in_reservoir_range(ss_reservoir_pixel_nearest)) {
+                    Paint available = CanvasReservoir[XYZ(ss_reservoir_pixel_nearest.x, ss_reservoir_pixel_nearest.y, 1, CanvasReservoirSize)];
 
                     // calculate volume
-                    int target_volume = overlap * VOLUME_TO_EMIT_TARGET;
-                    int really_available_volume = overlap * available.volume;
-                    volume_to_emit[i][j] = min(target_volume, really_available_volume);
-                    result_volume += volume_to_emit[i][j];
+                    int target_volume = ss_part * VOLUME_TO_EMIT_TARGET;
+                    int really_available_volume = ss_part * available.volume;
+
+                    uint i = radius.y + ss_reservoir_pixel_nearest.y - reservoir_pixel_nearest.y;
+                    uint j = radius.x + ss_reservoir_pixel_nearest.x - reservoir_pixel_nearest.x;
+                    int emitted_volume = min(target_volume, really_available_volume);
+                    volume_to_emit[i][j] += emitted_volume;
+                    result_volume += emitted_volume;
 
                     color_to_emit[i][j] = available.color;
                 }

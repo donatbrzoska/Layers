@@ -6746,6 +6746,7 @@ MonoBehaviour:
   ENSURE_SEQUENTIAL: 0
   TH_GROUP_SIZE_X: 32
   TH_GROUP_SIZE_Y: 1
+  SUPER_SAMPLING: 11
 --- !u!114 &1643505815
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -2,5 +2,6 @@
 {
     NearestNeighbour,
     Bilinear,
-    PolygonClipping
+    PolygonClipping,
+    SuperSampling
 }

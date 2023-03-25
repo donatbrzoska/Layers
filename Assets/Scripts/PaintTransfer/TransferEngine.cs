@@ -63,6 +63,7 @@ public class TransferEngine
             rakel,
             canvasEmitSR,
             transferConfiguration.MapMode,
+            transferConfiguration.SuperSamplingSteps,
             transferConfiguration.PickupVolume, false);
 
         rakel.ApplicationReservoir.Duplicate(
@@ -77,6 +78,7 @@ public class TransferEngine
             rakelEmitSR,
             wsc,
             transferConfiguration.MapMode,
+            transferConfiguration.SuperSamplingSteps,
             transferConfiguration.EmitVolumeApplicationReservoir,
             transferConfiguration.EmitVolumePickupReservoir, false);
 
