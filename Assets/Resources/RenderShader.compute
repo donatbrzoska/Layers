@@ -77,7 +77,7 @@ void update_normal(int2 canvas_pixel)
     int normal_z = 1;
 
     // ... ... scaling and normal assembly
-    float scale = 0.000008f;
+    float scale = 0.000000008f;
     // float scale = 0.000002f;
     
     float4 normal = float4(scale * (float)normal_x, scale * (float)(-normal_y), normal_z, 1);
@@ -94,7 +94,7 @@ void update_color(int2 canvas_pixel)
     Paint p = CanvasReservoir[XY(canvas_pixel.x, canvas_pixel.y, TextureSize.x)];
     // blend little paint with canvas color
     // we can't use alpha values, because there is nothing behind the paint - the paint is the texture
-    if (p.volume < 1000) {
+    if (p.volume < PAINT_UNIT()) {
         p = simulate_alpha(p);
     }
 
