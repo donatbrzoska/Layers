@@ -50,6 +50,7 @@ public class Configuration
     {
         CanvasResolution = 80;
 
+        RakelRotationLocked = false;
         RakelConfiguration.Resolution = 80;
 
         TransferConfiguration.MapMode = TransferMapMode.NearestNeighbour;
@@ -59,6 +60,32 @@ public class Configuration
         FillConfiguration.Color = Color_.CadmiumGreen;
         FillConfiguration.Volume = 300;
         FillConfiguration.Mode = FillMode.Flat;
+    }
+
+    public void LoadPresentation()
+    {
+        CanvasResolution = 80;
+
+        RakelRotationLocked = false;
+        RakelConfiguration.Resolution = 80;
+
+        TransferConfiguration.MapMode = TransferMapMode.PolygonClipping;
+
+        FillConfiguration.Color = Color_.Red;
+        FillConfiguration.Volume = 600;
+        FillConfiguration.Mode = FillMode.Perlin;
+
+        /*
+         * Curve
+         * > Clear Rakel
+         * > Fill with Cadmium Yellow
+         * Back and forth
+         * 
+         * > FillConfiguration.Volume = 200;
+         * > FillConfiguration.Mode = FillMode.PerlinNoiseColored
+         * Line and back
+         * Smear from left to right and from right to left
+         */
     }
 }
 
