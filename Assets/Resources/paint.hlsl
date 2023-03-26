@@ -7,7 +7,7 @@ float4 CANVAS_COLOR()
 
 int PAINT_UNIT()
 {
-    return 1000000;
+    return 100000;
 }
 
 struct Paint {

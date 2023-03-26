@@ -2,7 +2,7 @@ using UnityEngine;
 
 public abstract class ReservoirFiller
 {
-    protected static int PAINT_UNIT = 1_000_000;
+    protected static int PAINT_UNIT = 100_000;
 
     protected bool ColorGradient;
 
