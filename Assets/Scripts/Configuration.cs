@@ -87,6 +87,14 @@ public class Configuration
          * Smear from left to right and from right to left
          */
     }
+
+    public void LoadMappingResults()
+    {
+        CanvasResolution = 80;
+        RakelConfiguration.Resolution = 80;
+        FillConfiguration.Volume = 40;
+        FillConfiguration.Mode = FillMode.Flat;
+    }
 }
 
 public class RakelConfiguration
