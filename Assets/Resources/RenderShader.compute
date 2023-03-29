@@ -80,7 +80,7 @@ void update_normal(int2 canvas_pixel)
     float scale = 0.0000001f;
     // float scale = 0.000002f;
     
-    float4 normal = float4(scale * (float)normal_x, scale * (float)(-normal_y), normal_z, 1);
+    float4 normal = float4(scale * (float)(-normal_x), scale * (float)(normal_y), normal_z, 1);
     float4 normalized = normalize(normal);
     float4 halfed = (normalized + float4(1, 1, 1, 1)) / 2;
     halfed.w = 1;
