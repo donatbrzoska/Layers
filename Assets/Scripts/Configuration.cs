@@ -71,7 +71,7 @@ public class Configuration
 
         TransferConfiguration.MapMode = TransferMapMode.PolygonClipping;
 
-        FillConfiguration.Color = Color_.Red;
+        FillConfiguration.Color = Color_.DarkRed;
         FillConfiguration.Volume = 600;
         FillConfiguration.Mode = FillMode.Perlin;
 

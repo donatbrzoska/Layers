@@ -5,7 +5,7 @@ public enum Color_
 {
     TitanWhite,
     IvoryBlack,
-    Red,
+    DarkRed,
     UltramarineBlue,
     UltramarineBlueRAL,
     LemonYellow,
@@ -16,7 +16,6 @@ public enum Color_
     CadmiumGreenLight,
     Anthracite,
     Red_,
-    DarkRed,
     Green,
     Blue,
     DarkBlue,
@@ -72,7 +71,7 @@ public class Colors
         // https://www.color-name.com/ivory-black.color
         { Color_.IvoryBlack, new ColorInfo() { Name = "Ivory Black", Color = new Color(35/255f, 31/255f, 32/255f) } },
 
-        { Color_.Red, new ColorInfo() { Name = "Red", Color = new Color(0.58f, 0.06f, 0f)} },
+        { Color_.DarkRed, new ColorInfo() { Name = "Red", Color = new Color(0.58f, 0.06f, 0f)} },
 
         // https://www.color-name.com/ultramarine.color
         { Color_.UltramarineBlue, new ColorInfo() { Name = "Ultramarine Blue", Color = new Color(33/255f, 66/255f, 171/255f) } },
@@ -83,16 +82,16 @@ public class Colors
         // https://www.color-name.com/lemon-yellow.color
         { Color_.LemonYellow, new ColorInfo() { Name = "Lemon Yellow", Color = new Color(254/255f, 242/255f, 80/255f) } },
 
-        // https://en.wikipedia.org/wiki/Cadmium_pigments
+        // https://www.colorhexa.com/fff600
         { Color_.CadmiumYellow, new ColorInfo() { Name = "Cadmium Yellow", Color = new Color(255/255f, 246/255f, 0/255f) } },
 
-        // https://en.wikipedia.org/wiki/Cadmium_pigments
+        // https://www.colorhexa.com/ed872d
         { Color_.CadmiumOrange, new ColorInfo() { Name = "Cadmium Orange", Color = new Color(237/255f, 135/255f, 45/255f) } },
 
-        // https://en.wikipedia.org/wiki/Cadmium_pigments
+        // https://www.colorhexa.com/e30022
         { Color_.CadmiumRed, new ColorInfo() { Name = "Cadmium Red", Color = new Color(227/255f, 0/255f, 34/255f) } },
 
-        // https://en.wikipedia.org/wiki/Cadmium_pigments
+        // https://www.colorhexa.com/006b3c
         { Color_.CadmiumGreen, new ColorInfo() { Name = "Cadmium Green", Color = new Color(0/255f, 107/255f, 60/255f) } },
 
         // just taken from https://www.kremer-pigmente.com/en/shop/pigments/44500-cadmium-green-light.html
@@ -100,7 +99,6 @@ public class Colors
 
         { Color_.Anthracite, new ColorInfo() { Name = "Anthracite", Color = new Color(0.25f, 0.25f, 0.25f) } },
         { Color_.Red_, new ColorInfo() { Name = "Red_", Color = new Color(0.8f, 0.08f, 0.03f) } },
-        { Color_.DarkRed, new ColorInfo() { Name = "Dark Red", Color = new Color(0.58f, 0.06f, 0f) } },
         { Color_.Green, new ColorInfo() { Name = "Green", Color = new Color(0.02f, 0.57f, 0.04f) } },
         { Color_.Blue, new ColorInfo() { Name = "Blue", Color = new Color(0.12f, 0.49f, 0.93f) } },
         { Color_.DarkBlue, new ColorInfo() { Name = "Dark Blue", Color = new Color(0.05f, 0.12f, 0.32f)} },
