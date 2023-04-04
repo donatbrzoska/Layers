@@ -22,9 +22,9 @@ public class Reservoir : ComputeShaderCreator
         Buffer.SetData(BufferData);
     }
 
-    public void Fill(Color_ color, int volume, ReservoirFiller filler)
+    public void Fill(ReservoirFiller filler)
     {
-        filler.Fill(color, volume, BufferData, Size);
+        filler.Fill(BufferData, Size);
         Buffer.SetData(BufferData);
     }
 

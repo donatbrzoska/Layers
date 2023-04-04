@@ -220,38 +220,46 @@ public class OilPaintEngine : MonoBehaviour
         Configuration.FillConfiguration.Color = color;
     }
 
+    public void UpdateColorMode(ColorMode mode)
+    {
+        Configuration.FillConfiguration.ColorMode = mode;
+    }
+
     public void UpdateFillVolume(int volume)
     {
         Configuration.FillConfiguration.Volume = volume;
     }
 
-    public void UpdateFillMode(FillMode mode)
+    public void UpdateVolumeMode(VolumeMode mode)
     {
-        Configuration.FillConfiguration.Mode = mode;
+        Configuration.FillConfiguration.VolumeMode = mode;
     }
 
     public void FillApply()
     {
-        ReservoirFiller filler;
-        switch (Configuration.FillConfiguration.Mode)
+        FillConfiguration fillConfig = Configuration.FillConfiguration;
+
+        ColorFiller colorFiller;
+        if (fillConfig.ColorMode == ColorMode.Flat)
         {
-            case FillMode.Perlin:
-                filler = new PerlinNoiseFiller();
-                break;
-            case FillMode.Flat:
-                filler = new FlatFiller();
-                break;
-            case FillMode.PerlinColored:
-                filler = new PerlinNoiseFiller(true);
-                break;
-            case FillMode.FlatColored:
-                filler = new FlatFiller(true);
-                break;
-            default:
-                filler = new FlatFiller();
-                break;
+            colorFiller = new FlatColorFiller(fillConfig.Color);
+        } else
+        {
+            colorFiller = new GradientColorFiller(fillConfig.ColorMode);
         }
-        Rakel.Fill(Configuration.FillConfiguration.Color, Configuration.FillConfiguration.Volume, filler);
+
+        VolumeFiller volumeFiller;
+        if (fillConfig.VolumeMode == VolumeMode.Flat)
+        {
+            volumeFiller = new FlatVolumeFiller(fillConfig.Volume);
+        } else
+        {
+            volumeFiller = new PerlinVolumeFiller(fillConfig.Volume);
+        }
+
+        ReservoirFiller filler = new ReservoirFiller(colorFiller, volumeFiller);
+        
+        Rakel.Fill(filler);
     }
 
     // ****************************************************************************************
@@ -312,7 +320,7 @@ public class OilPaintEngine : MonoBehaviour
     public void DoMacroAction()
     {
         //Rakel.Fill(new Paint(new Color(0 / 255f, 107 / 255f, 60 / 255f), 240), new PerlinNoiseFiller());
-        Rakel.Fill(Color_.CadmiumGreen, 240, new FlatFiller());
+        Rakel.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen), new FlatVolumeFiller(240)));
 
         InputInterpolator.NewStroke();
         InputInterpolator.AddNode(
@@ -360,7 +368,7 @@ public class OilPaintEngine : MonoBehaviour
         //    Configuration.CanvasResolution);
 
 
-        Rakel.Fill(Color_.CadmiumGreen, 1, new FlatFiller());
+        Rakel.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen), new FlatVolumeFiller(1)));
 
         TransferEngine.SimulateStep(
             new Vector3(-5, 0, -0.10f),

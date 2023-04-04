@@ -80,9 +80,9 @@ public class Rakel : ComputeShaderCreator
         LowerRight = lrRotated + positionTranslation;
     }
 
-    public void Fill(Color_ color, int volume, ReservoirFiller filler)
+    public void Fill(ReservoirFiller filler)
     {
-        ApplicationReservoir.Fill(color, volume, filler);
+        ApplicationReservoir.Fill(filler);
 
         //PickupReservoir.Fill(Color_.CadmiumRed, volume / 2, filler);
     }

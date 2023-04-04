@@ -32,7 +32,8 @@ public class Configuration
         RakelConfiguration.Width = 1;
 
         FillConfiguration.Volume = 1;
-        FillConfiguration.Mode = FillMode.FlatColored;
+        FillConfiguration.VolumeMode = VolumeMode.Flat;
+        FillConfiguration.ColorMode = ColorMode.Colorful;
     }
 
     public void LoadBenchmark()
@@ -59,7 +60,7 @@ public class Configuration
 
         FillConfiguration.Color = Color_.CadmiumGreen;
         FillConfiguration.Volume = 300;
-        FillConfiguration.Mode = FillMode.Flat;
+        FillConfiguration.VolumeMode = VolumeMode.Flat;
     }
 
     public void LoadPresentation()
@@ -73,7 +74,7 @@ public class Configuration
 
         FillConfiguration.Color = Color_.DarkRed;
         FillConfiguration.Volume = 600;
-        FillConfiguration.Mode = FillMode.Perlin;
+        FillConfiguration.VolumeMode = VolumeMode.Perlin;
 
         /*
          * Curve
@@ -93,7 +94,7 @@ public class Configuration
         CanvasResolution = 80;
         RakelConfiguration.Resolution = 80;
         FillConfiguration.Volume = 40;
-        FillConfiguration.Mode = FillMode.Flat;
+        FillConfiguration.VolumeMode = VolumeMode.Flat;
     }
 }
 
@@ -114,14 +115,16 @@ public class RakelConfiguration
 public class FillConfiguration
 {
     public Color_ Color;
+    public ColorMode ColorMode;
     public int Volume;
-    public FillMode Mode;
+    public VolumeMode VolumeMode;
 
     public FillConfiguration()
     {
         Color = Color_.CadmiumGreen;
+        ColorMode = ColorMode.Colorful;
         Volume = 120;
-        Mode = FillMode.PerlinColored;
+        VolumeMode = VolumeMode.Perlin;
     }
 
 }
