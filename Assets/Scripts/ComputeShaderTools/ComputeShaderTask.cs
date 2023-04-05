@@ -200,7 +200,7 @@ public class ComputeShaderTask {
 
         ComputeShader.Dispatch(0, ThreadGroups.x, ThreadGroups.y, 1);
 
-        GL.Flush();
+        //GL.Flush();
 
         // Alternative but slow: GetData() blocks until the task is finished
         if (FinishedMarkerBuffer != null)
