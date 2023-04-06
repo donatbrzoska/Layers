@@ -137,7 +137,6 @@ public class CSFloat4 : CSAttribute
 public class ComputeShaderTask {
     public string Name;
     private ShaderRegion ShaderRegion;
-    public ComputeShader ComputeShader;
     public List<CSAttribute> Attributes;
     public ComputeBuffer FinishedMarkerBuffer;
     public List<ComputeBuffer> BuffersToDispose;
@@ -157,18 +156,18 @@ public class ComputeShaderTask {
         FinishedMarkerBuffer = finishedMarkerBuffer;
         BuffersToDispose = buffersToDispose;
         DebugEnabled = debugEnabled;
-
-        ComputeShader = (ComputeShader)Resources.Load(name);
-        Attributes.Add(new CSInt2("CalculationSize", shaderRegion.CalculationSize));
     }
 
     public void Run()
     {
+        ComputeShader computeShader = (ComputeShader)Resources.Load(Name);
+        Attributes.Add(new CSInt2("CalculationSize", ShaderRegion.CalculationSize));
+
         //Debug.Log("Processing " + Name);
         foreach (CSAttribute ca in Attributes)
         {
             //Debug.Log("Processing " + ca);
-            ca.ApplyTo(ComputeShader);
+            ca.ApplyTo(computeShader);
         }
 
 
@@ -182,21 +181,21 @@ public class ComputeShaderTask {
             debugBuffer = new ComputeBuffer(ShaderRegion.PixelCount, 4 * sizeof(float));
             debugValues = new Color[ShaderRegion.PixelCount];
             debugBuffer.SetData(debugValues);
-            ComputeShader.SetBuffer(0, "Debug", debugBuffer);
-            ComputeShader.SetBuffer(0, "DebugType", debugTypeBuffer);
+            computeShader.SetBuffer(0, "Debug", debugBuffer);
+            computeShader.SetBuffer(0, "DebugType", debugTypeBuffer);
         }
 
 
         if (FinishedMarkerBuffer != null)
         {
-            ComputeShader.SetBuffer(0, "Finished", FinishedMarkerBuffer);
+            computeShader.SetBuffer(0, "Finished", FinishedMarkerBuffer);
         }
 
         // The problem with AsyncGPUReadback is that .done is probably set in the next frame,
         // .. so we cannot use this to run multiple dispatches during one frame
         //CurrentReadbackRequest = AsyncGPUReadback.Request(cst.FinishedMarkerBuffer);
 
-        ComputeShader.Dispatch(0, ShaderRegion.ThreadGroups.x, ShaderRegion.ThreadGroups.y, 1);
+        computeShader.Dispatch(0, ShaderRegion.ThreadGroups.x, ShaderRegion.ThreadGroups.y, 1);
 
         //GL.Flush();
 
