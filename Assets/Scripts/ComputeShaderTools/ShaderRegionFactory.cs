@@ -2,16 +2,16 @@
 
 public class ShaderRegionFactory
 {
-    private Vector2Int GroupSize;
+    private Vector2Int ThreadGroupSize;
 
-    public ShaderRegionFactory(Vector2Int groupSize)
+    public ShaderRegionFactory(Vector2Int threadGroupSize)
     {
-        GroupSize = groupSize;
+        ThreadGroupSize = threadGroupSize;
     }
 
     public ShaderRegion Create(Vector2Int a, Vector2Int b, Vector2Int c, Vector2Int d, int padding)
     {
-        return new ShaderRegion(a, b, c, d, GroupSize, padding);
+        return new ShaderRegion(a, b, c, d, ThreadGroupSize, padding);
     }
 
     public ShaderRegion Create(Vector2Int a, Vector2Int b, Vector2Int c, Vector2Int d)
