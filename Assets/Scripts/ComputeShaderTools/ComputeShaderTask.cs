@@ -139,7 +139,6 @@ public class ComputeShaderTask {
     private ShaderRegion ShaderRegion;
     public ComputeShader ComputeShader;
     public List<CSAttribute> Attributes;
-    public Vector2Int ThreadGroups;
     public ComputeBuffer FinishedMarkerBuffer;
     public List<ComputeBuffer> BuffersToDispose;
     public bool DebugEnabled;
@@ -160,7 +159,6 @@ public class ComputeShaderTask {
         DebugEnabled = debugEnabled;
 
         ComputeShader = (ComputeShader)Resources.Load(name);
-        ThreadGroups = shaderRegion.ThreadGroups;
         Attributes.Add(new CSInt2("CalculationSize", shaderRegion.CalculationSize));
     }
 
@@ -198,7 +196,7 @@ public class ComputeShaderTask {
         // .. so we cannot use this to run multiple dispatches during one frame
         //CurrentReadbackRequest = AsyncGPUReadback.Request(cst.FinishedMarkerBuffer);
 
-        ComputeShader.Dispatch(0, ThreadGroups.x, ThreadGroups.y, 1);
+        ComputeShader.Dispatch(0, ShaderRegion.ThreadGroups.x, ShaderRegion.ThreadGroups.y, 1);
 
         //GL.Flush();
 
