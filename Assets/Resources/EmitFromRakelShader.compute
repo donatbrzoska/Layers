@@ -88,7 +88,7 @@ float3 rakel_mapped(int2 pos_pixel)
     float3 pos_world_space = map_to_world_space(pos_pixel, TextureResolution, CanvasPosition, CanvasSize);
 
     // translate back so pixel is anchor aligned
-    float3 back_translation_position = - (float3(RakelPosition.x, RakelPosition.y, 0) - RakelAnchor);
+    float3 back_translation_position = RakelAnchor - float3(RakelPosition.x, RakelPosition.y, 0);
     float3 pos_back_translated_position = pos_world_space + back_translation_position;
 
     // rotate back around anchor
