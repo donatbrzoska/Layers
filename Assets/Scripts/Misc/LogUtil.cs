@@ -113,7 +113,7 @@ public class LogUtil
         string result = "(";
         for (int i=0; i<(int)debugType; i++)
         {
-            result += color[i];
+            result += color[i].ToString("F2");
             if (i<(int)debugType - 1)
             {
                 result += ", ";
@@ -137,7 +137,7 @@ public class LogUtil
         {
             for (int j = 0; j < cols; j++)
             {
-                result += vecs[i * cols + j].ToString() + " ";
+                result += vecs[i * cols + j].ToString("F2") + " ";
             }
             result += "\n";
         }
@@ -179,7 +179,7 @@ public class LogUtil
         {
             for (int j = 0; j < cols; j++)
             {
-                result += vecs[i * cols + j].ToString() + " ";
+                result += vecs[i * cols + j].ToString("F2") + " ";
             }
             result += "\n";
         }
@@ -242,7 +242,7 @@ public class LogUtil
         {
             for (int j = 0; j < cols; j++)
             {
-                result += floats[i * cols + j].ToString() + " ";
+                result += floats[i * cols + j].ToString("F2") + " ";
             }
             result += "\n";
         }
