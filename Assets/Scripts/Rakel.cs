@@ -80,6 +80,11 @@ public class Rakel : ComputeShaderCreator
         LowerRight = lrRotated + positionTranslation;
     }
 
+    public override string ToString()
+    {
+        return base.ToString() + string.Format("\nPosition={0}, Rotation={1}, Tilt={2}\nUL={3}, UR={4}\nLL={5}, LR={6}, ", Position, Rotation, Tilt, UpperLeft, UpperRight, LowerLeft, LowerRight);
+    }
+
     public void Fill(ReservoirFiller filler)
     {
         ApplicationReservoir.Fill(filler);
