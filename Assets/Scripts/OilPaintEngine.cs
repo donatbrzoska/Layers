@@ -320,12 +320,12 @@ public class OilPaintEngine : MonoBehaviour
     public void DoMacroAction()
     {
         //Rakel.Fill(new Paint(new Color(0 / 255f, 107 / 255f, 60 / 255f), 240), new PerlinNoiseFiller());
-        Rakel.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen), new FlatVolumeFiller(240)));
+        Rakel.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen), new FlatVolumeFiller(1)));
 
         InputInterpolator.NewStroke();
         InputInterpolator.AddNode(
-            new Vector3(-5, 0, -0.10f),
-            0,
+            new Vector3(-3, 0, -0.10f),
+            45,
             0,
             Configuration.TransferConfiguration,
             Configuration.CanvasResolution);
@@ -343,12 +343,12 @@ public class OilPaintEngine : MonoBehaviour
 
         //RakelInterpolator.AddNode(new Vector3(6, 3, -0.10f), 0, 0, TextureResolution);
 
-        InputInterpolator.AddNode(
-            new Vector3(6, 0, -0.10f),
-            0,
-            0,
-            Configuration.TransferConfiguration,
-            Configuration.CanvasResolution);
+        //InputInterpolator.AddNode(
+        //    new Vector3(6, 0, -0.10f),
+        //    0,
+        //    0,
+        //    Configuration.TransferConfiguration,
+        //    Configuration.CanvasResolution);
     }
 
     public void DoMacro2Action()

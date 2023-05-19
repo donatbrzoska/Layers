@@ -28,12 +28,17 @@ public class Configuration
         CanvasResolution = 1;
 
         RakelConfiguration.Resolution = 1;
-        RakelConfiguration.Length = 2;
-        RakelConfiguration.Width = 1;
+        RakelConfiguration.Length = 4;
+        RakelConfiguration.Width = 2;
 
         FillConfiguration.Volume = 1;
         FillConfiguration.VolumeMode = VolumeMode.Flat;
         FillConfiguration.ColorMode = ColorMode.Colorful;
+
+        TransferConfiguration.MapMode = TransferMapMode.PolygonClipping;
+        TransferConfiguration.EmitVolumeApplicationReservoir = 1;
+        TransferConfiguration.EmitVolumePickupReservoir = 0;
+        TransferConfiguration.PickupVolume = 0;
     }
 
     public void LoadBenchmark()
