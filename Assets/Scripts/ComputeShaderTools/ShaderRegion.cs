@@ -44,4 +44,9 @@ public class ShaderRegion
     }
 
     public ShaderRegion(Vector2Int a, Vector2Int b, Vector2Int c, Vector2Int d, Vector2Int groupSize) : this(a, b, c, d, groupSize, 0) { }
+
+    public override string ToString()
+    {
+        return base.ToString() + " at " + CalculationPosition + " with dimensions " + CalculationSize;
+    }
 }
