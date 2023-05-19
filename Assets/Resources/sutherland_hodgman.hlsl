@@ -1,3 +1,42 @@
+struct Rectangle {
+    float2 a;
+    float2 b;
+    float2 c;
+    float2 d;
+};
+
+float2 tilt(float2 a, float angle)
+{
+    // TODO
+    return a;
+}
+
+Rectangle create_rectangle(float2 center, float rotation_angle, float tilt_angle)
+{
+    float2 ll = float2(-0.5, -0.5) + center;
+    float2 ul = float2(-0.5,  0.5) + center;
+    float2 ur = float2( 0.5,  0.5) + center;
+    float2 lr = float2( 0.5, -0.5) + center;
+
+    float2 ll_tilted = tilt(ll, tilt_angle);
+    float2 ul_tilted = tilt(ul, tilt_angle);
+    float2 ur_tilted = tilt(ur, tilt_angle);
+    float2 lr_tilted = tilt(lr, tilt_angle);
+
+    float2 ll_rotated = rotate(ll_tilted, rotation_angle, center);
+    float2 ul_rotated = rotate(ul_tilted, rotation_angle, center);
+    float2 ur_rotated = rotate(ur_tilted, rotation_angle, center);
+    float2 lr_rotated = rotate(lr_tilted, rotation_angle, center);
+
+    // polygon clipping algorithm expects vertices to be stored in counter clockwise order
+    Rectangle result;
+    result.a = ll_rotated;
+    result.b = lr_rotated;
+    result.c = ur_rotated;
+    result.d = ul_rotated;
+    return result;
+}
+
 bool vertex_inside(float2 vertex, float2 edge_v1, float2 edge_v2)
 {
     return (edge_v1.x - vertex.x) * (edge_v2.y - vertex.y) >= (edge_v1.y - vertex.y) * (edge_v2.x - vertex.x);
@@ -36,7 +75,7 @@ float2 compute_intersection(float2 a, float2 b, float2 p, float2 q)
 
 // inspired by Java implementation from https://rosettacode.org/wiki/Sutherland-Hodgman_polygon_clipping
 // TODO No support for differing canvas and rakel resolutions
-float calculate_exact_overlap(int2 adjacent_reservoir_pixel, float2 reservoir_pixel, float reservoir_pixel_rotation)
+float calculate_exact_overlap(Rectangle subject_p, Rectangle clip_p)
 {
     // bool debug_this = adjacent_reservoir_pixel.x == 0 && adjacent_reservoir_pixel.y == 1
     //                && f2_eq(reservoir_pixel, float2(0.13, 0.87));
@@ -44,35 +83,25 @@ float calculate_exact_overlap(int2 adjacent_reservoir_pixel, float2 reservoir_pi
     //     Debug[XY(id.x, id.y, CalculationSize.x)] = float2(7,7);
     // }
 
-    // 1. calculate clip and subject polygon -> adjacent_reservoir_pixel is clipping reservoir_pixel (back translated and rotated from canvas pixel)
-    // vertices are stored in counter clockwise order
-    float2 clip_poly[8];
-    uint clip_len = 0;
+    // bool debug_this = (id__().x == 2 && id__().y == 2 && debug_state().x == 0 && debug_state().y == 0);
+
+    float2 clip_poly[4];
+    clip_poly[0] = clip_p.a;
+    clip_poly[1] = clip_p.b;
+    clip_poly[2] = clip_p.c;
+    clip_poly[3] = clip_p.d;
+    uint clip_len = 4;
+
     float2 subj_poly[8];
-    uint subj_len = 0;
-
-    float2 ll = float2(-0.5, -0.5);
-    float2 ul = float2(-0.5,  0.5);
-    float2 ur = float2( 0.5,  0.5);
-    float2 lr = float2( 0.5, -0.5);
-
-    float2 adjacent_reservoir_pixel_ = float2(adjacent_reservoir_pixel.x, adjacent_reservoir_pixel.y);
-    clip_poly[0] = adjacent_reservoir_pixel_ + ll;
-    clip_poly[1] = adjacent_reservoir_pixel_ + lr;
-    clip_poly[2] = adjacent_reservoir_pixel_ + ur;
-    clip_poly[3] = adjacent_reservoir_pixel_ + ul;
-    clip_len = 4;
-
-    // TODO this doesn't work for a curved or tilted rakel
-    subj_poly[0] = reservoir_pixel + rotate(ll, reservoir_pixel_rotation, float2(0,0));
-    subj_poly[1] = reservoir_pixel + rotate(lr, reservoir_pixel_rotation, float2(0,0));
-    subj_poly[2] = reservoir_pixel + rotate(ur, reservoir_pixel_rotation, float2(0,0));
-    subj_poly[3] = reservoir_pixel + rotate(ul, reservoir_pixel_rotation, float2(0,0));
+    subj_poly[0] = subject_p.a;
+    subj_poly[1] = subject_p.b;
+    subj_poly[2] = subject_p.c;
+    subj_poly[3] = subject_p.d;
     subj_poly[4] = float2(0,0);
     subj_poly[5] = float2(0,0);
     subj_poly[6] = float2(0,0);
     subj_poly[7] = float2(0,0);
-    subj_len = 4;
+    uint subj_len = 4;
 
     // 2. calculate intersection polygon
     float2 input_list[8];

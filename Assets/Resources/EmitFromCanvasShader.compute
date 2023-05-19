@@ -145,7 +145,10 @@ void emit(float2 reservoir_pixel, int2 radius)
                     } else if (TransferMapMode == 1) { // bilinear interpolation
                         overlap = calculate_unrotated_overlap(coord, 1, reservoir_pixel, 1);
                     } else if (TransferMapMode == 2) { // polygon clipping
-                        overlap = calculate_exact_overlap(coord, reservoir_pixel, RakelRotation);
+                        float RakelTilt = 0; // TODO
+                        Rectangle subject_p = create_rectangle(reservoir_pixel, RakelRotation, RakelTilt);
+                        Rectangle clip_p = create_rectangle(coord, 0, 0);
+                        overlap = calculate_exact_overlap(subject_p, clip_p);
                     }
 
                     if (overlap > 0) {
