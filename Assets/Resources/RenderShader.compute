@@ -11,17 +11,20 @@ uint3 id;
 uint2 CalculationSize;
 
 RWStructuredBuffer<float4> Debug;
-RWStructuredBuffer<int> DebugType;
+RWStructuredBuffer<DebugListInfo> DebugInfo;
 // RWStructuredBuffer<int> Finished;
 
-void set_debug_type(int t)
+void set_debug_list_info(uint size, uint t)
 {
-    DebugType[0] = t;
+    DebugListInfo dli;
+    dli.Size = size;
+    dli.Type = t;
+    DebugInfo[0] = dli;
 }
 
-void log_(float4 f)
+void log_(uint index, float4 f)
 {
-    Debug[XY(id.x, id.y, CalculationSize.x)] = f;
+    Debug[XYZ(id.x, id.y, index, CalculationSize)] = f;
 }
 
 // ###################################### SHADER BASE END ######################################

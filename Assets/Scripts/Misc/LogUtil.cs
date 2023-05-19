@@ -1,15 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public enum DebugType
-{
-    None,
-    Float,
-    Float2,
-    Float3,
-    Float4
-}
-
 public class LogUtil
 {
     private LogUtil(){ }
@@ -85,36 +76,43 @@ public class LogUtil
         Debug.Log(result);
     }
 
-    public static void Log(Color[] colors, int rows = 1, string descr = "", DebugType debugType = DebugType.Float4)
+    public static void Log(Color[] colors, Vector3Int dimensions, int usedDepth, DebugListType debugElementType, string descr)
     {
-
         if (descr != "")
         {
             Debug.Log(descr);
         }
 
         string result = "";
-        int cols = colors.GetLength(0) / rows;
-        for (int i = rows - 1; i >= 0; i--)
+        for (int row = dimensions.y - 1; row >= 0; row--)
         {
-            for (int j = 0; j < cols; j++)
+            for (int col = 0; col < dimensions.x; col++)
             {
-                //string color_str = colors[i * cols + j].rToString();
-                string color_str = ColorToString(colors[i * cols + j], debugType);
-                result += color_str + " ";
+                result += "[";
+                for (int k = 0; k < usedDepth; k++)
+                {
+                    int index = k * dimensions.y * dimensions.x + row * dimensions.x + col;
+                    string color_str = ColorToString(colors[index], debugElementType);
+                    result += color_str;
+                    if (k < usedDepth - 1)
+                    {
+                        result += " ";
+                    }
+                }
+                result += "]  ";
             }
-            result += "\n";
+            result += "\n\n";
         }
         Debug.Log(result);
     }
 
-    private static string ColorToString(Color color, DebugType debugType)
+    private static string ColorToString(Color color, DebugListType debugType)
     {
         string result = "(";
         for (int i=0; i<(int)debugType; i++)
         {
             result += color[i].ToString("F2");
-            if (i<(int)debugType - 1)
+            if (i<(int)debugType - 1) // This assumes that DebugListType.None exists!
             {
                 result += ", ";
             }

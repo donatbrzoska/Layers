@@ -134,7 +134,33 @@ public class CSFloat4 : CSAttribute
     }
 }
 
-public class ComputeShaderTask {
+public struct DebugListInfo
+{
+    public int Size;
+    public DebugListType Type;
+
+    public static int SizeInBytes = sizeof(int) + sizeof(int);
+
+    public DebugListInfo(int size, DebugListType type)
+    {
+        Size = size;
+        Type = type;
+    }
+}
+
+public enum DebugListType
+{
+    None,
+    Float,
+    Float2,
+    Float3,
+    Float4
+}
+
+public class ComputeShaderTask
+{
+    const int DEBUG_LIST_SIZE_PER_THREAD_MAX = 8;
+
     public string Name;
     private ShaderRegion ShaderRegion;
     public List<CSAttribute> Attributes;
@@ -171,18 +197,18 @@ public class ComputeShaderTask {
         }
 
 
-        ComputeBuffer debugBuffer = new ComputeBuffer(1, sizeof(float)); // just for C#
-        Color[] debugValues = new Color[1]; // just for C#
-        ComputeBuffer debugTypeBuffer = new ComputeBuffer(1, sizeof(int));
-        int[] debugTypeValue = new int[] { 0 };
+        ComputeBuffer debugBuffer = new ComputeBuffer(1, sizeof(float)); // just for the compiler
+        Color[] debugValues = new Color[1]; // just for the compiler
+        ComputeBuffer debugListInfoBuffer = new ComputeBuffer(1, DebugListInfo.SizeInBytes);
+        DebugListInfo[] debugListInfoValue = new DebugListInfo[] { new DebugListInfo(0, DebugListType.None)};
         if (DebugEnabled)
         {
             debugBuffer.Dispose();
-            debugBuffer = new ComputeBuffer(ShaderRegion.PixelCount, 4 * sizeof(float));
-            debugValues = new Color[ShaderRegion.PixelCount];
+            debugBuffer = new ComputeBuffer(ShaderRegion.PixelCount, DEBUG_LIST_SIZE_PER_THREAD_MAX * 4 * sizeof(float));
+            debugValues = new Color[DEBUG_LIST_SIZE_PER_THREAD_MAX * ShaderRegion.PixelCount];
             debugBuffer.SetData(debugValues);
             computeShader.SetBuffer(0, "Debug", debugBuffer);
-            computeShader.SetBuffer(0, "DebugType", debugTypeBuffer);
+            computeShader.SetBuffer(0, "DebugInfo", debugListInfoBuffer);
         }
 
 
@@ -215,12 +241,19 @@ public class ComputeShaderTask {
         if (DebugEnabled)
         {
             debugBuffer.GetData(debugValues);
-            debugTypeBuffer.GetData(debugTypeValue);
-            DebugType debugType = (DebugType) debugTypeValue[0];
+            debugListInfoBuffer.GetData(debugListInfoValue);
+            int debugListSize = debugListInfoValue[0].Size;
+            DebugListType debugElementType = debugListInfoValue[0].Type;
 
-            if (debugType != DebugType.None)
+            if (debugListSize > 0)
             {
-                LogUtil.Log(debugValues, ShaderRegion.CalculationSize.y, Name, debugType);
+                LogUtil.Log(
+                    debugValues,
+                    new Vector3Int(ShaderRegion.CalculationSize.x, ShaderRegion.CalculationSize.y, DEBUG_LIST_SIZE_PER_THREAD_MAX),
+                    debugListSize,
+                    debugElementType,
+                    Name
+                );
 
                 //int sum = 0;
                 //for (int i = 0; i < debugValues.GetLength(0); i++)
@@ -231,7 +264,7 @@ public class ComputeShaderTask {
             }
         }
         debugBuffer.Dispose();
-        debugTypeBuffer.Dispose();
+        debugListInfoBuffer.Dispose();
 
 
         foreach (ComputeBuffer c in BuffersToDispose)
