@@ -3,6 +3,8 @@ using UnityEngine;
 
 public struct Paint : IEquatable<Paint>
 {
+    public static int UNIT = 100_000;
+
     public static Paint EMPTY_PAINT { get; private set; } = new Paint(Colors.NO_PAINT_COLOR, 0);
 
     public static int SizeInBytes = 4 * sizeof(float) + sizeof(int);
