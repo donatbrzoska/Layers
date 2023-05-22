@@ -290,16 +290,6 @@ public class OilPaintEngine : MonoBehaviour
         Configuration.TransferConfiguration.PickupVolume = value;
     }
 
-    public void UpdateReservoirSmoothingKernelSize(int value)
-    {
-        Configuration.TransferConfiguration.ReservoirSmoothingKernelSize = value;
-    }
-
-    public void UpdateReservoirDiscardVolumeThreshold(int value)
-    {
-        Configuration.TransferConfiguration.ReservoirDiscardVolumeThreshold = value;
-    }
-
     public void UpdateRakelEmitMode(TransferMapMode transferMapMode)
     {
         Configuration.TransferConfiguration.MapMode = transferMapMode;

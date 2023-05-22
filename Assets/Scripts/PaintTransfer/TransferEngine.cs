@@ -55,9 +55,7 @@ public class TransferEngine
             2 // Padding of 2 because normals of the previously set pixels around also have to be recalculated
         );
 
-        canvas.Reservoir.Duplicate(
-            transferConfiguration.ReservoirDiscardVolumeThreshold,
-            transferConfiguration.ReservoirSmoothingKernelSize, false);
+        canvas.Reservoir.Duplicate(false);
 
         ComputeBuffer canvasEmittedPaint = canvas.EmitPaint(
             rakel,
@@ -66,13 +64,9 @@ public class TransferEngine
             transferConfiguration.SuperSamplingSteps,
             transferConfiguration.PickupVolume, false);
 
-        rakel.ApplicationReservoir.Duplicate(
-            transferConfiguration.ReservoirDiscardVolumeThreshold,
-            transferConfiguration.ReservoirSmoothingKernelSize, false);
+        rakel.ApplicationReservoir.Duplicate(false);
 
-        rakel.PickupReservoir.Duplicate(
-            transferConfiguration.ReservoirDiscardVolumeThreshold,
-            transferConfiguration.ReservoirSmoothingKernelSize, false);
+        rakel.PickupReservoir.Duplicate(false);
 
         ComputeBuffer rakelEmittedPaint = rakel.EmitPaint(
             rakelEmitSR,

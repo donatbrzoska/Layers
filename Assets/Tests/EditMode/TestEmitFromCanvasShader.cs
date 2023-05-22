@@ -45,10 +45,7 @@ public class TestEmitFromCanvasShader
         // Arrange
         ShaderRegion canvasEmitSR = Rakel.ApplicationReservoir.GetShaderRegion();
         Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen), new FlatVolumeFiller(1)));
-        Canvas.Reservoir.Duplicate(
-            100, // unused
-            5, // unused
-            false);
+        Canvas.Reservoir.Duplicate(false);
 
         Rakel.UpdateState(new Vector3(-6, -0.5f, 0), 0, 0);
 
@@ -95,10 +92,7 @@ public class TestEmitFromCanvasShader
         // Arrange
         ShaderRegion canvasEmitSR = Rakel.ApplicationReservoir.GetShaderRegion();
         Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen), new FlatVolumeFiller(1)));
-        Canvas.Reservoir.Duplicate(
-            100, // unused
-            5, // unused
-            false);
+        Canvas.Reservoir.Duplicate(false);
 
         Rakel.UpdateState(new Vector3(-6, -0.5f, 0), 30, 0);
 

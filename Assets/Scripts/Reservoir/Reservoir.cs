@@ -38,18 +38,13 @@ public class Reservoir : ComputeShaderCreator
         );
     }
 
-    public void Duplicate(
-        int discardVolumeThreshold,
-        int smoothingKernelSize,
-        bool debugEnabled = false)
+    public void Duplicate(bool debugEnabled = false)
     {
         ShaderRegion duplicateSR = GetShaderRegion();
 
         List<CSAttribute> attributes = new List<CSAttribute>()
         {
-            new CSComputeBuffer("Reservoir", Buffer),
-            new CSInt("DiscardVolumeThreshhold", discardVolumeThreshold),
-            new CSInt("SmoothingKernelSize", smoothingKernelSize)
+            new CSComputeBuffer("Reservoir", Buffer)
         };
 
         ComputeShaderTask cst = new ComputeShaderTask(
