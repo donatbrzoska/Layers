@@ -3,7 +3,6 @@ using UnityEngine;
 public class OilPaintEngine : MonoBehaviour
 {
     public int BENCHMARK_STEPS = 0;
-    public bool ENSURE_SEQUENTIAL = false;
     public int TH_GROUP_SIZE_X = 1;
     public int TH_GROUP_SIZE_Y = 8;
 
@@ -32,8 +31,6 @@ public class OilPaintEngine : MonoBehaviour
     private Rakel Rakel;
     private InputInterpolator InputInterpolator;
 
-    private ComputeShaderEngine ComputeShaderEngine;
-
     void Awake()
     {
         Configuration = new Configuration();
@@ -54,7 +51,6 @@ public class OilPaintEngine : MonoBehaviour
 
     void Start()
     {
-        ComputeShaderEngine = new ComputeShaderEngine(ENSURE_SEQUENTIAL);
 
         ShaderRegionFactory = new ShaderRegionFactory(new Vector2Int(TH_GROUP_SIZE_X, TH_GROUP_SIZE_Y));
 
@@ -68,7 +64,7 @@ public class OilPaintEngine : MonoBehaviour
     {
         DisposeCanvas();
 
-        Canvas = new Canvas_(Configuration.TextureResolution, ShaderRegionFactory, ComputeShaderEngine);
+        Canvas = new Canvas_(Configuration.TextureResolution, ShaderRegionFactory);
 
         Renderer renderer = GameObject.Find("Canvas").GetComponent<Renderer>();
         renderer.material.SetTexture("_MainTex", Canvas.Texture);
@@ -84,7 +80,7 @@ public class OilPaintEngine : MonoBehaviour
     {
         DisposeRakel();
 
-        Rakel = new Rakel(Configuration.RakelConfiguration.Length, Configuration.RakelConfiguration.Width, Configuration.TextureResolution, ShaderRegionFactory, ComputeShaderEngine);
+        Rakel = new Rakel(Configuration.RakelConfiguration.Length, Configuration.RakelConfiguration.Width, Configuration.TextureResolution, ShaderRegionFactory);
 
         Debug.Log("Rakel is "
                   + Configuration.RakelConfiguration.Length * Configuration.TextureResolution + "x" + Configuration.RakelConfiguration.Width * Configuration.TextureResolution
@@ -146,8 +142,6 @@ public class OilPaintEngine : MonoBehaviour
                     Configuration.TextureResolution);
             }
         }
-
-        ComputeShaderEngine.ProcessTasks(ENSURE_SEQUENTIAL ? 1 : 0);
     }
     
     private void OnDestroy()

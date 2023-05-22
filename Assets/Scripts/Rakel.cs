@@ -25,22 +25,20 @@ public class Rakel : ComputeShaderCreator
     public Reservoir ApplicationReservoir;
     public Reservoir PickupReservoir;
 
-    public Rakel(float length, float width, int resolution, ShaderRegionFactory shaderRegionFactory, ComputeShaderEngine computeShaderEngine)
-        : base(shaderRegionFactory, computeShaderEngine)
+    public Rakel(float length, float width, int resolution, ShaderRegionFactory shaderRegionFactory)
+        : base(shaderRegionFactory)
     {
         ApplicationReservoir = new Reservoir(
             resolution,
             (int)(width * resolution),
             (int)(length * resolution),
-            shaderRegionFactory,
-            computeShaderEngine);
+            shaderRegionFactory);
 
         PickupReservoir = new Reservoir(
             resolution,
             (int)(width * resolution),
             (int)(length * resolution),
-            shaderRegionFactory,
-            computeShaderEngine);
+            shaderRegionFactory);
 
         // make sure Rakel is not bigger than its reservoir
         Length = ApplicationReservoir.Size.y * ApplicationReservoir.PixelSize;
@@ -136,12 +134,11 @@ public class Rakel : ComputeShaderCreator
             "EmitFromRakelShader",
             shaderRegion,
             attributes,
-            null,
             new List<ComputeBuffer>(),
             debugEnabled
         );
 
-        ComputeShaderEngine.EnqueueOrRun(cst);
+        cst.Run();
 
         return RakelEmittedPaint;
     }
@@ -163,12 +160,11 @@ public class Rakel : ComputeShaderCreator
             "ApplyBufferToRakelShader",
             shaderRegion,
             attributes,
-            null,
             new List<ComputeBuffer>() { canvasEmittedPaint },
             debugEnabled
         );
 
-        ComputeShaderEngine.EnqueueOrRun(cst);
+        cst.Run();
     }
 
     public void Dispose()

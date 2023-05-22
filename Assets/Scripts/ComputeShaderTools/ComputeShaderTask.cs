@@ -164,7 +164,6 @@ public class ComputeShaderTask
     public string Name;
     private ShaderRegion ShaderRegion;
     public List<CSAttribute> Attributes;
-    public ComputeBuffer FinishedMarkerBuffer;
     public List<ComputeBuffer> BuffersToDispose;
     public bool DebugEnabled;
 
@@ -172,14 +171,12 @@ public class ComputeShaderTask
         string name,
         ShaderRegion shaderRegion,
         List<CSAttribute> attributes,
-        ComputeBuffer finishedMarkerBuffer,
         List<ComputeBuffer> buffersToDispose,
         bool debugEnabled)
     {
         Name = name;
         ShaderRegion = shaderRegion;
         Attributes = attributes;
-        FinishedMarkerBuffer = finishedMarkerBuffer;
         BuffersToDispose = buffersToDispose;
         DebugEnabled = debugEnabled;
     }
@@ -212,30 +209,7 @@ public class ComputeShaderTask
         }
 
 
-        if (FinishedMarkerBuffer != null)
-        {
-            computeShader.SetBuffer(0, "Finished", FinishedMarkerBuffer);
-        }
-
-        // The problem with AsyncGPUReadback is that .done is probably set in the next frame,
-        // .. so we cannot use this to run multiple dispatches during one frame
-        //CurrentReadbackRequest = AsyncGPUReadback.Request(cst.FinishedMarkerBuffer);
-
         computeShader.Dispatch(0, ShaderRegion.ThreadGroups.x, ShaderRegion.ThreadGroups.y, 1);
-
-        //GL.Flush();
-
-        // Alternative but slow: GetData() blocks until the task is finished
-        if (FinishedMarkerBuffer != null)
-        {
-            FinishedMarkerBuffer.GetData(new int[1]);
-            FinishedMarkerBuffer.Dispose();
-        }
-
-        //while (!CurrentReadbackRequest.done)
-        //{
-        //    Thread.Sleep(1);
-        //}
 
 
         if (DebugEnabled)

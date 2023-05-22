@@ -12,7 +12,6 @@ uint2 CalculationSize;
 
 RWStructuredBuffer<float4> Debug;
 RWStructuredBuffer<DebugListInfo> DebugInfo;
-// RWStructuredBuffer<int> Finished;
 
 void set_debug_list_info(uint size, uint t)
 {
@@ -74,8 +73,4 @@ void main (uint3 id_ : SV_DispatchThreadID)
         Reservoir[XYZ(id.x, id.y, 1, CalculationSize)] = available;
         // Reservoir[XYZ(id.x, id.y, 0, CalculationSize)] = available; // also update source for corrections // TODO find out why this is not necessary
     }
-    // if (id.x == 0 && id.y == 0)
-    // {
-    //     Finished[0] = 3;
-    // }
 }

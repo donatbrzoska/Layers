@@ -8,8 +8,8 @@ public class Canvas_ : ComputeShaderCreator
     public RenderTexture Texture { get; private set; }
     public RenderTexture NormalMap { get; private set; }
 
-    public Canvas_(int textureResolution, ShaderRegionFactory shaderRegionFactory, ComputeShaderEngine computeShaderEngine)
-        : base(shaderRegionFactory, computeShaderEngine)
+    public Canvas_(int textureResolution, ShaderRegionFactory shaderRegionFactory)
+        : base(shaderRegionFactory)
     {
         float width = GameObject.Find("Canvas").GetComponent<Transform>().localScale.x * 10; // convert scale attribute to world space
         float height = GameObject.Find("Canvas").GetComponent<Transform>().localScale.y * 10; // convert scale attribute to world space
@@ -17,7 +17,7 @@ public class Canvas_ : ComputeShaderCreator
 
         WorldSpaceCanvas = new WorldSpaceCanvas(height, width, textureResolution, position);
 
-        Reservoir = new Reservoir(textureResolution, WorldSpaceCanvas.TextureSize.x, WorldSpaceCanvas.TextureSize.y, shaderRegionFactory, computeShaderEngine);
+        Reservoir = new Reservoir(textureResolution, WorldSpaceCanvas.TextureSize.x, WorldSpaceCanvas.TextureSize.y, shaderRegionFactory);
 
         Texture = new RenderTexture(WorldSpaceCanvas.TextureSize.x, WorldSpaceCanvas.TextureSize.y, 1);
         Texture.filterMode = FilterMode.Point;
@@ -49,7 +49,6 @@ public class Canvas_ : ComputeShaderCreator
                 new CSFloat4("Value", value),
                 new CSTexture("Target", texture)
             },
-            null,
             new List<ComputeBuffer>(),
             false
         );
@@ -97,12 +96,11 @@ public class Canvas_ : ComputeShaderCreator
             "EmitFromCanvasShader",
             shaderRegion,
             attributes,
-            null,
             new List<ComputeBuffer>(),
             debugEnabled
         );
 
-        ComputeShaderEngine.EnqueueOrRun(cst);
+        cst.Run();
 
         return canvasEmittedPaint;
     }
@@ -124,12 +122,11 @@ public class Canvas_ : ComputeShaderCreator
             "ApplyBufferToCanvasShader",
             shaderRegion,
             attributes,
-            null,
             new List<ComputeBuffer>() { rakelEmittedPaint },
             debugEnabled
         );
 
-        ComputeShaderEngine.EnqueueOrRun(cst);
+        cst.Run();
     }
 
     public void Render(
@@ -149,12 +146,11 @@ public class Canvas_ : ComputeShaderCreator
             "RenderShader",
             shaderRegion,
             attributes,
-            null,
             new List<ComputeBuffer>(),
             debugEnabled
         );
 
-        ComputeShaderEngine.EnqueueOrRun(cst);
+        cst.Run();
     }
 
     public void Dispose()

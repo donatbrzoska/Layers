@@ -12,7 +12,6 @@ uint2 CalculationSize;
 
 RWStructuredBuffer<float4> Debug;
 RWStructuredBuffer<DebugListInfo> DebugInfo;
-// RWStructuredBuffer<int> Finished;
 
 void set_debug_list_info(uint size, uint t)
 {
@@ -301,8 +300,4 @@ void main (uint3 id_ : SV_DispatchThreadID)
         
         do_emit(reservoir_pixel);
     }
-    // if (id.x == 0 && id.y == 0)
-    // {
-    //     Finished[0] = 2;
-    // }
 }

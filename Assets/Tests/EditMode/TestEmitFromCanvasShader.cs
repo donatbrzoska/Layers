@@ -25,11 +25,10 @@ public class TestEmitFromCanvasShader
     public void Setup()
     {
         ShaderRegionFactory = new ShaderRegionFactory(new Vector2Int(32, 1));
-        ComputeShaderEngine cse = new ComputeShaderEngine(false);
 
-        Rakel = new Rakel(RakelLength, RakelWidth, 1, ShaderRegionFactory, cse);
+        Rakel = new Rakel(RakelLength, RakelWidth, 1, ShaderRegionFactory);
 
-        Canvas = new Canvas_(1, ShaderRegionFactory, cse);
+        Canvas = new Canvas_(1, ShaderRegionFactory);
     }
 
     [TearDown]

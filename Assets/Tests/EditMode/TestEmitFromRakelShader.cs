@@ -27,9 +27,8 @@ public class TestEmitFromRakelShader
         WorldSpaceCanvas = new WorldSpaceCanvas(10, 15, 1, new Vector3(0, 0, 0));
 
         ShaderRegionFactory = new ShaderRegionFactory(new Vector2Int(32, 1));
-        ComputeShaderEngine cse = new ComputeShaderEngine(false);
 
-        Rakel = new Rakel(RakelLength, RakelWidth, 1, ShaderRegionFactory, cse);
+        Rakel = new Rakel(RakelLength, RakelWidth, 1, ShaderRegionFactory);
     }
 
     [TearDown]

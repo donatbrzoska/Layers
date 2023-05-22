@@ -10,8 +10,8 @@ public class Reservoir : ComputeShaderCreator
 
     public float PixelSize { get { return 1 / (float) Resolution; } }
 
-    public Reservoir(int resolution, int width, int height, ShaderRegionFactory shaderRegionFactory, ComputeShaderEngine computeShaderEngine)
-        : base(shaderRegionFactory, computeShaderEngine)
+    public Reservoir(int resolution, int width, int height, ShaderRegionFactory shaderRegionFactory)
+        : base(shaderRegionFactory)
     {
         Resolution = resolution;
         Size = new Vector2Int(width, height);
@@ -56,12 +56,11 @@ public class Reservoir : ComputeShaderCreator
             "ReservoirDuplicationShader",
             duplicateSR,
             attributes,
-            null,
             new List<ComputeBuffer>(),
             debugEnabled
         );
 
-        ComputeShaderEngine.EnqueueOrRun(cst);
+        cst.Run();
     }
 
     public void PrintVolumes(int z)
