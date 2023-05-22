@@ -50,7 +50,7 @@ public class TestWorldSpaceCanvas
     {
         WorldSpaceCanvas wsc = new WorldSpaceCanvas(3, 3, 1, new Vector3(0, 0, 0));
 
-        Vector2Int pixel = wsc.MapToPixel(new Vector3(-0.5f, 0, 0));
+        Vector2Int pixel = wsc.MapToPixel(new Vector3(-0.499f, 0, 0));
 
         Assert.AreEqual(
             new Vector2Int(1, 1),
@@ -76,7 +76,7 @@ public class TestWorldSpaceCanvas
     {
         WorldSpaceCanvas wsc = new WorldSpaceCanvas(3, 3, 1, new Vector3(0, 0, 0));
 
-        Vector2Int pixel = wsc.MapToPixel(new Vector3(0.499f, 0, 0));
+        Vector2Int pixel = wsc.MapToPixel(new Vector3(0.5f, 0, 0));
 
         Assert.AreEqual(
             new Vector2Int(1, 1),
@@ -89,7 +89,7 @@ public class TestWorldSpaceCanvas
     {
         WorldSpaceCanvas wsc = new WorldSpaceCanvas(3, 3, 1, new Vector3(0, 0, 0));
 
-        Vector2Int pixel = wsc.MapToPixel(new Vector3(0.5f, 0, 0));
+        Vector2Int pixel = wsc.MapToPixel(new Vector3(0.501f, 0, 0));
 
         Assert.AreEqual(
             new Vector2Int(2, 1),
@@ -102,7 +102,7 @@ public class TestWorldSpaceCanvas
     {
         WorldSpaceCanvas wsc = new WorldSpaceCanvas(3, 3, 1, new Vector3(0, 0, 0));
 
-        Vector2Int pixel = wsc.MapToPixel(new Vector3(0, 0.499f, 0));
+        Vector2Int pixel = wsc.MapToPixel(new Vector3(0, 0.5f, 0));
 
         Assert.AreEqual(
             new Vector2Int(1, 1),
@@ -115,7 +115,7 @@ public class TestWorldSpaceCanvas
     {
         WorldSpaceCanvas wsc = new WorldSpaceCanvas(3, 3, 1, new Vector3(0, 0, 0));
 
-        Vector2Int pixel = wsc.MapToPixel(new Vector3(0, 0.5f, 0));
+        Vector2Int pixel = wsc.MapToPixel(new Vector3(0, 0.501f, 0));
 
         Assert.AreEqual(
             new Vector2Int(1, 2),
@@ -128,7 +128,7 @@ public class TestWorldSpaceCanvas
     {
         WorldSpaceCanvas wsc = new WorldSpaceCanvas(3, 3, 1, new Vector3(0, 0, 0));
 
-        Vector2Int pixel = wsc.MapToPixel(new Vector3(0, -0.5f, 0));
+        Vector2Int pixel = wsc.MapToPixel(new Vector3(0, -0.499f, 0));
 
         Assert.AreEqual(
             new Vector2Int(1, 1),
@@ -141,7 +141,7 @@ public class TestWorldSpaceCanvas
     {
         WorldSpaceCanvas wsc = new WorldSpaceCanvas(3, 3, 1, new Vector3(0, 0, 0));
 
-        Vector2Int pixel = wsc.MapToPixel(new Vector3(0, -0.501f, 0));
+        Vector2Int pixel = wsc.MapToPixel(new Vector3(0, -0.5f, 0));
 
         Assert.AreEqual(
             new Vector2Int(1, 0),
@@ -157,7 +157,7 @@ public class TestWorldSpaceCanvas
         Vector2Int pixel = wsc.MapToPixel(new Vector3(0, 0, 0));
 
         Assert.AreEqual(
-            new Vector2Int(1, 1),
+            new Vector2Int(0, 0),
             pixel
         );
     }
@@ -169,7 +169,7 @@ public class TestWorldSpaceCanvas
     {
         WorldSpaceCanvas wsc = new WorldSpaceCanvas(3, 3, 1, new Vector3(0, 0, 0));
 
-        Vector2Int pixel = wsc.MapToPixel(new Vector3(-1.500f, 0, 0));
+        Vector2Int pixel = wsc.MapToPixel(new Vector3(-1.499f, 0, 0));
 
         Assert.AreEqual(
             new Vector2Int(0, 1),
@@ -182,7 +182,7 @@ public class TestWorldSpaceCanvas
     {
         WorldSpaceCanvas wsc = new WorldSpaceCanvas(3, 3, 1, new Vector3(0, 0, 0));
 
-        Vector2Int pixel = wsc.MapToPixel(new Vector3(-1.501f, 0, 0));
+        Vector2Int pixel = wsc.MapToPixel(new Vector3(-1.5f, 0, 0));
 
         Assert.AreEqual(
             new Vector2Int(-1, 1),
@@ -195,7 +195,7 @@ public class TestWorldSpaceCanvas
     {
         WorldSpaceCanvas wsc = new WorldSpaceCanvas(3, 3, 1, new Vector3(0, 0, 0));
 
-        Vector2Int pixel = wsc.MapToPixel(new Vector3(1.499f, 0, 0));
+        Vector2Int pixel = wsc.MapToPixel(new Vector3(1.5f, 0, 0));
 
         Assert.AreEqual(
             new Vector2Int(2, 1),
@@ -208,7 +208,7 @@ public class TestWorldSpaceCanvas
     {
         WorldSpaceCanvas wsc = new WorldSpaceCanvas(3, 3, 1, new Vector3(0, 0, 0));
 
-        Vector2Int pixel = wsc.MapToPixel(new Vector3(1.5f, 0, 0));
+        Vector2Int pixel = wsc.MapToPixel(new Vector3(1.501f, 0, 0));
 
         Assert.AreEqual(
             new Vector2Int(3, 1),
@@ -221,7 +221,7 @@ public class TestWorldSpaceCanvas
     {
         WorldSpaceCanvas wsc = new WorldSpaceCanvas(3, 3, 1, new Vector3(0, 0, 0));
 
-        Vector2Int pixel = wsc.MapToPixel(new Vector3(0, 1.499f, 0));
+        Vector2Int pixel = wsc.MapToPixel(new Vector3(0, 1.5f, 0));
 
         Assert.AreEqual(
             new Vector2Int(1, 2),
@@ -234,7 +234,7 @@ public class TestWorldSpaceCanvas
     {
         WorldSpaceCanvas wsc = new WorldSpaceCanvas(3, 3, 1, new Vector3(0, 0, 0));
 
-        Vector2Int pixel = wsc.MapToPixel(new Vector3(0, 1.5f, 0));
+        Vector2Int pixel = wsc.MapToPixel(new Vector3(0, 1.501f, 0));
 
         Assert.AreEqual(
             new Vector2Int(1, 3),
@@ -247,7 +247,7 @@ public class TestWorldSpaceCanvas
     {
         WorldSpaceCanvas wsc = new WorldSpaceCanvas(3, 3, 1, new Vector3(0, 0, 0));
 
-        Vector2Int pixel = wsc.MapToPixel(new Vector3(0, -1.5f, 0));
+        Vector2Int pixel = wsc.MapToPixel(new Vector3(0, -1.499f, 0));
 
         Assert.AreEqual(
             new Vector2Int(1, 0),
@@ -260,7 +260,7 @@ public class TestWorldSpaceCanvas
     {
         WorldSpaceCanvas wsc = new WorldSpaceCanvas(3, 3, 1, new Vector3(0, 0, 0));
 
-        Vector2Int pixel = wsc.MapToPixel(new Vector3(0, -1.501f, 0));
+        Vector2Int pixel = wsc.MapToPixel(new Vector3(0, -1.5f, 0));
 
         Assert.AreEqual(
             new Vector2Int(1, -1),
@@ -295,37 +295,11 @@ public class TestWorldSpaceCanvas
     }
 
     [Test]
-    public void MapToPixel_Shifted_LowerLeft_UpperLeftCorner()
+    public void MapToPixel_Shifted_LowerLeft_LowerLeftCorner_Inner()
     {
         WorldSpaceCanvas wsc = new WorldSpaceCanvas(3, 3, 1, new Vector3(-1, -1, 0));
 
-        Vector2Int pixel = wsc.MapToPixel(new Vector3(-2, 0, 0));
-
-        Assert.AreEqual(
-            new Vector2Int(0, 2),
-            pixel
-        );
-    }
-
-    [Test]
-    public void MapToPixel_Shifted_LowerLeft_UpperRightCorner()
-    {
-        WorldSpaceCanvas wsc = new WorldSpaceCanvas(3, 3, 1, new Vector3(-1, -1, 0));
-
-        Vector2Int pixel = wsc.MapToPixel(new Vector3(0, 0, 0));
-
-        Assert.AreEqual(
-            new Vector2Int(2, 2),
-            pixel
-        );
-    }
-
-    [Test]
-    public void MapToPixel_Shifted_LowerLeft_LowerLeftCorner()
-    {
-        WorldSpaceCanvas wsc = new WorldSpaceCanvas(3, 3, 1, new Vector3(-1, -1, 0));
-
-        Vector2Int pixel = wsc.MapToPixel(new Vector3(-2, -2, 0));
+        Vector2Int pixel = wsc.MapToPixel(new Vector3(-2.499f, -2.499f, 0));
 
         Assert.AreEqual(
             new Vector2Int(0, 0),
@@ -334,14 +308,40 @@ public class TestWorldSpaceCanvas
     }
 
     [Test]
-    public void MapToPixel_Shifted_LowerLeft_LowerRightCorner()
+    public void MapToPixel_Shifted_LowerLeft_LowerLeftCorner_Outer()
     {
         WorldSpaceCanvas wsc = new WorldSpaceCanvas(3, 3, 1, new Vector3(-1, -1, 0));
 
-        Vector2Int pixel = wsc.MapToPixel(new Vector3(0, -2, 0));
+        Vector2Int pixel = wsc.MapToPixel(new Vector3(-2.5f, -2.5f, 0));
 
         Assert.AreEqual(
-            new Vector2Int(2, 0),
+            new Vector2Int(-1, -1),
+            pixel
+        );
+    }
+
+    [Test]
+    public void MapToPixel_Shifted_LowerLeft_UpperRightCorner_Inner()
+    {
+        WorldSpaceCanvas wsc = new WorldSpaceCanvas(3, 3, 1, new Vector3(-1, -1, 0));
+
+        Vector2Int pixel = wsc.MapToPixel(new Vector3(0.5f, 0.5f, 0));
+
+        Assert.AreEqual(
+            new Vector2Int(2, 2),
+            pixel
+        );
+    }
+
+    [Test]
+    public void MapToPixel_Shifted_LowerLeft_UpperRightCorner_Outer()
+    {
+        WorldSpaceCanvas wsc = new WorldSpaceCanvas(3, 3, 1, new Vector3(-1, -1, 0));
+
+        Vector2Int pixel = wsc.MapToPixel(new Vector3(0.501f, 0.501f, 0));
+
+        Assert.AreEqual(
+            new Vector2Int(3, 3),
             pixel
         );
     }

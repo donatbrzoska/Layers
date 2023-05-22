@@ -55,7 +55,7 @@ public class WorldSpaceCanvas
 
     public Vector2Int MapToPixel(Vector3 worldSpace)
     {
-        Vector3 lowerLeftOriented = worldSpace + new Vector3(Size.x / 2, Size.y / 2, 0);
+        Vector3 lowerLeftOriented = worldSpace + new Vector3(Size.x / 2, Size.y / 2, 0) - Position;
         // really lowerLeftOriented / pixelSize, but that is lowerLeftOriented / (1/Resolution)
         Vector2 floatPixel = lowerLeftOriented * Resolution;
         return new Vector2Int((int)Mathf.Ceil(floatPixel.x), (int)Mathf.Ceil(floatPixel.y)) - new Vector2Int(1, 1);
