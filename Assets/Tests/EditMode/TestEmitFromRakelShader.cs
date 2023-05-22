@@ -9,6 +9,8 @@ public class TestEmitFromRakelShader
     ShaderRegionFactory ShaderRegionFactory;
     Rakel Rakel;
 
+    ComputeBuffer RakelEmittedPaint;
+
     public int Sum(int[] values)
     {
         int res = 0;
@@ -33,6 +35,13 @@ public class TestEmitFromRakelShader
         Rakel = new Rakel(RakelConfig, ShaderRegionFactory, cse);
     }
 
+    [TearDown]
+    public void Teardown()
+    {
+        RakelEmittedPaint.Dispose();
+        Rakel.Dispose();
+    }
+
     [Test]
     public void Volume_Unrotated_Untilted()
     {
@@ -49,7 +58,7 @@ public class TestEmitFromRakelShader
 
 
         // Act
-        ComputeBuffer rakelEmittedPaint = Rakel.EmitPaint(
+        RakelEmittedPaint = Rakel.EmitPaint(
             rakelEmitSR,
             WorldSpaceCanvas,
             TransferMapMode.PolygonClipping,
@@ -61,7 +70,7 @@ public class TestEmitFromRakelShader
 
         // Assert
         Paint[] rakelEmittedPaintData = new Paint[rakelEmitSR.PixelCount];
-        rakelEmittedPaint.GetData(rakelEmittedPaintData);
+        RakelEmittedPaint.GetData(rakelEmittedPaintData);
         int[] rakelEmittedVolumes = new int[rakelEmitSR.PixelCount];
         for (int i = 0; i < rakelEmittedVolumes.Length; i++)
         {
@@ -104,7 +113,7 @@ public class TestEmitFromRakelShader
 
 
         // Act
-        ComputeBuffer rakelEmittedPaint = Rakel.EmitPaint(
+        RakelEmittedPaint = Rakel.EmitPaint(
             rakelEmitSR,
             WorldSpaceCanvas,
             TransferMapMode.PolygonClipping,
@@ -116,7 +125,7 @@ public class TestEmitFromRakelShader
 
         // Assert
         Paint[] rakelEmittedPaintData = new Paint[rakelEmitSR.PixelCount];
-        rakelEmittedPaint.GetData(rakelEmittedPaintData);
+        RakelEmittedPaint.GetData(rakelEmittedPaintData);
         int[] rakelEmittedVolumes = new int[rakelEmitSR.PixelCount];
         for (int i = 0; i < rakelEmittedVolumes.Length; i++)
         {
