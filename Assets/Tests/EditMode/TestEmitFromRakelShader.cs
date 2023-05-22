@@ -5,8 +5,9 @@ using UnityEngine;
 public class TestEmitFromRakelShader
 {
     WorldSpaceCanvas WorldSpaceCanvas;
-    RakelConfiguration RakelConfig;
     ShaderRegionFactory ShaderRegionFactory;
+    float RakelLength = 4;
+    float RakelWidth = 2;
     Rakel Rakel;
 
     ComputeBuffer RakelEmittedPaint;
@@ -25,14 +26,10 @@ public class TestEmitFromRakelShader
     {
         WorldSpaceCanvas = new WorldSpaceCanvas(10, 15, 1, new Vector3(0, 0, 0));
 
-        RakelConfig = new RakelConfiguration();
-        RakelConfig.Length = 4;
-        RakelConfig.Width = 2;
-        RakelConfig.Resolution = 1;
         ShaderRegionFactory = new ShaderRegionFactory(new Vector2Int(32, 1));
         ComputeShaderEngine cse = new ComputeShaderEngine(false);
 
-        Rakel = new Rakel(RakelConfig, ShaderRegionFactory, cse);
+        Rakel = new Rakel(RakelLength, RakelWidth, 1, ShaderRegionFactory, cse);
     }
 
     [TearDown]
@@ -93,7 +90,7 @@ public class TestEmitFromRakelShader
             rakelEmittedVolumes);
 
         Assert.AreEqual(
-            RakelConfig.Length * RakelConfig.Width * Paint.UNIT,
+            RakelLength * RakelWidth * Paint.UNIT,
             Sum(rakelEmittedVolumes));
     }
 

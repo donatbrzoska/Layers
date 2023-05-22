@@ -2,7 +2,7 @@
 
 public class Configuration
 {
-    public int CanvasResolution;
+    public int TextureResolution;
 
     public float RakelRotation;
     public bool RakelRotationLocked;
@@ -13,7 +13,7 @@ public class Configuration
 
     public Configuration()
     {
-        CanvasResolution = 20;
+        TextureResolution = 20;
 
         RakelRotation = 0;
         RakelRotationLocked = true;
@@ -25,9 +25,8 @@ public class Configuration
 
     public void LoadDebug()
     {
-        CanvasResolution = 1;
+        TextureResolution = 1;
 
-        RakelConfiguration.Resolution = 1;
         RakelConfiguration.Length = 4;
         RakelConfiguration.Width = 2;
 
@@ -43,9 +42,8 @@ public class Configuration
 
     public void LoadBenchmark()
     {
-        CanvasResolution = 50;
+        TextureResolution = 50;
 
-        RakelConfiguration.Resolution = 50;
         RakelConfiguration.Length = 1;
         RakelConfiguration.Width = 1;
 
@@ -54,10 +52,9 @@ public class Configuration
 
     public void LoadPixelMapping()
     {
-        CanvasResolution = 80;
+        TextureResolution = 80;
 
         RakelRotationLocked = false;
-        RakelConfiguration.Resolution = 80;
 
         TransferConfiguration.MapMode = TransferMapMode.NearestNeighbour;
         TransferConfiguration.EmitVolumePickupReservoir = 0;
@@ -70,10 +67,9 @@ public class Configuration
 
     public void LoadPresentation()
     {
-        CanvasResolution = 80;
+        TextureResolution = 80;
 
         RakelRotationLocked = false;
-        RakelConfiguration.Resolution = 80;
 
         TransferConfiguration.MapMode = TransferMapMode.PolygonClipping;
 
@@ -96,8 +92,7 @@ public class Configuration
 
     public void LoadMappingResults()
     {
-        CanvasResolution = 80;
-        RakelConfiguration.Resolution = 80;
+        TextureResolution = 80;
         FillConfiguration.Volume = 40;
         FillConfiguration.VolumeMode = VolumeMode.Flat;
     }
@@ -107,13 +102,11 @@ public class RakelConfiguration
 {
     public float Length;
     public float Width;
-    public int Resolution;
 
     public RakelConfiguration()
     {
         Length = 2.5f;
         Width = 0.5f;
-        Resolution = 20;
     }
 }
 

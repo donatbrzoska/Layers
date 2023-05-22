@@ -68,7 +68,7 @@ public class OilPaintEngine : MonoBehaviour
     {
         DisposeCanvas();
 
-        Canvas = new Canvas_(Configuration.CanvasResolution, ShaderRegionFactory, ComputeShaderEngine);
+        Canvas = new Canvas_(Configuration.TextureResolution, ShaderRegionFactory, ComputeShaderEngine);
 
         Renderer renderer = GameObject.Find("Canvas").GetComponent<Renderer>();
         renderer.material.SetTexture("_MainTex", Canvas.Texture);
@@ -84,11 +84,11 @@ public class OilPaintEngine : MonoBehaviour
     {
         DisposeRakel();
 
-        Rakel = new Rakel(Configuration.RakelConfiguration, ShaderRegionFactory, ComputeShaderEngine);
+        Rakel = new Rakel(Configuration.RakelConfiguration.Length, Configuration.RakelConfiguration.Width, Configuration.TextureResolution, ShaderRegionFactory, ComputeShaderEngine);
 
         Debug.Log("Rakel is "
-                  + Configuration.RakelConfiguration.Length * Configuration.RakelConfiguration.Resolution + "x" + Configuration.RakelConfiguration.Width * Configuration.RakelConfiguration.Resolution
-                  + " = " + Configuration.RakelConfiguration.Length * Configuration.RakelConfiguration.Resolution * Configuration.RakelConfiguration.Width * Configuration.RakelConfiguration.Resolution);
+                  + Configuration.RakelConfiguration.Length * Configuration.TextureResolution + "x" + Configuration.RakelConfiguration.Width * Configuration.TextureResolution
+                  + " = " + Configuration.RakelConfiguration.Length * Configuration.TextureResolution * Configuration.RakelConfiguration.Width * Configuration.TextureResolution);
     }
 
     void CreateOilPaintTransferEngine()
@@ -143,7 +143,7 @@ public class OilPaintEngine : MonoBehaviour
                     rotation,
                     0,
                     Configuration.TransferConfiguration,
-                    Configuration.CanvasResolution);
+                    Configuration.TextureResolution);
             }
         }
 
@@ -204,14 +204,8 @@ public class OilPaintEngine : MonoBehaviour
 
     public void UpdateTextureResolution(int pixelsPerWorldSpaceUnit)
     {
-        Configuration.CanvasResolution = pixelsPerWorldSpaceUnit;
+        Configuration.TextureResolution = pixelsPerWorldSpaceUnit;
         CreateCanvas();
-        CreateInputInterpolator();
-    }
-
-    public void UpdateRakelResolution(int pixelsPerWorldSpaceUnit)
-    {
-        Configuration.RakelConfiguration.Resolution = pixelsPerWorldSpaceUnit;
         CreateRakel();
         CreateInputInterpolator();
     }
@@ -333,7 +327,7 @@ public class OilPaintEngine : MonoBehaviour
             45,
             0,
             Configuration.TransferConfiguration,
-            Configuration.CanvasResolution);
+            Configuration.TextureResolution);
 
         //RakelInterpolator.AddNode(new Vector3(-4, 0, -0.10f), 0, 0, TextureResolution);
         //RakelInterpolator.AddNode(new Vector3(-3, 0, -0.10f), 0, 0, TextureResolution);

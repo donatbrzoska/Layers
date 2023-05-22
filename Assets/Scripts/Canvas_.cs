@@ -74,9 +74,9 @@ public class Canvas_ : ComputeShaderCreator
         {
             new CSInt2("CalculationPosition", shaderRegion.CalculationPosition),
             new CSInt2("CanvasReservoirSize", WorldSpaceCanvas.TextureSize),
-            new CSInt("CanvasResolution", WorldSpaceCanvas.Resolution),
             new CSFloat3("CanvasPosition", WorldSpaceCanvas.Position),
             new CSFloat2("CanvasSize", WorldSpaceCanvas.Size),
+            new CSInt("TextureResolution", WorldSpaceCanvas.Resolution),
             new CSFloat3("RakelAnchor", rakel.Anchor),
             new CSFloat3("RakelPosition", rakel.Position),
             new CSFloat("RakelRotation", rakel.Rotation),

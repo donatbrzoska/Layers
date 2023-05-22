@@ -3,9 +3,10 @@ using UnityEngine;
 
 public class TestEmitFromCanvasShader
 {
-    RakelConfiguration RakelConfig;
     ShaderRegionFactory ShaderRegionFactory;
     Rakel Rakel;
+    float RakelLength = 4;
+    float RakelWidth = 2;
     Canvas_ Canvas;
 
     ComputeBuffer CanvasEmittedPaint;
@@ -23,14 +24,10 @@ public class TestEmitFromCanvasShader
     [SetUp]
     public void Setup()
     {
-        RakelConfig = new RakelConfiguration();
-        RakelConfig.Length = 4;
-        RakelConfig.Width = 2;
-        RakelConfig.Resolution = 1;
         ShaderRegionFactory = new ShaderRegionFactory(new Vector2Int(32, 1));
         ComputeShaderEngine cse = new ComputeShaderEngine(false);
 
-        Rakel = new Rakel(RakelConfig, ShaderRegionFactory, cse);
+        Rakel = new Rakel(RakelLength, RakelWidth, 1, ShaderRegionFactory, cse);
 
         Canvas = new Canvas_(1, ShaderRegionFactory, cse);
     }
@@ -89,7 +86,7 @@ public class TestEmitFromCanvasShader
             canvasEmittedVolumes);
 
         Assert.AreEqual(
-            RakelConfig.Length * RakelConfig.Width * Paint.UNIT * 0.75f,
+            RakelLength * RakelWidth * Paint.UNIT * 0.75f,
             Sum(canvasEmittedVolumes));
     }
 

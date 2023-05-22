@@ -60,7 +60,6 @@ float EmitVolumeApplicationReservoir;
 float EmitVolumePickupReservoir;
 
 uint2 RakelReservoirSize;
-uint RakelReservoirResolution;
 // uint2 RakelLowerLeftRounded;
 RWStructuredBuffer<Paint> RakelApplicationReservoir;
 RWStructuredBuffer<Paint> RakelPickupReservoir;

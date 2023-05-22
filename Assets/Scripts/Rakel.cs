@@ -25,20 +25,20 @@ public class Rakel : ComputeShaderCreator
     public Reservoir ApplicationReservoir;
     public Reservoir PickupReservoir;
 
-    public Rakel(RakelConfiguration config, ShaderRegionFactory shaderRegionFactory, ComputeShaderEngine computeShaderEngine)
+    public Rakel(float length, float width, int resolution, ShaderRegionFactory shaderRegionFactory, ComputeShaderEngine computeShaderEngine)
         : base(shaderRegionFactory, computeShaderEngine)
     {
         ApplicationReservoir = new Reservoir(
-            config.Resolution,
-            (int)(config.Width * config.Resolution),
-            (int)(config.Length * config.Resolution),
+            resolution,
+            (int)(width * resolution),
+            (int)(length * resolution),
             shaderRegionFactory,
             computeShaderEngine);
 
         PickupReservoir = new Reservoir(
-            config.Resolution,
-            (int)(config.Width * config.Resolution),
-            (int)(config.Length * config.Resolution),
+            resolution,
+            (int)(width * resolution),
+            (int)(length * resolution),
             shaderRegionFactory,
             computeShaderEngine);
 
@@ -126,7 +126,6 @@ public class Rakel : ComputeShaderCreator
             new CSComputeBuffer("RakelPickupReservoir", PickupReservoir.Buffer),
             new CSComputeBuffer("RakelEmittedPaint", RakelEmittedPaint),
             new CSInt2("RakelReservoirSize", ApplicationReservoir.Size),
-            new CSInt("RakelReservoirResolution", ApplicationReservoir.Resolution),
             new CSInt("TransferMapMode", (int)transferMapMode),
             new CSInt("SuperSamplingSteps", superSamplingSteps),
             new CSFloat("EmitVolumeApplicationReservoir", emitVolumeApplicationReservoir),

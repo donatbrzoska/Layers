@@ -36,7 +36,6 @@ void log_(uint index, float4 f)
 
 uint2 CalculationPosition;
 
-uint RakelResolution;
 float RakelRotation;
 float3 RakelAnchor;
 float3 RakelPosition;
@@ -48,8 +47,9 @@ float3 RakelLRTilted;
 
 float3 CanvasPosition;
 float2 CanvasSize;
-uint CanvasResolution;
 uint2 CanvasReservoirSize;
+
+uint TextureResolution;
 
 // Emitting
 uint TransferMapMode;
@@ -63,7 +63,7 @@ RWStructuredBuffer<Paint> CanvasEmittedPaint;
 
 float3 map_to_world_space(int2 pixel)
 {
-    float pixel_size = 1/float(RakelResolution);
+    float pixel_size = 1/float(TextureResolution);
     float3 positive_origin_aligned = float3(0.5*pixel_size + pixel.x*pixel_size,
                                             0.5*pixel_size + pixel.y*pixel_size,
                                             0);
