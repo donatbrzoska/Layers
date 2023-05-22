@@ -70,6 +70,11 @@ public class OilPaintEngine : MonoBehaviour
 
         Canvas = new Canvas_(Configuration.CanvasResolution, ShaderRegionFactory, ComputeShaderEngine);
 
+        Renderer renderer = GameObject.Find("Canvas").GetComponent<Renderer>();
+        renderer.material.SetTexture("_MainTex", Canvas.Texture);
+        renderer.material.EnableKeyword("_NORMALMAP");
+        renderer.material.SetTexture("_BumpMap", Canvas.NormalMap);
+
         Debug.Log("Texture is "
                   + Canvas.Texture.width + "x" + Canvas.Texture.height
                   + " = " + Canvas.Texture.width * Canvas.Texture.height);

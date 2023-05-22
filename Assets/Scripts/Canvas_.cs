@@ -11,7 +11,6 @@ public class Canvas_ : ComputeShaderCreator
     public Canvas_(int textureResolution, ShaderRegionFactory shaderRegionFactory, ComputeShaderEngine computeShaderEngine)
         : base(shaderRegionFactory, computeShaderEngine)
     {
-        Renderer renderer = GameObject.Find("Canvas").GetComponent<Renderer>();
         float width = GameObject.Find("Canvas").GetComponent<Transform>().localScale.x * 10; // convert scale attribute to world space
         float height = GameObject.Find("Canvas").GetComponent<Transform>().localScale.y * 10; // convert scale attribute to world space
         Vector3 position = GameObject.Find("Canvas").GetComponent<Transform>().position;
@@ -24,14 +23,11 @@ public class Canvas_ : ComputeShaderCreator
         Texture.filterMode = FilterMode.Point;
         Texture.enableRandomWrite = true;
         Texture.Create();
-        renderer.material.SetTexture("_MainTex", Texture);
 
         NormalMap = new RenderTexture(WorldSpaceCanvas.TextureSize.x, WorldSpaceCanvas.TextureSize.y, 1);
         NormalMap.filterMode = FilterMode.Point;
         NormalMap.enableRandomWrite = true;
         NormalMap.Create();
-        renderer.material.EnableKeyword("_NORMALMAP");
-        renderer.material.SetTexture("_BumpMap", NormalMap);
 
         InitializeTexture(Texture, Vector4.one);
         InitializeTexture(NormalMap, (new Vector4(0, 0, 1, 0) + Vector4.one) / 2);
