@@ -205,7 +205,7 @@ public class LogUtil
         Debug.Log(result);
     }
 
-    public static void Log(int[] ints, int rows = 1, string descr = "")
+    public static void Log(int[] ints, int rows = 1, bool readable = true, string descr = "")
     {
 
         if (descr != "")
@@ -215,13 +215,28 @@ public class LogUtil
 
         string result = "";
         int cols = ints.GetLength(0) / rows;
-        for (int i = rows - 1; i >= 0; i--)
+
+        if (readable)
         {
-            for (int j = 0; j < cols; j++)
+            for (int i = rows - 1; i >= 0; i--)
             {
-                result += ints[i * cols + j].ToString() + " ";
+                for (int j = 0; j < cols; j++)
+                {
+                    result += string.Format("{0,6:D}", ints[i * cols + j]) + ", ";
+                }
+                result += "\n";
             }
-            result += "\n";
+        }
+        else
+        {
+            for (int i = 0; i < rows; i++)
+            {
+                for (int j = 0; j < cols; j++)
+                {
+                    result += string.Format("{0,6:D}", ints[i * cols + j]) + ", ";
+                }
+                result += "\n";
+            }
         }
         Debug.Log(result);
     }
