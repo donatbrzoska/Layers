@@ -34,7 +34,6 @@ public class Configuration
         FillConfiguration.VolumeMode = VolumeMode.Flat;
         FillConfiguration.ColorMode = ColorMode.Colorful;
 
-        TransferConfiguration.MapMode = TransferMapMode.PolygonClipping;
         TransferConfiguration.EmitVolumeApplicationReservoir = 1;
         TransferConfiguration.EmitVolumePickupReservoir = 0;
         TransferConfiguration.PickupVolume = 0;
@@ -46,8 +45,6 @@ public class Configuration
 
         RakelConfiguration.Length = 1;
         RakelConfiguration.Width = 1;
-
-        TransferConfiguration.MapMode = TransferMapMode.NearestNeighbour;
     }
 
     public void LoadPixelMapping()
@@ -56,7 +53,6 @@ public class Configuration
 
         RakelRotationLocked = false;
 
-        TransferConfiguration.MapMode = TransferMapMode.NearestNeighbour;
         TransferConfiguration.EmitVolumePickupReservoir = 0;
         TransferConfiguration.PickupVolume = 0;
 
@@ -70,8 +66,6 @@ public class Configuration
         TextureResolution = 80;
 
         RakelRotationLocked = false;
-
-        TransferConfiguration.MapMode = TransferMapMode.PolygonClipping;
 
         FillConfiguration.Color = Color_.DarkRed;
         FillConfiguration.Volume = 600;
@@ -129,16 +123,12 @@ public class FillConfiguration
 
 public class TransferConfiguration
 {
-    public TransferMapMode MapMode;
-    public int SuperSamplingSteps;
     public float EmitVolumeApplicationReservoir;
     public float EmitVolumePickupReservoir;
     public float PickupVolume;
 
     public TransferConfiguration()
     {
-        MapMode = TransferMapMode.Bilinear;
-        SuperSamplingSteps = 11;
         EmitVolumeApplicationReservoir = 1;
         EmitVolumePickupReservoir = 1.2f;
         PickupVolume = 1.3f;

@@ -57,8 +57,6 @@ public class TestEmitFromRakelShader
         RakelEmittedPaint = Rakel.EmitPaint(
             rakelEmitSR,
             WorldSpaceCanvas,
-            TransferMapMode.PolygonClipping,
-            3, // unused
             1,
             1, // unused
             false);
@@ -112,8 +110,6 @@ public class TestEmitFromRakelShader
         RakelEmittedPaint = Rakel.EmitPaint(
             rakelEmitSR,
             WorldSpaceCanvas,
-            TransferMapMode.PolygonClipping,
-            3, // unused
             1,
             1, // unused
             false);

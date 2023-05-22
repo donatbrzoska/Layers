@@ -5,8 +5,6 @@ public class OilPaintEngine : MonoBehaviour
     public int BENCHMARK_STEPS = 0;
     public int TH_GROUP_SIZE_X = 1;
     public int TH_GROUP_SIZE_Y = 8;
-
-    public int SUPER_SAMPLING = 11;
     
     public Configuration Configuration { get; private set; }
     private ShaderRegionFactory ShaderRegionFactory;
@@ -99,9 +97,6 @@ public class OilPaintEngine : MonoBehaviour
 
     void Update()
     {
-        // HACK
-        Configuration.TransferConfiguration.SuperSamplingSteps = SUPER_SAMPLING;
-
         if (BENCHMARK_STEPS > 0){
             for (int i = 0; i < BENCHMARK_STEPS; i++){
                 float x = Random.Range(-5f, 5f);
@@ -288,11 +283,6 @@ public class OilPaintEngine : MonoBehaviour
     public void UpdatePickupVolume(float value)
     {
         Configuration.TransferConfiguration.PickupVolume = value;
-    }
-
-    public void UpdateRakelEmitMode(TransferMapMode transferMapMode)
-    {
-        Configuration.TransferConfiguration.MapMode = transferMapMode;
     }
 
     public void UpdateRakelYPositionLocked(bool locked)

@@ -5318,9 +5318,8 @@ GameObject:
   - component: {fileID: 1294332754}
   - component: {fileID: 1294332753}
   - component: {fileID: 1294332752}
-  - component: {fileID: 1294332755}
   m_Layer: 5
-  m_Name: Transfer Map Mode Dropdown
+  m_Name: Placeholder 3 Dropdown
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5441,18 +5440,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1294332750}
   m_CullTransparentMesh: 1
---- !u!114 &1294332755
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1294332750}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0897675ce0e914c8ebd399eb0fa2f132, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1316860794
 GameObject:
   m_ObjectHideFlags: 0
@@ -7086,7 +7073,6 @@ MonoBehaviour:
   BENCHMARK_STEPS: 0
   TH_GROUP_SIZE_X: 32
   TH_GROUP_SIZE_Y: 1
-  SUPER_SAMPLING: 11
 --- !u!114 &1643505815
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -54,8 +54,6 @@ public class TestEmitFromCanvasShader
         CanvasEmittedPaint = Canvas.EmitPaint(
             Rakel,
             canvasEmitSR,
-            TransferMapMode.PolygonClipping,
-            3, // unused
             1,
             false);
 
@@ -101,8 +99,6 @@ public class TestEmitFromCanvasShader
         CanvasEmittedPaint = Canvas.EmitPaint(
             Rakel,
             canvasEmitSR,
-            TransferMapMode.PolygonClipping,
-            3, // unused
             1,
             false);
 

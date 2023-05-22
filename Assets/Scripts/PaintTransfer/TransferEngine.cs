@@ -60,8 +60,6 @@ public class TransferEngine
         ComputeBuffer canvasEmittedPaint = canvas.EmitPaint(
             rakel,
             canvasEmitSR,
-            transferConfiguration.MapMode,
-            transferConfiguration.SuperSamplingSteps,
             transferConfiguration.PickupVolume, false);
 
         rakel.ApplicationReservoir.Duplicate(false);
@@ -71,8 +69,6 @@ public class TransferEngine
         ComputeBuffer rakelEmittedPaint = rakel.EmitPaint(
             rakelEmitSR,
             wsc,
-            transferConfiguration.MapMode,
-            transferConfiguration.SuperSamplingSteps,
             transferConfiguration.EmitVolumeApplicationReservoir,
             transferConfiguration.EmitVolumePickupReservoir, false);
 
