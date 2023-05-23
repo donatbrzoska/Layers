@@ -29,6 +29,8 @@ public class TestEmitFromCanvasShader
         Rakel = new Rakel(RakelLength, RakelWidth, 1, ShaderRegionFactory);
 
         Canvas = new Canvas_(1, ShaderRegionFactory);
+
+        new FileLogger_().OnEnable();
     }
 
     [TearDown]

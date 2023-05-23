@@ -29,6 +29,8 @@ public class TestEmitFromRakelShader
         ShaderRegionFactory = new ShaderRegionFactory(new Vector2Int(32, 1));
 
         Rakel = new Rakel(RakelLength, RakelWidth, 1, ShaderRegionFactory);
+
+        new FileLogger_().OnEnable();
     }
 
     [TearDown]
