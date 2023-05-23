@@ -189,13 +189,6 @@ public class ComputeShaderTask
         Attributes.Add(new CSInt2("CalculationPosition", ShaderCalculation.Position));
         Attributes.Add(new CSInt2("CalculationSize", ShaderCalculation.Size));
 
-        //Debug.Log("Processing " + Name);
-        foreach (CSAttribute ca in Attributes)
-        {
-            //Debug.Log("Processing " + ca);
-            ca.ApplyTo(computeShader);
-        }
-
 
         ComputeBuffer debugBuffer = new ComputeBuffer(1, sizeof(float)); // just for the compiler
         Color[] debugValues = new Color[1]; // just for the compiler
@@ -207,10 +200,17 @@ public class ComputeShaderTask
             debugBuffer = new ComputeBuffer(ShaderCalculation.PixelCount, DEBUG_LIST_SIZE_PER_THREAD_MAX * 4 * sizeof(float));
             debugValues = new Color[DEBUG_LIST_SIZE_PER_THREAD_MAX * ShaderCalculation.PixelCount];
             debugBuffer.SetData(debugValues);
-            computeShader.SetBuffer(0, "Debug", debugBuffer);
-            computeShader.SetBuffer(0, "DebugInfo", debugListInfoBuffer);
+            Attributes.Add(new CSComputeBuffer("Debug", debugBuffer));
+            Attributes.Add(new CSComputeBuffer("DebugInfo", debugListInfoBuffer));
         }
 
+
+        //Debug.Log("Processing " + Name);
+        foreach (CSAttribute ca in Attributes)
+        {
+            //Debug.Log("Processing " + ca);
+            ca.ApplyTo(computeShader);
+        }
 
         Vector2Int threadGroups = CalculateThreadGroups(ShaderCalculation.Size, ThreadGroupSize);
         computeShader.Dispatch(0, threadGroups.x, threadGroups.y, 1);
