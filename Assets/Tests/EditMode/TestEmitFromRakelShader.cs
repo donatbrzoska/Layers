@@ -5,7 +5,6 @@ using UnityEngine;
 public class TestEmitFromRakelShader
 {
     WorldSpaceCanvas WorldSpaceCanvas;
-    ShaderRegionFactory ShaderRegionFactory;
     float RakelLength = 4;
     float RakelWidth = 2;
     Rakel Rakel;
@@ -26,9 +25,7 @@ public class TestEmitFromRakelShader
     {
         WorldSpaceCanvas = new WorldSpaceCanvas(10, 15, 1, new Vector3(0, 0, 0));
 
-        ShaderRegionFactory = new ShaderRegionFactory(new Vector2Int(32, 1));
-
-        Rakel = new Rakel(RakelLength, RakelWidth, 1, ShaderRegionFactory);
+        Rakel = new Rakel(RakelLength, RakelWidth, 1);
 
         new FileLogger_().OnEnable();
     }
@@ -46,7 +43,7 @@ public class TestEmitFromRakelShader
         // Arrange
         Rakel.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen), new FlatVolumeFiller(1)));
         Rakel.UpdateState(new Vector3(-3, -0.5f, 0), 0, 0);
-        ShaderRegion rakelEmitSR = ShaderRegionFactory.Create(
+        ShaderCalculation rakelEmitSC = new ShaderCalculation(
             WorldSpaceCanvas.MapToPixelInRange(Rakel.UpperLeft),
             WorldSpaceCanvas.MapToPixelInRange(Rakel.UpperRight),
             WorldSpaceCanvas.MapToPixelInRange(Rakel.LowerLeft),
@@ -57,7 +54,7 @@ public class TestEmitFromRakelShader
 
         // Act
         RakelEmittedPaint = Rakel.EmitPaint(
-            rakelEmitSR,
+            rakelEmitSC,
             WorldSpaceCanvas,
             1,
             1, // unused
@@ -65,9 +62,9 @@ public class TestEmitFromRakelShader
 
 
         // Assert
-        Paint[] rakelEmittedPaintData = new Paint[rakelEmitSR.PixelCount];
+        Paint[] rakelEmittedPaintData = new Paint[rakelEmitSC.PixelCount];
         RakelEmittedPaint.GetData(rakelEmittedPaintData);
-        int[] rakelEmittedVolumes = new int[rakelEmitSR.PixelCount];
+        int[] rakelEmittedVolumes = new int[rakelEmitSC.PixelCount];
         for (int i = 0; i < rakelEmittedVolumes.Length; i++)
         {
             rakelEmittedVolumes[i] = rakelEmittedPaintData[i].Volume;
@@ -99,7 +96,7 @@ public class TestEmitFromRakelShader
         // Arrange
         Rakel.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen), new FlatVolumeFiller(1)));
         Rakel.UpdateState(new Vector3(-3, -0.5f, 0), 30, 0);
-        ShaderRegion rakelEmitSR = ShaderRegionFactory.Create(
+        ShaderCalculation rakelEmitSC = new ShaderCalculation(
             WorldSpaceCanvas.MapToPixelInRange(Rakel.UpperLeft),
             WorldSpaceCanvas.MapToPixelInRange(Rakel.UpperRight),
             WorldSpaceCanvas.MapToPixelInRange(Rakel.LowerLeft),
@@ -110,7 +107,7 @@ public class TestEmitFromRakelShader
 
         // Act
         RakelEmittedPaint = Rakel.EmitPaint(
-            rakelEmitSR,
+            rakelEmitSC,
             WorldSpaceCanvas,
             1,
             1, // unused
@@ -118,9 +115,9 @@ public class TestEmitFromRakelShader
 
 
         // Assert
-        Paint[] rakelEmittedPaintData = new Paint[rakelEmitSR.PixelCount];
+        Paint[] rakelEmittedPaintData = new Paint[rakelEmitSC.PixelCount];
         RakelEmittedPaint.GetData(rakelEmittedPaintData);
-        int[] rakelEmittedVolumes = new int[rakelEmitSR.PixelCount];
+        int[] rakelEmittedVolumes = new int[rakelEmitSC.PixelCount];
         for (int i = 0; i < rakelEmittedVolumes.Length; i++)
         {
             rakelEmittedVolumes[i] = rakelEmittedPaintData[i].Volume;
@@ -150,7 +147,7 @@ public class TestEmitFromRakelShader
         // Arrange
         Rakel.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen), new FlatVolumeFiller(1)));
         Rakel.UpdateState(new Vector3(-3, -0.5f, 0), 0, 60);
-        ShaderRegion rakelEmitSR = ShaderRegionFactory.Create(
+        ShaderCalculation rakelEmitSC = new ShaderCalculation(
             WorldSpaceCanvas.MapToPixelInRange(Rakel.UpperLeft),
             WorldSpaceCanvas.MapToPixelInRange(Rakel.UpperRight),
             WorldSpaceCanvas.MapToPixelInRange(Rakel.LowerLeft),
@@ -161,7 +158,7 @@ public class TestEmitFromRakelShader
 
         // Act
         RakelEmittedPaint = Rakel.EmitPaint(
-            rakelEmitSR,
+            rakelEmitSC,
             WorldSpaceCanvas,
             1,
             1, // unused
@@ -169,9 +166,9 @@ public class TestEmitFromRakelShader
 
 
         // Assert
-        Paint[] rakelEmittedPaintData = new Paint[rakelEmitSR.PixelCount];
+        Paint[] rakelEmittedPaintData = new Paint[rakelEmitSC.PixelCount];
         RakelEmittedPaint.GetData(rakelEmittedPaintData);
-        int[] rakelEmittedVolumes = new int[rakelEmitSR.PixelCount];
+        int[] rakelEmittedVolumes = new int[rakelEmitSC.PixelCount];
         for (int i = 0; i < rakelEmittedVolumes.Length; i++)
         {
             rakelEmittedVolumes[i] = rakelEmittedPaintData[i].Volume;
@@ -200,7 +197,7 @@ public class TestEmitFromRakelShader
         // Arrange
         Rakel.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen), new FlatVolumeFiller(1)));
         Rakel.UpdateState(new Vector3(-3, -0.5f, 0), 30, 60);
-        ShaderRegion rakelEmitSR = ShaderRegionFactory.Create(
+        ShaderCalculation rakelEmitSC = new ShaderCalculation(
             WorldSpaceCanvas.MapToPixelInRange(Rakel.UpperLeft),
             WorldSpaceCanvas.MapToPixelInRange(Rakel.UpperRight),
             WorldSpaceCanvas.MapToPixelInRange(Rakel.LowerLeft),
@@ -211,7 +208,7 @@ public class TestEmitFromRakelShader
 
         // Act
         RakelEmittedPaint = Rakel.EmitPaint(
-            rakelEmitSR,
+            rakelEmitSC,
             WorldSpaceCanvas,
             1,
             1, // unused
@@ -219,9 +216,9 @@ public class TestEmitFromRakelShader
 
 
         // Assert
-        Paint[] rakelEmittedPaintData = new Paint[rakelEmitSR.PixelCount];
+        Paint[] rakelEmittedPaintData = new Paint[rakelEmitSC.PixelCount];
         RakelEmittedPaint.GetData(rakelEmittedPaintData);
-        int[] rakelEmittedVolumes = new int[rakelEmitSR.PixelCount];
+        int[] rakelEmittedVolumes = new int[rakelEmitSC.PixelCount];
         for (int i = 0; i < rakelEmittedVolumes.Length; i++)
         {
             rakelEmittedVolumes[i] = rakelEmittedPaintData[i].Volume;

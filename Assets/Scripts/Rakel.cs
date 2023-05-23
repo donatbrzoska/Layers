@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-public class Rakel : ComputeShaderCreator
+public class Rakel
 {
     public float Length { get; private set; }
     public float Width { get; private set; }
@@ -25,20 +25,17 @@ public class Rakel : ComputeShaderCreator
     public Reservoir ApplicationReservoir;
     public Reservoir PickupReservoir;
 
-    public Rakel(float length, float width, int resolution, ShaderRegionFactory shaderRegionFactory)
-        : base(shaderRegionFactory)
+    public Rakel(float length, float width, int resolution)
     {
         ApplicationReservoir = new Reservoir(
             resolution,
             (int)(width * resolution),
-            (int)(length * resolution),
-            shaderRegionFactory);
+            (int)(length * resolution));
 
         PickupReservoir = new Reservoir(
             resolution,
             (int)(width * resolution),
-            (int)(length * resolution),
-            shaderRegionFactory);
+            (int)(length * resolution));
 
         // make sure Rakel is not bigger than its reservoir
         Length = ApplicationReservoir.Size.y * ApplicationReservoir.PixelSize;
@@ -91,20 +88,20 @@ public class Rakel : ComputeShaderCreator
     }
 
     public ComputeBuffer EmitPaint(
-        ShaderRegion shaderRegion,
+        ShaderCalculation shaderCalculation,
         WorldSpaceCanvas wsc,
         float emitVolumeApplicationReservoir,
         float emitVolumePickupReservoir,
         bool debugEnabled = false)
     {
-        ComputeBuffer RakelEmittedPaint = new ComputeBuffer(shaderRegion.PixelCount, Paint.SizeInBytes);
+        ComputeBuffer RakelEmittedPaint = new ComputeBuffer(shaderCalculation.PixelCount, Paint.SizeInBytes);
         // initialize buffer to empty values (Intel does this for you, nvidia doesn't)
-        Paint[] initPaint = new Paint[shaderRegion.PixelCount];
+        Paint[] initPaint = new Paint[shaderCalculation.PixelCount];
         RakelEmittedPaint.SetData(initPaint);
 
         List<CSAttribute> attributes = new List<CSAttribute>()
         {
-            new CSInt2("CalculationPosition", shaderRegion.CalculationPosition),
+            new CSInt2("CalculationPosition", shaderCalculation.Position),
             new CSInt2("TextureSize", wsc.TextureSize),
             new CSInt("TextureResolution", wsc.Resolution),
             new CSFloat3("CanvasPosition", wsc.Position),
@@ -129,7 +126,7 @@ public class Rakel : ComputeShaderCreator
 
         ComputeShaderTask cst = new ComputeShaderTask(
             "EmitFromRakelShader",
-            shaderRegion,
+            shaderCalculation,
             attributes,
             new List<ComputeBuffer>(),
             debugEnabled
@@ -141,13 +138,13 @@ public class Rakel : ComputeShaderCreator
     }
 
     public void ApplyPaint(
-        ShaderRegion shaderRegion,
+        ShaderCalculation shaderCalculation,
         ComputeBuffer canvasEmittedPaint,
         bool debugEnabled = false)
     {
         List<CSAttribute> attributes = new List<CSAttribute>()
         {
-            new CSInt2("CalculationPosition", shaderRegion.CalculationPosition),
+            new CSInt2("CalculationPosition", shaderCalculation.Position),
             new CSComputeBuffer("CanvasEmittedPaint", canvasEmittedPaint),
             new CSComputeBuffer("RakelPickupReservoir", PickupReservoir.Buffer),
             new CSInt("RakelReservoirWidth", PickupReservoir.Size.x)
@@ -155,7 +152,7 @@ public class Rakel : ComputeShaderCreator
 
         ComputeShaderTask cst = new ComputeShaderTask(
             "ApplyBufferToRakelShader",
-            shaderRegion,
+            shaderCalculation,
             attributes,
             new List<ComputeBuffer>() { canvasEmittedPaint },
             debugEnabled

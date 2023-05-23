@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-public class Reservoir : ComputeShaderCreator
+public class Reservoir
 {
     public int Resolution;
     public Vector2Int Size;
@@ -10,8 +10,7 @@ public class Reservoir : ComputeShaderCreator
 
     public float PixelSize { get { return 1 / (float) Resolution; } }
 
-    public Reservoir(int resolution, int width, int height, ShaderRegionFactory shaderRegionFactory)
-        : base(shaderRegionFactory)
+    public Reservoir(int resolution, int width, int height)
     {
         Resolution = resolution;
         Size = new Vector2Int(width, height);
@@ -28,9 +27,9 @@ public class Reservoir : ComputeShaderCreator
         Buffer.SetData(BufferData);
     }
 
-    public ShaderRegion GetShaderRegion()
+    public ShaderCalculation GetShaderCalculation()
     {
-        return ShaderRegionFactory.Create(
+        return new ShaderCalculation(
             new Vector2Int(0, Size.y - 1),
             new Vector2Int(Size.x - 1, Size.y - 1),
             new Vector2Int(0, 0),
@@ -40,7 +39,7 @@ public class Reservoir : ComputeShaderCreator
 
     public void Duplicate(bool debugEnabled = false)
     {
-        ShaderRegion duplicateSR = GetShaderRegion();
+        ShaderCalculation duplicateCalc = GetShaderCalculation();
 
         List<CSAttribute> attributes = new List<CSAttribute>()
         {
@@ -49,7 +48,7 @@ public class Reservoir : ComputeShaderCreator
 
         ComputeShaderTask cst = new ComputeShaderTask(
             "ReservoirDuplicationShader",
-            duplicateSR,
+            duplicateCalc,
             attributes,
             new List<ComputeBuffer>(),
             debugEnabled
@@ -61,7 +60,7 @@ public class Reservoir : ComputeShaderCreator
     public void PrintVolumes(int z)
     {
         Buffer.GetData(BufferData);
-        LogUtil.LogVolumes(BufferData, GetShaderRegion().CalculationSize.y, GetShaderRegion().CalculationSize.x, z, "z=" + z);
+        LogUtil.LogVolumes(BufferData, GetShaderCalculation().Size.y, GetShaderCalculation().Size.x, z, "z=" + z);
 
         //int sum = 0;
         //for (int i = 0; i < BufferData.GetLength(0) / 2; i++)

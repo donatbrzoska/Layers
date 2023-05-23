@@ -3,11 +3,10 @@ using UnityEngine;
 public class OilPaintEngine : MonoBehaviour
 {
     public int BENCHMARK_STEPS = 0;
-    public int TH_GROUP_SIZE_X = 1;
-    public int TH_GROUP_SIZE_Y = 8;
-    
+    public int TH_GROUP_SIZE_X = 32;
+    public int TH_GROUP_SIZE_Y = 1;
+
     public Configuration Configuration { get; private set; }
-    private ShaderRegionFactory ShaderRegionFactory;
     public RakelMouseInputManager RakelMouseInputManager { get; private set; }
     public float RakelRotation // used only for UI fetching
     {
@@ -51,8 +50,7 @@ public class OilPaintEngine : MonoBehaviour
 
     void Start()
     {
-
-        ShaderRegionFactory = new ShaderRegionFactory(new Vector2Int(TH_GROUP_SIZE_X, TH_GROUP_SIZE_Y));
+        ComputeShaderTask.ThreadGroupSize = new Vector2Int(TH_GROUP_SIZE_X, TH_GROUP_SIZE_Y);
 
         CreateCanvas();
         CreateRakel();
@@ -64,7 +62,7 @@ public class OilPaintEngine : MonoBehaviour
     {
         DisposeCanvas();
 
-        Canvas = new Canvas_(Configuration.TextureResolution, ShaderRegionFactory);
+        Canvas = new Canvas_(Configuration.TextureResolution);
 
         Renderer renderer = GameObject.Find("Canvas").GetComponent<Renderer>();
         renderer.material.SetTexture("_MainTex", Canvas.Texture);
@@ -80,7 +78,7 @@ public class OilPaintEngine : MonoBehaviour
     {
         DisposeRakel();
 
-        Rakel = new Rakel(Configuration.RakelConfiguration.Length, Configuration.RakelConfiguration.Width, Configuration.TextureResolution, ShaderRegionFactory);
+        Rakel = new Rakel(Configuration.RakelConfiguration.Length, Configuration.RakelConfiguration.Width, Configuration.TextureResolution);
 
         Debug.Log("Rakel is "
                   + Configuration.RakelConfiguration.Length * Configuration.TextureResolution + "x" + Configuration.RakelConfiguration.Width * Configuration.TextureResolution
@@ -89,7 +87,7 @@ public class OilPaintEngine : MonoBehaviour
 
     void CreateOilPaintTransferEngine()
     {
-        TransferEngine = new TransferEngine(ShaderRegionFactory);
+        TransferEngine = new TransferEngine();
     }
 
     void CreateInputInterpolator()

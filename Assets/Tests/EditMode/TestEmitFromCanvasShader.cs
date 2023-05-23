@@ -3,7 +3,6 @@ using UnityEngine;
 
 public class TestEmitFromCanvasShader
 {
-    ShaderRegionFactory ShaderRegionFactory;
     Rakel Rakel;
     float RakelLength = 4;
     float RakelWidth = 2;
@@ -24,11 +23,9 @@ public class TestEmitFromCanvasShader
     [SetUp]
     public void Setup()
     {
-        ShaderRegionFactory = new ShaderRegionFactory(new Vector2Int(32, 1));
+        Rakel = new Rakel(RakelLength, RakelWidth, 1);
 
-        Rakel = new Rakel(RakelLength, RakelWidth, 1, ShaderRegionFactory);
-
-        Canvas = new Canvas_(1, ShaderRegionFactory);
+        Canvas = new Canvas_(1);
 
         new FileLogger_().OnEnable();
     }
@@ -45,7 +42,7 @@ public class TestEmitFromCanvasShader
     public void Volume_Unrotated_Untilted()
     {
         // Arrange
-        ShaderRegion canvasEmitSR = Rakel.ApplicationReservoir.GetShaderRegion();
+        ShaderCalculation canvasEmitSC = Rakel.ApplicationReservoir.GetShaderCalculation();
         Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen), new FlatVolumeFiller(1)));
         Canvas.Reservoir.Duplicate(false);
 
@@ -55,15 +52,15 @@ public class TestEmitFromCanvasShader
         // Act
         CanvasEmittedPaint = Canvas.EmitPaint(
             Rakel,
-            canvasEmitSR,
+            canvasEmitSC,
             1,
             false);
 
 
         // Assert
-        Paint[] canvasEmittedPaintData = new Paint[canvasEmitSR.PixelCount];
+        Paint[] canvasEmittedPaintData = new Paint[canvasEmitSC.PixelCount];
         CanvasEmittedPaint.GetData(canvasEmittedPaintData);
-        int[] canvasEmittedVolumes = new int[canvasEmitSR.PixelCount];
+        int[] canvasEmittedVolumes = new int[canvasEmitSC.PixelCount];
         for (int i = 0; i < canvasEmittedVolumes.Length; i++)
         {
             canvasEmittedVolumes[i] = canvasEmittedPaintData[i].Volume;
@@ -90,7 +87,7 @@ public class TestEmitFromCanvasShader
     public void Volume_Rotated30_Untilted()
     {
         // Arrange
-        ShaderRegion canvasEmitSR = Rakel.ApplicationReservoir.GetShaderRegion();
+        ShaderCalculation canvasEmitSC = Rakel.ApplicationReservoir.GetShaderCalculation();
         Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen), new FlatVolumeFiller(1)));
         Canvas.Reservoir.Duplicate(false);
 
@@ -100,15 +97,15 @@ public class TestEmitFromCanvasShader
         // Act
         CanvasEmittedPaint = Canvas.EmitPaint(
             Rakel,
-            canvasEmitSR,
+            canvasEmitSC,
             1,
             false);
 
 
         // Assert
-        Paint[] canvasEmittedPaintData = new Paint[canvasEmitSR.PixelCount];
+        Paint[] canvasEmittedPaintData = new Paint[canvasEmitSC.PixelCount];
         CanvasEmittedPaint.GetData(canvasEmittedPaintData);
-        int[] canvasEmittedVolumes = new int[canvasEmitSR.PixelCount];
+        int[] canvasEmittedVolumes = new int[canvasEmitSC.PixelCount];
         for (int i = 0; i < canvasEmittedVolumes.Length; i++)
         {
             canvasEmittedVolumes[i] = canvasEmittedPaintData[i].Volume;
@@ -132,7 +129,7 @@ public class TestEmitFromCanvasShader
     public void Volume_Unrotated_Tilted60()
     {
         // Arrange
-        ShaderRegion canvasEmitSR = Rakel.ApplicationReservoir.GetShaderRegion();
+        ShaderCalculation canvasEmitSC = Rakel.ApplicationReservoir.GetShaderCalculation();
         Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen), new FlatVolumeFiller(1)));
         Canvas.Reservoir.Duplicate(false);
 
@@ -142,15 +139,15 @@ public class TestEmitFromCanvasShader
         // Act
         CanvasEmittedPaint = Canvas.EmitPaint(
             Rakel,
-            canvasEmitSR,
+            canvasEmitSC,
             1,
             false);
 
 
         // Assert
-        Paint[] canvasEmittedPaintData = new Paint[canvasEmitSR.PixelCount];
+        Paint[] canvasEmittedPaintData = new Paint[canvasEmitSC.PixelCount];
         CanvasEmittedPaint.GetData(canvasEmittedPaintData);
-        int[] canvasEmittedVolumes = new int[canvasEmitSR.PixelCount];
+        int[] canvasEmittedVolumes = new int[canvasEmitSC.PixelCount];
         for (int i = 0; i < canvasEmittedVolumes.Length; i++)
         {
             canvasEmittedVolumes[i] = canvasEmittedPaintData[i].Volume;
@@ -175,7 +172,7 @@ public class TestEmitFromCanvasShader
     public void Volume_Rotated30_Tilted60()
     {
         // Arrange
-        ShaderRegion canvasEmitSR = Rakel.ApplicationReservoir.GetShaderRegion();
+        ShaderCalculation canvasEmitSC = Rakel.ApplicationReservoir.GetShaderCalculation();
         Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen), new FlatVolumeFiller(1)));
         Canvas.Reservoir.Duplicate(false);
 
@@ -185,15 +182,15 @@ public class TestEmitFromCanvasShader
         // Act
         CanvasEmittedPaint = Canvas.EmitPaint(
             Rakel,
-            canvasEmitSR,
+            canvasEmitSC,
             1,
             false);
 
 
         // Assert
-        Paint[] canvasEmittedPaintData = new Paint[canvasEmitSR.PixelCount];
+        Paint[] canvasEmittedPaintData = new Paint[canvasEmitSC.PixelCount];
         CanvasEmittedPaint.GetData(canvasEmittedPaintData);
-        int[] canvasEmittedVolumes = new int[canvasEmitSR.PixelCount];
+        int[] canvasEmittedVolumes = new int[canvasEmitSC.PixelCount];
         for (int i = 0; i < canvasEmittedVolumes.Length; i++)
         {
             canvasEmittedVolumes[i] = canvasEmittedPaintData[i].Volume;

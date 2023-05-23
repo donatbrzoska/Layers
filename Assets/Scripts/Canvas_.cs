@@ -1,15 +1,14 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class Canvas_ : ComputeShaderCreator
+public class Canvas_
 {
     public WorldSpaceCanvas WorldSpaceCanvas { get; private set; }
     public Reservoir Reservoir { get; private set; }
     public RenderTexture Texture { get; private set; }
     public RenderTexture NormalMap { get; private set; }
 
-    public Canvas_(int textureResolution, ShaderRegionFactory shaderRegionFactory)
-        : base(shaderRegionFactory)
+    public Canvas_(int textureResolution)
     {
         float width = GameObject.Find("Canvas").GetComponent<Transform>().localScale.x * 10; // convert scale attribute to world space
         float height = GameObject.Find("Canvas").GetComponent<Transform>().localScale.y * 10; // convert scale attribute to world space
@@ -17,7 +16,7 @@ public class Canvas_ : ComputeShaderCreator
 
         WorldSpaceCanvas = new WorldSpaceCanvas(height, width, textureResolution, position);
 
-        Reservoir = new Reservoir(textureResolution, WorldSpaceCanvas.TextureSize.x, WorldSpaceCanvas.TextureSize.y, shaderRegionFactory);
+        Reservoir = new Reservoir(textureResolution, WorldSpaceCanvas.TextureSize.x, WorldSpaceCanvas.TextureSize.y);
 
         Texture = new RenderTexture(WorldSpaceCanvas.TextureSize.x, WorldSpaceCanvas.TextureSize.y, 1);
         Texture.filterMode = FilterMode.Point;
@@ -35,7 +34,7 @@ public class Canvas_ : ComputeShaderCreator
 
     private void InitializeTexture(RenderTexture texture, Vector4 value)
     {
-        ShaderRegion sr = ShaderRegionFactory.Create(
+        ShaderCalculation sc = new ShaderCalculation(
             new Vector2Int(texture.height-1, 0),
             new Vector2Int(texture.height-1, texture.width-1),
             new Vector2Int(0, 0),
@@ -44,7 +43,7 @@ public class Canvas_ : ComputeShaderCreator
 
         ComputeShaderTask cst = new ComputeShaderTask(
             "SetTextureShader",
-            sr,
+            sc,
             new List<CSAttribute>() {
                 new CSFloat4("Value", value),
                 new CSTexture("Target", texture)
@@ -58,18 +57,18 @@ public class Canvas_ : ComputeShaderCreator
 
     public ComputeBuffer EmitPaint(
         Rakel rakel,
-        ShaderRegion shaderRegion,
+        ShaderCalculation shaderCalculation,
         float emitVolume,
         bool debugEnabled = false)
     {
-        ComputeBuffer canvasEmittedPaint = new ComputeBuffer(shaderRegion.PixelCount, Paint.SizeInBytes);
+        ComputeBuffer canvasEmittedPaint = new ComputeBuffer(shaderCalculation.PixelCount, Paint.SizeInBytes);
         // initialize buffer to empty values (Intel does this for you, nvidia doesn't)
-        Paint[] initPaint = new Paint[shaderRegion.PixelCount];
+        Paint[] initPaint = new Paint[shaderCalculation.PixelCount];
         canvasEmittedPaint.SetData(initPaint);
 
         List<CSAttribute> attributes = new List<CSAttribute>()
         {
-            new CSInt2("CalculationPosition", shaderRegion.CalculationPosition),
+            new CSInt2("CalculationPosition", shaderCalculation.Position),
             new CSInt2("CanvasReservoirSize", WorldSpaceCanvas.TextureSize),
             new CSFloat3("CanvasPosition", WorldSpaceCanvas.Position),
             new CSFloat2("CanvasSize", WorldSpaceCanvas.Size),
@@ -91,7 +90,7 @@ public class Canvas_ : ComputeShaderCreator
 
         ComputeShaderTask cst = new ComputeShaderTask(
             "EmitFromCanvasShader",
-            shaderRegion,
+            shaderCalculation,
             attributes,
             new List<ComputeBuffer>(),
             debugEnabled
@@ -103,13 +102,13 @@ public class Canvas_ : ComputeShaderCreator
     }
 
     public void ApplyPaint(
-        ShaderRegion shaderRegion,
+        ShaderCalculation shaderCalculation,
         ComputeBuffer rakelEmittedPaint,
         bool debugEnabled = false)
     {
         List<CSAttribute> attributes = new List<CSAttribute>()
         {
-            new CSInt2("CalculationPosition", shaderRegion.CalculationPosition),
+            new CSInt2("CalculationPosition", shaderCalculation.Position),
             new CSComputeBuffer("RakelEmittedPaint", rakelEmittedPaint),
             new CSComputeBuffer("CanvasReservoir", Reservoir.Buffer),
             new CSInt("TextureWidth", Texture.width)
@@ -117,7 +116,7 @@ public class Canvas_ : ComputeShaderCreator
 
         ComputeShaderTask cst = new ComputeShaderTask(
             "ApplyBufferToCanvasShader",
-            shaderRegion,
+            shaderCalculation,
             attributes,
             new List<ComputeBuffer>() { rakelEmittedPaint },
             debugEnabled
@@ -127,12 +126,12 @@ public class Canvas_ : ComputeShaderCreator
     }
 
     public void Render(
-        ShaderRegion shaderRegion,
+        ShaderCalculation shaderCalculation,
         bool debugEnabled = false)
     {
         List<CSAttribute> attributes = new List<CSAttribute>()
         {
-            new CSInt2("CalculationPosition", shaderRegion.CalculationPosition),
+            new CSInt2("CalculationPosition", shaderCalculation.Position),
             new CSComputeBuffer("CanvasReservoir", Reservoir.Buffer),
             new CSInt2("TextureSize", WorldSpaceCanvas.TextureSize),
             new CSTexture("CanvasTexture", Texture),
@@ -141,7 +140,7 @@ public class Canvas_ : ComputeShaderCreator
 
         ComputeShaderTask cst = new ComputeShaderTask(
             "RenderShader",
-            shaderRegion,
+            shaderCalculation,
             attributes,
             new List<ComputeBuffer>(),
             debugEnabled

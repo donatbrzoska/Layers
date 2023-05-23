@@ -3,13 +3,9 @@ using UnityEngine;
 
 public class TransferEngine
 {
-    private ShaderRegionFactory ShaderRegionFactory;
     private Vector2Int PreviousApplyPosition = new Vector2Int(int.MinValue, int.MinValue);
 
-    public TransferEngine(ShaderRegionFactory shaderRegionFactory)
-    {
-        ShaderRegionFactory = shaderRegionFactory;
-    }
+    public TransferEngine() { }
 
     // Position is located at Rakel Anchor
     // Rotation 0 means Rakel is directed to the right
@@ -37,9 +33,9 @@ public class TransferEngine
 
         rakel.UpdateState(rakelPosition, rakelRotation, rakelTilt);
 
-        ShaderRegion canvasEmitSR = rakel.ApplicationReservoir.GetShaderRegion();
+        ShaderCalculation canvasEmitSC = rakel.ApplicationReservoir.GetShaderCalculation();
 
-        ShaderRegion rakelEmitSR = ShaderRegionFactory.Create(
+        ShaderCalculation rakelEmitSC = new ShaderCalculation(
             wsc.MapToPixelInRange(rakel.UpperLeft),
             wsc.MapToPixelInRange(rakel.UpperRight),
             wsc.MapToPixelInRange(rakel.LowerLeft),
@@ -47,7 +43,7 @@ public class TransferEngine
             1 // Padding because interpolation reaches pixels that are not directly under the rakel
         );
 
-        ShaderRegion rerenderSR = ShaderRegionFactory.Create(
+        ShaderCalculation rerenderSC = new ShaderCalculation(
             wsc.MapToPixelInRange(rakel.UpperLeft),
             wsc.MapToPixelInRange(rakel.UpperRight),
             wsc.MapToPixelInRange(rakel.LowerLeft),
@@ -59,7 +55,7 @@ public class TransferEngine
 
         ComputeBuffer canvasEmittedPaint = canvas.EmitPaint(
             rakel,
-            canvasEmitSR,
+            canvasEmitSC,
             transferConfiguration.PickupVolume, false);
 
         rakel.ApplicationReservoir.Duplicate(false);
@@ -67,19 +63,19 @@ public class TransferEngine
         rakel.PickupReservoir.Duplicate(false);
 
         ComputeBuffer rakelEmittedPaint = rakel.EmitPaint(
-            rakelEmitSR,
+            rakelEmitSC,
             wsc,
             transferConfiguration.EmitVolumeApplicationReservoir,
             transferConfiguration.EmitVolumePickupReservoir, false);
 
         canvas.ApplyPaint(
-            rakelEmitSR,
+            rakelEmitSC,
             rakelEmittedPaint);
 
         rakel.ApplyPaint(
-            canvasEmitSR,
+            canvasEmitSC,
             canvasEmittedPaint);
 
-        canvas.Render(rerenderSR);
+        canvas.Render(rerenderSC);
     }
 }
