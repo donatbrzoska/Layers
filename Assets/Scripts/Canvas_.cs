@@ -77,6 +77,7 @@ public class Canvas_ : ComputeShaderCreator
             new CSFloat3("RakelAnchor", rakel.Anchor),
             new CSFloat3("RakelPosition", rakel.Position),
             new CSFloat("RakelRotation", rakel.Rotation),
+            new CSFloat("RakelTilt", rakel.Tilt),
             new CSFloat3("RakelULTilted", rakel.ulTilted),
             new CSFloat3("RakelURTilted", rakel.urTilted),
             new CSFloat3("RakelLLTilted", rakel.llTilted),

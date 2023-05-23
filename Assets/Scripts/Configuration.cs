@@ -6,6 +6,7 @@ public class Configuration
 
     public float RakelRotation;
     public bool RakelRotationLocked;
+    public float RakelTilt;
 
     public RakelConfiguration RakelConfiguration;
     public FillConfiguration FillConfiguration;
@@ -17,6 +18,7 @@ public class Configuration
 
         RakelRotation = 0;
         RakelRotationLocked = true;
+        RakelTilt = 0;
 
         RakelConfiguration = new RakelConfiguration();
         FillConfiguration = new FillConfiguration();

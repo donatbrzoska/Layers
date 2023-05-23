@@ -45,6 +45,7 @@ float RakelLength;
 float RakelWidth;
 
 float RakelRotation;
+float RakelTilt;
 
 float3 RakelULTilted;
 float3 RakelURTilted;
@@ -74,6 +75,12 @@ float3 map_to_world_space(int2 pixel, uint texture_resolution, float3 canvas_pos
     float3 canvas_aligned = positive_canvas_aligned + canvas_lower_left;
 
     return canvas_aligned;
+}
+
+float2 map_to_index_space(float3 world_space_pos, uint rakel_resolution)
+{
+    float3 pixel_space = world_space_pos * rakel_resolution;
+    return float2(pixel_space.x, pixel_space.y);
 }
 
 // returns:
@@ -148,9 +155,11 @@ void emit(float2 reservoir_pixel, int2 radius)
             // calculate part
             int2 coord = reservoir_pixel_nearest + int2(x, y);
             if (pixel_in_reservoir_range(coord)) { // Prevent out of bounds access to reservoir. Also, if it's not in range, this overlap part is not (and must not be!) used anyways.
-                float RakelTilt = 0; // TODO
-                Rectangle fragment_rectangle = create_rectangle(reservoir_pixel, -RakelRotation, 0);
-                Rectangle reservoir_rectangle = create_rectangle(coord, 0, RakelTilt);
+                int2 rakel_anchor_index_space = map_to_index_space(RakelAnchor, TextureResolution);
+                float2 rect_reservoir_pixel = rotate_by_y(reservoir_pixel, RakelTilt, rakel_anchor_index_space);
+                float2 rect_coord = rotate_by_y(coord, RakelTilt, rakel_anchor_index_space);
+                Rectangle fragment_rectangle = create_rectangle(rect_reservoir_pixel, -RakelRotation, 0);
+                Rectangle reservoir_rectangle = create_rectangle(rect_coord, 0, RakelTilt);
                 float overlap = calculate_exact_overlap(fragment_rectangle, reservoir_rectangle);
 
                 if (overlap > 0) {

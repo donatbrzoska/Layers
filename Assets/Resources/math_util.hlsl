@@ -38,6 +38,27 @@ float3 rotate_by_z(float3 vec, float angle, float3 around)
     // return float3(result.x, result.y, vec.z) + around;
 }
 
+// only needed for tilting rectangles
+// -> converts float2 to float3, rotates clockwise and then converts back to float2
+float2 rotate_by_y(float2 vec, float angle, float2 around)
+{
+    float2 vec_ = vec - around;
+    float3 vec__ = float3(vec_.x, vec_.y, 0);
+
+    float rad = radians(angle);
+    float s = sin(rad);
+    float c = cos(rad);
+    float3x3 rotation = {
+        c,  0, -s,
+        0,  1,  0,
+        s,  0,  c
+    };
+
+    float3 result = mul(vec__, rotation);
+    float2 result_ = float2(result.x, result.y);
+    return result_ + around;
+}
+
 // rotates clockwise
 float2 rotate(float2 vec, float angle, float2 around)
 {

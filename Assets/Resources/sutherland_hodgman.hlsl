@@ -5,12 +5,6 @@ struct Rectangle {
     float2 d;
 };
 
-float2 tilt(float2 a, float angle)
-{
-    // TODO
-    return a;
-}
-
 Rectangle create_rectangle(float2 center, float rotation_angle, float tilt_angle)
 {
     float2 ll = float2(-0.5, -0.5) + center;
@@ -18,10 +12,10 @@ Rectangle create_rectangle(float2 center, float rotation_angle, float tilt_angle
     float2 ur = float2( 0.5,  0.5) + center;
     float2 lr = float2( 0.5, -0.5) + center;
 
-    float2 ll_tilted = tilt(ll, tilt_angle);
-    float2 ul_tilted = tilt(ul, tilt_angle);
-    float2 ur_tilted = tilt(ur, tilt_angle);
-    float2 lr_tilted = tilt(lr, tilt_angle);
+    float2 ll_tilted = rotate_by_y(ll, tilt_angle, center);
+    float2 ul_tilted = rotate_by_y(ul, tilt_angle, center);
+    float2 ur_tilted = rotate_by_y(ur, tilt_angle, center);
+    float2 lr_tilted = rotate_by_y(lr, tilt_angle, center);
 
     float2 ll_rotated = rotate(ll_tilted, rotation_angle, center);
     float2 ul_rotated = rotate(ul_tilted, rotation_angle, center);

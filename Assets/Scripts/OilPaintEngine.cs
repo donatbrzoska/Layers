@@ -31,6 +31,8 @@ public class OilPaintEngine : MonoBehaviour
 
     void Awake()
     {
+        Application.targetFrameRate = 30;
+
         Configuration = new Configuration();
         //Configuration.LoadDebug();
         //Configuration.RakelRotation = 22;
@@ -132,7 +134,7 @@ public class OilPaintEngine : MonoBehaviour
                 InputInterpolator.AddNode(
                     position,
                     rotation,
-                    0,
+                    Configuration.RakelTilt,
                     Configuration.TransferConfiguration,
                     Configuration.TextureResolution);
             }
@@ -175,6 +177,11 @@ public class OilPaintEngine : MonoBehaviour
     public void UpdateRakelRotationLocked(bool locked)
     {
         Configuration.RakelRotationLocked = locked;
+    }
+
+    public void UpdateRakelTilt(float tilt)
+    {
+        Configuration.RakelTilt = tilt;
     }
 
     public void UpdateRakelLength(float worldSpaceLength)
@@ -298,8 +305,9 @@ public class OilPaintEngine : MonoBehaviour
         InputInterpolator.NewStroke();
         InputInterpolator.AddNode(
             new Vector3(-3, 0, -0.10f),
-            45,
             0,
+            //60,
+            41.4096f,
             Configuration.TransferConfiguration,
             Configuration.TextureResolution);
 
@@ -346,7 +354,7 @@ public class OilPaintEngine : MonoBehaviour
         TransferEngine.SimulateStep(
             new Vector3(-5, 0, -0.10f),
             0,
-            0,
+            45,
             Configuration.TransferConfiguration,
             Rakel,
             Canvas);

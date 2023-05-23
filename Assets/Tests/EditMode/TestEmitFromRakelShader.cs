@@ -143,4 +143,104 @@ public class TestEmitFromRakelShader
             799988, // (int) (RakelConfig.Length * RakelConfig.Width * Paint.UNIT),
             Sum(rakelEmittedVolumes));
     }
+
+    [Test]
+    public void Volume_Unrotated_Tilted60()
+    {
+        // Arrange
+        Rakel.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen), new FlatVolumeFiller(1)));
+        Rakel.UpdateState(new Vector3(-3, -0.5f, 0), 0, 60);
+        ShaderRegion rakelEmitSR = ShaderRegionFactory.Create(
+            WorldSpaceCanvas.MapToPixelInRange(Rakel.UpperLeft),
+            WorldSpaceCanvas.MapToPixelInRange(Rakel.UpperRight),
+            WorldSpaceCanvas.MapToPixelInRange(Rakel.LowerLeft),
+            WorldSpaceCanvas.MapToPixelInRange(Rakel.LowerRight),
+            1 // not really needed for polygon clipping
+        );
+
+
+        // Act
+        RakelEmittedPaint = Rakel.EmitPaint(
+            rakelEmitSR,
+            WorldSpaceCanvas,
+            1,
+            1, // unused
+            false);
+
+
+        // Assert
+        Paint[] rakelEmittedPaintData = new Paint[rakelEmitSR.PixelCount];
+        RakelEmittedPaint.GetData(rakelEmittedPaintData);
+        int[] rakelEmittedVolumes = new int[rakelEmitSR.PixelCount];
+        for (int i = 0; i < rakelEmittedVolumes.Length; i++)
+        {
+            rakelEmittedVolumes[i] = rakelEmittedPaintData[i].Volume;
+        }
+
+        Assert.AreEqual(
+            new int[] { // remember: these arrays are upside down compared to the actual pixels
+                0,      0,      0,      0,
+                0,  25000,  25000,      0,
+                0,  50000,  50000,      0,
+                0,  50000,  50000,      0,
+                0,  50000,  50000,      0,
+                0,  24999,  25000,      0,
+                0,      0,      0,      0,
+            },
+            rakelEmittedVolumes);
+
+        Assert.AreEqual(
+            0.5f * RakelLength * RakelWidth * Paint.UNIT - 1,
+            Sum(rakelEmittedVolumes));
+    }
+
+    [Test]
+    public void Volume_Rotated30_Tilted60()
+    {
+        // Arrange
+        Rakel.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen), new FlatVolumeFiller(1)));
+        Rakel.UpdateState(new Vector3(-3, -0.5f, 0), 30, 60);
+        ShaderRegion rakelEmitSR = ShaderRegionFactory.Create(
+            WorldSpaceCanvas.MapToPixelInRange(Rakel.UpperLeft),
+            WorldSpaceCanvas.MapToPixelInRange(Rakel.UpperRight),
+            WorldSpaceCanvas.MapToPixelInRange(Rakel.LowerLeft),
+            WorldSpaceCanvas.MapToPixelInRange(Rakel.LowerRight),
+            1 // not really needed for polygon clipping
+        );
+
+
+        // Act
+        RakelEmittedPaint = Rakel.EmitPaint(
+            rakelEmitSR,
+            WorldSpaceCanvas,
+            1,
+            1, // unused
+            false);
+
+
+        // Assert
+        Paint[] rakelEmittedPaintData = new Paint[rakelEmitSR.PixelCount];
+        RakelEmittedPaint.GetData(rakelEmittedPaintData);
+        int[] rakelEmittedVolumes = new int[rakelEmitSR.PixelCount];
+        for (int i = 0; i < rakelEmittedVolumes.Length; i++)
+        {
+            rakelEmittedVolumes[i] = rakelEmittedPaintData[i].Volume;
+        }
+
+        Assert.AreEqual(
+            new int[] { // remember: these arrays are upside down compared to the actual pixels
+                0,      0,      0,      0,      0,      0,
+                0,      0,   6216,      0,      0,      0,
+                0,  15469,  87840,      0,      0,      0,
+                0,      0,  65469,  46132,      0,      0,
+                0,      0,  11601,  92264,  11602,      0,
+                0,      0,      0,  34529,  17264,      0,
+                0,      0,      0,      0,      0,      0,
+            },
+            rakelEmittedVolumes);
+
+        Assert.AreEqual(
+            388386, // 0.5f * RakelLength * RakelWidth * Paint.UNIT,
+            Sum(rakelEmittedVolumes));
+    }
 }

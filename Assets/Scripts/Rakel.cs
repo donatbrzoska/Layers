@@ -114,6 +114,7 @@ public class Rakel : ComputeShaderCreator
             new CSFloat("RakelLength", Length),
             new CSFloat("RakelWidth", Width),
             new CSFloat("RakelRotation", Rotation),
+            new CSFloat("RakelTilt", Tilt),
             new CSFloat3("RakelULTilted", ulTilted),
             new CSFloat3("RakelURTilted", urTilted),
             new CSFloat3("RakelLLTilted", llTilted),
