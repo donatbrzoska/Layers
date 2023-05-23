@@ -8,6 +8,7 @@
 
 uint3 id;
 
+uint2 CalculationPosition;
 uint2 CalculationSize;
 
 RWStructuredBuffer<float4> Debug;
@@ -31,8 +32,6 @@ void log_(uint index, float4 f)
 #include "paint.hlsl"
 #include "math_util.hlsl"
 #include "sutherland_hodgman.hlsl"
-
-uint2 CalculationPosition;
 
 float RakelRotation;
 float RakelTilt;

@@ -101,7 +101,6 @@ public class Rakel
 
         List<CSAttribute> attributes = new List<CSAttribute>()
         {
-            new CSInt2("CalculationPosition", shaderCalculation.Position),
             new CSInt2("TextureSize", wsc.TextureSize),
             new CSInt("TextureResolution", wsc.Resolution),
             new CSFloat3("CanvasPosition", wsc.Position),
@@ -144,7 +143,6 @@ public class Rakel
     {
         List<CSAttribute> attributes = new List<CSAttribute>()
         {
-            new CSInt2("CalculationPosition", shaderCalculation.Position),
             new CSComputeBuffer("CanvasEmittedPaint", canvasEmittedPaint),
             new CSComputeBuffer("RakelPickupReservoir", PickupReservoir.Buffer),
             new CSInt("RakelReservoirWidth", PickupReservoir.Size.x)

@@ -186,6 +186,7 @@ public class ComputeShaderTask
     public void Run()
     {
         ComputeShader computeShader = (ComputeShader)Resources.Load(Name);
+        Attributes.Add(new CSInt2("CalculationPosition", ShaderCalculation.Position));
         Attributes.Add(new CSInt2("CalculationSize", ShaderCalculation.Size));
 
         //Debug.Log("Processing " + Name);

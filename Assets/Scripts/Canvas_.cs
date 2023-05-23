@@ -68,7 +68,6 @@ public class Canvas_
 
         List<CSAttribute> attributes = new List<CSAttribute>()
         {
-            new CSInt2("CalculationPosition", shaderCalculation.Position),
             new CSInt2("CanvasReservoirSize", WorldSpaceCanvas.TextureSize),
             new CSFloat3("CanvasPosition", WorldSpaceCanvas.Position),
             new CSFloat2("CanvasSize", WorldSpaceCanvas.Size),
@@ -108,7 +107,6 @@ public class Canvas_
     {
         List<CSAttribute> attributes = new List<CSAttribute>()
         {
-            new CSInt2("CalculationPosition", shaderCalculation.Position),
             new CSComputeBuffer("RakelEmittedPaint", rakelEmittedPaint),
             new CSComputeBuffer("CanvasReservoir", Reservoir.Buffer),
             new CSInt("TextureWidth", Texture.width)
@@ -131,7 +129,6 @@ public class Canvas_
     {
         List<CSAttribute> attributes = new List<CSAttribute>()
         {
-            new CSInt2("CalculationPosition", shaderCalculation.Position),
             new CSComputeBuffer("CanvasReservoir", Reservoir.Buffer),
             new CSInt2("TextureSize", WorldSpaceCanvas.TextureSize),
             new CSTexture("CanvasTexture", Texture),

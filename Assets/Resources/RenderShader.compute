@@ -8,6 +8,7 @@
 
 uint3 id;
 
+int2 CalculationPosition;
 uint2 CalculationSize;
 
 RWStructuredBuffer<float4> Debug;
@@ -29,8 +30,6 @@ void log_(uint index, float4 f)
 // ###################################### SHADER BASE END ######################################
 
 #include "paint.hlsl"
-
-int2 CalculationPosition;
 
 RWStructuredBuffer<Paint> CanvasReservoir;
 
