@@ -107,10 +107,6 @@ void update_color(int2 canvas_pixel)
         p = simulate_alpha(p);
     }
 
-    if (is_empty(p)) {
-        p.color = CANVAS_COLOR();
-    }
-
     // set color
     CanvasTexture[canvas_pixel] = p.color;
 }
