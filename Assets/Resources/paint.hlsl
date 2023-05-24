@@ -7,12 +7,12 @@ float4 CANVAS_COLOR()
 
 int PAINT_UNIT()
 {
-    return 100000;
+    return 1;
 }
 
 struct Paint {
     float4 color;
-    int volume;
+    float volume;
 };
 
 Paint mix(Paint a, Paint b)
@@ -34,7 +34,7 @@ Paint mix(Paint a, Paint b)
 
 bool is_empty(Paint p)
 {
-    return p.volume <= 10;
+    return p.volume < 0.0001;
 }
 
 Paint simulate_alpha(Paint p)

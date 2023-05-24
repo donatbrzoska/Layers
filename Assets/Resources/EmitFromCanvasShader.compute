@@ -124,7 +124,7 @@ void emit(float2 reservoir_pixel, int2 radius)
 {
     int2 reservoir_pixel_nearest = round(reservoir_pixel);
 
-    int VOLUME_TO_EMIT_TARGET = EmitVolume * PAINT_UNIT();
+    float VOLUME_TO_EMIT_TARGET = EmitVolume * PAINT_UNIT();
 
     // array size should really be [1+2*radius.y][1+2*radius.x] but we can't make dynamic arrays
     // in HLSL. 9x9 should be enough though, since with 45° tilt we will probably use 6x6 and
@@ -155,8 +155,8 @@ void emit(float2 reservoir_pixel, int2 radius)
                     Paint available = CanvasReservoir[XYZ(coord_.x, coord_.y, 1, CanvasReservoirSize)];
 
                     // calculate volume
-                    int target_volume = overlap * VOLUME_TO_EMIT_TARGET;
-                    int really_available_volume = overlap * available.volume;
+                    float target_volume = overlap * VOLUME_TO_EMIT_TARGET;
+                    float really_available_volume = overlap * available.volume;
                     volume_to_emit[i][j] = min(target_volume, really_available_volume);
                     result_volume += volume_to_emit[i][j];
 
@@ -184,7 +184,7 @@ void emit(float2 reservoir_pixel, int2 radius)
     result_paint.color = result_color;
     result_paint.volume = result_volume;
 
-    int deleted = 0;
+    float deleted = 0;
     // delete amount of taken volume from reservoir (z=0)
     for (y=-radius.y; y<=radius.y; y++) {
         for (x=-radius.x; x<=radius.x; x++) {
@@ -192,7 +192,7 @@ void emit(float2 reservoir_pixel, int2 radius)
             if (pixel_in_reservoir_range(coord)) {
                 uint i = y + radius.y;
                 uint j = x + radius.x;
-                int to_be_deleted = volume_to_emit[i][j];
+                float to_be_deleted = volume_to_emit[i][j];
 
                 uint2 coord_ = uint2(coord.x, coord.y);
                 CanvasReservoir[XYZ(coord_.x, coord_.y, 0, CanvasReservoirSize)].volume -= to_be_deleted;

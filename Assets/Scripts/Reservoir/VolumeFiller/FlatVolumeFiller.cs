@@ -2,7 +2,7 @@
 
 public class FlatVolumeFiller : VolumeFiller
 {
-    public FlatVolumeFiller(int baseVolume) : base(baseVolume) { }
+    public FlatVolumeFiller(float baseVolume) : base(baseVolume) { }
 
     public override void Fill(Paint[] target, Vector2Int targetSize)
     {

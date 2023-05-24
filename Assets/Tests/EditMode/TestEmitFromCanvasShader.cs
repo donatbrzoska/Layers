@@ -10,10 +10,10 @@ public class TestEmitFromCanvasShader
 
     ComputeBuffer CanvasEmittedPaint;
 
-    public int Sum(int[] values)
+    public float Sum(float[] values)
     {
-        int res = 0;
-        foreach (int e in values)
+        float res = 0;
+        foreach (float e in values)
         {
             res += e;
         }
@@ -60,17 +60,19 @@ public class TestEmitFromCanvasShader
         // Assert
         Paint[] canvasEmittedPaintData = new Paint[canvasEmitSC.PixelCount];
         CanvasEmittedPaint.GetData(canvasEmittedPaintData);
-        int[] canvasEmittedVolumes = new int[canvasEmitSC.PixelCount];
+        float[] canvasEmittedVolumes = new float[canvasEmitSC.PixelCount];
         for (int i = 0; i < canvasEmittedVolumes.Length; i++)
         {
             canvasEmittedVolumes[i] = canvasEmittedPaintData[i].Volume;
         }
 
-        int Q = (int)(0.25f * Paint.UNIT); // quarter
-        int H = (int)(0.5f * Paint.UNIT); // half
-        int F = Paint.UNIT; // full
-        Assert.AreEqual(
-            new int[] { // remember: these arrays are upside down compared to the actual pixels
+        //LogUtil.Log(canvasEmittedVolumes, 4, false);
+
+        float Q = 0.25f * Paint.UNIT; // quarter
+        float H = 0.5f * Paint.UNIT; // half
+        float F = Paint.UNIT; // full
+        AssertUtil.AssertFloatsAreEqual(
+            new float[] { // remember: these arrays are upside down compared to the actual pixels
                 H, F,
                 H, F,
                 H, F,
@@ -78,7 +80,7 @@ public class TestEmitFromCanvasShader
             },
             canvasEmittedVolumes);
 
-        Assert.AreEqual(
+        AssertUtil.AssertFloatsEqual(
             RakelLength * RakelWidth * Paint.UNIT * 0.75f,
             Sum(canvasEmittedVolumes));
     }
@@ -105,23 +107,25 @@ public class TestEmitFromCanvasShader
         // Assert
         Paint[] canvasEmittedPaintData = new Paint[canvasEmitSC.PixelCount];
         CanvasEmittedPaint.GetData(canvasEmittedPaintData);
-        int[] canvasEmittedVolumes = new int[canvasEmitSC.PixelCount];
+        float[] canvasEmittedVolumes = new float[canvasEmitSC.PixelCount];
         for (int i = 0; i < canvasEmittedVolumes.Length; i++)
         {
             canvasEmittedVolumes[i] = canvasEmittedPaintData[i].Volume;
         }
 
-        Assert.AreEqual(
-            new int[] { // remember: these arrays are upside down compared to the actual pixels
-                2071,  84527,
-                44337, 99998,
-                93781, 99999,
-                99998, 99999,
+        //LogUtil.Log(canvasEmittedVolumes, 4, false);
+
+        AssertUtil.AssertFloatsAreEqual(
+            new float[] { // remember: these arrays are upside down compared to the actual pixels
+                0.021f,  0.845f,
+                0.443f,  1.000f,
+                0.938f,  1.000f,
+                1.000f,  1.000f,
             },
             canvasEmittedVolumes);
 
-        Assert.AreEqual(
-            624710,
+        AssertUtil.AssertFloatsEqual(
+            6.247f,
             Sum(canvasEmittedVolumes));
     }
 
@@ -147,15 +151,17 @@ public class TestEmitFromCanvasShader
         // Assert
         Paint[] canvasEmittedPaintData = new Paint[canvasEmitSC.PixelCount];
         CanvasEmittedPaint.GetData(canvasEmittedPaintData);
-        int[] canvasEmittedVolumes = new int[canvasEmitSC.PixelCount];
+        float[] canvasEmittedVolumes = new float[canvasEmitSC.PixelCount];
         for (int i = 0; i < canvasEmittedVolumes.Length; i++)
         {
             canvasEmittedVolumes[i] = canvasEmittedPaintData[i].Volume;
         }
 
-        int H = (int)(0.5f * Paint.UNIT); // half
-        Assert.AreEqual(
-            new int[] { // remember: these arrays are upside down compared to the actual pixels
+        //LogUtil.Log(canvasEmittedVolumes, 4, false);
+
+        float H = 0.5f * Paint.UNIT; // half
+        AssertUtil.AssertFloatsAreEqual(
+            new float[] { // remember: these arrays are upside down compared to the actual pixels
                 H, H,
                 H, H,
                 H, H,
@@ -163,7 +169,7 @@ public class TestEmitFromCanvasShader
             },
             canvasEmittedVolumes);
 
-        Assert.AreEqual(
+        AssertUtil.AssertFloatsEqual(
             RakelLength * RakelWidth * Paint.UNIT * 0.5f,
             Sum(canvasEmittedVolumes));
     }
@@ -190,24 +196,26 @@ public class TestEmitFromCanvasShader
         // Assert
         Paint[] canvasEmittedPaintData = new Paint[canvasEmitSC.PixelCount];
         CanvasEmittedPaint.GetData(canvasEmittedPaintData);
-        int[] canvasEmittedVolumes = new int[canvasEmitSC.PixelCount];
+        float[] canvasEmittedVolumes = new float[canvasEmitSC.PixelCount];
         for (int i = 0; i < canvasEmittedVolumes.Length; i++)
         {
             canvasEmittedVolumes[i] = canvasEmittedPaintData[i].Volume;
         }
 
-        int H = (int)(0.5f * Paint.UNIT); // half
-        Assert.AreEqual(
-            new int[] { // remember: these arrays are upside down compared to the actual pixels
-                H-1, H,
-                H-1, H,
-                H-1, H,
-                H-1, H-1,
+        //LogUtil.Log(canvasEmittedVolumes, 4, false);
+
+        float H = 0.5f * Paint.UNIT; // half
+        AssertUtil.AssertFloatsAreEqual(
+            new float[] { // remember: these arrays are upside down compared to the actual pixels
+                H, H,
+                H, H,
+                H, H,
+                H, H,
             },
             canvasEmittedVolumes);
 
-        Assert.AreEqual(
-            RakelLength * RakelWidth * Paint.UNIT * 0.5f - 5,
+        AssertUtil.AssertFloatsEqual(
+            RakelLength * RakelWidth * Paint.UNIT * 0.5f,
             Sum(canvasEmittedVolumes));
     }
 }

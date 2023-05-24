@@ -3,12 +3,12 @@ using UnityEngine;
 
 public class PerlinVolumeFiller : VolumeFiller
 {
-    public PerlinVolumeFiller(int baseVolume) : base(baseVolume) { }
+    public PerlinVolumeFiller(float baseVolume) : base(baseVolume) { }
 
     public override void Fill(Paint[] target, Vector2Int targetSize)
     {
         // determine added volume
-        int max_added_volume = BaseVolume;
+        float max_added_volume = BaseVolume;
 
         float scale = 5f; // bigger values == larger areas of the perlin noise terrain == more frequent noise
         float offset_x = UnityEngine.Random.Range(0f, 1000f);
@@ -41,7 +41,7 @@ public class PerlinVolumeFiller : VolumeFiller
         {
             for (int j = 0; j < targetSize.x; j++)
             {
-                target[IndexUtil.XY(j, i, targetSize.x)].Volume = BaseVolume + (int)(added_volumes[i, j] - added_volumes_min);
+                target[IndexUtil.XY(j, i, targetSize.x)].Volume = BaseVolume + (added_volumes[i, j] - added_volumes_min);
             }
         }
     }

@@ -2,9 +2,9 @@
 
 public abstract class VolumeFiller
 {
-    protected int BaseVolume;
+    protected float BaseVolume;
 
-    protected VolumeFiller(int baseVolume)
+    protected VolumeFiller(float baseVolume)
     {
         BaseVolume = baseVolume * Paint.UNIT;
     }

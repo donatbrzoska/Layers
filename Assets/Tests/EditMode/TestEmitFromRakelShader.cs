@@ -11,10 +11,10 @@ public class TestEmitFromRakelShader
 
     ComputeBuffer RakelEmittedPaint;
 
-    public int Sum(int[] values)
+    public float Sum(float[] values)
     {
-        int res = 0;
-        foreach (int e in values) {
+        float res = 0;
+        foreach (float e in values) {
             res += e;
         }
         return res;
@@ -64,17 +64,19 @@ public class TestEmitFromRakelShader
         // Assert
         Paint[] rakelEmittedPaintData = new Paint[rakelEmitSC.PixelCount];
         RakelEmittedPaint.GetData(rakelEmittedPaintData);
-        int[] rakelEmittedVolumes = new int[rakelEmitSC.PixelCount];
+        float[] rakelEmittedVolumes = new float[rakelEmitSC.PixelCount];
         for (int i = 0; i < rakelEmittedVolumes.Length; i++)
         {
             rakelEmittedVolumes[i] = rakelEmittedPaintData[i].Volume;
         }
 
-        int Q = (int)(0.25f * Paint.UNIT); // quarter
-        int H = (int)(0.5f * Paint.UNIT); // half
-        int F = Paint.UNIT; // full
-        Assert.AreEqual(
-            new int[] { // remember: these arrays are upside down compared to the actual pixels
+        //LogUtil.Log(rakelEmittedVolumes, 7, false);
+
+        float Q = 0.25f * Paint.UNIT; // quarter
+        float H = 0.5f * Paint.UNIT; // half
+        float F = Paint.UNIT; // full
+        AssertUtil.AssertFloatsAreEqual(
+            new float[] { // remember: these arrays are upside down compared to the actual pixels
                 0, 0, 0, 0, 0,
                 0, Q, H, Q, 0,
                 0, H, F, H, 0,
@@ -117,27 +119,29 @@ public class TestEmitFromRakelShader
         // Assert
         Paint[] rakelEmittedPaintData = new Paint[rakelEmitSC.PixelCount];
         RakelEmittedPaint.GetData(rakelEmittedPaintData);
-        int[] rakelEmittedVolumes = new int[rakelEmitSC.PixelCount];
+        float[] rakelEmittedVolumes = new float[rakelEmitSC.PixelCount];
         for (int i = 0; i < rakelEmittedVolumes.Length; i++)
         {
             rakelEmittedVolumes[i] = rakelEmittedPaintData[i].Volume;
         }
 
-        Assert.AreEqual(
-            new int[] { // remember: these arrays are upside down compared to the actual pixels
-                0,      0,      0,      0,      0,      0,      0,
-                0,      0,      0,   6217,      0,      0,      0,
-                0,   5384,  65468,  88118,   3867,      0,      0,
-                0,    833,  80107,  99999,  50000,      0,      0,
-                0,      0,  23482,  99721,  96132,  11603,      0,
-                0,      0,      0,  65468,  80107,  17265,      0,
-                0,      0,      0,   5384,    833,      0,      0,
-                0,      0,      0,      0,      0,      0,      0,
+        //LogUtil.Log(rakelEmittedVolumes, 8, false);
+
+        AssertUtil.AssertFloatsAreEqual(
+            new float[] { // remember: these arrays are upside down compared to the actual pixels
+                0.000f,  0.000f,  0.000f,  0.000f,  0.000f,  0.000f,  0.000f,
+                0.000f,  0.000f,  0.000f,  0.062f,  0.000f,  0.000f,  0.000f,
+                0.000f,  0.054f,  0.655f,  0.881f,  0.039f,  0.000f,  0.000f,
+                0.000f,  0.008f,  0.801f,  1.000f,  0.500f,  0.000f,  0.000f,
+                0.000f,  0.000f,  0.235f,  0.997f,  0.961f,  0.116f,  0.000f,
+                0.000f,  0.000f,  0.000f,  0.655f,  0.801f,  0.173f,  0.000f,
+                0.000f,  0.000f,  0.000f,  0.054f,  0.008f,  0.000f,  0.000f,
+                0.000f,  0.000f,  0.000f,  0.000f,  0.000f,  0.000f,  0.000f,
             },
             rakelEmittedVolumes);
 
-        Assert.AreEqual(
-            799988, // (int) (RakelConfig.Length * RakelConfig.Width * Paint.UNIT),
+        AssertUtil.AssertFloatsEqual(
+            RakelLength * RakelWidth * Paint.UNIT,
             Sum(rakelEmittedVolumes));
     }
 
@@ -168,26 +172,31 @@ public class TestEmitFromRakelShader
         // Assert
         Paint[] rakelEmittedPaintData = new Paint[rakelEmitSC.PixelCount];
         RakelEmittedPaint.GetData(rakelEmittedPaintData);
-        int[] rakelEmittedVolumes = new int[rakelEmitSC.PixelCount];
+        float[] rakelEmittedVolumes = new float[rakelEmitSC.PixelCount];
         for (int i = 0; i < rakelEmittedVolumes.Length; i++)
         {
             rakelEmittedVolumes[i] = rakelEmittedPaintData[i].Volume;
         }
 
-        Assert.AreEqual(
-            new int[] { // remember: these arrays are upside down compared to the actual pixels
-                0,      0,      0,      0,
-                0,  25000,  25000,      0,
-                0,  50000,  50000,      0,
-                0,  50000,  50000,      0,
-                0,  50000,  50000,      0,
-                0,  24999,  25000,      0,
-                0,      0,      0,      0,
+        //LogUtil.Log(rakelEmittedVolumes, 7, false);
+
+        float Q = 0.25f * Paint.UNIT; // quarter
+        float H = 0.5f * Paint.UNIT; // half
+        float F = Paint.UNIT; // full
+        AssertUtil.AssertFloatsAreEqual(
+            new float[] { // remember: these arrays are upside down compared to the actual pixels
+                0, 0, 0, 0,
+                0, Q, Q, 0,
+                0, H, H, 0,
+                0, H, H, 0,
+                0, H, H, 0,
+                0, Q, Q, 0,
+                0, 0, 0, 0,
             },
             rakelEmittedVolumes);
 
-        Assert.AreEqual(
-            0.5f * RakelLength * RakelWidth * Paint.UNIT - 1,
+        AssertUtil.AssertFloatsEqual(
+            0.5f * RakelLength * RakelWidth * Paint.UNIT,
             Sum(rakelEmittedVolumes));
     }
 
@@ -218,26 +227,30 @@ public class TestEmitFromRakelShader
         // Assert
         Paint[] rakelEmittedPaintData = new Paint[rakelEmitSC.PixelCount];
         RakelEmittedPaint.GetData(rakelEmittedPaintData);
-        int[] rakelEmittedVolumes = new int[rakelEmitSC.PixelCount];
+        float[] rakelEmittedVolumes = new float[rakelEmitSC.PixelCount];
         for (int i = 0; i < rakelEmittedVolumes.Length; i++)
         {
             rakelEmittedVolumes[i] = rakelEmittedPaintData[i].Volume;
         }
 
-        Assert.AreEqual(
-            new int[] { // remember: these arrays are upside down compared to the actual pixels
-                0,      0,      0,      0,      0,      0,
-                0,      0,   6216,      0,      0,      0,
-                0,  15469,  87840,      0,      0,      0,
-                0,      0,  65469,  46132,      0,      0,
-                0,      0,  11601,  92264,  11602,      0,
-                0,      0,      0,  34529,  17264,      0,
-                0,      0,      0,      0,      0,      0,
+        //LogUtil.Log(rakelEmittedVolumes, 7, false);
+
+        AssertUtil.AssertFloatsAreEqual(
+            new float[] { // remember: these arrays are upside down compared to the actual pixels
+                0.000f,  0.000f,  0.000f,  0.000f,  0.000f,  0.000f,
+                0.000f,  0.000f,  0.062f,  0.000f,  0.000f,  0.000f,
+                0.000f,  0.155f,  0.878f,  0.000f,  0.000f,  0.000f,
+                0.000f,  0.000f,  0.655f,  0.461f,  0.000f,  0.000f,
+                0.000f,  0.000f,  0.116f,  0.923f,  0.116f,  0.000f,
+                0.000f,  0.000f,  0.000f,  0.345f,  0.173f,  0.000f,
+                0.000f,  0.000f,  0.000f,  0.000f,  0.000f,  0.000f,
             },
             rakelEmittedVolumes);
 
-        Assert.AreEqual(
-            388386, // 0.5f * RakelLength * RakelWidth * Paint.UNIT,
-            Sum(rakelEmittedVolumes));
+        // TODO this is very suspicious
+        AssertUtil.AssertFloatsEqual(
+            0.5f * RakelLength * RakelWidth * Paint.UNIT,
+            Sum(rakelEmittedVolumes),
+            0.001f);
     }
 }

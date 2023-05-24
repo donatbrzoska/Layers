@@ -241,7 +241,7 @@ public class LogUtil
         Debug.Log(result);
     }
 
-    public static void Log(float[] floats, int rows = 1, string descr = "")
+    public static void Log(float[] floats, int rows = 1, bool readable = true, string descr = "")
     {
 
         if (descr != "")
@@ -251,13 +251,28 @@ public class LogUtil
 
         string result = "";
         int cols = floats.GetLength(0) / rows;
-        for (int i = rows - 1; i >= 0; i--)
+
+        if (readable)
         {
-            for (int j = 0; j < cols; j++)
+            for (int i = rows - 1; i >= 0; i--)
             {
-                result += floats[i * cols + j].ToString("F2") + " ";
+                for (int j = 0; j < cols; j++)
+                {
+                    result += string.Format("{0,6:0.000}", floats[i * cols + j]) + ", ";
+                }
+                result += "\n";
             }
-            result += "\n";
+        }
+        else
+        {
+            for (int i = 0; i < rows; i++)
+            {
+                for (int j = 0; j < cols; j++)
+                {
+                    result += string.Format("{0,6:0.000}f", floats[i * cols + j]) + ", ";
+                }
+                result += "\n";
+            }
         }
         Debug.Log(result);
     }

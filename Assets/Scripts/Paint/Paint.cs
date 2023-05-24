@@ -3,11 +3,11 @@ using UnityEngine;
 
 public struct Paint : IEquatable<Paint>
 {
-    public static int UNIT = 100_000;
+    public static float UNIT = 1;
 
     public static Paint EMPTY_PAINT { get; private set; } = new Paint(Colors.NO_PAINT_COLOR, 0);
 
-    public static int SizeInBytes = 4 * sizeof(float) + sizeof(int);
+    public static int SizeInBytes = 4 * sizeof(float) + sizeof(float);
 
     public static Paint operator +(Paint a, Paint b)
     {
@@ -26,13 +26,13 @@ public struct Paint : IEquatable<Paint>
                 a.Color.g * a_part + b.Color.g * b_part,
                 a.Color.b * a_part + b.Color.b * b_part
             ),
-            (int) summed_volume);
+            summed_volume);
     }
 
     public Color Color { get; set; }
-    public int Volume { get; set; }
+    public float Volume { get; set; }
 
-    public Paint(Color color, int volume)
+    public Paint(Color color, float volume)
     {
         if (volume == 0)
         {
@@ -58,7 +58,7 @@ public struct Paint : IEquatable<Paint>
 
     public bool Equals(Paint other)
     {
-        return ColorsEqual(Color, other.Color) && Volume == other.Volume;
+        return ColorsEqual(Color, other.Color) && FloatsEqual(Volume, other.Volume);
     }
 
     public override string ToString()
