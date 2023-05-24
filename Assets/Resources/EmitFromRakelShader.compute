@@ -229,9 +229,9 @@ void emit(float2 reservoir_pixel, int2 radius)
                 int to_be_deleted_pu = volume_to_emit_pu[i][j];
 
                 uint2 coord_ = uint2(coord.x, coord.y);
-                InterlockedAdd(RakelApplicationReservoir[XYZ(coord_.x, coord_.y, 0, RakelReservoirSize)].volume, -to_be_deleted_app);
+                RakelApplicationReservoir[XYZ(coord_.x, coord_.y, 0, RakelReservoirSize)].volume -= to_be_deleted_app;
                 deleted += to_be_deleted_app;
-                InterlockedAdd(RakelPickupReservoir[XYZ(coord_.x, coord_.y, 0, RakelReservoirSize)].volume, -to_be_deleted_pu);
+                RakelPickupReservoir[XYZ(coord_.x, coord_.y, 0, RakelReservoirSize)].volume -= to_be_deleted_pu;
             }
         }
     }

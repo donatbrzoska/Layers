@@ -195,7 +195,7 @@ void emit(float2 reservoir_pixel, int2 radius)
                 int to_be_deleted = volume_to_emit[i][j];
 
                 uint2 coord_ = uint2(coord.x, coord.y);
-                InterlockedAdd(CanvasReservoir[XYZ(coord_.x, coord_.y, 0, CanvasReservoirSize)].volume, -to_be_deleted);
+                CanvasReservoir[XYZ(coord_.x, coord_.y, 0, CanvasReservoirSize)].volume -= to_be_deleted;
                 deleted += to_be_deleted;
             }
         }

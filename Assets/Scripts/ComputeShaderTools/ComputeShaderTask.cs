@@ -214,7 +214,15 @@ public class ComputeShaderTask
 
 
         // TODO parametrize this somehow?
-        Vector2Int subgridGroupSize = new Vector2Int(1, 1); // basically disables subgrid logic for now
+        Vector2Int subgridGroupSize = new Vector2Int(1, 1); // basically disables subgrid logic
+        if (Name == "EmitFromRakelShader")
+        {
+            subgridGroupSize = new Vector2Int(5, 3);
+        }
+        else if (Name == "EmitFromCanvasShader")
+        {
+            subgridGroupSize = new Vector2Int(3, 3);
+        }
         Vector2Int subgridGroups = CalculateGroups(ShaderCalculation.Size, subgridGroupSize);
         Vector2Int threadGroups = CalculateGroups(subgridGroups, ThreadGroupSize);
         for (int y = 0; y < subgridGroupSize.y; y++)
