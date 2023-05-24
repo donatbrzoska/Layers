@@ -6,7 +6,15 @@
 #include "index_util.hlsl"
 #include "log_util.hlsl"
 
-uint3 id;
+uint3 id__;
+uint2 SubgridGroupSize;
+uint2 SubgridCurrentThreadID;
+
+uint2 id()
+{
+    uint2 subgrid_id = uint2(id__.x, id__.y);
+    return subgrid_id * SubgridGroupSize + SubgridCurrentThreadID;
+}
 
 int2 CalculationPosition;
 uint2 CalculationSize;
@@ -24,7 +32,7 @@ void set_debug_list_info(uint size, uint t)
 
 void log_(uint index, float4 f)
 {
-    Debug[XYZ(id.x, id.y, index, CalculationSize)] = f;
+    Debug[XYZ(id().x, id().y, index, CalculationSize)] = f;
 }
 
 // ###################################### SHADER BASE END ######################################
@@ -228,7 +236,7 @@ void emit(float2 reservoir_pixel, int2 radius)
         }
     }
 
-    RakelEmittedPaint[XY(id.x, id.y, CalculationSize.x)] = result_paint;
+    RakelEmittedPaint[XY(id().x, id().y, CalculationSize.x)] = result_paint;
     // log_float(deleted);
 }
 
@@ -240,12 +248,12 @@ void do_emit(float2 reservoir_pixel)
 [numthreads(32,1,1)]
 void main (uint3 id_ : SV_DispatchThreadID)
 {
-    id = id_;
-    if (is_relevant_thread(id, CalculationSize))
+    id__ = id_;
+    if (is_relevant_thread(id(), CalculationSize))
     {
         // calculate pixel position on canvas
         // was uint2 before, but negative values are possible due to padding and no prevention of that because it should not cause any more problems
-        int2 canvas_pixel = id.xy + CalculationPosition;
+        int2 canvas_pixel = id() + CalculationPosition;
         float3 rakel_mapped_info = rakel_mapped(canvas_pixel);
 
         // NOTE: this calculation does not work for a curved rakel

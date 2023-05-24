@@ -212,8 +212,21 @@ public class ComputeShaderTask
             ca.ApplyTo(computeShader);
         }
 
-        Vector2Int threadGroups = CalculateThreadGroups(ShaderCalculation.Size, ThreadGroupSize);
-        computeShader.Dispatch(0, threadGroups.x, threadGroups.y, 1);
+
+        // TODO parametrize this somehow?
+        Vector2Int subgridGroupSize = new Vector2Int(1, 1); // basically disables subgrid logic for now
+        Vector2Int subgridGroups = CalculateGroups(ShaderCalculation.Size, subgridGroupSize);
+        Vector2Int threadGroups = CalculateGroups(subgridGroups, ThreadGroupSize);
+        for (int y = 0; y < subgridGroupSize.y; y++)
+        {
+            for (int x = 0; x < subgridGroupSize.x; x++)
+            {
+                computeShader.SetInts("SubgridCurrentThreadID", x, y);
+                computeShader.SetInts("SubgridGroupSize", subgridGroupSize.x, subgridGroupSize.y);
+
+                computeShader.Dispatch(0, threadGroups.x, threadGroups.y, 1);
+            }
+        }
 
 
         if (DebugEnabled)
@@ -251,10 +264,10 @@ public class ComputeShaderTask
         }
     }
 
-    Vector2Int CalculateThreadGroups(Vector2Int RegionSize, Vector2Int ThreadGroupSize)
+    Vector2Int CalculateGroups(Vector2Int RegionSize, Vector2Int GroupSize)
     {
         return new Vector2Int(
-            Mathf.CeilToInt((float)RegionSize.x / ThreadGroupSize.x),
-            Mathf.CeilToInt((float)RegionSize.y / ThreadGroupSize.y));
+            Mathf.CeilToInt((float)RegionSize.x / GroupSize.x),
+            Mathf.CeilToInt((float)RegionSize.y / GroupSize.y));
     }
 }

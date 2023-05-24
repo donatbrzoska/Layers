@@ -1,6 +1,6 @@
-bool is_relevant_thread(uint3 id, uint2 calculation_size)
+bool is_relevant_thread(uint2 id, uint2 calculation_size)
 {
-    return all(id.xy < calculation_size);
+    return all(id < calculation_size);
 }
 
 float unzero(float f) {

@@ -6,7 +6,15 @@
 #include "index_util.hlsl"
 #include "log_util.hlsl"
 
-uint3 id;
+uint3 id__;
+uint2 SubgridGroupSize;
+uint2 SubgridCurrentThreadID;
+
+uint2 id()
+{
+    uint2 subgrid_id = uint2(id__.x, id__.y);
+    return subgrid_id * SubgridGroupSize + SubgridCurrentThreadID;
+}
 
 int2 CalculationPosition;
 uint2 CalculationSize;
@@ -24,7 +32,7 @@ void set_debug_list_info(uint size, uint t)
 
 void log_(uint index, float4 f)
 {
-    Debug[XYZ(id.x, id.y, index, CalculationSize)] = f;
+    Debug[XYZ(id().x, id().y, index, CalculationSize)] = f;
 }
 
 // ###################################### SHADER BASE END ######################################
@@ -36,9 +44,9 @@ RWTexture2D<float4> Target;
 [numthreads(32,1,1)]
 void main (uint3 id_ : SV_DispatchThreadID)
 {
-    id = id_;
-    if (is_relevant_thread(id, CalculationSize))
+    id__ = id_;
+    if (is_relevant_thread(id(), CalculationSize))
     {
-        Target[id.xy] = Value;
+        Target[id()] = Value;
     }
 }
