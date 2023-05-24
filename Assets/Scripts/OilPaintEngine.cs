@@ -33,8 +33,9 @@ public class OilPaintEngine : MonoBehaviour
         Configuration = new Configuration();
         //Configuration.LoadDebug();
         //Configuration.RakelRotation = 22;
-        //Configuration.FillConfiguration.Mode = FillMode.Flat;
-        //Configuration.FillConfiguration.Volume = 10;
+        //Configuration.RakelTilt = 20;
+        //Configuration.FillConfiguration.VolumeMode = VolumeMode.Flat;
+        //Configuration.FillConfiguration.Volume = 30;
 
         int wallColliderID = GameObject.Find("Wall").GetComponent<MeshCollider>().GetInstanceID();
         int canvasColliderID = GameObject.Find("Canvas").GetComponent<MeshCollider>().GetInstanceID();
