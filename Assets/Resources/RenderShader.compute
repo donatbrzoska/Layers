@@ -3,8 +3,8 @@
 #pragma kernel main
 
 #include "basic_util.hlsl"
-#include "index_util.hlsl"
-#include "log_util.hlsl"
+#include "indexing.hlsl"
+#include "logging.hlsl"
 
 uint3 id__;
 uint2 SubgridGroupSize;
