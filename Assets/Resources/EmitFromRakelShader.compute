@@ -8,7 +8,7 @@
 
 uint3 id;
 
-uint2 CalculationPosition;
+int2 CalculationPosition;
 uint2 CalculationSize;
 
 RWStructuredBuffer<float4> Debug;
