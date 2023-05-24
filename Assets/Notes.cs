@@ -285,6 +285,8 @@ public class Notes : MonoBehaviour
  * 
  * Falsche API vermutet, Arrays werden in HLSL nicht mit 0 initialisiert
  * 
+ * Variable im Shader hieß anders als das Attribut was ich im C# Code gesetzt habe
+ * -> wird vom Compiler still hingenommen aber mein Wert kommt natürlich nicht an
  */
 
 
