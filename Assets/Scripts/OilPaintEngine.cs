@@ -30,8 +30,6 @@ public class OilPaintEngine : MonoBehaviour
 
     void Awake()
     {
-        Application.targetFrameRate = 30;
-
         Configuration = new Configuration();
         //Configuration.LoadDebug();
         //Configuration.RakelRotation = 22;
