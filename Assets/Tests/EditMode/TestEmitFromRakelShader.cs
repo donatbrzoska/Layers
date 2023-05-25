@@ -70,7 +70,7 @@ public class TestEmitFromRakelShader
             rakelEmittedVolumes[i] = rakelEmittedPaintData[i].Volume;
         }
 
-        //LogUtil.Log(rakelEmittedVolumes, 7, false);
+        //LogUtil.Log(rakelEmittedVolumes, rakelEmitSC.Size.y, false);
 
         float Q = 0.25f * Paint.UNIT; // quarter
         float H = 0.5f * Paint.UNIT; // half
@@ -125,7 +125,7 @@ public class TestEmitFromRakelShader
             rakelEmittedVolumes[i] = rakelEmittedPaintData[i].Volume;
         }
 
-        //LogUtil.Log(rakelEmittedVolumes, 8, false);
+        //LogUtil.Log(rakelEmittedVolumes, rakelEmitSC.Size.y, false);
 
         AssertUtil.AssertFloatsAreEqual(
             new float[] { // remember: these arrays are upside down compared to the actual pixels
@@ -178,7 +178,7 @@ public class TestEmitFromRakelShader
             rakelEmittedVolumes[i] = rakelEmittedPaintData[i].Volume;
         }
 
-        //LogUtil.Log(rakelEmittedVolumes, 7, false);
+        //LogUtil.Log(rakelEmittedVolumes, rakelEmitSC.Size.y, false);
 
         float Q = 0.25f * Paint.UNIT; // quarter
         float H = 0.5f * Paint.UNIT; // half
@@ -233,7 +233,7 @@ public class TestEmitFromRakelShader
             rakelEmittedVolumes[i] = rakelEmittedPaintData[i].Volume;
         }
 
-        //LogUtil.Log(rakelEmittedVolumes, 7, false);
+        //LogUtil.Log(rakelEmittedVolumes, rakelEmitSC.Size.y, false);
 
         AssertUtil.AssertFloatsAreEqual(
             new float[] { // remember: these arrays are upside down compared to the actual pixels

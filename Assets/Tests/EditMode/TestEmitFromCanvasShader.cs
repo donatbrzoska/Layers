@@ -66,7 +66,7 @@ public class TestEmitFromCanvasShader
             canvasEmittedVolumes[i] = canvasEmittedPaintData[i].Volume;
         }
 
-        //LogUtil.Log(canvasEmittedVolumes, 4, false);
+        //LogUtil.Log(canvasEmittedVolumes, canvasEmitSC.Size.y, false);
 
         float Q = 0.25f * Paint.UNIT; // quarter
         float H = 0.5f * Paint.UNIT; // half
@@ -113,7 +113,7 @@ public class TestEmitFromCanvasShader
             canvasEmittedVolumes[i] = canvasEmittedPaintData[i].Volume;
         }
 
-        //LogUtil.Log(canvasEmittedVolumes, 4, false);
+        //LogUtil.Log(canvasEmittedVolumes, canvasEmitSC.Size.y, false);
 
         AssertUtil.AssertFloatsAreEqual(
             new float[] { // remember: these arrays are upside down compared to the actual pixels
@@ -157,7 +157,7 @@ public class TestEmitFromCanvasShader
             canvasEmittedVolumes[i] = canvasEmittedPaintData[i].Volume;
         }
 
-        //LogUtil.Log(canvasEmittedVolumes, 4, false);
+        //LogUtil.Log(canvasEmittedVolumes, canvasEmitSC.Size.y, false);
 
         float H = 0.5f * Paint.UNIT; // half
         AssertUtil.AssertFloatsAreEqual(
@@ -202,7 +202,7 @@ public class TestEmitFromCanvasShader
             canvasEmittedVolumes[i] = canvasEmittedPaintData[i].Volume;
         }
 
-        //LogUtil.Log(canvasEmittedVolumes, 4, false);
+        //LogUtil.Log(canvasEmittedVolumes, canvasEmitSC.Size.y, false);
 
         float H = 0.5f * Paint.UNIT; // half
         AssertUtil.AssertFloatsAreEqual(
