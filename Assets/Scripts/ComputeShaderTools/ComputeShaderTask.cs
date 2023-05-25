@@ -170,7 +170,7 @@ public class ComputeShaderTask
     public bool DebugEnabled;
     public int KernelID;
 
-    public Color[] DebugValues;
+    public Vector4[] DebugValues;
 
     public ComputeShaderTask(
         string name,
@@ -196,14 +196,14 @@ public class ComputeShaderTask
 
 
         ComputeBuffer debugBuffer = new ComputeBuffer(1, sizeof(float)); // just for the compiler
-        DebugValues = new Color[1]; // just for the compiler
+        DebugValues = new Vector4[1]; // just for the compiler
         ComputeBuffer debugListInfoBuffer = new ComputeBuffer(1, DebugListInfo.SizeInBytes);
         DebugListInfo[] debugListInfoValue = new DebugListInfo[] { new DebugListInfo(0, DebugListType.None)};
         if (DebugEnabled)
         {
             debugBuffer.Dispose();
             debugBuffer = new ComputeBuffer(ShaderCalculation.PixelCount, DEBUG_LIST_SIZE_PER_THREAD_MAX * 4 * sizeof(float));
-            DebugValues = new Color[DEBUG_LIST_SIZE_PER_THREAD_MAX * ShaderCalculation.PixelCount];
+            DebugValues = new Vector4[DEBUG_LIST_SIZE_PER_THREAD_MAX * ShaderCalculation.PixelCount];
             debugBuffer.SetData(DebugValues);
             Attributes.Add(new CSComputeBuffer("Debug", debugBuffer));
             Attributes.Add(new CSComputeBuffer("DebugInfo", debugListInfoBuffer));

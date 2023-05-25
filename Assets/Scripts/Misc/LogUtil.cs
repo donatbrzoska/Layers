@@ -76,7 +76,7 @@ public class LogUtil
         Debug.Log(result);
     }
 
-    public static void Log(Color[] colors, Vector3Int dimensions, int usedDepth, DebugListType debugElementType, string descr)
+    public static void Log(Vector4[] values, Vector3Int dimensions, int usedDepth, DebugListType debugElementType, string descr)
     {
         if (descr != "")
         {
@@ -92,7 +92,7 @@ public class LogUtil
                 for (int k = 0; k < usedDepth; k++)
                 {
                     int index = k * dimensions.y * dimensions.x + row * dimensions.x + col;
-                    string color_str = ColorToString(colors[index], debugElementType);
+                    string color_str = Float4ToString(values[index], debugElementType);
                     result += color_str;
                     if (k < usedDepth - 1)
                     {
@@ -106,12 +106,12 @@ public class LogUtil
         Debug.Log(result);
     }
 
-    private static string ColorToString(Color color, DebugListType debugType)
+    private static string Float4ToString(Vector4 value, DebugListType debugType)
     {
         string result = "(";
         for (int i=0; i<(int)debugType; i++)
         {
-            result += color[i].ToString("F2");
+            result += value[i].ToString("F2");
             if (i<(int)debugType - 1) // This assumes that DebugListType.None exists!
             {
                 result += ", ";
