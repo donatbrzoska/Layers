@@ -11,7 +11,7 @@ public abstract class CSAttribute
         Key = key;
     }
 
-    public abstract void ApplyTo(ComputeShader computeShader);
+    public abstract void ApplyTo(ComputeShader computeShader, int kernelID);
 }
 
 public class CSComputeBuffer : CSAttribute
@@ -23,9 +23,9 @@ public class CSComputeBuffer : CSAttribute
         ComputeBuffer = computeBuffer;
     }
 
-    public override void ApplyTo(ComputeShader computeShader)
+    public override void ApplyTo(ComputeShader computeShader, int kernelID)
     {
-        computeShader.SetBuffer(0, Key, ComputeBuffer);
+        computeShader.SetBuffer(kernelID, Key, ComputeBuffer);
     }
 }
 
@@ -38,9 +38,9 @@ public class CSTexture : CSAttribute
         RenderTexture = renderTexture;
     }
 
-    public override void ApplyTo(ComputeShader computeShader)
+    public override void ApplyTo(ComputeShader computeShader, int kernelID)
     {
-        computeShader.SetTexture(0, Key, RenderTexture);
+        computeShader.SetTexture(kernelID, Key, RenderTexture);
     }
 }
 
@@ -53,7 +53,7 @@ public class CSInt : CSAttribute
         Value = value;
     }
 
-    public override void ApplyTo(ComputeShader computeShader)
+    public override void ApplyTo(ComputeShader computeShader, int kernelID)
     {
         computeShader.SetInt(Key, Value);
     }
@@ -68,7 +68,7 @@ public class CSInt2 : CSAttribute
         Values = values;
     }
 
-    public override void ApplyTo(ComputeShader computeShader)
+    public override void ApplyTo(ComputeShader computeShader, int kernelID)
     {
         computeShader.SetInts(Key, Values.x, Values.y);
     }
@@ -83,7 +83,7 @@ public class CSFloat : CSAttribute
         Value = value;
     }
 
-    public override void ApplyTo(ComputeShader computeShader)
+    public override void ApplyTo(ComputeShader computeShader, int kernelID)
     {
         computeShader.SetFloat(Key, Value);
     }
@@ -98,7 +98,7 @@ public class CSFloat2 : CSAttribute
         Values = values;
     }
 
-    public override void ApplyTo(ComputeShader computeShader)
+    public override void ApplyTo(ComputeShader computeShader, int kernelID)
     {
         computeShader.SetFloats(Key, Values.x, Values.y);
     }
@@ -113,7 +113,7 @@ public class CSFloat3 : CSAttribute
         Values = values;
     }
 
-    public override void ApplyTo(ComputeShader computeShader)
+    public override void ApplyTo(ComputeShader computeShader, int kernelID)
     {
         computeShader.SetFloats(Key, Values.x, Values.y, Values.z);
     }
@@ -128,7 +128,7 @@ public class CSFloat4 : CSAttribute
         Values = values;
     }
 
-    public override void ApplyTo(ComputeShader computeShader)
+    public override void ApplyTo(ComputeShader computeShader, int kernelID)
     {
         computeShader.SetFloats(Key, Values.x, Values.y, Values.z, Values.w);
     }
@@ -168,19 +168,24 @@ public class ComputeShaderTask
     public List<CSAttribute> Attributes;
     public List<ComputeBuffer> BuffersToDispose;
     public bool DebugEnabled;
+    public int KernelID;
+
+    public Color[] DebugValues;
 
     public ComputeShaderTask(
         string name,
         ShaderCalculation shaderCalculation,
         List<CSAttribute> attributes,
         List<ComputeBuffer> buffersToDispose,
-        bool debugEnabled)
+        bool debugEnabled,
+        int kernelID = 0)
     {
         Name = name;
         ShaderCalculation = shaderCalculation;
         Attributes = attributes;
         BuffersToDispose = buffersToDispose;
         DebugEnabled = debugEnabled;
+        KernelID = kernelID;
     }
 
     public void Run()
@@ -191,15 +196,15 @@ public class ComputeShaderTask
 
 
         ComputeBuffer debugBuffer = new ComputeBuffer(1, sizeof(float)); // just for the compiler
-        Color[] debugValues = new Color[1]; // just for the compiler
+        DebugValues = new Color[1]; // just for the compiler
         ComputeBuffer debugListInfoBuffer = new ComputeBuffer(1, DebugListInfo.SizeInBytes);
         DebugListInfo[] debugListInfoValue = new DebugListInfo[] { new DebugListInfo(0, DebugListType.None)};
         if (DebugEnabled)
         {
             debugBuffer.Dispose();
             debugBuffer = new ComputeBuffer(ShaderCalculation.PixelCount, DEBUG_LIST_SIZE_PER_THREAD_MAX * 4 * sizeof(float));
-            debugValues = new Color[DEBUG_LIST_SIZE_PER_THREAD_MAX * ShaderCalculation.PixelCount];
-            debugBuffer.SetData(debugValues);
+            DebugValues = new Color[DEBUG_LIST_SIZE_PER_THREAD_MAX * ShaderCalculation.PixelCount];
+            debugBuffer.SetData(DebugValues);
             Attributes.Add(new CSComputeBuffer("Debug", debugBuffer));
             Attributes.Add(new CSComputeBuffer("DebugInfo", debugListInfoBuffer));
         }
@@ -209,7 +214,7 @@ public class ComputeShaderTask
         foreach (CSAttribute ca in Attributes)
         {
             //Debug.Log("Processing " + ca);
-            ca.ApplyTo(computeShader);
+            ca.ApplyTo(computeShader, KernelID);
         }
 
 
@@ -232,14 +237,14 @@ public class ComputeShaderTask
                 computeShader.SetInts("SubgridCurrentThreadID", x, y);
                 computeShader.SetInts("SubgridGroupSize", subgridGroupSize.x, subgridGroupSize.y);
 
-                computeShader.Dispatch(0, threadGroups.x, threadGroups.y, 1);
+                computeShader.Dispatch(KernelID, threadGroups.x, threadGroups.y, 1);
             }
         }
 
 
         if (DebugEnabled)
         {
-            debugBuffer.GetData(debugValues);
+            debugBuffer.GetData(DebugValues);
             debugListInfoBuffer.GetData(debugListInfoValue);
             int debugListSize = debugListInfoValue[0].Size;
             DebugListType debugElementType = debugListInfoValue[0].Type;
@@ -247,7 +252,7 @@ public class ComputeShaderTask
             if (debugListSize > 0)
             {
                 LogUtil.Log(
-                    debugValues,
+                    DebugValues,
                     new Vector3Int(ShaderCalculation.Size.x, ShaderCalculation.Size.y, DEBUG_LIST_SIZE_PER_THREAD_MAX),
                     debugListSize,
                     debugElementType,

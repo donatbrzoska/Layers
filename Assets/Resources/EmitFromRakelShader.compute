@@ -1,7 +1,5 @@
 // ######################################## SHADER BASE ########################################
 
-#pragma kernel main
-
 #include "basic_util.hlsl"
 #include "indexing.hlsl"
 #include "logging.hlsl"
@@ -37,6 +35,7 @@ void log_(uint index, float4 f)
 
 // ###################################### SHADER BASE END ######################################
 
+#include "convert.hlsl"
 #include "paint.hlsl"
 #include "math.hlsl"
 #include "sutherland_hodgman.hlsl"
@@ -71,25 +70,6 @@ RWStructuredBuffer<Paint> RakelPickupReservoir;
 RWStructuredBuffer<Paint> RakelEmittedPaint;
 
 
-float3 map_to_world_space(int2 pixel, uint texture_resolution, float3 canvas_position, float2 canvas_size)
-{
-    float pixel_size = 1/float(texture_resolution);
-    float3 positive_canvas_aligned = float3(0.5*pixel_size + pixel.x*pixel_size,
-                                            0.5*pixel_size + pixel.y*pixel_size,
-                                            0);
-
-    float3 canvas_lower_left = canvas_position - float3(canvas_size.x/2, canvas_size.y/2, 0);
-    float3 canvas_aligned = positive_canvas_aligned + canvas_lower_left;
-
-    return canvas_aligned;
-}
-
-float2 map_to_index_space(float3 world_space_pos, uint rakel_resolution)
-{
-    float3 pixel_space = world_space_pos * rakel_resolution;
-    return float2(pixel_space.x, pixel_space.y);
-}
-
 // returns:
 // - x: part of dx of rakel, 0-err..1+err would mean pixel is under rakel
 // - y: part of dy of rakel, 0-err..1+err would mean pixel is under rakel
@@ -97,7 +77,7 @@ float2 map_to_index_space(float3 world_space_pos, uint rakel_resolution)
 float3 rakel_mapped(int2 pos_pixel)
 {
     // translate pixel to world space
-    float3 pos_world_space = map_to_world_space(pos_pixel, TextureResolution, CanvasPosition, CanvasSize);
+    float3 pos_world_space = pixel_to_world_space(pos_pixel, TextureResolution, CanvasPosition, CanvasSize);
 
     // translate back so pixel is anchor aligned
     float3 back_translation_position = RakelAnchor - float3(RakelPosition.x, RakelPosition.y, 0);
@@ -162,7 +142,7 @@ void emit(float2 reservoir_pixel, int2 radius)
             // calculate part
             int2 coord = reservoir_pixel_nearest + int2(x, y);
             if (pixel_in_reservoir_range(coord)) { // Prevent out of bounds access to reservoir. Also, if it's not in range, this overlap part is not (and must not be!) used anyways.
-                int2 rakel_anchor_index_space = map_to_index_space(RakelAnchor, TextureResolution);
+                int2 rakel_anchor_index_space = rakel_anchor_to_index_space(RakelAnchor, TextureResolution);
                 float2 rect_reservoir_pixel = rotate_by_y(reservoir_pixel, RakelTilt, rakel_anchor_index_space);
                 float2 rect_coord = rotate_by_y(coord, RakelTilt, rakel_anchor_index_space);
                 Rectangle fragment_rectangle = create_rectangle(rect_reservoir_pixel, -RakelRotation, 0);
@@ -244,6 +224,8 @@ void do_emit(float2 reservoir_pixel)
 {
     emit(reservoir_pixel, uint2(1, 1));
 }
+
+#pragma kernel main
 
 [numthreads(32,1,1)]
 void main (uint3 id_ : SV_DispatchThreadID)

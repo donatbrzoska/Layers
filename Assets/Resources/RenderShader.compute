@@ -1,7 +1,5 @@
 // ######################################## SHADER BASE ########################################
 
-#pragma kernel main
-
 #include "basic_util.hlsl"
 #include "indexing.hlsl"
 #include "logging.hlsl"
@@ -110,6 +108,8 @@ void update_color(int2 canvas_pixel)
     // set color
     CanvasTexture[canvas_pixel] = p.color;
 }
+
+#pragma kernel main
 
 [numthreads(32,1,1)]
 void main (uint3 id_ : SV_DispatchThreadID)

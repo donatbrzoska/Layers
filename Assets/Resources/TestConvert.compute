@@ -35,29 +35,40 @@ void log_(uint index, float4 f)
 
 // ###################################### SHADER BASE END ######################################
 
-#include "paint.hlsl"
-
-RWStructuredBuffer<Paint> RakelEmittedPaint;
-
-RWStructuredBuffer<Paint> CanvasReservoir;
-uint TextureWidth;
+#include "convert.hlsl"
 
 
-#pragma kernel main
+int2 Pixel;
+uint TextureResolution;
+float3 SurfacePosition;
+float2 SurfaceSize;
+
+#pragma kernel test_pixel_to_world_space
 
 [numthreads(32,1,1)]
-void main (uint3 id_ : SV_DispatchThreadID)
+void test_pixel_to_world_space(uint3 id_ : SV_DispatchThreadID)
 {
     id__ = id_;
     if (is_relevant_thread(id(), CalculationSize))
     {
-        // calculate pixel position on canvas
-        int2 canvas_pixel = id() + CalculationPosition;
+        float3 pixel_to_world_space_result = pixel_to_world_space(Pixel, TextureResolution, SurfacePosition, SurfaceSize);
+        log_float3(pixel_to_world_space_result);
+    }
+}
 
-        Paint emitted = RakelEmittedPaint[XY(id().x, id().y, CalculationSize.x)];
-        Paint on_canvas = CanvasReservoir[XY(canvas_pixel.x, canvas_pixel.y, TextureWidth)];
-        Paint mixed = mix(emitted, on_canvas);
 
-        CanvasReservoir[XY(canvas_pixel.x, canvas_pixel.y, TextureWidth)] = mixed;
+float3 WorldSpacePosition;
+// uint TextureResolution;
+
+#pragma kernel test_rakel_anchor_to_index_space
+
+[numthreads(32,1,1)]
+void test_rakel_anchor_to_index_space(uint3 id_ : SV_DispatchThreadID)
+{
+    id__ = id_;
+    if (is_relevant_thread(id(), CalculationSize))
+    {
+        float2 test_rakel_anchor_to_index_space_result = rakel_anchor_to_index_space(WorldSpacePosition, TextureResolution);
+        log_float2(test_rakel_anchor_to_index_space_result);
     }
 }

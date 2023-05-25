@@ -1,7 +1,5 @@
 // ######################################## SHADER BASE ########################################
 
-#pragma kernel main
-
 #include "basic_util.hlsl"
 #include "indexing.hlsl"
 #include "logging.hlsl"

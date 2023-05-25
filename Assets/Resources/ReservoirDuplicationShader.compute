@@ -1,7 +1,5 @@
 // ######################################## SHADER BASE ########################################
 
-#pragma kernel main
-
 #include "basic_util.hlsl"
 #include "indexing.hlsl"
 #include "logging.hlsl"
@@ -41,6 +39,8 @@ void log_(uint index, float4 f)
 
 RWStructuredBuffer<Paint> Reservoir;
 
+
+#pragma kernel main
 
 [numthreads(32,1,1)]
 void main (uint3 id_ : SV_DispatchThreadID)

@@ -1,7 +1,5 @@
 // ######################################## SHADER BASE ########################################
 
-#pragma kernel main
-
 #include "basic_util.hlsl"
 #include "indexing.hlsl"
 #include "logging.hlsl"
@@ -37,6 +35,7 @@ void log_(uint index, float4 f)
 
 // ###################################### SHADER BASE END ######################################
 
+#include "convert.hlsl"
 #include "paint.hlsl"
 #include "math.hlsl"
 #include "sutherland_hodgman.hlsl"
@@ -45,6 +44,8 @@ float RakelRotation;
 float RakelTilt;
 float3 RakelAnchor;
 float3 RakelPosition;
+float RakelLength;
+float RakelWidth;
 
 float3 RakelULTilted;
 float3 RakelURTilted;
@@ -65,15 +66,6 @@ RWStructuredBuffer<Paint> CanvasReservoir;
 RWStructuredBuffer<Paint> CanvasEmittedPaint;
 
 
-float3 map_to_world_space(int2 pixel)
-{
-    float pixel_size = 1/float(TextureResolution);
-    float3 positive_origin_aligned = float3(0.5*pixel_size + pixel.x*pixel_size,
-                                            0.5*pixel_size + pixel.y*pixel_size,
-                                            0);
-    return positive_origin_aligned;
-}
-
 // returns:
 // - x: part of dx of canvas, 0-err..1+err would mean pixel is over canvas
 // - y: part of dy of canvas, 0-err..1+err would mean pixel is over canvas
@@ -81,7 +73,11 @@ float3 map_to_world_space(int2 pixel)
 float3 canvas_mapped(int2 pos_pixel)
 {
     // convert pixel to world space
-    float3 pos_world_space = map_to_world_space(pos_pixel);
+    float3 pos_world_space = pixel_to_world_space(
+        pos_pixel,
+        TextureResolution,
+        float3(RakelWidth/2, RakelLength/2, 0),
+        float2(RakelWidth, RakelLength));
 
     // TODO
     // float3 pos_tilted = rotate_by_
@@ -209,6 +205,8 @@ void do_emit(float2 reservoir_pixel)
 {
     emit(reservoir_pixel, int2(1, 1));
 }
+
+#pragma kernel main
 
 [numthreads(32,1,1)]
 void main(uint3 id_ : SV_DispatchThreadID)

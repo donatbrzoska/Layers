@@ -75,6 +75,8 @@ public class Canvas_
             new CSFloat3("RakelAnchor", rakel.Anchor),
             new CSFloat3("RakelPosition", rakel.Position),
             new CSFloat("RakelRotation", rakel.Rotation),
+            new CSFloat("RakelLength", rakel.Length),
+            new CSFloat("RakelWidth", rakel.Width),
             new CSFloat("RakelTilt", rakel.Tilt),
             new CSFloat3("RakelULTilted", rakel.ulTilted),
             new CSFloat3("RakelURTilted", rakel.urTilted),
