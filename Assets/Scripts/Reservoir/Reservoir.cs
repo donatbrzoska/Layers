@@ -47,7 +47,7 @@ public class Reservoir
         };
 
         ComputeShaderTask cst = new ComputeShaderTask(
-            "ReservoirDuplicationShader",
+            "ReservoirDuplication",
             duplicateCalc,
             attributes,
             new List<ComputeBuffer>(),

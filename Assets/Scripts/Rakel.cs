@@ -124,7 +124,7 @@ public class Rakel
         };
 
         ComputeShaderTask cst = new ComputeShaderTask(
-            "EmitFromRakelShader",
+            "EmitFromRakel",
             shaderCalculation,
             attributes,
             new List<ComputeBuffer>(),
@@ -149,7 +149,7 @@ public class Rakel
         };
 
         ComputeShaderTask cst = new ComputeShaderTask(
-            "ApplyBufferToRakelShader",
+            "ApplyBufferToRakel",
             shaderCalculation,
             attributes,
             new List<ComputeBuffer>() { canvasEmittedPaint },

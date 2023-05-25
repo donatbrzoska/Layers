@@ -42,7 +42,7 @@ public class Canvas_
         );
 
         ComputeShaderTask cst = new ComputeShaderTask(
-            "SetTextureShader",
+            "SetTexture",
             sc,
             new List<CSAttribute>() {
                 new CSFloat4("Value", value),
@@ -90,7 +90,7 @@ public class Canvas_
         };
 
         ComputeShaderTask cst = new ComputeShaderTask(
-            "EmitFromCanvasShader",
+            "EmitFromCanvas",
             shaderCalculation,
             attributes,
             new List<ComputeBuffer>(),
@@ -115,7 +115,7 @@ public class Canvas_
         };
 
         ComputeShaderTask cst = new ComputeShaderTask(
-            "ApplyBufferToCanvasShader",
+            "ApplyBufferToCanvas",
             shaderCalculation,
             attributes,
             new List<ComputeBuffer>() { rakelEmittedPaint },
@@ -138,7 +138,7 @@ public class Canvas_
         };
 
         ComputeShaderTask cst = new ComputeShaderTask(
-            "RenderShader",
+            "Render",
             shaderCalculation,
             attributes,
             new List<ComputeBuffer>(),

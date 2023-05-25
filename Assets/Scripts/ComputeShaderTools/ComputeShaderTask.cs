@@ -220,11 +220,11 @@ public class ComputeShaderTask
 
         // TODO parametrize this somehow?
         Vector2Int subgridGroupSize = new Vector2Int(1, 1); // basically disables subgrid logic
-        if (Name == "EmitFromRakelShader")
+        if (Name == "EmitFromRakel")
         {
             subgridGroupSize = new Vector2Int(5, 3);
         }
-        else if (Name == "EmitFromCanvasShader")
+        else if (Name == "EmitFromCanvas")
         {
             subgridGroupSize = new Vector2Int(3, 3);
         }
