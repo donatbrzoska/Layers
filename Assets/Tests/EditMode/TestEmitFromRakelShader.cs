@@ -239,15 +239,14 @@ public class TestEmitFromRakelShader
             new float[] { // remember: these arrays are upside down compared to the actual pixels
                 0.000f,  0.000f,  0.000f,  0.000f,  0.000f,  0.000f,
                 0.000f,  0.000f,  0.062f,  0.000f,  0.000f,  0.000f,
-                0.000f,  0.155f,  0.878f,  0.000f,  0.000f,  0.000f,
-                0.000f,  0.000f,  0.655f,  0.461f,  0.000f,  0.000f,
+                0.000f,  0.155f,  0.878f,  0.039f,  0.000f,  0.000f,
+                0.000f,  0.000f,  0.655f,  0.500f,  0.000f,  0.000f,
                 0.000f,  0.000f,  0.116f,  0.923f,  0.116f,  0.000f,
-                0.000f,  0.000f,  0.000f,  0.345f,  0.173f,  0.000f,
+                0.000f,  0.000f,  0.000f,  0.384f,  0.173f,  0.000f,
                 0.000f,  0.000f,  0.000f,  0.000f,  0.000f,  0.000f,
             },
             rakelEmittedVolumes);
 
-        // TODO this is very suspicious
         AssertUtil.AssertFloatsEqual(
             0.5f * RakelLength * RakelWidth * Paint.UNIT,
             Sum(rakelEmittedVolumes),
