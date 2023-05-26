@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
 using UnityEngine;
 
-public class TestEmitFromCanvasShader
+public class TestEmitFromCanvas
 {
     Rakel Rakel;
     float RakelLength = 4;

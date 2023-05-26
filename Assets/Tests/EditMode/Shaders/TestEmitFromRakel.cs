@@ -2,7 +2,7 @@
 using NUnit.Framework;
 using UnityEngine;
 
-public class TestEmitFromRakelShader
+public class TestEmitFromRakel
 {
     WorldSpaceCanvas WorldSpaceCanvas;
     float RakelLength = 4;
