@@ -138,7 +138,6 @@ public class Rakel
             shaderCalculation,
             subgridGroupSize,
             attributes,
-            new List<ComputeBuffer>(),
             debugEnabled
         );
 
@@ -163,11 +162,12 @@ public class Rakel
             "ApplyBufferToRakel",
             shaderCalculation,
             attributes,
-            new List<ComputeBuffer>() { canvasEmittedPaint },
             debugEnabled
         );
 
         cst.Run();
+
+        canvasEmittedPaint.Dispose();
     }
 
     public void Dispose()

@@ -167,7 +167,6 @@ public class ComputeShaderTask
     private ShaderCalculation ShaderCalculation;
     Vector2Int SubgridGroupSize;
     public List<CSAttribute> Attributes;
-    public List<ComputeBuffer> BuffersToDispose;
     public bool DebugEnabled;
     public int KernelID;
 
@@ -178,7 +177,6 @@ public class ComputeShaderTask
         ShaderCalculation shaderCalculation,
         Vector2Int subgridGroupSize,
         List<CSAttribute> attributes,
-        List<ComputeBuffer> buffersToDispose,
         bool debugEnabled,
         int kernelID = 0)
     {
@@ -187,13 +185,12 @@ public class ComputeShaderTask
         SubgridGroupSize = subgridGroupSize;
 
         Attributes = attributes;
-        BuffersToDispose = buffersToDispose;
         DebugEnabled = debugEnabled;
         KernelID = kernelID;
     }
 
     // disable subgrid logic constructor
-    public ComputeShaderTask(string name, ShaderCalculation shaderCalculation, List<CSAttribute> attributes, List<ComputeBuffer> buffersToDispose, bool debugEnabled, int kernelID = 0) : this(name, shaderCalculation, new Vector2Int(1, 1), attributes, buffersToDispose, debugEnabled, kernelID) { }
+    public ComputeShaderTask(string name, ShaderCalculation shaderCalculation, List<CSAttribute> attributes, bool debugEnabled, int kernelID = 0) : this(name, shaderCalculation, new Vector2Int(1, 1), attributes, debugEnabled, kernelID) { }
 
     public void Run()
     {
@@ -266,12 +263,6 @@ public class ComputeShaderTask
         }
         debugBuffer.Dispose();
         debugListInfoBuffer.Dispose();
-
-
-        foreach (ComputeBuffer c in BuffersToDispose)
-        {
-            c.Dispose();
-        }
     }
 
     Vector2Int CalculateGroups(Vector2Int RegionSize, Vector2Int GroupSize)

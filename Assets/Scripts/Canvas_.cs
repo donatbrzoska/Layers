@@ -48,7 +48,6 @@ public class Canvas_
                 new CSFloat4("Value", value),
                 new CSTexture("Target", texture)
             },
-            new List<ComputeBuffer>(),
             false
         );
 
@@ -94,7 +93,6 @@ public class Canvas_
             shaderCalculation,
             new Vector2Int(3, 3),
             attributes,
-            new List<ComputeBuffer>(),
             debugEnabled
         );
 
@@ -119,11 +117,12 @@ public class Canvas_
             "ApplyBufferToCanvas",
             shaderCalculation,
             attributes,
-            new List<ComputeBuffer>() { rakelEmittedPaint },
             debugEnabled
         );
 
         cst.Run();
+
+        rakelEmittedPaint.Dispose();
     }
 
     public void Render(
@@ -142,7 +141,6 @@ public class Canvas_
             "Render",
             shaderCalculation,
             attributes,
-            new List<ComputeBuffer>(),
             debugEnabled
         );
 

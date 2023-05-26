@@ -25,7 +25,6 @@ public class TestConvert
             "TestConvert",
             new ShaderCalculation(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
             Attributes,
-            new List<ComputeBuffer>(),
             true,
             kernelID);
 

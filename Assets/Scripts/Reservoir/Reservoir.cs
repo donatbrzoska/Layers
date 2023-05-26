@@ -50,7 +50,6 @@ public class Reservoir
             "ReservoirDuplication",
             duplicateCalc,
             attributes,
-            new List<ComputeBuffer>(),
             debugEnabled
         );
 
