@@ -165,6 +165,7 @@ public class ComputeShaderTask
 
     public string Name;
     private ShaderCalculation ShaderCalculation;
+    Vector2Int SubgridGroupSize;
     public List<CSAttribute> Attributes;
     public List<ComputeBuffer> BuffersToDispose;
     public bool DebugEnabled;
@@ -175,6 +176,7 @@ public class ComputeShaderTask
     public ComputeShaderTask(
         string name,
         ShaderCalculation shaderCalculation,
+        Vector2Int subgridGroupSize,
         List<CSAttribute> attributes,
         List<ComputeBuffer> buffersToDispose,
         bool debugEnabled,
@@ -182,11 +184,16 @@ public class ComputeShaderTask
     {
         Name = name;
         ShaderCalculation = shaderCalculation;
+        SubgridGroupSize = subgridGroupSize;
+
         Attributes = attributes;
         BuffersToDispose = buffersToDispose;
         DebugEnabled = debugEnabled;
         KernelID = kernelID;
     }
+
+    // disable subgrid logic constructor
+    public ComputeShaderTask(string name, ShaderCalculation shaderCalculation, List<CSAttribute> attributes, List<ComputeBuffer> buffersToDispose, bool debugEnabled, int kernelID = 0) : this(name, shaderCalculation, new Vector2Int(1, 1), attributes, buffersToDispose, debugEnabled, kernelID) { }
 
     public void Run()
     {
@@ -218,24 +225,14 @@ public class ComputeShaderTask
         }
 
 
-        // TODO parametrize this somehow?
-        Vector2Int subgridGroupSize = new Vector2Int(1, 1); // basically disables subgrid logic
-        if (Name == "EmitFromRakel")
-        {
-            subgridGroupSize = new Vector2Int(5, 3);
-        }
-        else if (Name == "EmitFromCanvas")
-        {
-            subgridGroupSize = new Vector2Int(3, 3);
-        }
-        Vector2Int subgridGroups = CalculateGroups(ShaderCalculation.Size, subgridGroupSize);
+        Vector2Int subgridGroups = CalculateGroups(ShaderCalculation.Size, SubgridGroupSize);
         Vector2Int threadGroups = CalculateGroups(subgridGroups, ThreadGroupSize);
-        for (int y = 0; y < subgridGroupSize.y; y++)
+        for (int y = 0; y < SubgridGroupSize.y; y++)
         {
-            for (int x = 0; x < subgridGroupSize.x; x++)
+            for (int x = 0; x < SubgridGroupSize.x; x++)
             {
                 computeShader.SetInts("SubgridCurrentThreadID", x, y);
-                computeShader.SetInts("SubgridGroupSize", subgridGroupSize.x, subgridGroupSize.y);
+                computeShader.SetInts("SubgridGroupSize", SubgridGroupSize.x, SubgridGroupSize.y);
 
                 computeShader.Dispatch(KernelID, threadGroups.x, threadGroups.y, 1);
             }

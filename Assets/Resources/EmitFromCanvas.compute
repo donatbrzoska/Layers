@@ -201,11 +201,6 @@ void emit(float2 reservoir_pixel, int2 radius)
     // log_float(deleted);
 }
 
-void do_emit(float2 reservoir_pixel)
-{
-    emit(reservoir_pixel, int2(1, 1));
-}
-
 #pragma kernel main
 
 [numthreads(32,1,1)]
@@ -224,6 +219,6 @@ void main(uint3 id_ : SV_DispatchThreadID)
         float2 canvas_reservoir_pixel = float2(canvas_mapped_info.x * CanvasReservoirSize.x - 0.5,
                                                canvas_mapped_info.y * CanvasReservoirSize.y - 0.5);
         
-        do_emit(canvas_reservoir_pixel);
+        emit(canvas_reservoir_pixel, int2(1, 1));
     }
 }

@@ -92,6 +92,7 @@ public class Canvas_
         ComputeShaderTask cst = new ComputeShaderTask(
             "EmitFromCanvas",
             shaderCalculation,
+            new Vector2Int(3, 3),
             attributes,
             new List<ComputeBuffer>(),
             debugEnabled

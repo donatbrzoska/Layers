@@ -52,6 +52,7 @@ float RakelWidth;
 
 float RakelRotation;
 float RakelTilt;
+int ClipRadiusX;
 
 float3 RakelULTilted;
 float3 RakelURTilted;
@@ -221,15 +222,6 @@ void emit(float2 reservoir_pixel, int2 radius)
     // log_float(deleted);
 }
 
-void do_emit(float2 reservoir_pixel)
-{
-    float pixel_size = 1/float(TextureResolution);
-    float pixel_diag = pixel_size * sqrt(2);
-    float tilted_pixel_short_side = cos(radians(RakelTilt)) * pixel_size;
-    int radius_x = (int) ceil((pixel_diag / 2) / tilted_pixel_short_side);
-    emit(reservoir_pixel, uint2(radius_x, 1));
-}
-
 #pragma kernel main
 
 [numthreads(32,1,1)]
@@ -249,6 +241,6 @@ void main (uint3 id_ : SV_DispatchThreadID)
         float2 reservoir_pixel = float2(rakel_mapped_info.x * RakelReservoirSize.x - 0.5,
                                         rakel_mapped_info.y * RakelReservoirSize.y - 0.5);
         
-        do_emit(reservoir_pixel);
+        emit(reservoir_pixel, uint2(ClipRadiusX, 1));
     }
 }

@@ -99,6 +99,12 @@ public class Rakel
         Paint[] initPaint = new Paint[shaderCalculation.PixelCount];
         RakelEmittedPaint.SetData(initPaint);
 
+        float pixelSize = 1 / (float) wsc.Resolution;
+        float pixelDiag = pixelSize * Mathf.Sqrt(2);
+        float tiltedPixelShortSide = Mathf.Cos(Tilt * Mathf.Deg2Rad) * pixelSize;
+        int clipRadiusX = (int)Mathf.Ceil((pixelDiag / 2) / tiltedPixelShortSide);
+        Vector2Int subgridGroupSize = new Vector2Int(clipRadiusX * 2 + 1, 3);
+
         List<CSAttribute> attributes = new List<CSAttribute>()
         {
             new CSInt2("TextureSize", wsc.TextureSize),
@@ -111,6 +117,7 @@ public class Rakel
             new CSFloat("RakelWidth", Width),
             new CSFloat("RakelRotation", Rotation),
             new CSFloat("RakelTilt", Tilt),
+            new CSInt("ClipRadiusX", clipRadiusX),
             new CSFloat3("RakelULTilted", ulTilted),
             new CSFloat3("RakelURTilted", urTilted),
             new CSFloat3("RakelLLTilted", llTilted),
@@ -126,6 +133,7 @@ public class Rakel
         ComputeShaderTask cst = new ComputeShaderTask(
             "EmitFromRakel",
             shaderCalculation,
+            subgridGroupSize,
             attributes,
             new List<ComputeBuffer>(),
             debugEnabled
