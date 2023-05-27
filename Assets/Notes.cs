@@ -287,6 +287,8 @@ public class Notes : MonoBehaviour
  * 
  * Variable im Shader hieß anders als das Attribut was ich im C# Code gesetzt habe
  * -> wird vom Compiler still hingenommen aber mein Wert kommt natürlich nicht an
+ * 
+ * Copy and Paste (Shader Test: Execute()-Funktion kopiert und dann den Shader-Namen nicht angepasst ...)
  */
 
 
