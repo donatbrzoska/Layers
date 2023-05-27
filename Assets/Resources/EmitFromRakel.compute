@@ -35,6 +35,7 @@ void log_(uint index, float4 f)
 
 // ###################################### SHADER BASE END ######################################
 
+#include "distance.hlsl"
 #include "convert.hlsl"
 #include "paint.hlsl"
 #include "math.hlsl"
@@ -94,9 +95,7 @@ float3 rakel_mapped(int2 pos_pixel)
     float part_x = (pos_back_rotated.x - rakel_tilted_x_min) / rakel_tilted_dx;
     float part_y = pos_back_rotated.y / RakelLength; // currently easy, because there is no length tilt
 
-    float m = (RakelLRTilted.y - RakelLLTilted.y) / (RakelLRTilted.x - RakelLLTilted.x);
-    float c = RakelPosition.y - m * RakelPosition.x;
-    float dist = m * pos_back_rotated.x + c;
+    float dist = distance_from_rakel(pos_back_rotated, RakelLLTilted, RakelLRTilted, RakelPosition);
 
     return float3(part_x, part_y, dist);
 }
