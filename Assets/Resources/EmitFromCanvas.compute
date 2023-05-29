@@ -79,11 +79,9 @@ float3 canvas_mapped(int2 pos_pixel)
         float3(RakelWidth/2, RakelLength/2, 0),
         float2(RakelWidth, RakelLength));
 
-    // TODO
-    // float3 pos_tilted = rotate_by_
-
-    // rotate around anchor
-    float3 pos_rotated = rotate_by_z(pos_world_space, RakelRotation, RakelAnchor);
+    // tilt and rotate around anchor
+    float3 pos_tilted = rotate_by_y(pos_world_space, RakelTilt, RakelAnchor);
+    float3 pos_rotated = rotate_by_z(pos_tilted, RakelRotation, RakelAnchor);
 
     // translate to actual rakel position
     float3 anchor_cleaned_translation = float3(RakelPosition.x, RakelPosition.y, 0) - RakelAnchor;
