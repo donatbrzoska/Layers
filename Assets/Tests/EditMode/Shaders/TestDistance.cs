@@ -13,11 +13,6 @@ public class TestDistance
     public void Setup()
     {
         Attributes = new List<CSAttribute>();
-        //Attributes = new()
-        //{
-        //    new CSInt("TextureResolution", 2),
-        //    new CSFloat2("SurfaceSize", new Vector2(15, 10))
-        //};
     }
 
     private ComputeShaderTask Execute(int kernelID)
