@@ -5,7 +5,7 @@ using UnityEngine;
 public class TestDistance
 {
     private const int KERNEL_ID_distance_from_rakel = 0;
-    //private const int KERNEL_ID_distance_from_canvas = 1;
+    private const int KERNEL_ID_distance_from_canvas = 1;
 
     List<CSAttribute> Attributes;
 
@@ -104,5 +104,60 @@ public class TestDistance
         AssertUtil.AssertFloatsEqual(
             0.6202f, // POS_RATE * Mathf.Sin(Mathf.Deg2Rad * TILT),
             result);
+    }
+
+    [Test]
+    public void distance_from_canvas_ZeroDistance()
+    {
+        // Arrange
+        Attributes.Add(new CSFloat3("PointPos", new Vector3(0, 0, -0.1f)));
+        Attributes.Add(new CSFloat3("CanvasPosition", new Vector3(0, 0, -0.1f)));
+        Attributes.Add(new CSFloat3("CanvasNormal", new Vector3(0, 0, -1)));
+
+        // Act
+        ComputeShaderTask cst = Execute(KERNEL_ID_distance_from_canvas);
+
+
+        // Assert
+        Vector4 e = cst.DebugValues[0];
+        float result = e.x;
+
+        Assert.AreEqual(0, result);
+    }
+
+    [Test]
+    public void distance_from_canvas_xy()
+    {
+        // Arrange
+        Attributes.Add(new CSFloat3("PointPos", new Vector3(0, 0, -0.1f)));
+        Attributes.Add(new CSFloat3("CanvasPosition", new Vector3(0, 0, 0)));
+        Attributes.Add(new CSFloat3("CanvasNormal", new Vector3(0, 0, -1)));
+
+        // Act
+        ComputeShaderTask cst = Execute(KERNEL_ID_distance_from_canvas);
+
+        // Assert
+        Vector4 e = cst.DebugValues[0];
+        float result = e.x;
+
+        AssertUtil.AssertFloatsEqual(0.1f, result);
+    }
+
+    [Test]
+    public void distance_from_canvas_xz()
+    {
+        // Arrange
+        Attributes.Add(new CSFloat3("PointPos", new Vector3(-0.2f, 0, 0)));
+        Attributes.Add(new CSFloat3("CanvasPosition", new Vector3(0, 0, 0)));
+        Attributes.Add(new CSFloat3("CanvasNormal", new Vector3(1, 0, 0)));
+
+        // Act
+        ComputeShaderTask cst = Execute(KERNEL_ID_distance_from_canvas);
+
+        // Assert
+        Vector4 e = cst.DebugValues[0];
+        float result = e.x;
+
+        AssertUtil.AssertFloatsEqual(0.2f, result);
     }
 }

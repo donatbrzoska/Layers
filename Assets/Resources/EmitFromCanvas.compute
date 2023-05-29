@@ -35,6 +35,7 @@ void log_(uint index, float4 f)
 
 // ###################################### SHADER BASE END ######################################
 
+#include "distance.hlsl"
 #include "convert.hlsl"
 #include "paint.hlsl"
 #include "math.hlsl"
@@ -46,11 +47,6 @@ float3 RakelAnchor;
 float3 RakelPosition;
 float RakelLength;
 float RakelWidth;
-
-float3 RakelULTilted;
-float3 RakelURTilted;
-float3 RakelLLTilted;
-float3 RakelLRTilted;
 
 float3 CanvasPosition;
 float2 CanvasSize;
@@ -98,13 +94,11 @@ float3 canvas_mapped(int2 pos_pixel)
     float canvas_dy = canvas_y_max - canvas_y_min;
     float part_y = (pos_translated.y - canvas_y_min) / canvas_dy;
 
-    // TODO Rakel is now potentially rotated, so we need a 2D function for the distance
-    // float m = (RakelLRTilted.y - RakelLLTilted.y) / (RakelLRTilted.x - RakelLLTilted.x);
-    // float c = RakelPosition.y - m * RakelPosition.x;
-    float dist = 0;//m * pos_back_rotated.x + c;
+    float dist = distance_from_canvas(pos_translated, CanvasPosition, float3(0, 0, -1));
 
     return float3(part_x, part_y, dist);
 }
+
 bool pixel_in_reservoir_range(int2 pixel)
 {
     return pixel.x >= 0
