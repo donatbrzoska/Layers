@@ -6,6 +6,7 @@ public class Configuration
 
     public float RakelRotation;
     public bool RakelRotationLocked;
+    public bool RakelYPositionLocked;
     public float RakelTilt;
 
     public RakelConfiguration RakelConfiguration;
@@ -18,6 +19,7 @@ public class Configuration
 
         RakelRotation = 0;
         RakelRotationLocked = true;
+        RakelYPositionLocked = false;
         RakelTilt = 0;
 
         RakelConfiguration = new RakelConfiguration();

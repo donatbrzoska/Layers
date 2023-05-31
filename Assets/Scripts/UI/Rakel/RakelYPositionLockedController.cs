@@ -3,7 +3,7 @@ public class RakelYPositionLockedController : ToggleController
 {
     void Start()
     {
-        Toggle.SetIsOnWithoutNotify(OilPaintEngine.RakelMouseInputManager.YPositionLocked);
+        Toggle.SetIsOnWithoutNotify(OilPaintEngine.Configuration.RakelYPositionLocked);
     }
 
     override public void OnValueChanged(bool locked)

@@ -2,9 +2,6 @@
 
 public class RakelMouseInputManager
 {
-    // Position attributes
-    public bool YPositionLocked { get; set; }
-
     private Camera Camera;
     private GraphicsRaycaster GraphicsRaycaster;
 
@@ -38,10 +35,6 @@ public class RakelMouseInputManager
                     if (hit.colliderInstanceID == id)
                     {
                         result = hit.point;
-                        if (YPositionLocked)
-                        {
-                            result.y = 0;
-                        }
                         break;
                     }
                 }
