@@ -118,13 +118,14 @@ public class OilPaintEngine : MonoBehaviour
             }
 
             Vector3 position = RakelMouseInputManager.Position;
-            if (Configuration.RakelYPositionLocked)
-            {
-                position.y = 0;
-            }
 
             if (!position.Equals(Vector3.negativeInfinity))
             {
+                if (Configuration.RakelYPositionLocked)
+                {
+                    position.y = 0;
+                }
+
                 if (Input.GetMouseButtonDown(0))
                 {
                     InputInterpolator.NewStroke();
