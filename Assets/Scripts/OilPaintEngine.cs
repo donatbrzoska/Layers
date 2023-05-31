@@ -111,14 +111,10 @@ public class OilPaintEngine : MonoBehaviour
         }
         else
         {
-            float rotation;
+            float rotation = RakelMouseInputManager.Rotation;
             if (Configuration.RakelRotationLocked)
             {
                 rotation = Configuration.RakelRotation;
-            }
-            else
-            {
-                rotation = RakelMouseInputManager.Rotation;
             }
 
             Vector3 position = RakelMouseInputManager.Position;
