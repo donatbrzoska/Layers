@@ -9,7 +9,7 @@ public class TransferEngine
 
     // Position is located at Rakel Anchor
     // Rotation 0 means Rakel is directed to the right
-    // Tilt 0 means Rakel is flat on canvas
+    // Tilt 0 means Rakel is parallel to canvas
     public void SimulateStep(
         Vector3 rakelPosition, float rakelRotation, float rakelTilt,
         TransferConfiguration transferConfiguration,
