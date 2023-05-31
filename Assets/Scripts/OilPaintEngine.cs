@@ -7,7 +7,7 @@ public class OilPaintEngine : MonoBehaviour
     public int TH_GROUP_SIZE_Y = 1;
 
     public Configuration Configuration { get; private set; }
-    public RakelMouseInputManager RakelMouseInputManager { get; private set; }
+    public MouseInput InputManager { get; private set; }
     public float RakelRotation // used only for UI fetching
     {
         get
@@ -18,7 +18,7 @@ public class OilPaintEngine : MonoBehaviour
             }
             else
             {
-                return RakelMouseInputManager.Rotation;
+                return InputManager.Rotation;
             }
         }
     }
@@ -39,7 +39,7 @@ public class OilPaintEngine : MonoBehaviour
 
         int wallColliderID = GameObject.Find("Wall").GetComponent<MeshCollider>().GetInstanceID();
         int canvasColliderID = GameObject.Find("Canvas").GetComponent<MeshCollider>().GetInstanceID();
-        RakelMouseInputManager = new RakelMouseInputManager(wallColliderID, canvasColliderID);
+        InputManager = new MouseInput(wallColliderID, canvasColliderID);
 
         if (BENCHMARK_STEPS > 0)
         {
@@ -111,25 +111,28 @@ public class OilPaintEngine : MonoBehaviour
         }
         else
         {
-            float rotation = RakelMouseInputManager.Rotation;
-            if (Configuration.RakelRotationLocked)
-            {
-                rotation = Configuration.RakelRotation;
-            }
+            InputManager.Update();
 
-            Vector3 position = RakelMouseInputManager.Position;
-
-            if (!position.Equals(Vector3.negativeInfinity))
+            if (InputManager.CanvasHit)
             {
+
+                Vector3 position = InputManager.Position;
                 if (Configuration.RakelYPositionLocked)
                 {
                     position.y = 0;
                 }
 
-                if (Input.GetMouseButtonDown(0))
+                float rotation = InputManager.Rotation;
+                if (Configuration.RakelRotationLocked)
+                {
+                    rotation = Configuration.RakelRotation;
+                }
+
+                if (InputManager.StrokeBegin)
                 {
                     InputInterpolator.NewStroke();
                 }
+
                 InputInterpolator.AddNode(
                     position,
                     rotation,
