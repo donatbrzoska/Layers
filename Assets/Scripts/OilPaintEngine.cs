@@ -7,18 +7,74 @@ public class OilPaintEngine : MonoBehaviour
     public int TH_GROUP_SIZE_Y = 1;
 
     public Configuration Configuration { get; private set; }
-    public MouseInput InputManager { get; private set; }
+    public MouseAndKeyboardInput InputManager { get; private set; }
+    public float RakelPositionX // used only for UI fetching
+    {
+        get
+        {
+            if (Configuration.RakelConfiguration.PositionLocked.x)
+            {
+                return Configuration.RakelConfiguration.Position.x;
+            }
+            else
+            {
+                return InputManager.Position.x;
+            }
+        }
+    }
+    public float RakelPositionY // used only for UI fetching
+    {
+        get
+        {
+            if (Configuration.RakelConfiguration.PositionLocked.y)
+            {
+                return Configuration.RakelConfiguration.Position.y;
+            }
+            else
+            {
+                return InputManager.Position.y;
+            }
+        }
+    }
+    public float RakelPositionZ // used only for UI fetching
+    {
+        get
+        {
+            if (Configuration.RakelConfiguration.PositionLocked.z)
+            {
+                return Configuration.RakelConfiguration.Position.z;
+            }
+            else
+            {
+                return InputManager.Position.z;
+            }
+        }
+    }
     public float RakelRotation // used only for UI fetching
     {
         get
         {
-            if (Configuration.RakelRotationLocked)
+            if (Configuration.RakelConfiguration.RotationLocked)
             {
-                return Configuration.RakelRotation;
+                return Configuration.RakelConfiguration.Rotation;
             }
             else
             {
                 return InputManager.Rotation;
+            }
+        }
+    }
+    public float RakelTilt // used only for UI fetching
+    {
+        get
+        {
+            if (Configuration.RakelConfiguration.TiltLocked)
+            {
+                return Configuration.RakelConfiguration.Tilt;
+            }
+            else
+            {
+                return InputManager.Tilt;
             }
         }
     }
@@ -39,7 +95,7 @@ public class OilPaintEngine : MonoBehaviour
 
         int wallColliderID = GameObject.Find("Wall").GetComponent<MeshCollider>().GetInstanceID();
         int canvasColliderID = GameObject.Find("Canvas").GetComponent<MeshCollider>().GetInstanceID();
-        InputManager = new MouseInput(wallColliderID, canvasColliderID);
+        InputManager = new MouseAndKeyboardInput(wallColliderID, canvasColliderID);
 
         if (BENCHMARK_STEPS > 0)
         {
@@ -113,19 +169,32 @@ public class OilPaintEngine : MonoBehaviour
         {
             InputManager.Update();
 
-            if (InputManager.CanvasHit)
+            if (InputManager.DrawingEnabled)
             {
-
                 Vector3 position = InputManager.Position;
-                if (Configuration.RakelYPositionLocked)
+                if (Configuration.RakelConfiguration.PositionLocked.x)
                 {
-                    position.y = 0;
+                    position.x = Configuration.RakelConfiguration.Position.x;
+                }
+                if (Configuration.RakelConfiguration.PositionLocked.y)
+                {
+                    position.y = Configuration.RakelConfiguration.Position.y;
+                }
+                if (Configuration.RakelConfiguration.PositionLocked.z)
+                {
+                    position.z = Configuration.RakelConfiguration.Position.z;
                 }
 
                 float rotation = InputManager.Rotation;
-                if (Configuration.RakelRotationLocked)
+                if (Configuration.RakelConfiguration.RotationLocked)
                 {
-                    rotation = Configuration.RakelRotation;
+                    rotation = Configuration.RakelConfiguration.Rotation;
+                }
+
+                float tilt = InputManager.Tilt;
+                if (Configuration.RakelConfiguration.TiltLocked)
+                {
+                    tilt = Configuration.RakelConfiguration.Tilt;
                 }
 
                 if (InputManager.StrokeBegin)
@@ -136,7 +205,7 @@ public class OilPaintEngine : MonoBehaviour
                 InputInterpolator.AddNode(
                     position,
                     rotation,
-                    Configuration.RakelTilt,
+                    tilt,
                     Configuration.TransferConfiguration,
                     Configuration.TextureResolution);
             }
@@ -171,19 +240,54 @@ public class OilPaintEngine : MonoBehaviour
     // ***                                      TOP LEFT                                    ***
     // ****************************************************************************************
 
+    public void UpdateRakelPositionX(float value)
+    {
+        Configuration.RakelConfiguration.Position.x = value;
+    }
+
+    public void UpdateRakelPositionXLocked(bool locked)
+    {
+        Configuration.RakelConfiguration.PositionLocked.x = locked;
+    }
+
+    public void UpdateRakelPositionY(float value)
+    {
+        Configuration.RakelConfiguration.Position.y = value;
+    }
+
+    public void UpdateRakelPositionYLocked(bool locked)
+    {
+        Configuration.RakelConfiguration.PositionLocked.y = locked;
+    }
+
+    public void UpdateRakelPositionZ(float value)
+    {
+        Configuration.RakelConfiguration.Position.z = value;
+    }
+
+    public void UpdateRakelPositionZLocked(bool locked)
+    {
+        Configuration.RakelConfiguration.PositionLocked.z = locked;
+    }
+
     public void UpdateRakelRotation(float rotation)
     {
-        Configuration.RakelRotation = rotation;
+        Configuration.RakelConfiguration.Rotation = rotation;
     }
 
     public void UpdateRakelRotationLocked(bool locked)
     {
-        Configuration.RakelRotationLocked = locked;
+        Configuration.RakelConfiguration.RotationLocked = locked;
     }
 
     public void UpdateRakelTilt(float tilt)
     {
-        Configuration.RakelTilt = tilt;
+        Configuration.RakelConfiguration.Tilt = tilt;
+    }
+
+    public void UpdateRakelTiltLocked(bool locked)
+    {
+        Configuration.RakelConfiguration.TiltLocked = locked;
     }
 
     public void UpdateRakelLength(float worldSpaceLength)
@@ -292,11 +396,6 @@ public class OilPaintEngine : MonoBehaviour
     public void UpdatePickupVolume(float value)
     {
         Configuration.TransferConfiguration.PickupVolume = value;
-    }
-
-    public void UpdateRakelYPositionLocked(bool locked)
-    {
-        Configuration.RakelYPositionLocked = locked;
     }
 
     public void DoMacroAction()

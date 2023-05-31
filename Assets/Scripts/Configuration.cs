@@ -4,11 +4,6 @@ public class Configuration
 {
     public int TextureResolution;
 
-    public bool RakelYPositionLocked;
-    public float RakelRotation;
-    public bool RakelRotationLocked;
-    public float RakelTilt;
-
     public RakelConfiguration RakelConfiguration;
     public FillConfiguration FillConfiguration;
     public TransferConfiguration TransferConfiguration;
@@ -16,11 +11,6 @@ public class Configuration
     public Configuration()
     {
         TextureResolution = 20;
-
-        RakelYPositionLocked = false;
-        RakelRotation = 0;
-        RakelRotationLocked = true;
-        RakelTilt = 0;
 
         RakelConfiguration = new RakelConfiguration();
         FillConfiguration = new FillConfiguration();
@@ -55,7 +45,7 @@ public class Configuration
     {
         TextureResolution = 80;
 
-        RakelRotationLocked = false;
+        RakelConfiguration.RotationLocked = false;
 
         TransferConfiguration.EmitVolumePickupReservoir = 0;
         TransferConfiguration.PickupVolume = 0;
@@ -69,7 +59,7 @@ public class Configuration
     {
         TextureResolution = 80;
 
-        RakelRotationLocked = false;
+        RakelConfiguration.RotationLocked = false;
 
         FillConfiguration.Color = Color_.DarkRed;
         FillConfiguration.Volume = 600;
@@ -98,11 +88,41 @@ public class Configuration
 
 public class RakelConfiguration
 {
+    public class Bool3
+    {
+        public bool x;
+        public bool y;
+        public bool z;
+
+        public override string ToString()
+        {
+            return base.ToString() + string.Format(": ({0}, {1}, {2})", x, y, z);
+        }
+    }
+
     public float Length;
     public float Width;
 
+    public Vector3 Position;
+    public Bool3 PositionLocked;
+
+    public float Rotation;
+    public bool RotationLocked;
+
+    public float Tilt;
+    public bool TiltLocked;
+
     public RakelConfiguration()
     {
+        Position = Vector3.zero;
+        PositionLocked = new Bool3();
+
+        Rotation = 0;
+        RotationLocked = true;
+
+        Tilt = 0;
+        TiltLocked = true;
+
         Length = 2.5f;
         Width = 0.5f;
     }

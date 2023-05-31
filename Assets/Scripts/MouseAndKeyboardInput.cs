@@ -1,13 +1,13 @@
 ﻿using UnityEngine;
 
-public class MouseInput
+public class MouseAndKeyboardInput
 {
     private Camera Camera;
     private GraphicsRaycaster GraphicsRaycaster;
 
     private int[] ColliderIDs;
 
-    public MouseInput(params int[] colliderIDs)
+    public MouseAndKeyboardInput(params int[] colliderIDs)
     {
         Camera = GameObject.Find("Main Camera").GetComponent<Camera>();
         GraphicsRaycaster = GameObject.Find("UI").GetComponent<GraphicsRaycaster>();
@@ -18,44 +18,56 @@ public class MouseInput
     public void Update()
     {
         UpdatePosition();
-        UpdateCanvasHit();
+        UpdateDrawingEnabled();
         UpdateStrokeBegin();
         UpdateRotation();
+        UpdateTilt();
     }
 
 
-    // only valid if CanvasHit is true
     public Vector3 Position { get; private set; }
+
+    private const float POSITION_Z_STEP = 0.1f;
+    private float positionZ;
 
     private void UpdatePosition()
     {
-        Position = Vector3.negativeInfinity;
-        if (!GraphicsRaycaster.UIBlocking() && Input.GetMouseButton(0))
-        {
-            RaycastHit hit;
-            Ray ray = Camera.ScreenPointToRay(Input.mousePosition);
-            Physics.Raycast(ray, out hit);
+        // determine mouse position on canvas
+        RaycastHit hit;
+        Ray ray = Camera.ScreenPointToRay(Input.mousePosition);
+        Physics.Raycast(ray, out hit);
 
-            foreach (int id in ColliderIDs)
+        foreach (int id in ColliderIDs)
+        {
+            if (hit.colliderInstanceID == id)
             {
-                if (hit.colliderInstanceID == id)
-                {
-                    Position = hit.point;
-                    break;
-                }
+                Position = hit.point;
+                break;
             }
         }
+
+        // process keyboard input
+        if (Input.GetKey(KeyCode.Q))
+        {
+            positionZ += POSITION_Z_STEP;
+        }
+        if (Input.GetKey(KeyCode.W))
+        {
+            positionZ -= POSITION_Z_STEP;
+        }
+
+        Vector3 p = Position;
+        p.z = positionZ;
+        Position = p;
     }
 
 
-    public bool CanvasHit { get; private set; }
+    // Real haptic input controllers probably won't need this and should always return true
+    public bool DrawingEnabled { get; private set; }
 
-    private void UpdateCanvasHit()
+    private void UpdateDrawingEnabled()
     {
-        if (!Position.Equals(Vector3.negativeInfinity))
-        {
-            CanvasHit = true;
-        }
+        DrawingEnabled = Input.GetMouseButton(0) && !GraphicsRaycaster.UIBlocking();
     }
 
 
@@ -63,7 +75,7 @@ public class MouseInput
 
     private void UpdateStrokeBegin()
     {
-        if (CanvasHit)
+        if (DrawingEnabled)
         {
             StrokeBegin = Input.GetMouseButtonDown(0);
         }
@@ -95,5 +107,24 @@ public class MouseInput
                 PreviousMousePosition = currentMousePosition;
             }
         }
+    }
+
+
+    public float Tilt { get; private set; }
+
+    private float TILT_STEP = 0.2f;
+
+    private void UpdateTilt()
+    {
+        if (Input.GetKey(KeyCode.A))
+        {
+            Tilt += TILT_STEP;
+        }
+        if (Input.GetKey(KeyCode.S))
+        {
+            Tilt -= TILT_STEP;
+        }
+
+        Tilt = Rakel.ClampTilt(Tilt);
     }
 }
