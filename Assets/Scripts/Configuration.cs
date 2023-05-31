@@ -4,9 +4,9 @@ public class Configuration
 {
     public int TextureResolution;
 
+    public bool RakelYPositionLocked;
     public float RakelRotation;
     public bool RakelRotationLocked;
-    public bool RakelYPositionLocked;
     public float RakelTilt;
 
     public RakelConfiguration RakelConfiguration;
@@ -17,9 +17,9 @@ public class Configuration
     {
         TextureResolution = 20;
 
+        RakelYPositionLocked = false;
         RakelRotation = 0;
         RakelRotationLocked = true;
-        RakelYPositionLocked = false;
         RakelTilt = 0;
 
         RakelConfiguration = new RakelConfiguration();
