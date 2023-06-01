@@ -50,6 +50,46 @@ public class TestDistance
     }
 
     [Test]
+    public void distance_from_rakel_Untilted_No_NegativeDistance_1()
+    {
+        // Arrange
+        Attributes.Add(new CSFloat3("PointPos", new Vector3(0, 0, 0.1f)));
+        Attributes.Add(new CSFloat3("RakelLLTilted", new Vector3(0, 0, 0)));
+        Attributes.Add(new CSFloat3("RakelLRTilted", new Vector3(1, 0, 0)));
+        Attributes.Add(new CSFloat3("RakelPosition", new Vector3(1, 1, 0)));
+
+        // Act
+        ComputeShaderTask cst = Execute(KERNEL_ID_distance_from_rakel);
+
+
+        // Assert
+        Vector4 e = cst.DebugValues[0];
+        float result = e.x;
+
+        Assert.AreEqual(0.1f, result);
+    }
+
+    [Test]
+    public void distance_from_rakel_Untilted_No_NegativeDistance_2()
+    {
+        // Arrange
+        Attributes.Add(new CSFloat3("PointPos", new Vector3(0, 0, -0.1f)));
+        Attributes.Add(new CSFloat3("RakelLLTilted", new Vector3(0, 0, 0)));
+        Attributes.Add(new CSFloat3("RakelLRTilted", new Vector3(1, 0, 0)));
+        Attributes.Add(new CSFloat3("RakelPosition", new Vector3(1, 1, 0)));
+
+        // Act
+        ComputeShaderTask cst = Execute(KERNEL_ID_distance_from_rakel);
+
+
+        // Assert
+        Vector4 e = cst.DebugValues[0];
+        float result = e.x;
+
+        Assert.AreEqual(0.1f, result);
+    }
+
+    [Test]
     public void distance_from_rakel_Tilted30_ZeroDistance()
     {
         float TILT = 30;

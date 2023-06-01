@@ -5,7 +5,7 @@ float distance_from_rakel(float3 point_pos, float3 rakel_LL_tilted, float3 rakel
     float m = (rakel_LR_tilted.z - rakel_LL_tilted.z) / (rakel_LR_tilted.x - rakel_LL_tilted.x);
     float c = rakel_position.z - m * rakel_position.x;
     float h = m * point_pos.x + c;
-    return h - point_pos.z;
+    return abs(h - point_pos.z);
 }
 
 float distance_from_canvas(float3 point_pos, float3 canvas_position, float3 canvas_normal)
