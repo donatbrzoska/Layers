@@ -95,7 +95,8 @@ float3 rakel_mapped(int2 pos_pixel)
     float part_x = (pos_back_rotated.x - rakel_tilted_x_min) / rakel_tilted_dx;
     float part_y = pos_back_rotated.y / RakelLength; // currently easy, because there is no length tilt
 
-    float dist = distance_from_rakel(pos_back_rotated, RakelLLTilted, RakelLRTilted, RakelPosition);
+    float3 rakel_normal = cross(RakelLLTilted - RakelLRTilted, RakelURTilted - RakelLRTilted);
+    float dist = distance_point_plane(pos_back_rotated, RakelPosition, rakel_normal);
 
     return float3(part_x, part_y, dist);
 }

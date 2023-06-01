@@ -38,38 +38,19 @@ void log_(uint index, float4 f)
 #include "distance.hlsl"
 
 
-float3 PointPos;
-float3 RakelLLTilted;
-float3 RakelLRTilted;
-float3 RakelPosition;
+float3 PointPosition;
+float3 PlaneSuppVec;
+float3 PlaneNormal;
 
-#pragma kernel test_distance_from_rakel
+#pragma kernel test_distance_point_plane
 
 [numthreads(32,1,1)]
-void test_distance_from_rakel(uint3 id_ : SV_DispatchThreadID)
+void test_distance_point_plane(uint3 id_ : SV_DispatchThreadID)
 {
     id__ = id_;
     if (is_relevant_thread(id(), CalculationSize))
     {
-        float distance_from_rakel_result = distance_from_rakel(PointPos, RakelLLTilted, RakelLRTilted, RakelPosition);
-        log_float(distance_from_rakel_result);
-    }
-}
-
-
-// float3 PointPos;
-float3 CanvasNormal;
-float3 CanvasPosition;
-
-#pragma kernel test_distance_from_canvas
-
-[numthreads(32,1,1)]
-void test_distance_from_canvas(uint3 id_ : SV_DispatchThreadID)
-{
-    id__ = id_;
-    if (is_relevant_thread(id(), CalculationSize))
-    {
-        float distance_from_canvas_result = distance_from_canvas(PointPos, CanvasPosition, CanvasNormal);
-        log_float(distance_from_canvas_result);
+        float distance_point_plane_result = distance_point_plane(PointPosition, PlaneSuppVec, PlaneNormal);
+        log_float(distance_point_plane_result);
     }
 }

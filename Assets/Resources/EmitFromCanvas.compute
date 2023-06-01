@@ -94,7 +94,7 @@ float3 canvas_mapped(int2 pos_pixel)
     float canvas_dy = canvas_y_max - canvas_y_min;
     float part_y = (pos_translated.y - canvas_y_min) / canvas_dy;
 
-    float dist = distance_from_canvas(pos_translated, CanvasPosition, float3(0, 0, -1));
+    float dist = distance_point_plane(pos_translated, CanvasPosition, float3(0, 0, -1));
 
     return float3(part_x, part_y, dist);
 }
