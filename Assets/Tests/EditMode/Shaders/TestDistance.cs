@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class TestDistance
 {
-    private const int KERNEL_ID_distance_point_plane = 0;
+    private const int KERNEL_ID_distance_from_rakel = 0;
+    private const int KERNEL_ID_distance_from_canvas = 1;
 
     List<CSAttribute> Attributes;
 
@@ -29,15 +30,16 @@ public class TestDistance
     }
 
     [Test]
-    public void distance_point_plane_ZeroDistance()
+    public void distance_from_rakel_Untilted_ZeroDistance()
     {
         // Arrange
-        Attributes.Add(new CSFloat3("PointPosition", new Vector3(0, 0, -0.1f)));
-        Attributes.Add(new CSFloat3("PlaneSuppVec", new Vector3(0, 0, -0.1f)));
-        Attributes.Add(new CSFloat3("PlaneNormal", new Vector3(0, 0, -1)));
+        Attributes.Add(new CSFloat3("PointPos", new Vector3(0, 0, -0.1f)));
+        Attributes.Add(new CSFloat3("RakelLLTilted", new Vector3(0, 0, -0.1f)));
+        Attributes.Add(new CSFloat3("RakelLRTilted", new Vector3(1, 0, -0.1f)));
+        Attributes.Add(new CSFloat3("RakelPosition", new Vector3(1, 1, -0.1f)));
 
         // Act
-        ComputeShaderTask cst = Execute(KERNEL_ID_distance_point_plane);
+        ComputeShaderTask cst = Execute(KERNEL_ID_distance_from_rakel);
 
 
         // Assert
@@ -48,34 +50,126 @@ public class TestDistance
     }
 
     [Test]
-    public void distance_point_plane_full()
+    public void distance_from_rakel_Untilted_No_NegativeDistance_1()
     {
         // Arrange
-        Attributes.Add(new CSFloat3("PointPosition", new Vector3(-1, -1, -1)));
-        Attributes.Add(new CSFloat3("PlaneSuppVec", new Vector3(2, 2, 2)));
-        Attributes.Add(new CSFloat3("PlaneNormal", new Vector3(1, 1, 1)));
+        Attributes.Add(new CSFloat3("PointPos", new Vector3(0, 0, 0.1f)));
+        Attributes.Add(new CSFloat3("RakelLLTilted", new Vector3(0, 0, 0)));
+        Attributes.Add(new CSFloat3("RakelLRTilted", new Vector3(1, 0, 0)));
+        Attributes.Add(new CSFloat3("RakelPosition", new Vector3(1, 1, 0)));
 
         // Act
-        ComputeShaderTask cst = Execute(KERNEL_ID_distance_point_plane);
+        ComputeShaderTask cst = Execute(KERNEL_ID_distance_from_rakel);
 
 
         // Assert
         Vector4 e = cst.DebugValues[0];
         float result = e.x;
 
-        Assert.AreEqual(new Vector3(3, 3, 3).magnitude, result);
+        Assert.AreEqual(0.1f, result);
     }
 
     [Test]
-    public void distance_point_plane_xy_NoNegativeDistance_1()
+    public void distance_from_rakel_Untilted_No_NegativeDistance_2()
     {
         // Arrange
-        Attributes.Add(new CSFloat3("PointPosition", new Vector3(0, 0, -0.1f)));
-        Attributes.Add(new CSFloat3("PlaneSuppVec", new Vector3(0, 0, 0)));
-        Attributes.Add(new CSFloat3("PlaneNormal", new Vector3(0, 0, -1)));
+        Attributes.Add(new CSFloat3("PointPos", new Vector3(0, 0, -0.1f)));
+        Attributes.Add(new CSFloat3("RakelLLTilted", new Vector3(0, 0, 0)));
+        Attributes.Add(new CSFloat3("RakelLRTilted", new Vector3(1, 0, 0)));
+        Attributes.Add(new CSFloat3("RakelPosition", new Vector3(1, 1, 0)));
 
         // Act
-        ComputeShaderTask cst = Execute(KERNEL_ID_distance_point_plane);
+        ComputeShaderTask cst = Execute(KERNEL_ID_distance_from_rakel);
+
+
+        // Assert
+        Vector4 e = cst.DebugValues[0];
+        float result = e.x;
+
+        Assert.AreEqual(0.1f, result);
+    }
+
+    [Test]
+    public void distance_from_rakel_Tilted30_ZeroDistance()
+    {
+        float TILT = 30;
+        // PointPos is at 0.25 * dx of tilted Rakel, looking from LL of Rakel
+        float POS_RATE = 0.25f;
+        // Arrange
+        Attributes.Add(new CSFloat3("PointPos", new Vector3(
+            1 - Mathf.Cos(Mathf.Deg2Rad * TILT) + POS_RATE * Mathf.Cos(Mathf.Deg2Rad * TILT),
+            0,
+            POS_RATE * Mathf.Sin(Mathf.Deg2Rad * TILT))));
+        Attributes.Add(new CSFloat3("RakelLLTilted", new Vector3(1 - Mathf.Cos(Mathf.Deg2Rad * TILT), 0, 0)));
+        Attributes.Add(new CSFloat3("RakelLRTilted", new Vector3(1, 0, Mathf.Sin(Mathf.Deg2Rad * TILT))));
+        Attributes.Add(new CSFloat3("RakelPosition", new Vector3(1, 1, Mathf.Sin(Mathf.Deg2Rad * TILT))));
+
+        // Act
+        ComputeShaderTask cst = Execute(KERNEL_ID_distance_from_rakel);
+
+
+        // Assert
+        Vector4 e = cst.DebugValues[0];
+        float result = e.x;
+
+        AssertUtil.AssertFloatsEqual(0, result);
+    }
+
+    [Test]
+    public void distance_from_rakel_Tilted30()
+    {
+        float TILT = 70;
+        // PointPos is at 0.66 * dx of tilted Rakel, looking from LL of Rakel
+        float POS_RATE = 0.66f;
+        // Arrange
+        Attributes.Add(new CSFloat3("PointPos", new Vector3(
+            1 - Mathf.Cos(Mathf.Deg2Rad * TILT) + POS_RATE * Mathf.Cos(Mathf.Deg2Rad * TILT), 0, 0)));
+        Attributes.Add(new CSFloat3("RakelLLTilted", new Vector3(1 - Mathf.Cos(Mathf.Deg2Rad * TILT), 0, 0)));
+        Attributes.Add(new CSFloat3("RakelLRTilted", new Vector3(1, 0, Mathf.Sin(Mathf.Deg2Rad * TILT))));
+        Attributes.Add(new CSFloat3("RakelPosition", new Vector3(1, 1, Mathf.Sin(Mathf.Deg2Rad * TILT))));
+
+        // Act
+        ComputeShaderTask cst = Execute(KERNEL_ID_distance_from_rakel);
+
+
+        // Assert
+        Vector4 e = cst.DebugValues[0];
+        float result = e.x;
+
+        AssertUtil.AssertFloatsEqual(
+            0.6202f, // POS_RATE * Mathf.Sin(Mathf.Deg2Rad * TILT),
+            result);
+    }
+
+    [Test]
+    public void distance_from_canvas_ZeroDistance()
+    {
+        // Arrange
+        Attributes.Add(new CSFloat3("PointPos", new Vector3(0, 0, -0.1f)));
+        Attributes.Add(new CSFloat3("CanvasPosition", new Vector3(0, 0, -0.1f)));
+        Attributes.Add(new CSFloat3("CanvasNormal", new Vector3(0, 0, -1)));
+
+        // Act
+        ComputeShaderTask cst = Execute(KERNEL_ID_distance_from_canvas);
+
+
+        // Assert
+        Vector4 e = cst.DebugValues[0];
+        float result = e.x;
+
+        Assert.AreEqual(0, result);
+    }
+
+    [Test]
+    public void distance_from_canvas_xy()
+    {
+        // Arrange
+        Attributes.Add(new CSFloat3("PointPos", new Vector3(0, 0, -0.1f)));
+        Attributes.Add(new CSFloat3("CanvasPosition", new Vector3(0, 0, 0)));
+        Attributes.Add(new CSFloat3("CanvasNormal", new Vector3(0, 0, -1)));
+
+        // Act
+        ComputeShaderTask cst = Execute(KERNEL_ID_distance_from_canvas);
 
         // Assert
         Vector4 e = cst.DebugValues[0];
@@ -85,33 +179,15 @@ public class TestDistance
     }
 
     [Test]
-    public void distance_point_plane_xy_NoNegativeDistance_2()
+    public void distance_from_canvas_xz()
     {
         // Arrange
-        Attributes.Add(new CSFloat3("PointPosition", new Vector3(0, 0, 0.1f)));
-        Attributes.Add(new CSFloat3("PlaneSuppVec", new Vector3(0, 0, 0)));
-        Attributes.Add(new CSFloat3("PlaneNormal", new Vector3(0, 0, -1)));
+        Attributes.Add(new CSFloat3("PointPos", new Vector3(-0.2f, 0, 0)));
+        Attributes.Add(new CSFloat3("CanvasPosition", new Vector3(0, 0, 0)));
+        Attributes.Add(new CSFloat3("CanvasNormal", new Vector3(1, 0, 0)));
 
         // Act
-        ComputeShaderTask cst = Execute(KERNEL_ID_distance_point_plane);
-
-        // Assert
-        Vector4 e = cst.DebugValues[0];
-        float result = e.x;
-
-        AssertUtil.AssertFloatsEqual(0.1f, result);
-    }
-
-    [Test]
-    public void distance_point_plane_xz()
-    {
-        // Arrange
-        Attributes.Add(new CSFloat3("PointPosition", new Vector3(-0.2f, 0, 0)));
-        Attributes.Add(new CSFloat3("PlaneSuppVec", new Vector3(0, 0, 0)));
-        Attributes.Add(new CSFloat3("PlaneNormal", new Vector3(1, 0, 0)));
-
-        // Act
-        ComputeShaderTask cst = Execute(KERNEL_ID_distance_point_plane);
+        ComputeShaderTask cst = Execute(KERNEL_ID_distance_from_canvas);
 
         // Assert
         Vector4 e = cst.DebugValues[0];
