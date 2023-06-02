@@ -34,7 +34,7 @@ public class Rakel
     public Reservoir ApplicationReservoir;
     public Reservoir PickupReservoir;
 
-    public Rakel(float length, float width, int resolution)
+    public Rakel(float length, float width, int resolution, float anchorRatioLength = 0.5f, float anchorRatioWidth = 1)
     {
         ApplicationReservoir = new Reservoir(
             resolution,
@@ -51,7 +51,7 @@ public class Rakel
         Width = ApplicationReservoir.Size.x * ApplicationReservoir.PixelSize;
 
         // NOTE this has to be set after Width and Length were corrected
-        Anchor = new Vector3(Width, Length / 2, 0);
+        Anchor = new Vector3(anchorRatioWidth * Width, anchorRatioLength * Length, 0);
     }
 
     public void UpdateState(Vector3 position, float rotation, float tilt)
