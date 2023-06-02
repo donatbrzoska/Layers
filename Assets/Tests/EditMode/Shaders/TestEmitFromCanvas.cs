@@ -23,7 +23,7 @@ public class TestEmitFromCanvas
     [SetUp]
     public void Setup()
     {
-        Rakel = new Rakel(RakelLength, RakelWidth, 1);
+        Rakel = new Rakel(RakelLength, RakelWidth, 1, 0.5f, 0);
 
         Canvas = new Canvas_(1);
 
@@ -46,7 +46,7 @@ public class TestEmitFromCanvas
         Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen), new FlatVolumeFiller(1)));
         Canvas.Reservoir.Duplicate(false);
 
-        Rakel.UpdateState(new Vector3(-6, -0.5f, 0), 0, 0);
+        Rakel.UpdateState(new Vector3(-8, -0.5f, 0), 0, 0);
 
 
         // Act
@@ -93,7 +93,7 @@ public class TestEmitFromCanvas
         Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen), new FlatVolumeFiller(1)));
         Canvas.Reservoir.Duplicate(false);
 
-        Rakel.UpdateState(new Vector3(-6, -0.5f, 0), 30, 0);
+        Rakel.UpdateState(new Vector3(-8, 0.5f, 0), 30, 0);
 
 
         // Act
@@ -113,19 +113,19 @@ public class TestEmitFromCanvas
             canvasEmittedVolumes[i] = canvasEmittedPaintData[i].Volume;
         }
 
-        //LogUtil.Log(canvasEmittedVolumes, canvasEmitSC.Size.y, false);
+        LogUtil.Log(canvasEmittedVolumes, canvasEmitSC.Size.y, false);
 
         AssertUtil.AssertFloatsAreEqual(
             new float[] { // remember: these arrays are upside down compared to the actual pixels
-                0.021f,  0.845f,
-                0.443f,  1.000f,
-                0.938f,  1.000f,
+                0.000f,  0.557f,
+                0.155f,  0.979f,
+                0.711f,  1.000f,
                 1.000f,  1.000f,
             },
             canvasEmittedVolumes);
 
         AssertUtil.AssertFloatsEqual(
-            6.247f,
+            5.40195417f,
             Sum(canvasEmittedVolumes));
     }
 
@@ -137,7 +137,7 @@ public class TestEmitFromCanvas
         Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen), new FlatVolumeFiller(1)));
         Canvas.Reservoir.Duplicate(false);
 
-        Rakel.UpdateState(new Vector3(-3, -0.5f, 0), 0, 60);
+        Rakel.UpdateState(new Vector3(-4, -0.5f, 0), 0, 60);
 
 
         // Act
@@ -182,7 +182,7 @@ public class TestEmitFromCanvas
         Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen), new FlatVolumeFiller(1)));
         Canvas.Reservoir.Duplicate(false);
 
-        Rakel.UpdateState(new Vector3(-3, -0.5f, 0), 30, 60);
+        Rakel.UpdateState(new Vector3(-4, 0.5f, 0), 30, 60);
 
 
         // Act
@@ -202,7 +202,7 @@ public class TestEmitFromCanvas
             canvasEmittedVolumes[i] = canvasEmittedPaintData[i].Volume;
         }
 
-        //LogUtil.Log(canvasEmittedVolumes, canvasEmitSC.Size.y, false);
+        LogUtil.Log(canvasEmittedVolumes, canvasEmitSC.Size.y, false);
 
         float H = 0.5f * Paint.UNIT; // half
         AssertUtil.AssertFloatsAreEqual(
