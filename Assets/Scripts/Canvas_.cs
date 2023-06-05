@@ -138,9 +138,9 @@ public class Canvas_
     {
         return new ShaderRegion(
             new Vector2Int(0, 0),
-            new Vector2Int(0, WorldSpaceCanvas.TextureSize.x),
-            new Vector2Int(WorldSpaceCanvas.TextureSize.y, 0),
-            new Vector2Int(WorldSpaceCanvas.TextureSize.y, WorldSpaceCanvas.TextureSize.x));
+            new Vector2Int(WorldSpaceCanvas.TextureSize.x, 0),
+            new Vector2Int(0, WorldSpaceCanvas.TextureSize.y),
+            new Vector2Int(WorldSpaceCanvas.TextureSize.x, WorldSpaceCanvas.TextureSize.y));
     }
 
     public void Render(
