@@ -117,7 +117,7 @@ public class OilPaintEngine : MonoBehaviour
     {
         DisposeCanvas();
 
-        Canvas = new Canvas_(Configuration.TextureResolution);
+        Canvas = new Canvas_(Configuration.TextureResolution, Configuration.NormalScale);
 
         Renderer renderer = GameObject.Find("Canvas").GetComponent<Renderer>();
         renderer.material.SetTexture("_MainTex", Canvas.Texture);

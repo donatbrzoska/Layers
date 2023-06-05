@@ -8,8 +8,12 @@ public class Canvas_
     public RenderTexture Texture { get; private set; }
     public RenderTexture NormalMap { get; private set; }
 
-    public Canvas_(int textureResolution)
+    public float NormalScale { get; set; }
+
+    public Canvas_(int textureResolution, float normalScale)
     {
+        NormalScale = normalScale;
+
         float width = GameObject.Find("Canvas").GetComponent<Transform>().localScale.x * 10; // convert scale attribute to world space
         float height = GameObject.Find("Canvas").GetComponent<Transform>().localScale.y * 10; // convert scale attribute to world space
         Vector3 position = GameObject.Find("Canvas").GetComponent<Transform>().position;
@@ -139,7 +143,8 @@ public class Canvas_
             new CSComputeBuffer("CanvasReservoir", Reservoir.Buffer),
             new CSInt2("TextureSize", WorldSpaceCanvas.TextureSize),
             new CSTexture("CanvasTexture", Texture),
-            new CSTexture("NormalMap", NormalMap)
+            new CSTexture("NormalMap", NormalMap),
+            new CSFloat("NormalScale", NormalScale),
         };
 
         ComputeShaderTask cst = new ComputeShaderTask(

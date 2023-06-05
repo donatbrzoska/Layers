@@ -40,6 +40,7 @@ void log_(uint index, float4 f)
 RWStructuredBuffer<Paint> CanvasReservoir;
 
 RWTexture2D<float4> NormalMap;
+float NormalScale;
 RWTexture2D<float4> CanvasTexture;
 uint2 TextureSize;
 
@@ -84,8 +85,7 @@ void update_normal(int2 canvas_pixel)
     int normal_z = 1;
 
     // ... ... scaling and normal assembly
-    float scale = 0.0000001f;
-    // float scale = 0.000002f;
+    float scale = NormalScale;
     
     float4 normal = float4(scale * (float)(-normal_x), scale * (float)(normal_y), normal_z, 1);
     float4 normalized = normalize(normal);

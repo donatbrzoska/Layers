@@ -27,7 +27,7 @@ public class TestEmitFromCanvas
     {
         Rakel = new Rakel(RakelLength, RakelWidth, 1, 0.5f, 0);
 
-        Canvas = new Canvas_(1);
+        Canvas = new Canvas_(1, 0.015f);
 
         new FileLogger_().OnEnable();
     }

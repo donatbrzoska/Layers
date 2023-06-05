@@ -3,6 +3,7 @@
 public class Configuration
 {
     public int TextureResolution;
+    public float NormalScale;
 
     public RakelConfiguration RakelConfiguration;
     public FillConfiguration FillConfiguration;
@@ -11,6 +12,7 @@ public class Configuration
     public Configuration()
     {
         TextureResolution = 20;
+        NormalScale = 0.015f;
 
         RakelConfiguration = new RakelConfiguration();
         FillConfiguration = new FillConfiguration();
