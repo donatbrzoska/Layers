@@ -112,7 +112,7 @@ public class MouseAndKeyboardInput
 
     public float Tilt { get; private set; }
 
-    private float TILT_STEP = 0.2f;
+    private float TILT_STEP = 2f;
 
     private void UpdateTilt()
     {

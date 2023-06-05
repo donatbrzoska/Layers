@@ -9865,6 +9865,8 @@ MonoBehaviour:
   BENCHMARK_STEPS: 0
   TH_GROUP_SIZE_X: 32
   TH_GROUP_SIZE_Y: 1
+  ANCHOR_RATIO_X: 0
+  ANCHOR_RATIO_Y: 0.5
 --- !u!114 &1643505815
 MonoBehaviour:
   m_ObjectHideFlags: 0
