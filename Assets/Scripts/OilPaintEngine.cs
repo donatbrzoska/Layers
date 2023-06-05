@@ -7,6 +7,9 @@ public class OilPaintEngine : MonoBehaviour
     public int TH_GROUP_SIZE_X = 32;
     public int TH_GROUP_SIZE_Y = 1;
 
+    public float ANCHOR_RATIO_X = 1;
+    public float ANCHOR_RATIO_Y = 0.5f;
+
     public Configuration Configuration { get; private set; }
     public MouseAndKeyboardInput InputManager { get; private set; }
     public float RakelPositionX // used only for UI fetching
@@ -134,7 +137,12 @@ public class OilPaintEngine : MonoBehaviour
     {
         DisposeRakel();
 
-        Rakel = new Rakel(Configuration.RakelConfiguration.Length, Configuration.RakelConfiguration.Width, Configuration.TextureResolution);
+        Rakel = new Rakel(
+            Configuration.RakelConfiguration.Length,
+            Configuration.RakelConfiguration.Width,
+            Configuration.TextureResolution,
+            ANCHOR_RATIO_Y,
+            ANCHOR_RATIO_X);
 
         Debug.Log("Rakel is "
                   + Configuration.RakelConfiguration.Length * Configuration.TextureResolution + "x" + Configuration.RakelConfiguration.Width * Configuration.TextureResolution
