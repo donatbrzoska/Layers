@@ -33,9 +33,9 @@ public class TransferEngine
 
         rakel.UpdateState(rakelPosition, rakelRotation, rakelTilt);
 
-        ShaderCalculation canvasEmitSC = rakel.ApplicationReservoir.GetShaderCalculation();
+        ShaderRegion canvasEmitSR = rakel.ApplicationReservoir.GetFullShaderRegion();
 
-        ShaderCalculation rakelEmitSC = new ShaderCalculation(
+        ShaderRegion rakelEmitSR = new ShaderRegion(
             wsc.MapToPixelInRange(rakel.UpperLeft),
             wsc.MapToPixelInRange(rakel.UpperRight),
             wsc.MapToPixelInRange(rakel.LowerLeft),
@@ -43,7 +43,7 @@ public class TransferEngine
             1 // Padding because interpolation reaches pixels that are not directly under the rakel
         );
 
-        ShaderCalculation rerenderSC = new ShaderCalculation(
+        ShaderRegion rerenderSR = new ShaderRegion(
             wsc.MapToPixelInRange(rakel.UpperLeft),
             wsc.MapToPixelInRange(rakel.UpperRight),
             wsc.MapToPixelInRange(rakel.LowerLeft),
@@ -55,7 +55,7 @@ public class TransferEngine
 
         ComputeBuffer canvasEmittedPaint = canvas.EmitPaint(
             rakel,
-            canvasEmitSC,
+            canvasEmitSR,
             transferConfiguration.PickupDistance_MAX,
             transferConfiguration.PickupVolume_MIN,
             transferConfiguration.PickupVolume_MAX, false); ;
@@ -65,7 +65,7 @@ public class TransferEngine
         rakel.PickupReservoir.Duplicate(false);
 
         ComputeBuffer rakelEmittedPaint = rakel.EmitPaint(
-            rakelEmitSC,
+            rakelEmitSR,
             wsc,
             transferConfiguration.EmitDistance_MAX,
             transferConfiguration.EmitVolumeApplicationReservoir_MIN,
@@ -74,13 +74,13 @@ public class TransferEngine
             transferConfiguration.EmitVolumePickupReservoir_MAX, false);
 
         canvas.ApplyPaint(
-            rakelEmitSC,
+            rakelEmitSR,
             rakelEmittedPaint);
 
         rakel.ApplyPaint(
-            canvasEmitSC,
+            canvasEmitSR,
             canvasEmittedPaint);
 
-        canvas.Render(rerenderSC);
+        canvas.Render(rerenderSR);
     }
 }

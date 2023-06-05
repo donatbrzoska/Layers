@@ -23,7 +23,7 @@ public class TestConvert
     {
         ComputeShaderTask cst = new ComputeShaderTask(
             "TestConvert",
-            new ShaderCalculation(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
+            new ShaderRegion(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
             Attributes,
             true,
             kernelID);

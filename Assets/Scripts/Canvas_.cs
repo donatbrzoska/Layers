@@ -38,7 +38,7 @@ public class Canvas_
 
     private void InitializeTexture(RenderTexture texture, Vector4 value)
     {
-        ShaderCalculation sc = new ShaderCalculation(
+        ShaderRegion sr = new ShaderRegion(
             new Vector2Int(texture.height-1, 0),
             new Vector2Int(texture.height-1, texture.width-1),
             new Vector2Int(0, 0),
@@ -47,7 +47,7 @@ public class Canvas_
 
         ComputeShaderTask cst = new ComputeShaderTask(
             "SetTexture",
-            sc,
+            sr,
             new List<CSAttribute>() {
                 new CSFloat4("Value", value),
                 new CSTexture("Target", texture)
@@ -60,15 +60,15 @@ public class Canvas_
 
     public ComputeBuffer EmitPaint(
         Rakel rakel,
-        ShaderCalculation shaderCalculation,
+        ShaderRegion shaderRegion,
         float pickupDistance_MAX,
         float pickupVolume_MIN,
         float pickupVolume_MAX,
         bool debugEnabled = false)
     {
-        ComputeBuffer canvasEmittedPaint = new ComputeBuffer(shaderCalculation.PixelCount, Paint.SizeInBytes);
+        ComputeBuffer canvasEmittedPaint = new ComputeBuffer(shaderRegion.PixelCount, Paint.SizeInBytes);
         // initialize buffer to empty values (Intel does this for you, nvidia doesn't)
-        Paint[] initPaint = new Paint[shaderCalculation.PixelCount];
+        Paint[] initPaint = new Paint[shaderRegion.PixelCount];
         canvasEmittedPaint.SetData(initPaint);
 
         List<CSAttribute> attributes = new List<CSAttribute>()
@@ -99,7 +99,7 @@ public class Canvas_
 
         ComputeShaderTask cst = new ComputeShaderTask(
             "EmitFromCanvas",
-            shaderCalculation,
+            shaderRegion,
             new Vector2Int(3, 3),
             attributes,
             debugEnabled
@@ -111,7 +111,7 @@ public class Canvas_
     }
 
     public void ApplyPaint(
-        ShaderCalculation shaderCalculation,
+        ShaderRegion shaderRegion,
         ComputeBuffer rakelEmittedPaint,
         bool debugEnabled = false)
     {
@@ -124,7 +124,7 @@ public class Canvas_
 
         ComputeShaderTask cst = new ComputeShaderTask(
             "ApplyBufferToCanvas",
-            shaderCalculation,
+            shaderRegion,
             attributes,
             debugEnabled
         );
@@ -134,9 +134,9 @@ public class Canvas_
         rakelEmittedPaint.Dispose();
     }
 
-    public ShaderCalculation GetFullShaderCalculation()
+    public ShaderRegion GetFullShaderRegion()
     {
-        return new ShaderCalculation(
+        return new ShaderRegion(
             new Vector2Int(0, 0),
             new Vector2Int(0, WorldSpaceCanvas.TextureSize.x),
             new Vector2Int(WorldSpaceCanvas.TextureSize.y, 0),
@@ -144,7 +144,7 @@ public class Canvas_
     }
 
     public void Render(
-        ShaderCalculation shaderCalculation,
+        ShaderRegion shaderRegion,
         bool debugEnabled = false)
     {
         List<CSAttribute> attributes = new List<CSAttribute>()
@@ -158,7 +158,7 @@ public class Canvas_
 
         ComputeShaderTask cst = new ComputeShaderTask(
             "Render",
-            shaderCalculation,
+            shaderRegion,
             attributes,
             debugEnabled
         );

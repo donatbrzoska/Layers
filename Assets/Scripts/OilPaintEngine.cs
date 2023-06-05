@@ -402,7 +402,7 @@ public class OilPaintEngine : MonoBehaviour
     {
         Configuration.NormalScale = value;
         Canvas.NormalScale = value;
-        Canvas.Render(Canvas.GetFullShaderCalculation());
+        Canvas.Render(Canvas.GetFullShaderRegion());
     }
 
     public void DoMacroAction()

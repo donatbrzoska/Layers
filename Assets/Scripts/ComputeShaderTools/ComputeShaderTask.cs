@@ -164,7 +164,7 @@ public class ComputeShaderTask
     private const int DEBUG_LIST_SIZE_PER_THREAD_MAX = 8;
 
     public string Name;
-    private ShaderCalculation ShaderCalculation;
+    private ShaderRegion ShaderRegion;
     Vector2Int SubgridGroupSize;
     public List<CSAttribute> Attributes;
     public bool DebugEnabled;
@@ -174,14 +174,14 @@ public class ComputeShaderTask
 
     public ComputeShaderTask(
         string name,
-        ShaderCalculation shaderCalculation,
+        ShaderRegion shaderRegion,
         Vector2Int subgridGroupSize,
         List<CSAttribute> attributes,
         bool debugEnabled,
         int kernelID = 0)
     {
         Name = name;
-        ShaderCalculation = shaderCalculation;
+        ShaderRegion = shaderRegion;
         SubgridGroupSize = subgridGroupSize;
 
         Attributes = attributes;
@@ -190,13 +190,13 @@ public class ComputeShaderTask
     }
 
     // disable subgrid logic constructor
-    public ComputeShaderTask(string name, ShaderCalculation shaderCalculation, List<CSAttribute> attributes, bool debugEnabled, int kernelID = 0) : this(name, shaderCalculation, new Vector2Int(1, 1), attributes, debugEnabled, kernelID) { }
+    public ComputeShaderTask(string name, ShaderRegion shaderRegion, List<CSAttribute> attributes, bool debugEnabled, int kernelID = 0) : this(name, shaderRegion, new Vector2Int(1, 1), attributes, debugEnabled, kernelID) { }
 
     public void Run()
     {
         ComputeShader computeShader = (ComputeShader)Resources.Load(Name);
-        Attributes.Add(new CSInt2("CalculationPosition", ShaderCalculation.Position));
-        Attributes.Add(new CSInt2("CalculationSize", ShaderCalculation.Size));
+        Attributes.Add(new CSInt2("CalculationPosition", ShaderRegion.Position));
+        Attributes.Add(new CSInt2("CalculationSize", ShaderRegion.Size));
 
 
         ComputeBuffer debugBuffer = new ComputeBuffer(1, sizeof(float)); // just for the compiler
@@ -206,8 +206,8 @@ public class ComputeShaderTask
         if (DebugEnabled)
         {
             debugBuffer.Dispose();
-            debugBuffer = new ComputeBuffer(ShaderCalculation.PixelCount, DEBUG_LIST_SIZE_PER_THREAD_MAX * 4 * sizeof(float));
-            DebugValues = new Vector4[DEBUG_LIST_SIZE_PER_THREAD_MAX * ShaderCalculation.PixelCount];
+            debugBuffer = new ComputeBuffer(ShaderRegion.PixelCount, DEBUG_LIST_SIZE_PER_THREAD_MAX * 4 * sizeof(float));
+            DebugValues = new Vector4[DEBUG_LIST_SIZE_PER_THREAD_MAX * ShaderRegion.PixelCount];
             debugBuffer.SetData(DebugValues);
             Attributes.Add(new CSComputeBuffer("Debug", debugBuffer));
             Attributes.Add(new CSComputeBuffer("DebugInfo", debugListInfoBuffer));
@@ -222,7 +222,7 @@ public class ComputeShaderTask
         }
 
 
-        Vector2Int subgridGroups = CalculateGroups(ShaderCalculation.Size, SubgridGroupSize);
+        Vector2Int subgridGroups = CalculateGroups(ShaderRegion.Size, SubgridGroupSize);
         Vector2Int threadGroups = CalculateGroups(subgridGroups, ThreadGroupSize);
         for (int y = 0; y < SubgridGroupSize.y; y++)
         {
@@ -247,7 +247,7 @@ public class ComputeShaderTask
             {
                 LogUtil.Log(
                     DebugValues,
-                    new Vector3Int(ShaderCalculation.Size.x, ShaderCalculation.Size.y, DEBUG_LIST_SIZE_PER_THREAD_MAX),
+                    new Vector3Int(ShaderRegion.Size.x, ShaderRegion.Size.y, DEBUG_LIST_SIZE_PER_THREAD_MAX),
                     debugListSize,
                     debugElementType,
                     Name

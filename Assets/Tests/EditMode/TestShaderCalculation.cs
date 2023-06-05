@@ -11,16 +11,16 @@ public class TestShaderCalculation
         Vector2Int c = a;
         Vector2Int d = a;
 
-        ShaderCalculation sc = new ShaderCalculation(a, b, c, d);
+        ShaderRegion sr = new ShaderRegion(a, b, c, d);
 
         Assert.AreEqual(
             new Vector2Int(1, 1),
-            sc.Size
+            sr.Size
         );
 
         Assert.AreEqual(
             new Vector2Int(0, 0),
-            sc.Position
+            sr.Position
         );
     }
 
@@ -32,16 +32,16 @@ public class TestShaderCalculation
         Vector2Int c = a;
         Vector2Int d = a;
 
-        ShaderCalculation sc = new ShaderCalculation(a, b, c, d, 1);
+        ShaderRegion sr = new ShaderRegion(a, b, c, d, 1);
 
         Assert.AreEqual(
             new Vector2Int(3, 3),
-            sc.Size
+            sr.Size
         );
 
         Assert.AreEqual(
             new Vector2Int(-1, -1),
-            sc.Position
+            sr.Position
         );
     }
 
@@ -53,16 +53,16 @@ public class TestShaderCalculation
         Vector2Int c = new Vector2Int(0, 0);
         Vector2Int d = new Vector2Int(6, 0);
 
-        ShaderCalculation sc = new ShaderCalculation(a, b, c, d);
+        ShaderRegion sr = new ShaderRegion(a, b, c, d);
 
         Assert.AreEqual(
             new Vector2Int(7, 3),
-            sc.Size
+            sr.Size
         );
 
         Assert.AreEqual(
             new Vector2Int(0, 0),
-            sc.Position
+            sr.Position
         );
     }
 
@@ -74,16 +74,16 @@ public class TestShaderCalculation
         Vector2Int c = new Vector2Int(0, 0);
         Vector2Int d = new Vector2Int(7, 0);
 
-        ShaderCalculation sc = new ShaderCalculation(a, b, c, d);
+        ShaderRegion sr = new ShaderRegion(a, b, c, d);
 
         Assert.AreEqual(
             new Vector2Int(8, 4),
-            sc.Size
+            sr.Size
         );
 
         Assert.AreEqual(
             new Vector2Int(0, 0),
-            sc.Position
+            sr.Position
         );
     }
 
@@ -95,16 +95,16 @@ public class TestShaderCalculation
         Vector2Int c = new Vector2Int(0, 0);
         Vector2Int d = new Vector2Int(16, 0);
 
-        ShaderCalculation sc = new ShaderCalculation(a, b, c, d);
+        ShaderRegion sr = new ShaderRegion(a, b, c, d);
 
         Assert.AreEqual(
             new Vector2Int(17, 5),
-            sc.Size
+            sr.Size
         );
 
         Assert.AreEqual(
             new Vector2Int(0, 0),
-            sc.Position
+            sr.Position
         );
     }
 }

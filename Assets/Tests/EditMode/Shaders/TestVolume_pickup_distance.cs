@@ -23,7 +23,7 @@ public class TestVolume_pickup_distance
     {
         ComputeShaderTask cst = new ComputeShaderTask(
             "TestVolume_pickup",
-            new ShaderCalculation(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
+            new ShaderRegion(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
             Attributes,
             true,
             kernelID);

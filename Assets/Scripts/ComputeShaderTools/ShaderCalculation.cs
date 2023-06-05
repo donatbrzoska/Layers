@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class ShaderCalculation
+public class ShaderRegion
 {
     // Number of columns and rows the shader needs to be active in
     public Vector2Int Size;
@@ -10,7 +10,7 @@ public class ShaderCalculation
 
     public int PixelCount { get { return Size.x * Size.y; } }
 
-    public ShaderCalculation(Vector2Int a, Vector2Int b, Vector2Int c, Vector2Int d, int padding)
+    public ShaderRegion(Vector2Int a, Vector2Int b, Vector2Int c, Vector2Int d, int padding)
     {
         int minX = Mathf.Min(Mathf.Min(Mathf.Min(a.x, b.x), c.x), d.x) - padding;
         int maxX = Mathf.Max(Mathf.Max(Mathf.Max(a.x, b.x), c.x), d.x) + padding;
@@ -24,7 +24,7 @@ public class ShaderCalculation
         Position.y = minY;
     }
 
-    public ShaderCalculation(Vector2Int a, Vector2Int b, Vector2Int c, Vector2Int d) : this(a, b, c, d, 0) { }
+    public ShaderRegion(Vector2Int a, Vector2Int b, Vector2Int c, Vector2Int d) : this(a, b, c, d, 0) { }
 
     public override string ToString()
     {

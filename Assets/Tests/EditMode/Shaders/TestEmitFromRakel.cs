@@ -48,7 +48,7 @@ public class TestEmitFromRakel
             new Vector3(-3, -0.5f, -0.5f * EMIT_DISTANCE_MAX), // choose z for max paint emission
             0,
             0);
-        ShaderCalculation rakelEmitSC = new ShaderCalculation(
+        ShaderRegion rakelEmitSR = new ShaderRegion(
             WorldSpaceCanvas.MapToPixelInRange(Rakel.UpperLeft),
             WorldSpaceCanvas.MapToPixelInRange(Rakel.UpperRight),
             WorldSpaceCanvas.MapToPixelInRange(Rakel.LowerLeft),
@@ -59,7 +59,7 @@ public class TestEmitFromRakel
 
         // Act
         RakelEmittedPaint = Rakel.EmitPaint(
-            rakelEmitSC,
+            rakelEmitSR,
             WorldSpaceCanvas,
             EMIT_DISTANCE_MAX,
             0,
@@ -70,9 +70,9 @@ public class TestEmitFromRakel
 
 
         // Assert
-        Paint[] rakelEmittedPaintData = new Paint[rakelEmitSC.PixelCount];
+        Paint[] rakelEmittedPaintData = new Paint[rakelEmitSR.PixelCount];
         RakelEmittedPaint.GetData(rakelEmittedPaintData);
-        float[] rakelEmittedVolumes = new float[rakelEmitSC.PixelCount];
+        float[] rakelEmittedVolumes = new float[rakelEmitSR.PixelCount];
         for (int i = 0; i < rakelEmittedVolumes.Length; i++)
         {
             rakelEmittedVolumes[i] = rakelEmittedPaintData[i].Volume;
@@ -109,7 +109,7 @@ public class TestEmitFromRakel
             new Vector3(-3, -0.5f, -0.5f * EMIT_DISTANCE_MAX), // choose z for max paint emission
             30,
             0);
-        ShaderCalculation rakelEmitSC = new ShaderCalculation(
+        ShaderRegion rakelEmitSR = new ShaderRegion(
             WorldSpaceCanvas.MapToPixelInRange(Rakel.UpperLeft),
             WorldSpaceCanvas.MapToPixelInRange(Rakel.UpperRight),
             WorldSpaceCanvas.MapToPixelInRange(Rakel.LowerLeft),
@@ -120,7 +120,7 @@ public class TestEmitFromRakel
 
         // Act
         RakelEmittedPaint = Rakel.EmitPaint(
-            rakelEmitSC,
+            rakelEmitSR,
             WorldSpaceCanvas,
             EMIT_DISTANCE_MAX,
             0,
@@ -131,9 +131,9 @@ public class TestEmitFromRakel
 
 
         // Assert
-        Paint[] rakelEmittedPaintData = new Paint[rakelEmitSC.PixelCount];
+        Paint[] rakelEmittedPaintData = new Paint[rakelEmitSR.PixelCount];
         RakelEmittedPaint.GetData(rakelEmittedPaintData);
-        float[] rakelEmittedVolumes = new float[rakelEmitSC.PixelCount];
+        float[] rakelEmittedVolumes = new float[rakelEmitSR.PixelCount];
         for (int i = 0; i < rakelEmittedVolumes.Length; i++)
         {
             rakelEmittedVolumes[i] = rakelEmittedPaintData[i].Volume;
@@ -172,7 +172,7 @@ public class TestEmitFromRakel
             0,
             60);
 
-        ShaderCalculation rakelEmitSC = new ShaderCalculation(
+        ShaderRegion rakelEmitSR = new ShaderRegion(
             WorldSpaceCanvas.MapToPixelInRange(Rakel.UpperLeft),
             WorldSpaceCanvas.MapToPixelInRange(Rakel.UpperRight),
             WorldSpaceCanvas.MapToPixelInRange(Rakel.LowerLeft),
@@ -182,7 +182,7 @@ public class TestEmitFromRakel
 
         // Act
         RakelEmittedPaint = Rakel.EmitPaint(
-            rakelEmitSC,
+            rakelEmitSR,
             WorldSpaceCanvas,
             EMIT_DISTANCE_MAX,
             0,
@@ -193,9 +193,9 @@ public class TestEmitFromRakel
 
 
         // Assert
-        Paint[] rakelEmittedPaintData = new Paint[rakelEmitSC.PixelCount];
+        Paint[] rakelEmittedPaintData = new Paint[rakelEmitSR.PixelCount];
         RakelEmittedPaint.GetData(rakelEmittedPaintData);
-        float[] rakelEmittedVolumes = new float[rakelEmitSC.PixelCount];
+        float[] rakelEmittedVolumes = new float[rakelEmitSR.PixelCount];
         for (int i = 0; i < rakelEmittedVolumes.Length; i++)
         {
             rakelEmittedVolumes[i] = rakelEmittedPaintData[i].Volume;
@@ -233,7 +233,7 @@ public class TestEmitFromRakel
             30,
             10);
 
-        ShaderCalculation rakelEmitSC = new ShaderCalculation(
+        ShaderRegion rakelEmitSR = new ShaderRegion(
             WorldSpaceCanvas.MapToPixelInRange(Rakel.UpperLeft),
             WorldSpaceCanvas.MapToPixelInRange(Rakel.UpperRight),
             WorldSpaceCanvas.MapToPixelInRange(Rakel.LowerLeft),
@@ -244,7 +244,7 @@ public class TestEmitFromRakel
 
         // Act
         RakelEmittedPaint = Rakel.EmitPaint(
-            rakelEmitSC,
+            rakelEmitSR,
             WorldSpaceCanvas,
             EMIT_DISTANCE_MAX,
             0,
@@ -255,9 +255,9 @@ public class TestEmitFromRakel
 
 
         // Assert
-        Paint[] rakelEmittedPaintData = new Paint[rakelEmitSC.PixelCount];
+        Paint[] rakelEmittedPaintData = new Paint[rakelEmitSR.PixelCount];
         RakelEmittedPaint.GetData(rakelEmittedPaintData);
-        float[] rakelEmittedVolumes = new float[rakelEmitSC.PixelCount];
+        float[] rakelEmittedVolumes = new float[rakelEmitSR.PixelCount];
         for (int i = 0; i < rakelEmittedVolumes.Length; i++)
         {
             rakelEmittedVolumes[i] = rakelEmittedPaintData[i].Volume;

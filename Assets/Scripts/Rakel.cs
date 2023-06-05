@@ -97,7 +97,7 @@ public class Rakel
     }
 
     public ComputeBuffer EmitPaint(
-        ShaderCalculation shaderCalculation,
+        ShaderRegion shaderRegion,
         WorldSpaceCanvas wsc,
         float emitDistance_MAX,
         float emitVolumeApplicationReservoir_MIN,
@@ -106,9 +106,9 @@ public class Rakel
         float emitVolumePickupReservoir_MAX,
         bool debugEnabled = false)
     {
-        ComputeBuffer RakelEmittedPaint = new ComputeBuffer(shaderCalculation.PixelCount, Paint.SizeInBytes);
+        ComputeBuffer RakelEmittedPaint = new ComputeBuffer(shaderRegion.PixelCount, Paint.SizeInBytes);
         // initialize buffer to empty values (Intel does this for you, nvidia doesn't)
-        Paint[] initPaint = new Paint[shaderCalculation.PixelCount];
+        Paint[] initPaint = new Paint[shaderRegion.PixelCount];
         RakelEmittedPaint.SetData(initPaint);
 
         float pixelSize = 1 / (float) wsc.Resolution;
@@ -148,7 +148,7 @@ public class Rakel
 
         ComputeShaderTask cst = new ComputeShaderTask(
             "EmitFromRakel",
-            shaderCalculation,
+            shaderRegion,
             subgridGroupSize,
             attributes,
             debugEnabled
@@ -160,7 +160,7 @@ public class Rakel
     }
 
     public void ApplyPaint(
-        ShaderCalculation shaderCalculation,
+        ShaderRegion shaderRegion,
         ComputeBuffer canvasEmittedPaint,
         bool debugEnabled = false)
     {
@@ -173,7 +173,7 @@ public class Rakel
 
         ComputeShaderTask cst = new ComputeShaderTask(
             "ApplyBufferToRakel",
-            shaderCalculation,
+            shaderRegion,
             attributes,
             debugEnabled
         );

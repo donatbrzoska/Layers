@@ -27,9 +27,9 @@ public class Reservoir
         Buffer.SetData(BufferData);
     }
 
-    public ShaderCalculation GetShaderCalculation()
+    public ShaderRegion GetFullShaderRegion()
     {
-        return new ShaderCalculation(
+        return new ShaderRegion(
             new Vector2Int(0, Size.y - 1),
             new Vector2Int(Size.x - 1, Size.y - 1),
             new Vector2Int(0, 0),
@@ -39,7 +39,7 @@ public class Reservoir
 
     public void Duplicate(bool debugEnabled = false)
     {
-        ShaderCalculation duplicateCalc = GetShaderCalculation();
+        ShaderRegion duplicateSR = GetFullShaderRegion();
 
         List<CSAttribute> attributes = new List<CSAttribute>()
         {
@@ -48,7 +48,7 @@ public class Reservoir
 
         ComputeShaderTask cst = new ComputeShaderTask(
             "ReservoirDuplication",
-            duplicateCalc,
+            duplicateSR,
             attributes,
             debugEnabled
         );
@@ -59,7 +59,7 @@ public class Reservoir
     public void PrintVolumes(int z)
     {
         Buffer.GetData(BufferData);
-        LogUtil.LogVolumes(BufferData, GetShaderCalculation().Size.y, GetShaderCalculation().Size.x, z, "z=" + z);
+        LogUtil.LogVolumes(BufferData, GetFullShaderRegion().Size.y, GetFullShaderRegion().Size.x, z, "z=" + z);
 
         //int sum = 0;
         //for (int i = 0; i < BufferData.GetLength(0) / 2; i++)
