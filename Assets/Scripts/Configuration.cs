@@ -28,9 +28,9 @@ public class Configuration
         FillConfiguration.VolumeMode = VolumeMode.Flat;
         FillConfiguration.ColorMode = ColorMode.Colorful;
 
-        TransferConfiguration.EmitVolumeApplicationReservoir = 1;
-        TransferConfiguration.EmitVolumePickupReservoir = 0;
-        TransferConfiguration.PickupVolume = 0;
+        TransferConfiguration.EmitVolumeApplicationReservoir_MAX = 1;
+        TransferConfiguration.EmitVolumePickupReservoir_MAX = 0;
+        TransferConfiguration.PickupVolume_MAX = 0;
     }
 
     public void LoadBenchmark()
@@ -47,8 +47,8 @@ public class Configuration
 
         RakelConfiguration.RotationLocked = false;
 
-        TransferConfiguration.EmitVolumePickupReservoir = 0;
-        TransferConfiguration.PickupVolume = 0;
+        TransferConfiguration.EmitVolumePickupReservoir_MAX = 0;
+        TransferConfiguration.PickupVolume_MAX = 0;
 
         FillConfiguration.Color = Color_.CadmiumGreen;
         FillConfiguration.Volume = 300;
@@ -116,12 +116,14 @@ public class RakelConfiguration
     {
         Position = Vector3.zero;
         PositionLocked = new Bool3();
+        Position.z = 0.05f;
+        PositionLocked.z = true;
 
         Rotation = 0;
         RotationLocked = true;
 
         Tilt = 0;
-        TiltLocked = true;
+        TiltLocked = false;
 
         Length = 2.5f;
         Width = 0.5f;
@@ -147,14 +149,22 @@ public class FillConfiguration
 
 public class TransferConfiguration
 {
-    public float EmitVolumeApplicationReservoir;
-    public float EmitVolumePickupReservoir;
-    public float PickupVolume;
+    public float EmitDistance_MAX;
+    public float PickupDistance_MAX;
+    public float EmitVolumeApplicationReservoir_MIN;
+    public float EmitVolumeApplicationReservoir_MAX;
+    public float EmitVolumePickupReservoir_MIN;
+    public float EmitVolumePickupReservoir_MAX;
+    public float PickupVolume_MIN;
+    public float PickupVolume_MAX;
 
     public TransferConfiguration()
     {
-        EmitVolumeApplicationReservoir = 1;
-        EmitVolumePickupReservoir = 1.2f;
-        PickupVolume = 1.3f;
+        EmitDistance_MAX = 0.1f;
+        PickupDistance_MAX = EmitDistance_MAX;
+
+        EmitVolumeApplicationReservoir_MAX = 1;
+        EmitVolumePickupReservoir_MAX = 1.2f;
+        PickupVolume_MAX = 1.3f;
     }
 }

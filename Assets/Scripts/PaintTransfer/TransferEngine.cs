@@ -56,7 +56,9 @@ public class TransferEngine
         ComputeBuffer canvasEmittedPaint = canvas.EmitPaint(
             rakel,
             canvasEmitSC,
-            transferConfiguration.PickupVolume, false);
+            transferConfiguration.PickupDistance_MAX,
+            transferConfiguration.PickupVolume_MIN,
+            transferConfiguration.PickupVolume_MAX, false); ;
 
         rakel.ApplicationReservoir.Duplicate(false);
 
@@ -65,8 +67,11 @@ public class TransferEngine
         ComputeBuffer rakelEmittedPaint = rakel.EmitPaint(
             rakelEmitSC,
             wsc,
-            transferConfiguration.EmitVolumeApplicationReservoir,
-            transferConfiguration.EmitVolumePickupReservoir, false);
+            transferConfiguration.EmitDistance_MAX,
+            transferConfiguration.EmitVolumeApplicationReservoir_MIN,
+            transferConfiguration.EmitVolumeApplicationReservoir_MAX,
+            transferConfiguration.EmitVolumePickupReservoir_MIN,
+            transferConfiguration.EmitVolumePickupReservoir_MAX, false);
 
         canvas.ApplyPaint(
             rakelEmitSC,

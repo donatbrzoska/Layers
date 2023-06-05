@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class TestEmitFromRakel
 {
+    private const float EMIT_DISTANCE_MAX = 0.1f;
+
     WorldSpaceCanvas WorldSpaceCanvas;
     float RakelLength = 4;
     float RakelWidth = 2;
@@ -42,7 +44,10 @@ public class TestEmitFromRakel
     {
         // Arrange
         Rakel.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen), new FlatVolumeFiller(1)));
-        Rakel.UpdateState(new Vector3(-3, -0.5f, 0), 0, 0);
+        Rakel.UpdateState(
+            new Vector3(-3, -0.5f, -0.5f * EMIT_DISTANCE_MAX), // choose z for max paint emission
+            0,
+            0);
         ShaderCalculation rakelEmitSC = new ShaderCalculation(
             WorldSpaceCanvas.MapToPixelInRange(Rakel.UpperLeft),
             WorldSpaceCanvas.MapToPixelInRange(Rakel.UpperRight),
@@ -56,7 +61,10 @@ public class TestEmitFromRakel
         RakelEmittedPaint = Rakel.EmitPaint(
             rakelEmitSC,
             WorldSpaceCanvas,
+            EMIT_DISTANCE_MAX,
+            0,
             1,
+            0,
             1, // unused
             false);
 
@@ -97,7 +105,10 @@ public class TestEmitFromRakel
     {
         // Arrange
         Rakel.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen), new FlatVolumeFiller(1)));
-        Rakel.UpdateState(new Vector3(-3, -0.5f, 0), 30, 0);
+        Rakel.UpdateState(
+            new Vector3(-3, -0.5f, -0.5f * EMIT_DISTANCE_MAX), // choose z for max paint emission
+            30,
+            0);
         ShaderCalculation rakelEmitSC = new ShaderCalculation(
             WorldSpaceCanvas.MapToPixelInRange(Rakel.UpperLeft),
             WorldSpaceCanvas.MapToPixelInRange(Rakel.UpperRight),
@@ -111,7 +122,10 @@ public class TestEmitFromRakel
         RakelEmittedPaint = Rakel.EmitPaint(
             rakelEmitSC,
             WorldSpaceCanvas,
+            EMIT_DISTANCE_MAX,
+            0,
             1,
+            0,
             1, // unused
             false);
 
@@ -125,7 +139,7 @@ public class TestEmitFromRakel
             rakelEmittedVolumes[i] = rakelEmittedPaintData[i].Volume;
         }
 
-        LogUtil.Log(rakelEmittedVolumes, rakelEmitSC.Size.y, false);
+        //LogUtil.Log(rakelEmittedVolumes, rakelEmitSC.Size.y, false);
 
         AssertUtil.AssertFloatsAreEqual(
             new float[] { // remember: these arrays are upside down compared to the actual pixels
@@ -150,7 +164,14 @@ public class TestEmitFromRakel
     {
         // Arrange
         Rakel.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen), new FlatVolumeFiller(1)));
-        Rakel.UpdateState(new Vector3(-4, -0.5f, 0), 0, 60);
+        Rakel.UpdateState(
+            new Vector3(
+                -4,
+                -0.5f,
+                -0.5f * EMIT_DISTANCE_MAX),
+            0,
+            60);
+
         ShaderCalculation rakelEmitSC = new ShaderCalculation(
             WorldSpaceCanvas.MapToPixelInRange(Rakel.UpperLeft),
             WorldSpaceCanvas.MapToPixelInRange(Rakel.UpperRight),
@@ -159,12 +180,14 @@ public class TestEmitFromRakel
             1 // not really needed for polygon clipping
         );
 
-
         // Act
         RakelEmittedPaint = Rakel.EmitPaint(
             rakelEmitSC,
             WorldSpaceCanvas,
+            EMIT_DISTANCE_MAX,
+            0,
             1,
+            0,
             1, // unused
             false);
 
@@ -180,23 +203,20 @@ public class TestEmitFromRakel
 
         //LogUtil.Log(rakelEmittedVolumes, rakelEmitSC.Size.y, false);
 
-        float Q = 0.25f * Paint.UNIT; // quarter
-        float H = 0.5f * Paint.UNIT; // half
-        float F = Paint.UNIT; // full
         AssertUtil.AssertFloatsAreEqual(
             new float[] { // remember: these arrays are upside down compared to the actual pixels
-                0, 0, 0, 0,
-                0, Q, Q, 0,
-                0, H, H, 0,
-                0, H, H, 0,
-                0, H, H, 0,
-                0, Q, Q, 0,
-                0, 0, 0, 0,
+                0.000f,  0.000f,  0.000f,  0.000f,
+                0.000f,  0.012f,  0.000f,  0.000f,
+                0.000f,  0.024f,  0.000f,  0.000f,
+                0.000f,  0.024f,  0.000f,  0.000f,
+                0.000f,  0.024f,  0.000f,  0.000f,
+                0.000f,  0.012f,  0.000f,  0.000f,
+                0.000f,  0.000f,  0.000f,  0.000f,
             },
             rakelEmittedVolumes);
 
         AssertUtil.AssertFloatsEqual(
-            0.5f * RakelLength * RakelWidth * Paint.UNIT,
+            0.0958637297f * Paint.UNIT,
             Sum(rakelEmittedVolumes));
     }
 
@@ -205,7 +225,14 @@ public class TestEmitFromRakel
     {
         // Arrange
         Rakel.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen), new FlatVolumeFiller(1)));
-        Rakel.UpdateState(new Vector3(-3, -0.5f, 0), 30, 60);
+        Rakel.UpdateState(
+            new Vector3(
+                -3,
+                -0.5f,
+                -0.1f * EMIT_DISTANCE_MAX),
+            30,
+            10);
+
         ShaderCalculation rakelEmitSC = new ShaderCalculation(
             WorldSpaceCanvas.MapToPixelInRange(Rakel.UpperLeft),
             WorldSpaceCanvas.MapToPixelInRange(Rakel.UpperRight),
@@ -219,7 +246,10 @@ public class TestEmitFromRakel
         RakelEmittedPaint = Rakel.EmitPaint(
             rakelEmitSC,
             WorldSpaceCanvas,
+            EMIT_DISTANCE_MAX,
+            0,
             1,
+            0,
             1, // unused
             false);
 
@@ -233,23 +263,23 @@ public class TestEmitFromRakel
             rakelEmittedVolumes[i] = rakelEmittedPaintData[i].Volume;
         }
 
-        LogUtil.Log(rakelEmittedVolumes, rakelEmitSC.Size.y, false);
+        //LogUtil.Log(rakelEmittedVolumes, rakelEmitSC.Size.y, false);
 
         AssertUtil.AssertFloatsAreEqual(
             new float[] { // remember: these arrays are upside down compared to the actual pixels
-                 0.000f,  0.000f,  0.000f,  0.000f,  0.000f,  0.000f,
-                 0.000f,  0.173f,  0.384f,  0.000f,  0.000f,  0.000f,
-                 0.000f,  0.116f,  0.923f,  0.116f,  0.000f,  0.000f,
-                 0.000f,  0.000f,  0.500f,  0.655f,  0.000f,  0.000f,
-                 0.000f,  0.000f,  0.039f,  0.878f,  0.155f,  0.000f,
-                 0.000f,  0.000f,  0.000f,  0.062f,  0.000f,  0.000f,
-                 0.000f,  0.000f,  0.000f,  0.000f,  0.000f,  0.000f,
+                 0.000f,  0.000f,  0.000f,  0.000f,  0.000f,  0.000f,  0.000f,
+                 0.000f,  0.000f,  0.000f,  0.000f,  0.000f,  0.000f,  0.000f,
+                 0.000f,  0.093f,  0.000f,  0.000f,  0.000f,  0.000f,  0.000f,
+                 0.000f,  0.069f,  0.042f,  0.000f,  0.000f,  0.000f,  0.000f,
+                 0.000f,  0.000f,  0.108f,  0.000f,  0.000f,  0.000f,  0.000f,
+                 0.000f,  0.000f,  0.016f,  0.403f,  0.000f,  0.000f,  0.000f,
+                 0.000f,  0.000f,  0.000f,  0.018f,  0.000f,  0.000f,  0.000f,
+                 0.000f,  0.000f,  0.000f,  0.000f,  0.000f,  0.000f,  0.000f,
             },
             rakelEmittedVolumes);
 
         AssertUtil.AssertFloatsEqual(
-            0.5f * RakelLength * RakelWidth * Paint.UNIT,
-            Sum(rakelEmittedVolumes),
-            0.001f);
+            0.749224544f,
+            Sum(rakelEmittedVolumes));
     }
 }

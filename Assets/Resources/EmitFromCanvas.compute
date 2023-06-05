@@ -37,12 +37,14 @@ void log_(uint index, float4 f)
 
 #include "distance.hlsl"
 #include "convert.hlsl"
+#include "volume.hlsl"
 #include "paint.hlsl"
 #include "math.hlsl"
 #include "sutherland_hodgman.hlsl"
 
 float RakelRotation;
 float RakelTilt;
+float RakelTilt_MAX;
 float3 RakelAnchor;
 float3 RakelPosition;
 float RakelLength;
@@ -55,7 +57,9 @@ uint2 CanvasReservoirSize;
 uint TextureResolution;
 
 // Emitting
-float EmitVolume;
+float PickupDistance_MAX;
+float PickupVolume_MIN;
+float PickupVolume_MAX;
 
 RWStructuredBuffer<Paint> CanvasReservoir;
 
@@ -108,11 +112,17 @@ bool pixel_in_reservoir_range(int2 pixel)
 }
 
 // radius of 1 does an emit on a 3x3 area from emit source grid, based on the rounded reservoir_pixel
-void emit(float2 reservoir_pixel, int2 radius)
+void emit(float2 reservoir_pixel, int2 radius, float distance)
 {
     int2 reservoir_pixel_nearest = round(reservoir_pixel);
 
-    float VOLUME_TO_EMIT_TARGET = EmitVolume * PAINT_UNIT();
+    float VOLUME_TO_EMIT_TARGET = pickup_volume(
+        distance,
+        PickupDistance_MAX,
+        RakelTilt,
+        RakelTilt_MAX,
+        PickupVolume_MIN * PAINT_UNIT(),
+        PickupVolume_MAX * PAINT_UNIT());
 
     // array size should really be [1+2*radius.y][1+2*radius.x] but we can't make dynamic arrays
     // in HLSL. 9x9 should be enough though, since with 45° tilt we will probably use 6x6 and
@@ -211,6 +221,6 @@ void main(uint3 id_ : SV_DispatchThreadID)
         float2 canvas_reservoir_pixel = float2(canvas_mapped_info.x * CanvasReservoirSize.x - 0.5,
                                                canvas_mapped_info.y * CanvasReservoirSize.y - 0.5);
         
-        emit(canvas_reservoir_pixel, int2(1, 1));
+        emit(canvas_reservoir_pixel, int2(1, 1), canvas_mapped_info.z);
     }
 }

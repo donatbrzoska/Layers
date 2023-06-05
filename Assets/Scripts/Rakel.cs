@@ -5,7 +5,7 @@ public class Rakel
 {
     // see EmitFromRakel shader for details (look for "79 degree tilt")
     private const int MIN_SUPPORTED_TILT = 0;
-    private const int MAX_SUPPORTED_TILT = 79;
+    public const int MAX_SUPPORTED_TILT = 79;
 
     public static float ClampTilt(float tilt)
     {
@@ -99,8 +99,11 @@ public class Rakel
     public ComputeBuffer EmitPaint(
         ShaderCalculation shaderCalculation,
         WorldSpaceCanvas wsc,
-        float emitVolumeApplicationReservoir,
-        float emitVolumePickupReservoir,
+        float emitDistance_MAX,
+        float emitVolumeApplicationReservoir_MIN,
+        float emitVolumeApplicationReservoir_MAX,
+        float emitVolumePickupReservoir_MIN,
+        float emitVolumePickupReservoir_MAX,
         bool debugEnabled = false)
     {
         ComputeBuffer RakelEmittedPaint = new ComputeBuffer(shaderCalculation.PixelCount, Paint.SizeInBytes);
@@ -126,6 +129,7 @@ public class Rakel
             new CSFloat("RakelWidth", Width),
             new CSFloat("RakelRotation", Rotation),
             new CSFloat("RakelTilt", Tilt),
+            new CSFloat("RakelTilt_MAX", MAX_SUPPORTED_TILT),
             new CSInt("ClipRadiusX", clipRadiusX),
             new CSFloat3("RakelULTilted", ulTilted),
             new CSFloat3("RakelURTilted", urTilted),
@@ -135,8 +139,11 @@ public class Rakel
             new CSComputeBuffer("RakelPickupReservoir", PickupReservoir.Buffer),
             new CSComputeBuffer("RakelEmittedPaint", RakelEmittedPaint),
             new CSInt2("RakelReservoirSize", ApplicationReservoir.Size),
-            new CSFloat("EmitVolumeApplicationReservoir", emitVolumeApplicationReservoir),
-            new CSFloat("EmitVolumePickupReservoir", emitVolumePickupReservoir),
+            new CSFloat("EmitDistance_MAX", emitDistance_MAX),
+            new CSFloat("EmitVolumeApplicationReservoir_MIN", emitVolumeApplicationReservoir_MIN),
+            new CSFloat("EmitVolumeApplicationReservoir_MAX", emitVolumeApplicationReservoir_MAX),
+            new CSFloat("EmitVolumePickupReservoir_MIN", emitVolumePickupReservoir_MIN),
+            new CSFloat("EmitVolumePickupReservoir_MAX", emitVolumePickupReservoir_MAX),
         };
 
         ComputeShaderTask cst = new ComputeShaderTask(

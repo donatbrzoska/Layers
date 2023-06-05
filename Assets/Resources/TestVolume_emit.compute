@@ -1,0 +1,97 @@
+// ######################################## SHADER BASE ########################################
+
+#include "basic_util.hlsl"
+#include "indexing.hlsl"
+#include "logging.hlsl"
+
+uint3 id__;
+uint2 SubgridGroupSize;
+uint2 SubgridCurrentThreadID;
+
+uint2 id()
+{
+    uint2 subgrid_id = uint2(id__.x, id__.y);
+    return subgrid_id * SubgridGroupSize + SubgridCurrentThreadID;
+}
+
+int2 CalculationPosition;
+uint2 CalculationSize;
+
+RWStructuredBuffer<float4> Debug;
+RWStructuredBuffer<DebugListInfo> DebugInfo;
+
+void set_debug_list_info(uint size, uint t)
+{
+    DebugListInfo dli;
+    dli.Size = size;
+    dli.Type = t;
+    DebugInfo[0] = dli;
+}
+
+void log_(uint index, float4 f)
+{
+    Debug[XYZ(id().x, id().y, index, CalculationSize)] = f;
+}
+
+// ###################################### SHADER BASE END ######################################
+
+#include "volume.hlsl"
+
+
+float Distance;
+float EmitDistance_MAX;
+float EmitVolume_MIN;
+float EmitVolume_MAX;
+
+#pragma kernel test_emit_volume_distance
+
+[numthreads(32,1,1)]
+void test_emit_volume_distance(uint3 id_ : SV_DispatchThreadID)
+{
+    id__ = id_;
+    if (is_relevant_thread(id(), CalculationSize))
+    {
+        float emit_volume_distance_result = emit_volume_distance(Distance, EmitDistance_MAX, EmitVolume_MIN, EmitVolume_MAX);
+        log_float(emit_volume_distance_result);
+    }
+}
+
+
+float Tilt;
+float Tilt_MAX;
+// float EmitVolume_MIN;
+// float EmitVolume_MAX;
+
+#pragma kernel test_emit_volume_tilt
+
+[numthreads(32,1,1)]
+void test_emit_volume_tilt(uint3 id_ : SV_DispatchThreadID)
+{
+    id__ = id_;
+    if (is_relevant_thread(id(), CalculationSize))
+    {
+        float emit_volume_tilt_result = emit_volume_tilt(Tilt, Tilt_MAX, EmitVolume_MIN, EmitVolume_MAX);
+        log_float(emit_volume_tilt_result);
+    }
+}
+
+
+// float Distance;
+// float EmitDistance_MAX;
+// float Tilt;
+// float Tilt_MAX;
+// float EmitVolume_MIN;
+// float EmitVolume_MAX;
+
+#pragma kernel test_emit_volume
+
+[numthreads(32,1,1)]
+void test_emit_volume(uint3 id_ : SV_DispatchThreadID)
+{
+    id__ = id_;
+    if (is_relevant_thread(id(), CalculationSize))
+    {
+        float emit_volume_result = emit_volume(Distance, EmitDistance_MAX, Tilt, Tilt_MAX, EmitVolume_MIN, EmitVolume_MAX);
+        log_float(emit_volume_result);
+    }
+}

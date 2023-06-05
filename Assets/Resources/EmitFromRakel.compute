@@ -37,6 +37,7 @@ void log_(uint index, float4 f)
 
 #include "distance.hlsl"
 #include "convert.hlsl"
+#include "volume.hlsl"
 #include "paint.hlsl"
 #include "math.hlsl"
 #include "sutherland_hodgman.hlsl"
@@ -53,6 +54,7 @@ float RakelWidth;
 
 float RakelRotation;
 float RakelTilt;
+float RakelTilt_MAX;
 int ClipRadiusX;
 
 float3 RakelULTilted;
@@ -61,8 +63,11 @@ float3 RakelLLTilted;
 float3 RakelLRTilted;
 
 // Emitting
-float EmitVolumeApplicationReservoir;
-float EmitVolumePickupReservoir;
+float EmitDistance_MAX;
+float EmitVolumeApplicationReservoir_MIN;
+float EmitVolumeApplicationReservoir_MAX;
+float EmitVolumePickupReservoir_MIN;
+float EmitVolumePickupReservoir_MAX;
 
 uint2 RakelReservoirSize;
 // uint2 RakelLowerLeftRounded;
@@ -95,8 +100,8 @@ float3 rakel_mapped(int2 pos_pixel)
     float part_x = (pos_back_rotated.x - rakel_tilted_x_min) / rakel_tilted_dx;
     float part_y = pos_back_rotated.y / RakelLength; // currently easy, because there is no length tilt
 
-    float dist = distance_from_rakel(pos_back_rotated, RakelLLTilted, RakelLRTilted, RakelPosition);
-
+    float dist = distance_from_rakel(pos_back_rotated, RakelLLTilted, RakelLRTilted, float3(RakelAnchor.x, RakelAnchor.y, RakelPosition.z));
+    
     return float3(part_x, part_y, dist);
 }
 
@@ -109,13 +114,25 @@ bool pixel_in_reservoir_range(int2 pixel)
 }
 
 // radius of 1 does an emit on a 3x3 area from emit source grid, based on the rounded reservoir_pixel
-void emit(float2 reservoir_pixel, int2 radius)
+void emit(float2 reservoir_pixel, int2 radius, float distance)
 {
     int2 reservoir_pixel_nearest = round(reservoir_pixel);
 
-    // TODO ratio of application and pickup reservoir
-    float VOLUME_TO_EMIT_TARGET_APP = EmitVolumeApplicationReservoir * PAINT_UNIT();
-    float VOLUME_TO_EMIT_TARGET_PU = EmitVolumePickupReservoir * PAINT_UNIT();
+    // TODO single target volume and determine ratio further below
+    float VOLUME_TO_EMIT_TARGET_APP = emit_volume(
+        distance,
+        EmitDistance_MAX,
+        RakelTilt,
+        RakelTilt_MAX,
+        EmitVolumeApplicationReservoir_MIN * PAINT_UNIT(),
+        EmitVolumeApplicationReservoir_MAX * PAINT_UNIT());
+    float VOLUME_TO_EMIT_TARGET_PU = emit_volume(
+        distance,
+        EmitDistance_MAX,
+        RakelTilt,
+        RakelTilt_MAX,
+        EmitVolumePickupReservoir_MIN * PAINT_UNIT(),
+        EmitVolumePickupReservoir_MAX * PAINT_UNIT());
 
     // Array size should really be [1+2*radius.y][1+2*radius.x] but we can't make dynamic arrays
     // in HLSL. So we do 9x9, which is enough for 79 degree tilt and more is not useful for emitting anyways.
@@ -161,6 +178,7 @@ void emit(float2 reservoir_pixel, int2 radius)
                     float target_volume_pu = overlap * VOLUME_TO_EMIT_TARGET_PU;
                     float really_available_volume_app = overlap * available_app.volume;
                     float really_available_volume_pu = overlap * available_pu.volume;
+                    // TODO mostly prefer pickup reservoir as long as it is filled?
                     volume_to_emit_app[i][j] = min(target_volume_app, really_available_volume_app);
                     volume_to_emit_pu[i][j] = min(target_volume_pu, really_available_volume_pu);
                     result_volume_app += volume_to_emit_app[i][j];
@@ -240,6 +258,6 @@ void main (uint3 id_ : SV_DispatchThreadID)
         float2 reservoir_pixel = float2(rakel_mapped_info.x * RakelReservoirSize.x - 0.5,
                                         rakel_mapped_info.y * RakelReservoirSize.y - 0.5);
         
-        emit(reservoir_pixel, uint2(ClipRadiusX, 1));
+        emit(reservoir_pixel, uint2(ClipRadiusX, 1), rakel_mapped_info.z);
     }
 }

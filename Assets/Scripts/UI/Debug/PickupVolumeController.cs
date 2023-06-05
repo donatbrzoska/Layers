@@ -3,7 +3,7 @@ public class PickupVolumeController : InputFieldController
 {
     public void Start()
     {
-        InputField.SetTextWithoutNotify("" + OilPaintEngine.Configuration.TransferConfiguration.PickupVolume);
+        InputField.SetTextWithoutNotify("" + OilPaintEngine.Configuration.TransferConfiguration.PickupVolume_MAX);
     }
 
     override public void OnValueChanged(string arg0)

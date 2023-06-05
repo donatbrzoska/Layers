@@ -57,7 +57,9 @@ public class Canvas_
     public ComputeBuffer EmitPaint(
         Rakel rakel,
         ShaderCalculation shaderCalculation,
-        float emitVolume,
+        float pickupDistance_MAX,
+        float pickupVolume_MIN,
+        float pickupVolume_MAX,
         bool debugEnabled = false)
     {
         ComputeBuffer canvasEmittedPaint = new ComputeBuffer(shaderCalculation.PixelCount, Paint.SizeInBytes);
@@ -77,6 +79,7 @@ public class Canvas_
             new CSFloat("RakelLength", rakel.Length),
             new CSFloat("RakelWidth", rakel.Width),
             new CSFloat("RakelTilt", rakel.Tilt),
+            new CSFloat("RakelTilt_MAX", Rakel.MAX_SUPPORTED_TILT),
             new CSFloat3("RakelULTilted", rakel.ulTilted),
             new CSFloat3("RakelURTilted", rakel.urTilted),
             new CSFloat3("RakelLLTilted", rakel.llTilted),
@@ -85,7 +88,9 @@ public class Canvas_
             new CSComputeBuffer("CanvasEmittedPaint", canvasEmittedPaint),
             new CSInt2("RakelReservoirSize", rakel.ApplicationReservoir.Size),
             new CSInt("RakelResolution", rakel.ApplicationReservoir.Resolution),
-            new CSFloat("EmitVolume", emitVolume),
+            new CSFloat("PickupDistance_MAX", pickupDistance_MAX),
+            new CSFloat("PickupVolume_MIN", pickupVolume_MIN),
+            new CSFloat("PickupVolume_MAX", pickupVolume_MAX),
         };
 
         ComputeShaderTask cst = new ComputeShaderTask(
