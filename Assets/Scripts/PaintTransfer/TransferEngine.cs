@@ -3,9 +3,13 @@ using UnityEngine;
 
 public class TransferEngine
 {
+    private bool DebugShader;
     private Vector2Int PreviousApplyPosition = new Vector2Int(int.MinValue, int.MinValue);
 
-    public TransferEngine() { }
+    public TransferEngine(bool debugShader)
+    {
+        DebugShader = debugShader;
+    }
 
     // Position is located at Rakel Anchor
     // Rotation 0 means Rakel is directed to the right
@@ -51,18 +55,19 @@ public class TransferEngine
             2 // Padding of 2 because normals of the previously set pixels around also have to be recalculated
         );
 
-        canvas.Reservoir.Duplicate(false);
+        canvas.Reservoir.Duplicate(DebugShader);
 
         ComputeBuffer canvasEmittedPaint = canvas.EmitPaint(
             rakel,
             canvasEmitSR,
             transferConfiguration.PickupDistance_MAX,
             transferConfiguration.PickupVolume_MIN,
-            transferConfiguration.PickupVolume_MAX, false); ;
+            transferConfiguration.PickupVolume_MAX,
+            DebugShader); ;
 
-        rakel.ApplicationReservoir.Duplicate(false);
+        rakel.ApplicationReservoir.Duplicate(DebugShader);
 
-        rakel.PickupReservoir.Duplicate(false);
+        rakel.PickupReservoir.Duplicate(DebugShader);
 
         ComputeBuffer rakelEmittedPaint = rakel.EmitPaint(
             rakelEmitSR,
@@ -71,16 +76,21 @@ public class TransferEngine
             transferConfiguration.EmitVolumeApplicationReservoir_MIN,
             transferConfiguration.EmitVolumeApplicationReservoir_MAX,
             transferConfiguration.EmitVolumePickupReservoir_MIN,
-            transferConfiguration.EmitVolumePickupReservoir_MAX, false);
+            transferConfiguration.EmitVolumePickupReservoir_MAX,
+            DebugShader);
 
         canvas.ApplyPaint(
             rakelEmitSR,
-            rakelEmittedPaint);
+            rakelEmittedPaint,
+            DebugShader);
 
         rakel.ApplyPaint(
             canvasEmitSR,
-            canvasEmittedPaint);
+            canvasEmittedPaint,
+            DebugShader);
 
-        canvas.Render(rerenderSR);
+        canvas.Render(
+            rerenderSR,
+            DebugShader);
     }
 }
