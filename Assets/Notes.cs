@@ -289,6 +289,9 @@ public class Notes : MonoBehaviour
  * -> wird vom Compiler still hingenommen aber mein Wert kommt natürlich nicht an
  * 
  * Copy and Paste (Shader Test: Execute()-Funktion kopiert und dann den Shader-Namen nicht angepasst ...)
+ * 
+ * Wechsel von int auf float für Volume -> vergessen die Volumenwerte bei der Normalenberechnung dann auch in floats zu speichern
+ * -> 0.999999 wird zu 0 ...
  */
 
 
