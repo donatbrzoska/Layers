@@ -398,6 +398,13 @@ public class OilPaintEngine : MonoBehaviour
         Configuration.TransferConfiguration.PickupVolume_MAX = value;
     }
 
+    public void UpdateNormalScale(float value)
+    {
+        Configuration.NormalScale = value;
+        Canvas.NormalScale = value;
+        Canvas.Render(Canvas.GetFullShaderCalculation());
+    }
+
     public void DoMacroAction()
     {
         //Rakel.Fill(new Paint(new Color(0 / 255f, 107 / 255f, 60 / 255f), 240), new PerlinNoiseFiller());

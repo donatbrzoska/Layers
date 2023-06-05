@@ -134,6 +134,15 @@ public class Canvas_
         rakelEmittedPaint.Dispose();
     }
 
+    public ShaderCalculation GetFullShaderCalculation()
+    {
+        return new ShaderCalculation(
+            new Vector2Int(0, 0),
+            new Vector2Int(0, WorldSpaceCanvas.TextureSize.x),
+            new Vector2Int(WorldSpaceCanvas.TextureSize.y, 0),
+            new Vector2Int(WorldSpaceCanvas.TextureSize.y, WorldSpaceCanvas.TextureSize.x));
+    }
+
     public void Render(
         ShaderCalculation shaderCalculation,
         bool debugEnabled = false)
