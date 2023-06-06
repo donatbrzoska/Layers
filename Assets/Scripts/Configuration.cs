@@ -11,7 +11,7 @@ public class Configuration
 
     public Configuration()
     {
-        TextureResolution = 20;
+        TextureResolution = 40;
         NormalScale = 0.015f;
 
         RakelConfiguration = new RakelConfiguration();
