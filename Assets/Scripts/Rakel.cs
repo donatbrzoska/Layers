@@ -9,7 +9,7 @@ public class Rakel
 
     public static float ClampTilt(float tilt)
     {
-        return Mathf.Max(Mathf.Min(tilt, MAX_SUPPORTED_TILT), MIN_SUPPORTED_TILT);
+        return Mathf.Clamp(tilt, MIN_SUPPORTED_TILT, MAX_SUPPORTED_TILT);
     }
 
     public float Length { get; private set; }

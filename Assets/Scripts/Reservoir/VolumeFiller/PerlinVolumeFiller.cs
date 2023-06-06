@@ -26,7 +26,7 @@ public class PerlinVolumeFiller : VolumeFiller
                 float x = (float)j / maxSide * scale + offset_x;
                 float y = (float)i / maxSide * scale + offset_y;
 
-                float clipped_noise = Mathf.Max(Mathf.Min(Mathf.PerlinNoise(x, y), 1), 0);
+                float clipped_noise = Mathf.Clamp01(Mathf.PerlinNoise(x, y));
                 float added_volume = clipped_noise * max_added_volume;
 
                 added_volumes[i, j] = added_volume;
