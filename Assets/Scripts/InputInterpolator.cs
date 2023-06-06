@@ -25,6 +25,8 @@ public class InputInterpolator
         PreviousRakelPosition = NO_POSITION;
         PreviousRakelRotation = NO_ANGLE;
         PreviousRakelTilt = NO_ANGLE;
+
+        Rakel.NewStroke();
     }
 
     public void AddNode(Vector3 rakelPosition, float rakelRotation, float rakelTilt, TransferConfiguration transferConfiguration, int interpolationResolution)

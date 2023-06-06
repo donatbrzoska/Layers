@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 public class Rakel
 {
+
     // see EmitFromRakel shader for details (look for "79 degree tilt")
     private const int MIN_SUPPORTED_TILT = 0;
     public const int MAX_SUPPORTED_TILT = 79;
@@ -34,17 +35,27 @@ public class Rakel
     public Reservoir ApplicationReservoir;
     public Reservoir PickupReservoir;
 
+    private ComputeBuffer DistortionMap;
+    private int DistortionMapIndex;
+    private const int MAX_STROKE_LENGTH = 3000; // should always be bigger than Rakel width
+    private Vector2Int DistortionMapSize;
+
     public Rakel(float length, float width, int resolution, float anchorRatioLength = 0.5f, float anchorRatioWidth = 1)
     {
+        Vector2Int reservoirSize = new Vector2Int((int)(width * resolution), (int)(length * resolution));
+
         ApplicationReservoir = new Reservoir(
             resolution,
-            (int)(width * resolution),
-            (int)(length * resolution));
+            reservoirSize.x,
+            reservoirSize.y);
 
         PickupReservoir = new Reservoir(
             resolution,
-            (int)(width * resolution),
-            (int)(length * resolution));
+            reservoirSize.x,
+            reservoirSize.y);
+
+        DistortionMapSize = new Vector2Int(MAX_STROKE_LENGTH, reservoirSize.y);
+        DistortionMap = new ComputeBuffer(DistortionMapSize.x * DistortionMapSize.y , sizeof(float));
 
         // make sure Rakel is not bigger than its reservoir
         Length = ApplicationReservoir.Size.y * ApplicationReservoir.PixelSize;
@@ -52,6 +63,41 @@ public class Rakel
 
         // NOTE this has to be set after Width and Length were corrected
         Anchor = new Vector3(anchorRatioWidth * Width, anchorRatioLength * Length, 0);
+    }
+
+    public void NewStroke()
+    {
+        //float[] distortionMapData = new float[DistortionMapSize.x * DistortionMapSize.y];
+
+        ////float noiseCapRatio = 0.6f;
+        ////float noiseCapSubtract = 0.5f;
+
+        //PerlinNoise perlinNoise = new PerlinNoise(DistortionMapSize, new Vector2(10, 800));
+        //for (int x = 0; x < DistortionMapSize.x; x++)
+        //{
+        //    for (int y = 0; y < DistortionMapSize.y; y++)
+        //    {
+        //        float value = perlinNoise.ValueAt(x, y);
+        //        //distortionMapData[IndexUtil.XY(x, y, DistortionMapSize.x)] = Mathf.Clamp01(Mathf.Clamp(value, 0, noiseCapRatio) - noiseCapSubtract);
+        //        distortionMapData[IndexUtil.XY(x, y, DistortionMapSize.x)] = value;
+        //    }
+        //}
+
+        //DistortionMap.SetData(distortionMapData);
+    }
+
+    private int IncrementDistortionMapIndex()
+    {
+        int oldValue = DistortionMapIndex;
+
+        DistortionMapIndex++;
+        // wrap around
+        if (DistortionMapIndex > DistortionMapSize.x - ApplicationReservoir.Size.x - 1)
+        {
+            DistortionMapIndex = 0;
+        }
+
+        return oldValue;
     }
 
     public void UpdateState(Vector3 position, float rotation, float tilt)
@@ -137,6 +183,9 @@ public class Rakel
             new CSFloat3("RakelLRTilted", lrTilted),
             new CSComputeBuffer("RakelApplicationReservoir", ApplicationReservoir.Buffer),
             new CSComputeBuffer("RakelPickupReservoir", PickupReservoir.Buffer),
+            new CSComputeBuffer("DistortionMap", DistortionMap),
+            new CSInt2("DistortionMapSize", DistortionMapSize),
+            new CSInt("DistortionMapIndex", IncrementDistortionMapIndex()),
             new CSComputeBuffer("RakelEmittedPaint", RakelEmittedPaint),
             new CSInt2("RakelReservoirSize", ApplicationReservoir.Size),
             new CSFloat("EmitDistance_MAX", emitDistance_MAX),
@@ -187,6 +236,8 @@ public class Rakel
     {
         ApplicationReservoir.Dispose();
         PickupReservoir.Dispose();
+
+        DistortionMap.Dispose();
     }
 }
 

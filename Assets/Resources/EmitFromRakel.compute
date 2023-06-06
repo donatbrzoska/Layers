@@ -74,6 +74,10 @@ uint2 RakelReservoirSize;
 RWStructuredBuffer<Paint> RakelApplicationReservoir;
 RWStructuredBuffer<Paint> RakelPickupReservoir;
 
+RWStructuredBuffer<float> DistortionMap;
+uint2 DistortionMapSize;
+uint DistortionMapIndex;
+
 RWStructuredBuffer<Paint> RakelEmittedPaint;
 
 
@@ -126,6 +130,10 @@ void emit(float2 reservoir_pixel, int2 radius, float distance)
         RakelTilt_MAX,
         EmitVolumeApplicationReservoir_MIN * PAINT_UNIT(),
         EmitVolumeApplicationReservoir_MAX * PAINT_UNIT());
+
+    // TODO there might be problems with rounding to negative indizes
+    // VOLUME_TO_EMIT_TARGET_APP *= DistortionMap[XY(reservoir_pixel_nearest.x + DistortionMapIndex, reservoir_pixel_nearest.y, DistortionMapSize.x)];
+
     float VOLUME_TO_EMIT_TARGET_PU = emit_volume(
         distance,
         EmitDistance_MAX,
@@ -133,6 +141,9 @@ void emit(float2 reservoir_pixel, int2 radius, float distance)
         RakelTilt_MAX,
         EmitVolumePickupReservoir_MIN * PAINT_UNIT(),
         EmitVolumePickupReservoir_MAX * PAINT_UNIT());
+
+    //TODO there might be problems with rounding to negative indizes
+    // VOLUME_TO_EMIT_TARGET_PU *= DistortionMap[XY(reservoir_pixel_nearest.x + DistortionMapIndex, reservoir_pixel_nearest.y, DistortionMapSize.x)];
 
     // Array size should really be [1+2*radius.y][1+2*radius.x] but we can't make dynamic arrays
     // in HLSL. So we do 9x9, which is enough for 79 degree tilt and more is not useful for emitting anyways.
