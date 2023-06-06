@@ -7,13 +7,10 @@ public class PerlinVolumeFiller : VolumeFiller
 
     public override void Fill(Paint[] target, Vector2Int targetSize)
     {
+        PerlinNoise perlinNoise = new PerlinNoise(targetSize, new Vector2(5, 5));
+
         // determine added volume
         float max_added_volume = BaseVolume;
-
-        float scale = 5f; // bigger values == larger areas of the perlin noise terrain == more frequent noise
-        float offset_x = UnityEngine.Random.Range(0f, 1000f);
-        float offset_y = UnityEngine.Random.Range(0f, 1000f);
-
         float[,] added_volumes = new float[targetSize.y, targetSize.x];
         float added_volumes_min = int.MaxValue;
 
@@ -22,12 +19,8 @@ public class PerlinVolumeFiller : VolumeFiller
         {
             for (int j = 0; j < targetSize.x; j++)
             {
-                int maxSide = Mathf.Max(targetSize.x, targetSize.y);
-                float x = (float)j / maxSide * scale + offset_x;
-                float y = (float)i / maxSide * scale + offset_y;
-
-                float clipped_noise = Mathf.Clamp01(Mathf.PerlinNoise(x, y));
-                float added_volume = clipped_noise * max_added_volume;
+                float noise = perlinNoise.ValueAt(j, i);
+                float added_volume = noise * max_added_volume;
 
                 added_volumes[i, j] = added_volume;
 
