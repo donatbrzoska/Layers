@@ -1,9 +1,17 @@
 ﻿
 public class RakelPositionXController : InputFieldController
 {
-    public void Update()
+    public void Start()
     {
         InputField.SetTextWithoutNotify("" + OilPaintEngine.RakelPositionX);
+    }
+
+    public void Update()
+    {
+        if (!OilPaintEngine.Configuration.RakelConfiguration.PositionLocked.x)
+        {
+            InputField.SetTextWithoutNotify("" + OilPaintEngine.RakelPositionX);
+        }
     }
 
     override public void OnValueChanged(string arg0)
