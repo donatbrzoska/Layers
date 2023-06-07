@@ -20,6 +20,7 @@ public class MouseAndKeyboardInput
         UpdatePosition();
         UpdateDrawingEnabled();
         UpdateStrokeBegin();
+        UpdateInStroke();
         UpdateRotation();
         UpdateTilt();
     }
@@ -62,12 +63,12 @@ public class MouseAndKeyboardInput
     }
 
 
-    // Real haptic input controllers probably won't need this and should always return true
+    // NOTE: Real haptic input controllers probably won't need this and should always return true
     public bool DrawingEnabled { get; private set; }
 
     private void UpdateDrawingEnabled()
     {
-        DrawingEnabled = Input.GetMouseButton(0) && !GraphicsRaycaster.UIBlocking();
+        DrawingEnabled = Input.GetMouseButton(0);
     }
 
 
@@ -77,7 +78,22 @@ public class MouseAndKeyboardInput
     {
         if (DrawingEnabled)
         {
-            StrokeBegin = Input.GetMouseButtonDown(0);
+            StrokeBegin = Input.GetMouseButtonDown(0) && !GraphicsRaycaster.UIBlocking();
+            if (StrokeBegin)
+            {
+                InStroke = true;
+            }
+        }
+    }
+
+
+    public bool InStroke { get; private set; }
+
+    private void UpdateInStroke()
+    {
+        if (Input.GetMouseButtonUp(0))
+        {
+            InStroke = false;
         }
     }
 

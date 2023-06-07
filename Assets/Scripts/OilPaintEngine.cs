@@ -180,43 +180,46 @@ public class OilPaintEngine : MonoBehaviour
 
             if (InputManager.DrawingEnabled)
             {
-                Vector3 position = InputManager.Position;
-                if (Configuration.RakelConfiguration.PositionLocked.x)
-                {
-                    position.x = Configuration.RakelConfiguration.Position.x;
-                }
-                if (Configuration.RakelConfiguration.PositionLocked.y)
-                {
-                    position.y = Configuration.RakelConfiguration.Position.y;
-                }
-                if (Configuration.RakelConfiguration.PositionLocked.z)
-                {
-                    position.z = Configuration.RakelConfiguration.Position.z;
-                }
-
-                float rotation = InputManager.Rotation;
-                if (Configuration.RakelConfiguration.RotationLocked)
-                {
-                    rotation = Configuration.RakelConfiguration.Rotation;
-                }
-
-                float tilt = InputManager.Tilt;
-                if (Configuration.RakelConfiguration.TiltLocked)
-                {
-                    tilt = Configuration.RakelConfiguration.Tilt;
-                }
-
                 if (InputManager.StrokeBegin)
                 {
                     InputInterpolator.NewStroke();
                 }
 
-                InputInterpolator.AddNode(
-                    position,
-                    rotation,
-                    tilt,
-                    Configuration.TransferConfiguration,
-                    Configuration.TextureResolution);
+                if (InputManager.InStroke)
+                {
+                    Vector3 position = InputManager.Position;
+                    if (Configuration.RakelConfiguration.PositionLocked.x)
+                    {
+                        position.x = Configuration.RakelConfiguration.Position.x;
+                    }
+                    if (Configuration.RakelConfiguration.PositionLocked.y)
+                    {
+                        position.y = Configuration.RakelConfiguration.Position.y;
+                    }
+                    if (Configuration.RakelConfiguration.PositionLocked.z)
+                    {
+                        position.z = Configuration.RakelConfiguration.Position.z;
+                    }
+
+                    float rotation = InputManager.Rotation;
+                    if (Configuration.RakelConfiguration.RotationLocked)
+                    {
+                        rotation = Configuration.RakelConfiguration.Rotation;
+                    }
+
+                    float tilt = InputManager.Tilt;
+                    if (Configuration.RakelConfiguration.TiltLocked)
+                    {
+                        tilt = Configuration.RakelConfiguration.Tilt;
+                    }
+
+                    InputInterpolator.AddNode(
+                        position,
+                        rotation,
+                        tilt,
+                        Configuration.TransferConfiguration,
+                        Configuration.TextureResolution);
+                }
             }
         }
     }
