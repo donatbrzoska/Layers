@@ -2,13 +2,14 @@ using UnityEngine;
 
 public class OilPaintEngine : MonoBehaviour
 {
-    public bool DEBUG_SHADER = false;
-    public int BENCHMARK_STEPS = 0;
-    public int TH_GROUP_SIZE_X = 32;
-    public int TH_GROUP_SIZE_Y = 1;
+    // These attributes are set through inspector
+    public bool DEBUG_SHADER;
+    public int BENCHMARK_STEPS;
+    public int TH_GROUP_SIZE_X;
+    public int TH_GROUP_SIZE_Y;
 
-    public float ANCHOR_RATIO_X = 1;
-    public float ANCHOR_RATIO_Y = 0.5f;
+    public float ANCHOR_RATIO_X;
+    public float ANCHOR_RATIO_Y;
 
     public Configuration Configuration { get; private set; }
     public MouseAndKeyboardInput InputManager { get; private set; }
