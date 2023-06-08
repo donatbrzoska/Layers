@@ -11,6 +11,8 @@ public class OilPaintEngine : MonoBehaviour
     public float ANCHOR_RATIO_X;
     public float ANCHOR_RATIO_Y;
 
+    public bool USE_PEN;
+
     public Configuration Configuration { get; private set; }
     public InputManager InputManager { get; private set; }
 
@@ -28,6 +30,11 @@ public class OilPaintEngine : MonoBehaviour
         //Configuration.FillConfiguration.VolumeMode = VolumeMode.Flat;
         //Configuration.FillConfiguration.Volume = 30;
 
+        if (USE_PEN)
+        {
+            Configuration.InputConfiguration.RakelPositionZ.Source = InputSourceType.Pen;
+        }
+
         CreateInputManager();
 
         if (BENCHMARK_STEPS > 0)
@@ -38,7 +45,7 @@ public class OilPaintEngine : MonoBehaviour
 
     void CreateInputManager()
     {
-        InputManager = new InputManager(Configuration.InputConfiguration);
+        InputManager = new InputManager(Configuration.InputConfiguration, 0, -Configuration.TransferConfiguration.EmitDistance_MAX);
     }
 
     void Start()
@@ -226,7 +233,14 @@ public class OilPaintEngine : MonoBehaviour
         }
         else
         {
-            Configuration.InputConfiguration.RakelPositionZ.Source = InputSourceType.Keyboard;
+            if (USE_PEN)
+            {
+                Configuration.InputConfiguration.RakelPositionZ.Source = InputSourceType.Pen;
+            }
+            else
+            {
+                Configuration.InputConfiguration.RakelPositionZ.Source = InputSourceType.Keyboard;
+            }
         }
         CreateInputManager();
     }

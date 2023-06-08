@@ -20,6 +20,7 @@ public enum InputSourceType
     Text,
     Mouse,
     Keyboard,
+    Pen,
 }
 
 public struct InputValue
@@ -39,7 +40,7 @@ public class InputManager
 
     private StrokeStateSource StrokeStateSource;
 
-    public InputManager(InputConfiguration inputConfiguration)
+    public InputManager(InputConfiguration inputConfiguration, float RakelPositionZ_MIN, float RakelPositionZ_MAX)
     {
         switch (inputConfiguration.RakelPositionX.Source)
         {
@@ -76,6 +77,9 @@ public class InputManager
                 RakelPositionZSource = new KeyboardRakelPositionZ();
                 break;
             case InputSourceType.Mouse:
+                break;
+            case InputSourceType.Pen:
+                RakelPositionZSource = new PenRakelPositionZ(RakelPositionZ_MIN, RakelPositionZ_MAX);
                 break;
             default:
                 break;
