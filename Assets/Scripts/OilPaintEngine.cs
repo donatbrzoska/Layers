@@ -85,7 +85,7 @@ public class OilPaintEngine : MonoBehaviour
 
     private TransferEngine TransferEngine;
     private Canvas_ Canvas;
-    private Rakel Rakel;
+    public Rakel Rakel;
     private InputInterpolator InputInterpolator;
 
     void Awake()
