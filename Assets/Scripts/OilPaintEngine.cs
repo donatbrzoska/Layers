@@ -151,20 +151,12 @@ public class OilPaintEngine : MonoBehaviour
 
     private void DisposeRakel()
     {
-        if (Rakel != null)
-        {
-            //Debug.Log("Disposing Rakel");
-            Rakel.Dispose();
-        }
+        Rakel?.Dispose();
     }
 
     private void DisposeCanvas()
     {
-        if (Canvas != null)
-        {
-            //Debug.Log("Disposing Canvas");
-            Canvas.Dispose();
-        }
+        Canvas?.Dispose();
     }
 
     // ****************************************************************************************
@@ -189,14 +181,7 @@ public class OilPaintEngine : MonoBehaviour
 
     public void UpdateRakelPositionXLocked(bool locked)
     {
-        if (locked)
-        {
-            Configuration.InputConfiguration.RakelPositionX.Source = InputSourceType.Text;
-        }
-        else
-        {
-            Configuration.InputConfiguration.RakelPositionX.Source = InputSourceType.Mouse;
-        }
+        Configuration.InputConfiguration.RakelPositionX.Source = locked ? InputSourceType.Text : InputSourceType.Mouse;
         CreateInputManager();
     }
 
@@ -208,14 +193,7 @@ public class OilPaintEngine : MonoBehaviour
 
     public void UpdateRakelPositionYLocked(bool locked)
     {
-        if (locked)
-        {
-            Configuration.InputConfiguration.RakelPositionY.Source = InputSourceType.Text;
-        }
-        else
-        {
-            Configuration.InputConfiguration.RakelPositionY.Source = InputSourceType.Mouse;
-        }
+        Configuration.InputConfiguration.RakelPositionY.Source = locked ? InputSourceType.Text : InputSourceType.Mouse;
         CreateInputManager();
     }
 
@@ -227,21 +205,8 @@ public class OilPaintEngine : MonoBehaviour
 
     public void UpdateRakelPositionZLocked(bool locked)
     {
-        if (locked)
-        {
-            Configuration.InputConfiguration.RakelPositionZ.Source = InputSourceType.Text;
-        }
-        else
-        {
-            if (USE_PEN)
-            {
-                Configuration.InputConfiguration.RakelPositionZ.Source = InputSourceType.Pen;
-            }
-            else
-            {
-                Configuration.InputConfiguration.RakelPositionZ.Source = InputSourceType.Keyboard;
-            }
-        }
+        InputSourceType penOrKeyboard = USE_PEN ? InputSourceType.Pen : InputSourceType.Keyboard;
+        Configuration.InputConfiguration.RakelPositionZ.Source = locked ? InputSourceType.Text : penOrKeyboard;
         CreateInputManager();
     }
 
@@ -253,14 +218,7 @@ public class OilPaintEngine : MonoBehaviour
 
     public void UpdateRakelRotationLocked(bool locked)
     {
-        if (locked)
-        {
-            Configuration.InputConfiguration.RakelRotation.Source = InputSourceType.Text;
-        }
-        else
-        {
-            Configuration.InputConfiguration.RakelRotation.Source = InputSourceType.Mouse;
-        }
+        Configuration.InputConfiguration.RakelRotation.Source = locked ? InputSourceType.Text : InputSourceType.Mouse;
         CreateInputManager();
     }
 
@@ -272,14 +230,7 @@ public class OilPaintEngine : MonoBehaviour
 
     public void UpdateRakelTiltLocked(bool locked)
     {
-        if (locked)
-        {
-            Configuration.InputConfiguration.RakelTilt.Source = InputSourceType.Text;
-        }
-        else
-        {
-            Configuration.InputConfiguration.RakelTilt.Source = InputSourceType.Keyboard;
-        }
+        Configuration.InputConfiguration.RakelTilt.Source = locked ? InputSourceType.Text : InputSourceType.Keyboard;
         CreateInputManager();
     }
 
