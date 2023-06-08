@@ -351,91 +351,19 @@ public class OilPaintEngine : MonoBehaviour
 
     public void DoMacroAction()
     {
-        //Rakel.Fill(new Paint(new Color(0 / 255f, 107 / 255f, 60 / 255f), 240), new PerlinNoiseFiller());
         Rakel.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen), new FlatVolumeFiller(1)));
 
         InputInterpolator.NewStroke();
         InputInterpolator.AddNode(
             new Vector3(-3, 0, -0.10f),
             0,
-            //60,
-            41.4096f,
+            0,
             Configuration.TransferConfiguration,
             Configuration.TextureResolution);
-
-        //RakelInterpolator.AddNode(new Vector3(-4, 0, -0.10f), 0, 0, TextureResolution);
-        //RakelInterpolator.AddNode(new Vector3(-3, 0, -0.10f), 0, 0, TextureResolution);
-        //RakelInterpolator.AddNode(new Vector3(-2, 0, -0.10f), 0, 0, TextureResolution);
-        //RakelInterpolator.AddNode(new Vector3(-1, 0, -0.10f), 0, 0, TextureResolution);
-        //RakelInterpolator.AddNode(new Vector3(-0, 0, -0.10f), 0, 0, TextureResolution);
-        //RakelInterpolator.AddNode(new Vector3(1, 0, -0.10f), 0, 0, TextureResolution);
-        //RakelInterpolator.AddNode(new Vector3(2, 0, -0.10f), 0, 0, TextureResolution);
-        //RakelInterpolator.AddNode(new Vector3(3, 0, -0.10f), 0, 0, TextureResolution);
-        //RakelInterpolator.AddNode(new Vector3(4, 0, -0.10f), 0, 0, TextureResolution);
-        //RakelInterpolator.AddNode(new Vector3(5, 0, -0.10f), 0, 0, TextureResolution);
-
-        //RakelInterpolator.AddNode(new Vector3(6, 3, -0.10f), 0, 0, TextureResolution);
-
-        //InputInterpolator.AddNode(
-        //    new Vector3(6, 0, -0.10f),
-        //    0,
-        //    0,
-        //    Configuration.TransferConfiguration,
-        //    Configuration.CanvasResolution);
     }
 
     public void DoMacro2Action()
     {
-        //Rakel.Fill(new Paint(new Color(0 / 255f, 107 / 255f, 60 / 255f), 240), new PerlinNoiseFiller());
-        //RakelInterpolator.NewStroke();
-        //RakelInterpolator.AddNode(new Vector3(-5, 0, -0.10f), 45, 0, TextureResolution);
 
-
-        //Rakel.Fill(Color_.CadmiumGreen, 240, new FlatFiller());
-        //RakelInterpolator.NewStroke();
-        //RakelInterpolator.AddNode(
-        //    new Vector3(-5, 0, -0.10f),
-        //    0,
-        //    0,
-        //    Configuration.TransferConfiguration,
-        //    Configuration.CanvasResolution);
-
-
-        Rakel.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen), new FlatVolumeFiller(1)));
-
-        TransferEngine.SimulateStep(
-            new Vector3(-5, 0, -0.10f),
-            0,
-            45,
-            Configuration.TransferConfiguration,
-            Rakel,
-            Canvas);
-
-        UpdateRakelWidth(3);
-        UpdateRakelLength(4);
-
-        TransferEngine.SimulateStep(
-            new Vector3(-4, 0, -0.10f),
-            0,
-            0,
-            Configuration.TransferConfiguration,
-            Rakel,
-            Canvas);
-
-        //TransferEngine.SimulateStep(
-        //    new Vector3(-4, 0, -0.10f),
-        //    0,
-        //    0,
-        //    Configuration.TransferConfiguration,
-        //    Rakel,
-        //    OilPaintCanvas);
-
-        //TransferEngine.SimulateStep(
-        //    new Vector3(-4, 0, -0.10f),
-        //    0,
-        //    0,
-        //    Configuration.TransferConfiguration,
-        //    Rakel,
-        //    OilPaintCanvas);
     }
 }
