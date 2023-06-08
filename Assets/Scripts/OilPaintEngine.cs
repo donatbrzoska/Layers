@@ -14,46 +14,6 @@ public class OilPaintEngine : MonoBehaviour
     public Configuration Configuration { get; private set; }
     public InputManager InputManager { get; private set; }
 
-    public bool RakelPositionXLocked
-    {
-        get
-        {
-            return Configuration.InputConfiguration.RakelPositionX.Source == InputSourceType.Text;
-        }
-    }
-
-    public bool RakelPositionYLocked
-    {
-        get
-        {
-            return Configuration.InputConfiguration.RakelPositionY.Source == InputSourceType.Text;
-        }
-    }
-
-    public bool RakelPositionZLocked
-    {
-        get
-        {
-            return Configuration.InputConfiguration.RakelPositionZ.Source == InputSourceType.Text;
-        }
-    }
-
-    public bool RakelRotationLocked
-    {
-        get
-        {
-            return Configuration.InputConfiguration.RakelRotation.Source == InputSourceType.Text;
-        }
-    }
-
-    public bool RakelTiltLocked
-    {
-        get
-        {
-            return Configuration.InputConfiguration.RakelTilt.Source == InputSourceType.Text;
-        }
-    }
-
     private TransferEngine TransferEngine;
     private Canvas_ Canvas;
     public Rakel Rakel;
@@ -203,6 +163,16 @@ public class OilPaintEngine : MonoBehaviour
     // ****************************************************************************************
     // ***                                      TOP LEFT                                    ***
     // ****************************************************************************************
+
+    public bool RakelPositionXLocked { get { return Configuration.InputConfiguration.RakelPositionX.Source == InputSourceType.Text; } }
+
+    public bool RakelPositionYLocked { get { return Configuration.InputConfiguration.RakelPositionY.Source == InputSourceType.Text; } }
+
+    public bool RakelPositionZLocked { get { return Configuration.InputConfiguration.RakelPositionZ.Source == InputSourceType.Text; } }
+
+    public bool RakelRotationLocked { get { return Configuration.InputConfiguration.RakelRotation.Source == InputSourceType.Text; } }
+
+    public bool RakelTiltLocked { get { return Configuration.InputConfiguration.RakelTilt.Source == InputSourceType.Text; } }
 
     public void UpdateRakelPositionX(float value)
     {
