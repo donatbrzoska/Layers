@@ -118,7 +118,7 @@ public class RakelConfiguration
     {
         Position = Vector3.zero;
         PositionLocked = new Bool3();
-        Position.z = 0.05f;
+        Position.z = -0.05f;
         PositionLocked.z = true;
 
         Rotation = 0;
