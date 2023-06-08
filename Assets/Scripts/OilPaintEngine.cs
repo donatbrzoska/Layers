@@ -68,12 +68,17 @@ public class OilPaintEngine : MonoBehaviour
         //Configuration.FillConfiguration.VolumeMode = VolumeMode.Flat;
         //Configuration.FillConfiguration.Volume = 30;
 
-        InputManager = new InputManager(Configuration.InputConfiguration);
+        CreateInputManager();
 
         if (BENCHMARK_STEPS > 0)
         {
             Configuration.LoadBenchmark();
         }
+    }
+
+    void CreateInputManager()
+    {
+        InputManager = new InputManager(Configuration.InputConfiguration);
     }
 
     void Start()
@@ -201,8 +206,8 @@ public class OilPaintEngine : MonoBehaviour
 
     public void UpdateRakelPositionX(float value)
     {
-        InputManager.RakelPositionX = value;
         Configuration.InputConfiguration.RakelPositionX.Default = value;
+        CreateInputManager();
     }
 
     public void UpdateRakelPositionXLocked(bool locked)
@@ -210,19 +215,18 @@ public class OilPaintEngine : MonoBehaviour
         if (locked)
         {
             Configuration.InputConfiguration.RakelPositionX.Source = InputSourceType.Text;
-            InputManager.RakelPositionXSource = new TextRakelPositionX(Configuration.InputConfiguration.RakelPositionX.Default);
         }
         else
         {
             Configuration.InputConfiguration.RakelPositionX.Source = InputSourceType.Mouse;
-            InputManager.RakelPositionXSource = new MouseRakelPositionX();
         }
+        CreateInputManager();
     }
 
     public void UpdateRakelPositionY(float value)
     {
-        InputManager.RakelPositionY = value;
         Configuration.InputConfiguration.RakelPositionY.Default = value;
+        CreateInputManager();
     }
 
     public void UpdateRakelPositionYLocked(bool locked)
@@ -230,19 +234,18 @@ public class OilPaintEngine : MonoBehaviour
         if (locked)
         {
             Configuration.InputConfiguration.RakelPositionY.Source = InputSourceType.Text;
-            InputManager.RakelPositionYSource = new TextRakelPositionY(Configuration.InputConfiguration.RakelPositionY.Default);
         }
         else
         {
             Configuration.InputConfiguration.RakelPositionY.Source = InputSourceType.Mouse;
-            InputManager.RakelPositionYSource = new MouseRakelPositionY();
         }
+        CreateInputManager();
     }
 
     public void UpdateRakelPositionZ(float value)
     {
-        InputManager.RakelPositionZ = value;
         Configuration.InputConfiguration.RakelPositionZ.Default = value;
+        CreateInputManager();
     }
 
     public void UpdateRakelPositionZLocked(bool locked)
@@ -250,19 +253,18 @@ public class OilPaintEngine : MonoBehaviour
         if (locked)
         {
             Configuration.InputConfiguration.RakelPositionZ.Source = InputSourceType.Text;
-            InputManager.RakelPositionZSource = new TextRakelPositionZ(Configuration.InputConfiguration.RakelPositionZ.Default);
         }
         else
         {
             Configuration.InputConfiguration.RakelPositionZ.Source = InputSourceType.Keyboard;
-            InputManager.RakelPositionZSource = new KeyboardRakelPositionZ();
         }
+        CreateInputManager();
     }
 
     public void UpdateRakelRotation(float rotation)
     {
-        InputManager.RakelRotation = rotation;
         Configuration.InputConfiguration.RakelRotation.Default = rotation;
+        CreateInputManager();
     }
 
     public void UpdateRakelRotationLocked(bool locked)
@@ -270,19 +272,18 @@ public class OilPaintEngine : MonoBehaviour
         if (locked)
         {
             Configuration.InputConfiguration.RakelRotation.Source = InputSourceType.Text;
-            InputManager.RakelRotationSource = new TextRakelRotation(Configuration.InputConfiguration.RakelRotation.Default);
         }
         else
         {
             Configuration.InputConfiguration.RakelRotation.Source = InputSourceType.Mouse;
-            InputManager.RakelRotationSource = new MouseRakelRotation();
         }
+        CreateInputManager();
     }
 
     public void UpdateRakelTilt(float tilt)
     {
-        InputManager.RakelTilt = tilt;
         Configuration.InputConfiguration.RakelTilt.Default = tilt;
+        CreateInputManager();
     }
 
     public void UpdateRakelTiltLocked(bool locked)
@@ -290,13 +291,12 @@ public class OilPaintEngine : MonoBehaviour
         if (locked)
         {
             Configuration.InputConfiguration.RakelTilt.Source = InputSourceType.Text;
-            InputManager.RakelTiltSource = new TextRakelTilt(Configuration.InputConfiguration.RakelTilt.Default);
         }
         else
         {
             Configuration.InputConfiguration.RakelTilt.Source = InputSourceType.Keyboard;
-            InputManager.RakelTiltSource = new KeyboardRakelTilt();
         }
+        CreateInputManager();
     }
 
     public void UpdateRakelLength(float worldSpaceLength)

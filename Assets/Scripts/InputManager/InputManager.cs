@@ -31,14 +31,13 @@ public struct InputValue
 
 public class InputManager
 {
-    public FloatValueSource RakelPositionXSource;
-    public FloatValueSource RakelPositionYSource;
-    public FloatValueSource RakelPositionZSource;
-    public FloatValueSource RakelRotationSource;
-    public FloatValueSource RakelTiltSource;
+    private FloatValueSource RakelPositionXSource;
+    private FloatValueSource RakelPositionYSource;
+    private FloatValueSource RakelPositionZSource;
+    private FloatValueSource RakelRotationSource;
+    private FloatValueSource RakelTiltSource;
 
-    public StrokeStateSource StrokeStateSource;
-
+    private StrokeStateSource StrokeStateSource;
 
     public InputManager(InputConfiguration inputConfiguration)
     {
@@ -122,7 +121,6 @@ public class InputManager
         }
     }
 
-
     public void Update()
     {
         RakelPositionXSource.Update();
@@ -134,98 +132,13 @@ public class InputManager
         StrokeStateSource.Update();
     }
 
-    public float RakelPositionX
-    {
-        get
-        {
-            return RakelPositionXSource.Value;
-        }
+    public float RakelPositionX { get { return RakelPositionXSource.Value; } }
+    public float RakelPositionY { get { return RakelPositionYSource.Value; } }
+    public float RakelPositionZ { get { return RakelPositionZSource.Value; } }
+    public float RakelRotation { get { return RakelRotationSource.Value; } }
+    public float RakelTilt { get { return RakelTiltSource.Value; } }
 
-        // this is only really used for text source
-        set
-        {
-            RakelPositionXSource.Value = value;
-        }
-    }
-
-    public float RakelPositionY
-    {
-        get
-        {
-            return RakelPositionYSource.Value;
-        }
-
-        // this is only really used for text source
-        set
-        {
-            RakelPositionYSource.Value = value;
-        }
-    }
-
-    public float RakelPositionZ
-    {
-        get
-        {
-            return RakelPositionZSource.Value;
-        }
-
-        // this is only really used for text source
-        set
-        {
-            RakelPositionZSource.Value = value;
-        }
-    }
-
-    public float RakelRotation
-    {
-        get
-        {
-            return RakelRotationSource.Value;
-        }
-
-        // this is only really used for text source
-        set
-        {
-            RakelRotationSource.Value = value;
-        }
-    }
-
-    public float RakelTilt
-    {
-        get
-        {
-            return RakelTiltSource.Value;
-        }
-
-        // this is only really used for text source
-        set
-        {
-            RakelTiltSource.Value = value;
-        }
-    }
-
-
-    public bool DrawingEnabled
-    {
-        get
-        {
-            return StrokeStateSource.DrawingEnabled;
-        }
-    }
-
-    public bool StrokeBegin
-    {
-        get
-        {
-            return StrokeStateSource.StrokeBegin;
-        }
-    }
-
-    public bool InStroke
-    {
-        get
-        {
-            return StrokeStateSource.InStroke;
-        }
-    }
+    public bool DrawingEnabled { get { return StrokeStateSource.DrawingEnabled; } }
+    public bool StrokeBegin { get { return StrokeStateSource.StrokeBegin; } }
+    public bool InStroke { get { return StrokeStateSource.InStroke; } }
 }
