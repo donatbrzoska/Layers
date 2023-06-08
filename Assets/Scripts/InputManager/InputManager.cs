@@ -1,4 +1,5 @@
-﻿
+﻿using UnityEngine;
+
 public abstract class FloatValueSource
 {
     public abstract void Update();
@@ -47,12 +48,11 @@ public class InputManager
             case InputSourceType.Text:
                 RakelPositionXSource = new TextRakelPositionX(inputConfiguration.RakelPositionX.Default);
                 break;
-            case InputSourceType.Keyboard:
-                break;
             case InputSourceType.Mouse:
                 RakelPositionXSource = new MouseRakelPositionX();
                 break;
             default:
+                Debug.LogError(string.Format("Unsupported InputSourceType '{0}' for RakelPositionXSource", inputConfiguration.RakelPositionX.Source.ToString())); 
                 break;
         }
         switch (inputConfiguration.RakelPositionY.Source)
@@ -60,12 +60,11 @@ public class InputManager
             case InputSourceType.Text:
                 RakelPositionYSource = new TextRakelPositionY(inputConfiguration.RakelPositionY.Default);
                 break;
-            case InputSourceType.Keyboard:
-                break;
             case InputSourceType.Mouse:
                 RakelPositionYSource = new MouseRakelPositionY();
                 break;
             default:
+                Debug.LogError(string.Format("Unsupported InputSourceType '{0}' for RakelPositionYSource", inputConfiguration.RakelPositionY.Source.ToString()));
                 break;
         }
         switch (inputConfiguration.RakelPositionZ.Source)
@@ -76,12 +75,11 @@ public class InputManager
             case InputSourceType.Keyboard:
                 RakelPositionZSource = new KeyboardRakelPositionZ();
                 break;
-            case InputSourceType.Mouse:
-                break;
             case InputSourceType.Pen:
                 RakelPositionZSource = new PenRakelPositionZ(RakelPositionZ_MIN, RakelPositionZ_MAX);
                 break;
             default:
+                Debug.LogError(string.Format("Unsupported InputSourceType '{0}' for RakelPositionZSource", inputConfiguration.RakelPositionZ.Source.ToString()));
                 break;
         }
         switch (inputConfiguration.RakelRotation.Source)
@@ -89,12 +87,11 @@ public class InputManager
             case InputSourceType.Text:
                 RakelRotationSource = new TextRakelRotation(inputConfiguration.RakelRotation.Default);
                 break;
-            case InputSourceType.Keyboard:
-                break;
             case InputSourceType.Mouse:
                 RakelRotationSource = new MouseRakelRotation();
                 break;
             default:
+                Debug.LogError(string.Format("Unsupported InputSourceType '{0}' for RakelRotationSource", inputConfiguration.RakelRotation.Source.ToString()));
                 break;
         }
         switch (inputConfiguration.RakelTilt.Source)
@@ -105,22 +102,18 @@ public class InputManager
             case InputSourceType.Keyboard:
                 RakelTiltSource = new KeyboardRakelTilt();
                 break;
-            case InputSourceType.Mouse:
-                break;
             default:
+                Debug.LogError(string.Format("Unsupported InputSourceType '{0}' for RakelTiltSource", inputConfiguration.RakelTilt.Source.ToString()));
                 break;
         }
 
         switch (inputConfiguration.StrokeStateSource)
         {
-            case InputSourceType.Text:
-                break;
-            case InputSourceType.Keyboard:
-                break;
             case InputSourceType.Mouse:
                 StrokeStateSource = new MouseStrokeState();
                 break;
             default:
+                Debug.LogError(string.Format("Unsupported InputSourceType '{0}' for StrokeStateSource", inputConfiguration.StrokeStateSource.ToString()));
                 break;
         }
     }
