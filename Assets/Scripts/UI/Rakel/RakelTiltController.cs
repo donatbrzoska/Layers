@@ -3,7 +3,7 @@ public class RakelTiltController : InputFieldController
 {
     public void Update()
     {
-        InputField.SetTextWithoutNotify("" + OilPaintEngine.RakelTilt);
+        InputField.SetTextWithoutNotify("" + OilPaintEngine.InputManager.RakelTilt);
     }
 
     override public void OnValueChanged(string arg0)

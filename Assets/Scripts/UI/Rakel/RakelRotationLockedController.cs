@@ -3,7 +3,7 @@ public class RakelRotationLockedController : ToggleController
 {
     void Start()
     {
-        Toggle.SetIsOnWithoutNotify(OilPaintEngine.Configuration.RakelConfiguration.RotationLocked);
+        Toggle.SetIsOnWithoutNotify(OilPaintEngine.RakelRotationLocked);
     }
 
     override public void OnValueChanged(bool locked)

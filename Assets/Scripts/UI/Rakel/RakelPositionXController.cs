@@ -3,14 +3,14 @@ public class RakelPositionXController : InputFieldController
 {
     public void Start()
     {
-        InputField.SetTextWithoutNotify("" + OilPaintEngine.RakelPositionX);
+        InputField.SetTextWithoutNotify("" + OilPaintEngine.InputManager.RakelPositionX);
     }
 
     public void Update()
     {
-        if (!OilPaintEngine.Configuration.RakelConfiguration.PositionLocked.x)
+        if (!OilPaintEngine.RakelPositionXLocked)
         {
-            InputField.SetTextWithoutNotify("" + OilPaintEngine.RakelPositionX);
+            InputField.SetTextWithoutNotify("" + OilPaintEngine.InputManager.RakelPositionX);
         }
     }
 

@@ -3,7 +3,7 @@ public class RakelTiltLockedController : ToggleController
 {
     void Start()
     {
-        Toggle.SetIsOnWithoutNotify(OilPaintEngine.Configuration.RakelConfiguration.TiltLocked);
+        Toggle.SetIsOnWithoutNotify(OilPaintEngine.RakelTiltLocked);
     }
 
     override public void OnValueChanged(bool locked)

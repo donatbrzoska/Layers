@@ -12,75 +12,45 @@ public class OilPaintEngine : MonoBehaviour
     public float ANCHOR_RATIO_Y;
 
     public Configuration Configuration { get; private set; }
-    public MouseAndKeyboardInput InputManager { get; private set; }
-    public float RakelPositionX // used only for UI fetching
+    public InputManager InputManager { get; private set; }
+
+    public bool RakelPositionXLocked
     {
         get
         {
-            if (Configuration.RakelConfiguration.PositionLocked.x)
-            {
-                return Configuration.RakelConfiguration.Position.x;
-            }
-            else
-            {
-                return InputManager.Position.x;
-            }
+            return Configuration.InputConfiguration.RakelPositionX.Source == InputSourceType.Text;
         }
     }
-    public float RakelPositionY // used only for UI fetching
+
+    public bool RakelPositionYLocked
     {
         get
         {
-            if (Configuration.RakelConfiguration.PositionLocked.y)
-            {
-                return Configuration.RakelConfiguration.Position.y;
-            }
-            else
-            {
-                return InputManager.Position.y;
-            }
+            return Configuration.InputConfiguration.RakelPositionY.Source == InputSourceType.Text;
         }
     }
-    public float RakelPositionZ // used only for UI fetching
+
+    public bool RakelPositionZLocked
     {
         get
         {
-            if (Configuration.RakelConfiguration.PositionLocked.z)
-            {
-                return Configuration.RakelConfiguration.Position.z;
-            }
-            else
-            {
-                return InputManager.Position.z;
-            }
+            return Configuration.InputConfiguration.RakelPositionZ.Source == InputSourceType.Text;
         }
     }
-    public float RakelRotation // used only for UI fetching
+
+    public bool RakelRotationLocked
     {
         get
         {
-            if (Configuration.RakelConfiguration.RotationLocked)
-            {
-                return Configuration.RakelConfiguration.Rotation;
-            }
-            else
-            {
-                return InputManager.Rotation;
-            }
+            return Configuration.InputConfiguration.RakelRotation.Source == InputSourceType.Text;
         }
     }
-    public float RakelTilt // used only for UI fetching
+
+    public bool RakelTiltLocked
     {
         get
         {
-            if (Configuration.RakelConfiguration.TiltLocked)
-            {
-                return Configuration.RakelConfiguration.Tilt;
-            }
-            else
-            {
-                return InputManager.Tilt;
-            }
+            return Configuration.InputConfiguration.RakelTilt.Source == InputSourceType.Text;
         }
     }
 
@@ -98,9 +68,7 @@ public class OilPaintEngine : MonoBehaviour
         //Configuration.FillConfiguration.VolumeMode = VolumeMode.Flat;
         //Configuration.FillConfiguration.Volume = 30;
 
-        int wallColliderID = GameObject.Find("Wall").GetComponent<MeshCollider>().GetInstanceID();
-        int canvasColliderID = GameObject.Find("Canvas").GetComponent<MeshCollider>().GetInstanceID();
-        InputManager = new MouseAndKeyboardInput(wallColliderID, canvasColliderID);
+        InputManager = new InputManager(Configuration.InputConfiguration);
 
         if (BENCHMARK_STEPS > 0)
         {
@@ -188,31 +156,9 @@ public class OilPaintEngine : MonoBehaviour
 
                 if (InputManager.InStroke)
                 {
-                    Vector3 position = InputManager.Position;
-                    if (Configuration.RakelConfiguration.PositionLocked.x)
-                    {
-                        position.x = Configuration.RakelConfiguration.Position.x;
-                    }
-                    if (Configuration.RakelConfiguration.PositionLocked.y)
-                    {
-                        position.y = Configuration.RakelConfiguration.Position.y;
-                    }
-                    if (Configuration.RakelConfiguration.PositionLocked.z)
-                    {
-                        position.z = Configuration.RakelConfiguration.Position.z;
-                    }
-
-                    float rotation = InputManager.Rotation;
-                    if (Configuration.RakelConfiguration.RotationLocked)
-                    {
-                        rotation = Configuration.RakelConfiguration.Rotation;
-                    }
-
-                    float tilt = InputManager.Tilt;
-                    if (Configuration.RakelConfiguration.TiltLocked)
-                    {
-                        tilt = Configuration.RakelConfiguration.Tilt;
-                    }
+                    Vector3 position = new Vector3(InputManager.RakelPositionX, InputManager.RakelPositionY, InputManager.RakelPositionZ);
+                    float rotation = InputManager.RakelRotation;
+                    float tilt = InputManager.RakelTilt;
 
                     InputInterpolator.AddNode(
                         position,
@@ -255,52 +201,102 @@ public class OilPaintEngine : MonoBehaviour
 
     public void UpdateRakelPositionX(float value)
     {
-        Configuration.RakelConfiguration.Position.x = value;
+        InputManager.RakelPositionX = value;
+        Configuration.InputConfiguration.RakelPositionX.Default = value;
     }
 
     public void UpdateRakelPositionXLocked(bool locked)
     {
-        Configuration.RakelConfiguration.PositionLocked.x = locked;
+        if (locked)
+        {
+            Configuration.InputConfiguration.RakelPositionX.Source = InputSourceType.Text;
+            InputManager.RakelPositionXSource = new TextRakelPositionX(Configuration.InputConfiguration.RakelPositionX.Default);
+        }
+        else
+        {
+            Configuration.InputConfiguration.RakelPositionX.Source = InputSourceType.Mouse;
+            InputManager.RakelPositionXSource = new MouseRakelPositionX();
+        }
     }
 
     public void UpdateRakelPositionY(float value)
     {
-        Configuration.RakelConfiguration.Position.y = value;
+        InputManager.RakelPositionY = value;
+        Configuration.InputConfiguration.RakelPositionY.Default = value;
     }
 
     public void UpdateRakelPositionYLocked(bool locked)
     {
-        Configuration.RakelConfiguration.PositionLocked.y = locked;
+        if (locked)
+        {
+            Configuration.InputConfiguration.RakelPositionY.Source = InputSourceType.Text;
+            InputManager.RakelPositionYSource = new TextRakelPositionY(Configuration.InputConfiguration.RakelPositionY.Default);
+        }
+        else
+        {
+            Configuration.InputConfiguration.RakelPositionY.Source = InputSourceType.Mouse;
+            InputManager.RakelPositionYSource = new MouseRakelPositionY();
+        }
     }
 
     public void UpdateRakelPositionZ(float value)
     {
-        Configuration.RakelConfiguration.Position.z = value;
+        InputManager.RakelPositionZ = value;
+        Configuration.InputConfiguration.RakelPositionZ.Default = value;
     }
 
     public void UpdateRakelPositionZLocked(bool locked)
     {
-        Configuration.RakelConfiguration.PositionLocked.z = locked;
+        if (locked)
+        {
+            Configuration.InputConfiguration.RakelPositionZ.Source = InputSourceType.Text;
+            InputManager.RakelPositionZSource = new TextRakelPositionZ(Configuration.InputConfiguration.RakelPositionZ.Default);
+        }
+        else
+        {
+            Configuration.InputConfiguration.RakelPositionZ.Source = InputSourceType.Keyboard;
+            InputManager.RakelPositionZSource = new KeyboardRakelPositionZ();
+        }
     }
 
     public void UpdateRakelRotation(float rotation)
     {
-        Configuration.RakelConfiguration.Rotation = rotation;
+        InputManager.RakelRotation = rotation;
+        Configuration.InputConfiguration.RakelRotation.Default = rotation;
     }
 
     public void UpdateRakelRotationLocked(bool locked)
     {
-        Configuration.RakelConfiguration.RotationLocked = locked;
+        if (locked)
+        {
+            Configuration.InputConfiguration.RakelRotation.Source = InputSourceType.Text;
+            InputManager.RakelRotationSource = new TextRakelRotation(Configuration.InputConfiguration.RakelRotation.Default);
+        }
+        else
+        {
+            Configuration.InputConfiguration.RakelRotation.Source = InputSourceType.Mouse;
+            InputManager.RakelRotationSource = new MouseRakelRotation();
+        }
     }
 
     public void UpdateRakelTilt(float tilt)
     {
-        Configuration.RakelConfiguration.Tilt = tilt;
+        InputManager.RakelTilt = tilt;
+        Configuration.InputConfiguration.RakelTilt.Default = tilt;
     }
 
     public void UpdateRakelTiltLocked(bool locked)
     {
-        Configuration.RakelConfiguration.TiltLocked = locked;
+        if (locked)
+        {
+            Configuration.InputConfiguration.RakelTilt.Source = InputSourceType.Text;
+            InputManager.RakelTiltSource = new TextRakelTilt(Configuration.InputConfiguration.RakelTilt.Default);
+        }
+        else
+        {
+            Configuration.InputConfiguration.RakelTilt.Source = InputSourceType.Keyboard;
+            InputManager.RakelTiltSource = new KeyboardRakelTilt();
+        }
     }
 
     public void UpdateRakelLength(float worldSpaceLength)

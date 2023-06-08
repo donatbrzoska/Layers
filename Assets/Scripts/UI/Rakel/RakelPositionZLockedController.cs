@@ -3,7 +3,7 @@ public class RakelPositionZLockedController : ToggleController
 {
     void Start()
     {
-        Toggle.SetIsOnWithoutNotify(OilPaintEngine.Configuration.RakelConfiguration.PositionLocked.z);
+        Toggle.SetIsOnWithoutNotify(OilPaintEngine.RakelPositionZLocked);
     }
 
     override public void OnValueChanged(bool locked)

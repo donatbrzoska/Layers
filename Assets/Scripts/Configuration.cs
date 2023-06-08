@@ -5,6 +5,7 @@ public class Configuration
     public int TextureResolution;
     public float NormalScale;
 
+    public InputConfiguration InputConfiguration;
     public RakelConfiguration RakelConfiguration;
     public FillConfiguration FillConfiguration;
     public TransferConfiguration TransferConfiguration;
@@ -14,6 +15,7 @@ public class Configuration
         TextureResolution = 40;
         NormalScale = 0.015f;
 
+        InputConfiguration = new InputConfiguration();
         RakelConfiguration = new RakelConfiguration();
         FillConfiguration = new FillConfiguration();
         TransferConfiguration = new TransferConfiguration();
@@ -47,7 +49,7 @@ public class Configuration
     {
         TextureResolution = 80;
 
-        RakelConfiguration.RotationLocked = false;
+        InputConfiguration.RakelRotation.Source = InputSourceType.Mouse;
 
         TransferConfiguration.EmitVolumePickupReservoir_MAX = 0;
         TransferConfiguration.PickupVolume_MAX = 0;
@@ -61,7 +63,7 @@ public class Configuration
     {
         TextureResolution = 80;
 
-        RakelConfiguration.RotationLocked = false;
+        InputConfiguration.RakelRotation.Source = InputSourceType.Mouse;
 
         FillConfiguration.Color = Color_.DarkRed;
         FillConfiguration.Volume = 600;
@@ -88,45 +90,37 @@ public class Configuration
     }
 }
 
+public class InputConfiguration
+{
+    public InputValue RakelPositionX;
+    public InputValue RakelPositionY;
+    public InputValue RakelPositionZ;
+
+    public InputValue RakelRotation;
+    public InputValue RakelTilt;
+
+    public InputSourceType StrokeStateSource;
+
+    public InputConfiguration()
+    {
+        RakelPositionX = new InputValue() { Source = InputSourceType.Mouse, Default = 0 };
+        RakelPositionY = new InputValue() { Source = InputSourceType.Mouse, Default = 0 };
+        RakelPositionZ = new InputValue() { Source = InputSourceType.Text, Default = -0.05f };
+
+        RakelRotation = new InputValue() { Source = InputSourceType.Text, Default = 0 };
+        RakelTilt = new InputValue() { Source = InputSourceType.Keyboard, Default = 0 };
+
+        StrokeStateSource = InputSourceType.Mouse;
+    }
+}
+
 public class RakelConfiguration
 {
-    public class Bool3
-    {
-        public bool x;
-        public bool y;
-        public bool z;
-
-        public override string ToString()
-        {
-            return base.ToString() + string.Format(": ({0}, {1}, {2})", x, y, z);
-        }
-    }
-
     public float Length;
     public float Width;
 
-    public Vector3 Position;
-    public Bool3 PositionLocked;
-
-    public float Rotation;
-    public bool RotationLocked;
-
-    public float Tilt;
-    public bool TiltLocked;
-
     public RakelConfiguration()
     {
-        Position = Vector3.zero;
-        PositionLocked = new Bool3();
-        Position.z = -0.05f;
-        PositionLocked.z = true;
-
-        Rotation = 0;
-        RotationLocked = true;
-
-        Tilt = 0;
-        TiltLocked = false;
-
         Length = 2.5f;
         Width = 0.5f;
     }

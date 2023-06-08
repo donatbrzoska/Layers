@@ -3,14 +3,14 @@ public class RakelPositionZController : InputFieldController
 {
     public void Start()
     {
-        InputField.SetTextWithoutNotify("" + OilPaintEngine.RakelPositionZ);
+        InputField.SetTextWithoutNotify("" + OilPaintEngine.InputManager.RakelPositionZ);
     }
 
     public void Update()
     {
-        if (!OilPaintEngine.Configuration.RakelConfiguration.PositionLocked.z)
+        if (!OilPaintEngine.RakelPositionZLocked)
         {
-            InputField.SetTextWithoutNotify("" + OilPaintEngine.RakelPositionZ);
+            InputField.SetTextWithoutNotify("" + OilPaintEngine.InputManager.RakelPositionZ);
         }
     }
 
