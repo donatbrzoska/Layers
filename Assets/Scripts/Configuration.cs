@@ -103,12 +103,12 @@ public class InputConfiguration
 
     public InputConfiguration()
     {
-        RakelPositionX = new InputValue() { Source = InputSourceType.Mouse, Default = 0 };
-        RakelPositionY = new InputValue() { Source = InputSourceType.Mouse, Default = 0 };
-        RakelPositionZ = new InputValue() { Source = InputSourceType.Text, Default = -0.05f };
+        RakelPositionX = new InputValue() { Source = InputSourceType.Mouse, Value = 0 };
+        RakelPositionY = new InputValue() { Source = InputSourceType.Mouse, Value = 0 };
+        RakelPositionZ = new InputValue() { Source = InputSourceType.Text, Value = -0.05f };
 
-        RakelRotation = new InputValue() { Source = InputSourceType.Text, Default = 0 };
-        RakelTilt = new InputValue() { Source = InputSourceType.Keyboard, Default = 0 };
+        RakelRotation = new InputValue() { Source = InputSourceType.Text, Value = 0 };
+        RakelTilt = new InputValue() { Source = InputSourceType.Keyboard, Value = 0 };
 
         StrokeStateSource = InputSourceType.Mouse;
     }

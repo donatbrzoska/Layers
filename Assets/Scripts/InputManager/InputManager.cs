@@ -27,7 +27,7 @@ public enum InputSourceType
 public struct InputValue
 {
     public InputSourceType Source;
-    public float Default;
+    public float Value;
 }
 
 
@@ -41,12 +41,16 @@ public class InputManager
 
     private StrokeStateSource StrokeStateSource;
 
+    private InputConfiguration InputConfiguration;
+
     public InputManager(InputConfiguration inputConfiguration, float RakelPositionZ_MIN, float RakelPositionZ_MAX)
     {
+        InputConfiguration = inputConfiguration;
+
         switch (inputConfiguration.RakelPositionX.Source)
         {
             case InputSourceType.Text:
-                RakelPositionXSource = new TextRakelPositionX(inputConfiguration.RakelPositionX.Default);
+                RakelPositionXSource = new TextRakelPositionX();
                 break;
             case InputSourceType.Mouse:
                 RakelPositionXSource = new MouseRakelPositionX();
@@ -58,7 +62,7 @@ public class InputManager
         switch (inputConfiguration.RakelPositionY.Source)
         {
             case InputSourceType.Text:
-                RakelPositionYSource = new TextRakelPositionY(inputConfiguration.RakelPositionY.Default);
+                RakelPositionYSource = new TextRakelPositionY();
                 break;
             case InputSourceType.Mouse:
                 RakelPositionYSource = new MouseRakelPositionY();
@@ -70,7 +74,7 @@ public class InputManager
         switch (inputConfiguration.RakelPositionZ.Source)
         {
             case InputSourceType.Text:
-                RakelPositionZSource = new TextRakelPositionZ(inputConfiguration.RakelPositionZ.Default);
+                RakelPositionZSource = new TextRakelPositionZ();
                 break;
             case InputSourceType.Keyboard:
                 RakelPositionZSource = new KeyboardRakelPositionZ();
@@ -85,7 +89,7 @@ public class InputManager
         switch (inputConfiguration.RakelRotation.Source)
         {
             case InputSourceType.Text:
-                RakelRotationSource = new TextRakelRotation(inputConfiguration.RakelRotation.Default);
+                RakelRotationSource = new TextRakelRotation();
                 break;
             case InputSourceType.Mouse:
                 RakelRotationSource = new MouseRakelRotation();
@@ -97,7 +101,7 @@ public class InputManager
         switch (inputConfiguration.RakelTilt.Source)
         {
             case InputSourceType.Text:
-                RakelTiltSource = new TextRakelTilt(inputConfiguration.RakelTilt.Default);
+                RakelTiltSource = new TextRakelTilt();
                 break;
             case InputSourceType.Keyboard:
                 RakelTiltSource = new KeyboardRakelTilt();
@@ -106,6 +110,15 @@ public class InputManager
                 Debug.LogError(string.Format("Unsupported InputSourceType '{0}' for RakelTiltSource", inputConfiguration.RakelTilt.Source.ToString()));
                 break;
         }
+
+        // HACK This is necessary for keeping the complete current configuration
+        // Ideally we wouldn't need to reinitialize the entire InputManager every
+        // time a value changes, but it works and there is no time to fix it
+        RakelPositionXSource.Value = inputConfiguration.RakelPositionX.Value;
+        RakelPositionYSource.Value = inputConfiguration.RakelPositionY.Value;
+        RakelPositionZSource.Value = inputConfiguration.RakelPositionZ.Value;
+        RakelRotationSource.Value = inputConfiguration.RakelRotation.Value;
+        RakelTiltSource.Value = inputConfiguration.RakelTilt.Value;
 
         switch (inputConfiguration.StrokeStateSource)
         {
@@ -121,10 +134,15 @@ public class InputManager
     public void Update()
     {
         RakelPositionXSource.Update();
+        InputConfiguration.RakelPositionX.Value = RakelPositionXSource.Value;
         RakelPositionYSource.Update();
+        InputConfiguration.RakelPositionY.Value = RakelPositionYSource.Value;
         RakelPositionZSource.Update();
+        InputConfiguration.RakelPositionZ.Value = RakelPositionZSource.Value;
         RakelRotationSource.Update();
+        InputConfiguration.RakelRotation.Value = RakelRotationSource.Value;
         RakelTiltSource.Update();
+        InputConfiguration.RakelTilt.Value = RakelTiltSource.Value;
 
         StrokeStateSource.Update();
     }

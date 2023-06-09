@@ -1,11 +1,6 @@
-﻿using System;
+﻿
 public class TextRakelRotation : FloatValueSource
 {
-    public TextRakelRotation(float defaultValue)
-    {
-        Value = defaultValue;
-    }
-
     public override void Update()
     {
         // For consistency, we could fetch the value from the UI element here.

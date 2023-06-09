@@ -1,11 +1,6 @@
-﻿using System;
+﻿
 public class TextRakelPositionY : FloatValueSource
 {
-    public TextRakelPositionY(float defaultValue)
-    {
-        Value = defaultValue;
-    }
-
     public override void Update()
     {
         // For consistency, we could fetch the value from the UI element here.

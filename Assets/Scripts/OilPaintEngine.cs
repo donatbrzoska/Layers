@@ -175,7 +175,7 @@ public class OilPaintEngine : MonoBehaviour
 
     public void UpdateRakelPositionX(float value)
     {
-        Configuration.InputConfiguration.RakelPositionX.Default = value;
+        Configuration.InputConfiguration.RakelPositionX.Value = value;
         CreateInputManager();
     }
 
@@ -187,7 +187,7 @@ public class OilPaintEngine : MonoBehaviour
 
     public void UpdateRakelPositionY(float value)
     {
-        Configuration.InputConfiguration.RakelPositionY.Default = value;
+        Configuration.InputConfiguration.RakelPositionY.Value = value;
         CreateInputManager();
     }
 
@@ -199,7 +199,7 @@ public class OilPaintEngine : MonoBehaviour
 
     public void UpdateRakelPositionZ(float value)
     {
-        Configuration.InputConfiguration.RakelPositionZ.Default = value;
+        Configuration.InputConfiguration.RakelPositionZ.Value = value;
         CreateInputManager();
     }
 
@@ -212,7 +212,7 @@ public class OilPaintEngine : MonoBehaviour
 
     public void UpdateRakelRotation(float rotation)
     {
-        Configuration.InputConfiguration.RakelRotation.Default = rotation;
+        Configuration.InputConfiguration.RakelRotation.Value = rotation;
         CreateInputManager();
     }
 
@@ -224,7 +224,7 @@ public class OilPaintEngine : MonoBehaviour
 
     public void UpdateRakelTilt(float tilt)
     {
-        Configuration.InputConfiguration.RakelTilt.Default = tilt;
+        Configuration.InputConfiguration.RakelTilt.Value = tilt;
         CreateInputManager();
     }
 
