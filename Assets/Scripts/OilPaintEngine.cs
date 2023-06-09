@@ -69,6 +69,9 @@ public class OilPaintEngine : MonoBehaviour
         renderer.material.EnableKeyword("_NORMALMAP");
         renderer.material.SetTexture("_BumpMap", Canvas.NormalMap);
 
+        // Trigger lighting update
+        Canvas.Render(Canvas.GetFullShaderRegion());
+
         Debug.Log("Texture is "
                   + Canvas.Texture.width + "x" + Canvas.Texture.height
                   + " = " + Canvas.Texture.width * Canvas.Texture.height);
