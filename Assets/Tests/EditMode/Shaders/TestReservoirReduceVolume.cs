@@ -56,8 +56,8 @@ public class TestReservoirReduceVolume
         // calculate points from reduction info because that is how the function is going to be used
         ShaderRegion sr = new ShaderRegion(
             reductionPosition,
-            reductionPosition + new Vector2Int(reductionSize.x - 1,                   0),
-            reductionPosition + new Vector2Int(                  0, reductionSize.y - 1),
+            reductionPosition + new Vector2Int(reductionSize.x - 1, 0),
+            reductionPosition + new Vector2Int(0, reductionSize.y - 1),
             reductionPosition + new Vector2Int(reductionSize.x - 1, reductionSize.y - 1));
         Reservoir.ReduceVolume(sr, ReduceFunction.Max, false);
 
@@ -87,8 +87,8 @@ public class TestReservoirReduceVolume
         // calculate points from reduction info because that is how the function is going to be used
         ShaderRegion sr = new ShaderRegion(
             reductionPosition,
-            reductionPosition + new Vector2Int(reductionSize.x - 1,                   0),
-            reductionPosition + new Vector2Int(                  0, reductionSize.y - 1),
+            reductionPosition + new Vector2Int(reductionSize.x - 1, 0),
+            reductionPosition + new Vector2Int(0, reductionSize.y - 1),
             reductionPosition + new Vector2Int(reductionSize.x - 1, reductionSize.y - 1));
         Reservoir.ReduceVolume(sr, ReduceFunction.Max, false);
 
