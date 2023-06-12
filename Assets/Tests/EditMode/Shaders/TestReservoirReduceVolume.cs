@@ -70,7 +70,7 @@ public class TestReservoirReduceVolume
     }
 
     [Test]
-    public void odd_with_max()
+    public void odd_width_max()
     {
         Vector2Int TEXTURE_SIZE = new Vector2Int(13, 9);
 
