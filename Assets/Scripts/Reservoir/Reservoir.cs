@@ -69,6 +69,52 @@ public class Reservoir
         //Debug.Log("Sum is " + sum);
     }
 
+    public void MaxVolumeReduction(ShaderRegion sr, bool debugEnabled = false)
+    {
+        // shader is hardcoded to deal with 2x2 blocks (processing 4 values per thread)
+        Vector2Int REDUCE_BLOCK_SIZE = new Vector2Int(2, 2);
+
+        ShaderRegion reductionShaderRegion = new ShaderRegion(
+            sr.Position,
+            sr.Size,
+            REDUCE_BLOCK_SIZE);
+
+        while (reductionShaderRegion.Size.x > 1 || reductionShaderRegion.Size.y > 1)
+        {
+            List<CSAttribute> attributes = new List<CSAttribute>()
+            {
+                new CSComputeBuffer("Reservoir", Buffer),
+                new CSInt2("ReservoirSize", Size)
+            };
+
+            ComputeShaderTask cst = new ComputeShaderTask(
+                "MaxVolumeReduction",
+                reductionShaderRegion,
+                attributes,
+                debugEnabled
+            );
+
+            cst.Run();
+
+            reductionShaderRegion = new ShaderRegion(
+                reductionShaderRegion.Position,
+                reductionShaderRegion.Size,
+                REDUCE_BLOCK_SIZE);
+        }
+    }
+
+    // Only used for testing purposes
+    public void Readback()
+    {
+        Buffer.GetData(BufferData);
+    }
+
+    // Only used for testing purposes
+    public Paint Get(int x, int y, int z)
+    {
+        return BufferData[IndexUtil.XYZ(x, y, z, Size.x, Size.y)];
+    }
+
     public void Dispose()
     {
         Buffer.Dispose();

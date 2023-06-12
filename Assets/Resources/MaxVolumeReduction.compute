@@ -1,0 +1,68 @@
+// ######################################## SHADER BASE ########################################
+
+#include "basic_util.hlsl"
+#include "indexing.hlsl"
+#include "logging.hlsl"
+
+uint3 id__;
+uint2 SubgridGroupSize;
+uint2 SubgridCurrentThreadID;
+
+uint2 id()
+{
+    uint2 subgrid_id = uint2(id__.x, id__.y);
+    return subgrid_id * SubgridGroupSize + SubgridCurrentThreadID;
+}
+
+int2 CalculationPosition;
+uint2 CalculationSize;
+
+RWStructuredBuffer<float4> Debug;
+RWStructuredBuffer<DebugListInfo> DebugInfo;
+
+void set_debug_list_info(uint size, uint t)
+{
+    DebugListInfo dli;
+    dli.Size = size;
+    dli.Type = t;
+    DebugInfo[0] = dli;
+}
+
+void log_(uint index, float4 f)
+{
+    Debug[XYZ(id().x, id().y, index, CalculationSize)] = f;
+}
+
+// ###################################### SHADER BASE END ######################################
+
+#include "paint.hlsl"
+
+RWStructuredBuffer<Paint> Reservoir;
+uint2 ReservoirSize;
+
+
+#pragma kernel max_volume_reduction
+
+[numthreads(32,1,1)]
+void max_volume_reduction(uint3 id_ : SV_DispatchThreadID)
+{
+    id__ = id_;
+    if (is_relevant_thread(id(), CalculationSize))
+    {
+        uint2 upper = uint2(0, CalculationSize.y);
+        uint2 right = uint2(CalculationSize.x, 0);
+
+        uint2 i_base = CalculationPosition + id();
+        uint2 i_ll = i_base;
+        uint2 i_lr = i_base + right;
+        uint2 i_ul = i_base + upper;
+        uint2 i_ur = i_base + right + upper;
+
+        float value_ll = Reservoir[XYZ(i_ll.x, i_ll.y, 1, ReservoirSize)].volume;
+        float value_lr = Reservoir[XYZ(i_lr.x, i_lr.y, 1, ReservoirSize)].volume;
+        float value_ul = Reservoir[XYZ(i_ul.x, i_ul.y, 1, ReservoirSize)].volume;
+        float value_ur = Reservoir[XYZ(i_ur.x, i_ur.y, 1, ReservoirSize)].volume;
+
+        Reservoir[XYZ(i_ll.x, i_ll.y, 1, ReservoirSize)].volume = max(max(max(value_ll, value_lr), value_ul), value_ur);
+    }
+}

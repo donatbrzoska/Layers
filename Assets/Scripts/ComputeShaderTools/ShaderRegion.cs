@@ -26,6 +26,18 @@ public class ShaderRegion
 
     public ShaderRegion(Vector2Int a, Vector2Int b, Vector2Int c, Vector2Int d) : this(a, b, c, d, 0) { }
 
+    public ShaderRegion(Vector2Int reduceRegionPosition, Vector2Int reduceRegionSize, Vector2Int reduceBlockSize)
+    {
+        Position = reduceRegionPosition;
+
+        Vector2Int reduceRegionSizePadded = new Vector2Int(
+            (int) Mathf.Ceil(((float) reduceRegionSize.x) / reduceBlockSize.x) * reduceBlockSize.x,
+            (int) Mathf.Ceil(((float)reduceRegionSize.y) / reduceBlockSize.y) * reduceBlockSize.y);
+        Size = new Vector2Int(
+            reduceRegionSizePadded.x / reduceBlockSize.x,
+            reduceRegionSizePadded.y / reduceBlockSize.y);
+    }
+
     public override string ToString()
     {
         return base.ToString() + " at " + Position + " with dimensions " + Size;

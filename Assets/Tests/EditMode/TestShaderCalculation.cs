@@ -107,4 +107,24 @@ public class TestShaderCalculation
             sr.Position
         );
     }
+
+    [Test]
+    public void ReduceShaderRegion()
+    {
+        Vector2Int reduceRegionPosition = new Vector2Int(1, 2);
+        Vector2Int reduceRegionSize = new Vector2Int(9, 6);
+        Vector2Int reduceBlockSize = new Vector2Int(2, 2);
+
+        ShaderRegion rsr = new ShaderRegion(reduceRegionPosition, reduceRegionSize, reduceBlockSize);
+
+        Assert.AreEqual(
+            new Vector2Int(5, 3),
+            rsr.Size
+        );
+
+        Assert.AreEqual(
+            reduceRegionPosition,
+            rsr.Position
+        );
+    }
 }
