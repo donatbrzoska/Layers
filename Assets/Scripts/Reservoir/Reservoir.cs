@@ -4,6 +4,7 @@ using System.Collections.Generic;
 public enum ReduceFunction
 {
     Max,
+    Add,
 }
 
 public class Reservoir
@@ -79,17 +80,19 @@ public class Reservoir
         // shader is hardcoded to deal with 2x2 blocks (processing 4 values per thread)
         Vector2Int REDUCE_BLOCK_SIZE = new Vector2Int(2, 2);
 
-        ShaderRegion reduceShaderRegion = new ShaderRegion(
-            reduceRegion.Position,
-            reduceRegion.Size,
-            REDUCE_BLOCK_SIZE);
-
-        while (reduceShaderRegion.Size.x > 1 || reduceShaderRegion.Size.y > 1)
+        while (reduceRegion.Size.x > 1 || reduceRegion.Size.y > 1)
         {
+            // reduceShaderRegion is the region the shader runs on to perform the reduce on the reduceRegion
+            ShaderRegion reduceShaderRegion = new ShaderRegion(
+                reduceRegion.Position,
+                reduceRegion.Size,
+                REDUCE_BLOCK_SIZE);
+
             List<CSAttribute> attributes = new List<CSAttribute>()
             {
                 new CSComputeBuffer("Reservoir", Buffer),
                 new CSInt2("ReservoirSize", Size),
+                new CSInt2("ReduceRegionSize", reduceRegion.Size),
                 new CSInt("ReduceFunction", (int) reduceFunction)
             };
 
@@ -102,10 +105,8 @@ public class Reservoir
 
             cst.Run();
 
-            reduceShaderRegion = new ShaderRegion(
-                reduceShaderRegion.Position,
-                reduceShaderRegion.Size,
-                REDUCE_BLOCK_SIZE);
+            // current reduceShaderRegion is new reduceRegion
+            reduceRegion = reduceShaderRegion;
         }
     }
 

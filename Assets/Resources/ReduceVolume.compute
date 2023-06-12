@@ -40,10 +40,18 @@ void log_(uint index, float4 f)
 RWStructuredBuffer<Paint> Reservoir;
 uint2 ReservoirSize;
 
+uint2 ReduceRegionSize;
 uint ReduceFunction;
 
 
 #pragma kernel reduce_volume
+
+// assumes that index_base always has always smaller values than index
+uint in_reduce_bounds(uint2 index, uint2 index_base)
+{
+    // casting to int2 and do abs(), because CalculationPosition may be negative
+    return uint(all(abs(int2(index) - CalculationPosition) < int2(ReduceRegionSize)));
+}
 
 [numthreads(32,1,1)]
 void reduce_volume(uint3 id_ : SV_DispatchThreadID)
@@ -60,15 +68,19 @@ void reduce_volume(uint3 id_ : SV_DispatchThreadID)
         uint2 i_ul = i_base + upper;
         uint2 i_ur = i_base + right + upper;
 
-        float value_ll = Reservoir[XYZ(i_ll.x, i_ll.y, 1, ReservoirSize)].volume;
-        float value_lr = Reservoir[XYZ(i_lr.x, i_lr.y, 1, ReservoirSize)].volume;
-        float value_ul = Reservoir[XYZ(i_ul.x, i_ul.y, 1, ReservoirSize)].volume;
-        float value_ur = Reservoir[XYZ(i_ur.x, i_ur.y, 1, ReservoirSize)].volume;
+        float value_ll = Reservoir[XYZ(i_ll.x, i_ll.y, 1, ReservoirSize)].volume * in_reduce_bounds(i_ll, i_base);
+        float value_lr = Reservoir[XYZ(i_lr.x, i_lr.y, 1, ReservoirSize)].volume * in_reduce_bounds(i_lr, i_base);
+        float value_ul = Reservoir[XYZ(i_ul.x, i_ul.y, 1, ReservoirSize)].volume * in_reduce_bounds(i_ul, i_base);
+        float value_ur = Reservoir[XYZ(i_ur.x, i_ur.y, 1, ReservoirSize)].volume * in_reduce_bounds(i_ur, i_base);
 
         float result = 0;
         if (ReduceFunction == 0) // max
         {
             result = max(max(max(value_ll, value_lr), value_ul), value_ur);
+        }
+        else if (ReduceFunction == 1) // add
+        {
+            result = value_ll + value_lr + value_ul + value_ur;
         }
         Reservoir[XYZ(i_ll.x, i_ll.y, 1, ReservoirSize)].volume = result;
     }
