@@ -45,7 +45,7 @@ public class FileLogger_
         Application.logMessageReceived += Log;
     }
 
-    void OnDisable()
+    public void OnDisable()
     {
         Application.logMessageReceived -= Log;
     }

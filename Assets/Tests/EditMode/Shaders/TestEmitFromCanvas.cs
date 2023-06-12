@@ -38,6 +38,8 @@ public class TestEmitFromCanvas
         CanvasEmittedPaint.Dispose();
         Canvas.Dispose();
         Rakel.Dispose();
+
+        new FileLogger_().OnDisable();
     }
 
     [Test]

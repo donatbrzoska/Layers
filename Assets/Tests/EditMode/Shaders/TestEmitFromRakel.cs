@@ -37,6 +37,8 @@ public class TestEmitFromRakel
     {
         RakelEmittedPaint.Dispose();
         Rakel.Dispose();
+
+        new FileLogger_().OnDisable();
     }
 
     [Test]
