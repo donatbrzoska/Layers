@@ -74,17 +74,17 @@ public class Reservoir
         //Debug.Log("Sum is " + sum);
     }
 
-    public void ReduceVolume(ShaderRegion sr, ReduceFunction reduceFunction, bool debugEnabled = false)
+    public void ReduceVolume(ShaderRegion reduceRegion, ReduceFunction reduceFunction, bool debugEnabled = false)
     {
         // shader is hardcoded to deal with 2x2 blocks (processing 4 values per thread)
         Vector2Int REDUCE_BLOCK_SIZE = new Vector2Int(2, 2);
 
-        ShaderRegion reductionShaderRegion = new ShaderRegion(
-            sr.Position,
-            sr.Size,
+        ShaderRegion reduceShaderRegion = new ShaderRegion(
+            reduceRegion.Position,
+            reduceRegion.Size,
             REDUCE_BLOCK_SIZE);
 
-        while (reductionShaderRegion.Size.x > 1 || reductionShaderRegion.Size.y > 1)
+        while (reduceShaderRegion.Size.x > 1 || reduceShaderRegion.Size.y > 1)
         {
             List<CSAttribute> attributes = new List<CSAttribute>()
             {
@@ -95,16 +95,16 @@ public class Reservoir
 
             ComputeShaderTask cst = new ComputeShaderTask(
                 "ReduceVolume",
-                reductionShaderRegion,
+                reduceShaderRegion,
                 attributes,
                 debugEnabled
             );
 
             cst.Run();
 
-            reductionShaderRegion = new ShaderRegion(
-                reductionShaderRegion.Position,
-                reductionShaderRegion.Size,
+            reduceShaderRegion = new ShaderRegion(
+                reduceShaderRegion.Position,
+                reduceShaderRegion.Size,
                 REDUCE_BLOCK_SIZE);
         }
     }
