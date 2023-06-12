@@ -20,7 +20,7 @@ class IndexVolumeFiller : VolumeFiller
     }
 }
 
-public class TestReservoirMaxVolumeReduction
+public class TestReservoirReduceVolume
 {
     Reservoir Reservoir;
 
@@ -39,7 +39,7 @@ public class TestReservoirMaxVolumeReduction
     }
 
     [Test]
-    public void max_volume_reduction_exact_fit()
+    public void exact_fit_max()
     {
         Vector2Int TEXTURE_SIZE = new Vector2Int(24, 16);
 
@@ -59,7 +59,7 @@ public class TestReservoirMaxVolumeReduction
             reductionPosition + new Vector2Int(reductionSize.x - 1,                   0),
             reductionPosition + new Vector2Int(                  0, reductionSize.y - 1),
             reductionPosition + new Vector2Int(reductionSize.x - 1, reductionSize.y - 1));
-        Reservoir.MaxVolumeReduction(sr, false);
+        Reservoir.ReduceVolume(sr, ReduceFunction.Max, false);
 
 
         // Assert
@@ -70,7 +70,7 @@ public class TestReservoirMaxVolumeReduction
     }
 
     [Test]
-    public void max_volume_reduction_odd_width()
+    public void odd_with_max()
     {
         Vector2Int TEXTURE_SIZE = new Vector2Int(13, 9);
 
@@ -90,7 +90,7 @@ public class TestReservoirMaxVolumeReduction
             reductionPosition + new Vector2Int(reductionSize.x - 1,                   0),
             reductionPosition + new Vector2Int(                  0, reductionSize.y - 1),
             reductionPosition + new Vector2Int(reductionSize.x - 1, reductionSize.y - 1));
-        Reservoir.MaxVolumeReduction(sr, false);
+        Reservoir.ReduceVolume(sr, ReduceFunction.Max, false);
 
 
         // Assert

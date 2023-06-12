@@ -1,6 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
+public enum ReduceFunction
+{
+    Max,
+}
+
 public class Reservoir
 {
     public int Resolution;
@@ -69,7 +74,7 @@ public class Reservoir
         //Debug.Log("Sum is " + sum);
     }
 
-    public void MaxVolumeReduction(ShaderRegion sr, bool debugEnabled = false)
+    public void ReduceVolume(ShaderRegion sr, ReduceFunction reduceFunction, bool debugEnabled = false)
     {
         // shader is hardcoded to deal with 2x2 blocks (processing 4 values per thread)
         Vector2Int REDUCE_BLOCK_SIZE = new Vector2Int(2, 2);
@@ -84,11 +89,12 @@ public class Reservoir
             List<CSAttribute> attributes = new List<CSAttribute>()
             {
                 new CSComputeBuffer("Reservoir", Buffer),
-                new CSInt2("ReservoirSize", Size)
+                new CSInt2("ReservoirSize", Size),
+                new CSInt("ReduceFunction", (int) reduceFunction)
             };
 
             ComputeShaderTask cst = new ComputeShaderTask(
-                "MaxVolumeReduction",
+                "ReduceVolume",
                 reductionShaderRegion,
                 attributes,
                 debugEnabled

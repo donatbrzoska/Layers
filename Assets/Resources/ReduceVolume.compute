@@ -40,11 +40,13 @@ void log_(uint index, float4 f)
 RWStructuredBuffer<Paint> Reservoir;
 uint2 ReservoirSize;
 
+uint ReduceFunction;
 
-#pragma kernel max_volume_reduction
+
+#pragma kernel reduce_volume
 
 [numthreads(32,1,1)]
-void max_volume_reduction(uint3 id_ : SV_DispatchThreadID)
+void reduce_volume(uint3 id_ : SV_DispatchThreadID)
 {
     id__ = id_;
     if (is_relevant_thread(id(), CalculationSize))
@@ -63,6 +65,11 @@ void max_volume_reduction(uint3 id_ : SV_DispatchThreadID)
         float value_ul = Reservoir[XYZ(i_ul.x, i_ul.y, 1, ReservoirSize)].volume;
         float value_ur = Reservoir[XYZ(i_ur.x, i_ur.y, 1, ReservoirSize)].volume;
 
-        Reservoir[XYZ(i_ll.x, i_ll.y, 1, ReservoirSize)].volume = max(max(max(value_ll, value_lr), value_ul), value_ur);
+        float result = 0;
+        if (ReduceFunction == 0) // max
+        {
+            result = max(max(max(value_ll, value_lr), value_ul), value_ur);
+        }
+        Reservoir[XYZ(i_ll.x, i_ll.y, 1, ReservoirSize)].volume = result;
     }
 }
