@@ -35,44 +35,28 @@ void log_(uint index, float4 f)
 
 // ###################################### SHADER BASE END ######################################
 
-#include "distance.hlsl"
 #include "convert.hlsl"
 #include "volume.hlsl"
 #include "paint.hlsl"
 #include "math.hlsl"
 #include "sutherland_hodgman.hlsl"
 
-uint2 TextureSize;
 uint TextureResolution;
-float3 CanvasPosition;
-float2 CanvasSize;
 
 float3 RakelAnchor;
-float3 RakelPosition;
-float RakelLength;
-float RakelWidth;
-
 float RakelRotation;
 float RakelTilt;
-float RakelTilt_MAX;
+RWStructuredBuffer<Paint> RakelApplicationReservoir;
+RWStructuredBuffer<Paint> RakelPickupReservoir;
+uint2 RakelReservoirSize;
+
 int ClipRadiusX;
-
-float3 RakelULTilted;
-float3 RakelURTilted;
-float3 RakelLLTilted;
-float3 RakelLRTilted;
-
-// Emitting
+float RakelTilt_MAX;
 float EmitDistance_MAX;
 float EmitVolumeApplicationReservoir_MIN;
 float EmitVolumeApplicationReservoir_MAX;
 float EmitVolumePickupReservoir_MIN;
 float EmitVolumePickupReservoir_MAX;
-
-uint2 RakelReservoirSize;
-// uint2 RakelLowerLeftRounded;
-RWStructuredBuffer<Paint> RakelApplicationReservoir;
-RWStructuredBuffer<Paint> RakelPickupReservoir;
 
 RWStructuredBuffer<float> DistortionMap;
 uint2 DistortionMapSize;
@@ -80,34 +64,6 @@ uint DistortionMapIndex;
 
 RWStructuredBuffer<Paint> RakelEmittedPaint;
 
-
-// returns:
-// - x: part of dx of rakel, 0-err..1+err would mean pixel is under rakel
-// - y: part of dy of rakel, 0-err..1+err would mean pixel is under rakel
-// - z: distance from rakel: -inf .. +inf
-float3 rakel_mapped(int2 pos_pixel)
-{
-    // translate pixel to world space
-    float3 pos_world_space = pixel_to_world_space(pos_pixel, TextureResolution, CanvasPosition, CanvasSize);
-
-    // translate back so pixel is anchor aligned
-    float3 back_translation_position = RakelAnchor - float3(RakelPosition.x, RakelPosition.y, 0);
-    float3 pos_back_translated_position = pos_world_space + back_translation_position;
-
-    // rotate back around anchor
-    float3 pos_back_rotated = rotate_by_z(pos_back_translated_position, - RakelRotation, RakelAnchor);
-
-    // calculate results
-    float rakel_tilted_x_max = RakelLRTilted.x;
-    float rakel_tilted_x_min = RakelLLTilted.x;
-    float rakel_tilted_dx = rakel_tilted_x_max - rakel_tilted_x_min;
-    float part_x = (pos_back_rotated.x - rakel_tilted_x_min) / rakel_tilted_dx;
-    float part_y = pos_back_rotated.y / RakelLength; // currently easy, because there is no length tilt
-
-    float dist = distance_from_rakel(pos_back_rotated, RakelLLTilted, RakelLRTilted, float3(RakelAnchor.x, RakelAnchor.y, RakelPosition.z));
-    
-    return float3(part_x, part_y, dist);
-}
 
 bool pixel_in_reservoir_range(int2 pixel)
 {
@@ -258,17 +214,15 @@ void main (uint3 id_ : SV_DispatchThreadID)
     id__ = id_;
     if (is_relevant_thread(id(), CalculationSize))
     {
+        // extract rakel mapped info from previous step
+        Paint p = RakelEmittedPaint[XY(id().x, id().y, CalculationSize.x)];
+        float2 reservoir_pixel = float2(p.color.x, p.color.y);
+        float distance = p.color.z;
+
         // calculate pixel position on canvas
         // was uint2 before, but negative values are possible due to padding and no prevention of that because it should not cause any more problems
         int2 canvas_pixel = id() + CalculationPosition;
-        float3 rakel_mapped_info = rakel_mapped(canvas_pixel);
-
-        // NOTE: this calculation does not work for a curved rakel
-        // rakel_mapped_info.x 0 means actually left from the pixel center, because the part_ info is about world space
-        // reservoir_pixel is -0.5 for part_k == 0 and RakelReservoirSize.k - 1 + 0.5 for part_k == 1
-        float2 reservoir_pixel = float2(rakel_mapped_info.x * RakelReservoirSize.x - 0.5,
-                                        rakel_mapped_info.y * RakelReservoirSize.y - 0.5);
         
-        emit(reservoir_pixel, uint2(ClipRadiusX, 1), rakel_mapped_info.z);
+        emit(reservoir_pixel, uint2(ClipRadiusX, 1), distance);
     }
 }

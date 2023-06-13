@@ -152,10 +152,12 @@ public class Rakel
         float emitVolumePickupReservoir_MAX,
         bool debugEnabled = false)
     {
-        ComputeBuffer RakelEmittedPaint = new ComputeBuffer(shaderRegion.PixelCount, Paint.SizeInBytes);
+        ComputeBuffer rakelEmittedPaint = new ComputeBuffer(shaderRegion.PixelCount, Paint.SizeInBytes);
         // initialize buffer to empty values (Intel does this for you, nvidia doesn't)
         Paint[] initPaint = new Paint[shaderRegion.PixelCount];
-        RakelEmittedPaint.SetData(initPaint);
+        rakelEmittedPaint.SetData(initPaint);
+
+        WriteRakelMappedInfo(rakelEmittedPaint, shaderRegion, wsc, debugEnabled);
 
         float pixelSize = 1 / (float) wsc.Resolution;
         float pixelDiag = pixelSize * Mathf.Sqrt(2);
@@ -165,34 +167,28 @@ public class Rakel
 
         List<CSAttribute> attributes = new List<CSAttribute>()
         {
-            new CSInt2("TextureSize", wsc.TextureSize),
             new CSInt("TextureResolution", wsc.Resolution),
-            new CSFloat3("CanvasPosition", wsc.Position),
-            new CSFloat2("CanvasSize", wsc.Size),
+
             new CSFloat3("RakelAnchor", Anchor),
-            new CSFloat3("RakelPosition", Position),
-            new CSFloat("RakelLength", Length),
-            new CSFloat("RakelWidth", Width),
             new CSFloat("RakelRotation", Rotation),
             new CSFloat("RakelTilt", Tilt),
-            new CSFloat("RakelTilt_MAX", MAX_SUPPORTED_TILT),
-            new CSInt("ClipRadiusX", clipRadiusX),
-            new CSFloat3("RakelULTilted", ulTilted),
-            new CSFloat3("RakelURTilted", urTilted),
-            new CSFloat3("RakelLLTilted", llTilted),
-            new CSFloat3("RakelLRTilted", lrTilted),
             new CSComputeBuffer("RakelApplicationReservoir", ApplicationReservoir.Buffer),
             new CSComputeBuffer("RakelPickupReservoir", PickupReservoir.Buffer),
-            new CSComputeBuffer("DistortionMap", DistortionMap),
-            new CSInt2("DistortionMapSize", DistortionMapSize),
-            new CSInt("DistortionMapIndex", IncrementDistortionMapIndex()),
-            new CSComputeBuffer("RakelEmittedPaint", RakelEmittedPaint),
             new CSInt2("RakelReservoirSize", ApplicationReservoir.Size),
+
+            new CSInt("ClipRadiusX", clipRadiusX),
+            new CSFloat("RakelTilt_MAX", MAX_SUPPORTED_TILT),
             new CSFloat("EmitDistance_MAX", emitDistance_MAX),
             new CSFloat("EmitVolumeApplicationReservoir_MIN", emitVolumeApplicationReservoir_MIN),
             new CSFloat("EmitVolumeApplicationReservoir_MAX", emitVolumeApplicationReservoir_MAX),
             new CSFloat("EmitVolumePickupReservoir_MIN", emitVolumePickupReservoir_MIN),
             new CSFloat("EmitVolumePickupReservoir_MAX", emitVolumePickupReservoir_MAX),
+
+            new CSComputeBuffer("DistortionMap", DistortionMap),
+            new CSInt2("DistortionMapSize", DistortionMapSize),
+            new CSInt("DistortionMapIndex", IncrementDistortionMapIndex()),
+
+            new CSComputeBuffer("RakelEmittedPaint", rakelEmittedPaint),
         };
 
         ComputeShaderTask cst = new ComputeShaderTask(
@@ -205,7 +201,42 @@ public class Rakel
 
         cst.Run();
 
-        return RakelEmittedPaint;
+        return rakelEmittedPaint;
+    }
+
+    private void WriteRakelMappedInfo(
+        ComputeBuffer rakelMappedInfoTarget,
+        ShaderRegion shaderRegion,
+        WorldSpaceCanvas wsc,
+        bool debugEnabled = false)
+    {
+        List<CSAttribute> attributes = new List<CSAttribute>()
+        {
+            new CSInt("TextureResolution", wsc.Resolution),
+
+            new CSFloat3("CanvasPosition", wsc.Position),
+            new CSFloat2("CanvasSize", wsc.Size),
+
+            new CSFloat("RakelLength", Length),
+            new CSFloat3("RakelPosition", Position),
+            new CSFloat3("RakelAnchor", Anchor),
+            new CSFloat("RakelRotation", Rotation),
+            new CSFloat("RakelTilt", Tilt),
+            new CSFloat3("RakelLLTilted", llTilted),
+            new CSFloat3("RakelLRTilted", lrTilted),
+            new CSInt2("RakelReservoirSize", ApplicationReservoir.Size),
+
+            new CSComputeBuffer("RakelMappedInfoTarget", rakelMappedInfoTarget),
+        };
+
+        ComputeShaderTask cst = new ComputeShaderTask(
+            "RakelMappedInfo",
+            shaderRegion,
+            attributes,
+            debugEnabled
+        );
+
+        cst.Run();
     }
 
     public void ApplyPaint(

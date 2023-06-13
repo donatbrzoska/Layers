@@ -71,30 +71,30 @@ public class Canvas_
         Paint[] initPaint = new Paint[shaderRegion.PixelCount];
         canvasEmittedPaint.SetData(initPaint);
 
+        WriteCanvasMappedInfo(canvasEmittedPaint, rakel, shaderRegion, debugEnabled);
+
         List<CSAttribute> attributes = new List<CSAttribute>()
         {
-            new CSInt2("CanvasReservoirSize", WorldSpaceCanvas.TextureSize),
-            new CSFloat3("CanvasPosition", WorldSpaceCanvas.Position),
-            new CSFloat2("CanvasSize", WorldSpaceCanvas.Size),
             new CSInt("TextureResolution", WorldSpaceCanvas.Resolution),
-            new CSFloat3("RakelAnchor", rakel.Anchor),
-            new CSFloat3("RakelPosition", rakel.Position),
-            new CSFloat("RakelRotation", rakel.Rotation),
+
             new CSFloat("RakelLength", rakel.Length),
             new CSFloat("RakelWidth", rakel.Width),
+            new CSFloat3("RakelPosition", rakel.Position),
+            new CSFloat3("RakelAnchor", rakel.Anchor),
+            new CSFloat("RakelRotation", rakel.Rotation),
             new CSFloat("RakelTilt", rakel.Tilt),
-            new CSFloat("RakelTilt_MAX", Rakel.MAX_SUPPORTED_TILT),
-            new CSFloat3("RakelULTilted", rakel.ulTilted),
-            new CSFloat3("RakelURTilted", rakel.urTilted),
-            new CSFloat3("RakelLLTilted", rakel.llTilted),
-            new CSFloat3("RakelLRTilted", rakel.lrTilted),
+
+            new CSFloat3("CanvasPosition", WorldSpaceCanvas.Position),
+            new CSFloat2("CanvasSize", WorldSpaceCanvas.Size),
             new CSComputeBuffer("CanvasReservoir", Reservoir.Buffer),
-            new CSComputeBuffer("CanvasEmittedPaint", canvasEmittedPaint),
-            new CSInt2("RakelReservoirSize", rakel.ApplicationReservoir.Size),
-            new CSInt("RakelResolution", rakel.ApplicationReservoir.Resolution),
+            new CSInt2("CanvasReservoirSize", WorldSpaceCanvas.TextureSize),
+
+            new CSFloat("RakelTilt_MAX", Rakel.MAX_SUPPORTED_TILT),
             new CSFloat("PickupDistance_MAX", pickupDistance_MAX),
             new CSFloat("PickupVolume_MIN", pickupVolume_MIN),
             new CSFloat("PickupVolume_MAX", pickupVolume_MAX),
+
+            new CSComputeBuffer("CanvasEmittedPaint", canvasEmittedPaint),
         };
 
         ComputeShaderTask cst = new ComputeShaderTask(
@@ -108,6 +108,40 @@ public class Canvas_
         cst.Run();
 
         return canvasEmittedPaint;
+    }
+
+    private void WriteCanvasMappedInfo(
+        ComputeBuffer canvasMappedInfoTarget,
+        Rakel rakel,
+        ShaderRegion shaderRegion,
+        bool debugEnabled = false)
+    {
+        List<CSAttribute> attributes = new List<CSAttribute>()
+        {
+            new CSInt("TextureResolution", WorldSpaceCanvas.Resolution),
+
+            new CSFloat("RakelLength", rakel.Length),
+            new CSFloat("RakelWidth", rakel.Width),
+            new CSFloat3("RakelPosition", rakel.Position),
+            new CSFloat3("RakelAnchor", rakel.Anchor),
+            new CSFloat("RakelRotation", rakel.Rotation),
+            new CSFloat("RakelTilt", rakel.Tilt),
+
+            new CSFloat3("CanvasPosition", WorldSpaceCanvas.Position),
+            new CSFloat2("CanvasSize", WorldSpaceCanvas.Size),
+            new CSInt2("CanvasReservoirSize", WorldSpaceCanvas.TextureSize),
+
+            new CSComputeBuffer("CanvasMappedInfoTarget", canvasMappedInfoTarget),
+        };
+
+        ComputeShaderTask cst = new ComputeShaderTask(
+            "CanvasMappedInfo",
+            shaderRegion,
+            attributes,
+            debugEnabled
+        );
+
+        cst.Run();
     }
 
     public void ApplyPaint(

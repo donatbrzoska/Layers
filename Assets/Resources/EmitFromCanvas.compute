@@ -42,66 +42,27 @@ void log_(uint index, float4 f)
 #include "math.hlsl"
 #include "sutherland_hodgman.hlsl"
 
-float RakelRotation;
-float RakelTilt;
-float RakelTilt_MAX;
-float3 RakelAnchor;
-float3 RakelPosition;
+uint TextureResolution;
+
 float RakelLength;
 float RakelWidth;
+float3 RakelPosition;
+float3 RakelAnchor;
+float RakelRotation;
+float RakelTilt;
 
 float3 CanvasPosition;
 float2 CanvasSize;
+RWStructuredBuffer<Paint> CanvasReservoir;
 uint2 CanvasReservoirSize;
 
-uint TextureResolution;
-
-// Emitting
+float RakelTilt_MAX;
 float PickupDistance_MAX;
 float PickupVolume_MIN;
 float PickupVolume_MAX;
 
-RWStructuredBuffer<Paint> CanvasReservoir;
-
 RWStructuredBuffer<Paint> CanvasEmittedPaint;
 
-
-// returns:
-// - x: part of dx of canvas, 0-err..1+err would mean pixel is over canvas
-// - y: part of dy of canvas, 0-err..1+err would mean pixel is over canvas
-// - z: distance from canvas: -inf .. +inf
-float3 canvas_mapped(int2 pos_pixel)
-{
-    // convert pixel to world space
-    float3 pos_world_space = pixel_to_world_space(
-        pos_pixel,
-        TextureResolution,
-        float3(RakelWidth/2, RakelLength/2, 0),
-        float2(RakelWidth, RakelLength));
-
-    // tilt and rotate around anchor
-    float3 pos_tilted = rotate_by_y(pos_world_space, RakelTilt, RakelAnchor);
-    float3 pos_rotated = rotate_by_z(pos_tilted, RakelRotation, RakelAnchor);
-
-    // translate to actual rakel position
-    float3 anchor_cleaned_translation = float3(RakelPosition.x, RakelPosition.y, 0) - RakelAnchor;
-    float3 pos_translated = pos_rotated + anchor_cleaned_translation;
-
-    // calculate results
-    float canvas_x_max = CanvasPosition.x + CanvasSize.x / 2;
-    float canvas_x_min = CanvasPosition.x - CanvasSize.x / 2;
-    float canvas_dx = canvas_x_max - canvas_x_min;
-    float part_x = (pos_translated.x - canvas_x_min) / canvas_dx;
-
-    float canvas_y_max = CanvasPosition.y + CanvasSize.y / 2;
-    float canvas_y_min = CanvasPosition.y - CanvasSize.y / 2;
-    float canvas_dy = canvas_y_max - canvas_y_min;
-    float part_y = (pos_translated.y - canvas_y_min) / canvas_dy;
-
-    float dist = distance_from_canvas(pos_translated, CanvasPosition, float3(0, 0, -1));
-
-    return float3(part_x, part_y, dist);
-}
 
 bool pixel_in_reservoir_range(int2 pixel)
 {
@@ -211,16 +172,15 @@ void main(uint3 id_ : SV_DispatchThreadID)
     id__ = id_;
     if (is_relevant_thread(id(), CalculationSize))
     {
+        // extract canvas mapped info from previous step
+        Paint p = CanvasEmittedPaint[XY(id().x, id().y, CalculationSize.x)];
+        float2 canvas_reservoir_pixel = float2(p.color.x, p.color.y);
+        float distance = p.color.z;
+
         // calculate pixel position in reservoir
         // was uint2 before, but negative values are possible due to padding and no prevention of that because it should not cause any more problems
         int2 rakel_pixel = id() + CalculationPosition;
-        float3 canvas_mapped_info = canvas_mapped(rakel_pixel);
-
-        // canvas_mapped_info.x 0 means actually left from the pixel, because the part_ info is about world space
-        // canvas_reservoir_pixel is -0.5 for part_k == 0 and CanvasReservoirSize.k - 1 + 0.5 for part_k == 1
-        float2 canvas_reservoir_pixel = float2(canvas_mapped_info.x * CanvasReservoirSize.x - 0.5,
-                                               canvas_mapped_info.y * CanvasReservoirSize.y - 0.5);
         
-        emit(canvas_reservoir_pixel, int2(1, 1), canvas_mapped_info.z);
+        emit(canvas_reservoir_pixel, int2(1, 1), distance);
     }
 }

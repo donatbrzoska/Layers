@@ -1,0 +1,125 @@
+// ######################################## SHADER BASE ########################################
+
+#include "basic_util.hlsl"
+#include "indexing.hlsl"
+#include "logging.hlsl"
+
+uint3 id__;
+uint2 SubgridGroupSize;
+uint2 SubgridCurrentThreadID;
+
+uint2 id()
+{
+    uint2 subgrid_id = uint2(id__.x, id__.y);
+    return subgrid_id * SubgridGroupSize + SubgridCurrentThreadID;
+}
+
+int2 CalculationPosition;
+uint2 CalculationSize;
+
+RWStructuredBuffer<float4> Debug;
+RWStructuredBuffer<DebugListInfo> DebugInfo;
+
+void set_debug_list_info(uint size, uint t)
+{
+    DebugListInfo dli;
+    dli.Size = size;
+    dli.Type = t;
+    DebugInfo[0] = dli;
+}
+
+void log_(uint index, float4 f)
+{
+    Debug[XYZ(id().x, id().y, index, CalculationSize)] = f;
+}
+
+// ###################################### SHADER BASE END ######################################
+
+#include "distance.hlsl"
+#include "convert.hlsl"
+#include "volume.hlsl"
+#include "paint.hlsl"
+#include "math.hlsl"
+
+uint TextureResolution;
+
+float RakelLength;
+float RakelWidth;
+float3 RakelPosition;
+float3 RakelAnchor;
+float RakelRotation;
+float RakelTilt;
+
+float3 CanvasPosition;
+float2 CanvasSize;
+uint2 CanvasReservoirSize;
+
+RWStructuredBuffer<Paint> CanvasMappedInfoTarget;
+
+
+// returns:
+// - x: exact projection of rakel pixel.x to canvas reservoir index space
+// - y: exact projection of rakel pixel.y to canvas reservoir index space
+// - z: distance from canvas: -inf .. +inf
+float3 canvas_mapped(int2 pos_pixel)
+{
+    // convert pixel to world space
+    float3 pos_world_space = pixel_to_world_space(
+        pos_pixel,
+        TextureResolution,
+        float3(RakelWidth/2, RakelLength/2, 0),
+        float2(RakelWidth, RakelLength));
+
+    // tilt and rotate around anchor
+    float3 pos_tilted = rotate_by_y(pos_world_space, RakelTilt, RakelAnchor);
+    float3 pos_rotated = rotate_by_z(pos_tilted, RakelRotation, RakelAnchor);
+
+    // translate to actual rakel position
+    float3 anchor_cleaned_translation = float3(RakelPosition.x, RakelPosition.y, 0) - RakelAnchor;
+    float3 pos_translated = pos_rotated + anchor_cleaned_translation;
+
+    // calculate results
+    float canvas_x_max = CanvasPosition.x + CanvasSize.x / 2;
+    float canvas_x_min = CanvasPosition.x - CanvasSize.x / 2;
+    float canvas_dx = canvas_x_max - canvas_x_min;
+    float part_x = (pos_translated.x - canvas_x_min) / canvas_dx;
+
+    float canvas_y_max = CanvasPosition.y + CanvasSize.y / 2;
+    float canvas_y_min = CanvasPosition.y - CanvasSize.y / 2;
+    float canvas_dy = canvas_y_max - canvas_y_min;
+    float part_y = (pos_translated.y - canvas_y_min) / canvas_dy;
+
+    float dist = distance_from_canvas(pos_translated, CanvasPosition, float3(0, 0, -1));
+    // canvas_mapped_info.x 0 means actually left from the pixel, because the part_ info is about world space
+    // canvas_reservoir_pixel is -0.5 for part_k == 0 and CanvasReservoirSize.k - 1 + 0.5 for part_k == 1
+    float2 canvas_reservoir_pixel = float2(part_x * CanvasReservoirSize.x - 0.5,
+                                           part_y * CanvasReservoirSize.y - 0.5);
+
+    return float3(canvas_reservoir_pixel.x, canvas_reservoir_pixel.y, dist);
+}
+
+#pragma kernel main
+
+[numthreads(32,1,1)]
+void main(uint3 id_ : SV_DispatchThreadID)
+{
+    id__ = id_;
+    if (is_relevant_thread(id(), CalculationSize))
+    {
+        // calculate pixel position in reservoir
+        // was uint2 before, but negative values are possible due to padding and no prevention of that because it should not cause any more problems
+        int2 rakel_pixel = id() + CalculationPosition;
+        float3 canvas_mapped_info = canvas_mapped(rakel_pixel);
+        
+        // use paint struct to store result
+        Paint p;
+        p.color = float4(
+            canvas_mapped_info.x,
+            canvas_mapped_info.y,
+            canvas_mapped_info.z,
+            0 // unused
+        );
+        p.volume = 0; // unused
+        CanvasMappedInfoTarget[XY(id().x, id().y, CalculationSize.x)] = p;
+    }
+}
