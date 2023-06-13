@@ -72,10 +72,10 @@ bool pixel_in_reservoir_range(int2 pixel)
         && pixel.y < (int)CanvasReservoirSize.y;
 }
 
-// radius of 1 does an emit on a 3x3 area from emit source grid, based on the rounded reservoir_pixel
-void emit(float2 reservoir_pixel, int2 radius, float distance)
+// radius of 1 does an emit on a 3x3 area from emit source grid, based on the rounded canvas_reservoir_pixel
+void emit(float2 canvas_reservoir_pixel, int2 radius, float distance)
 {
-    int2 reservoir_pixel_nearest = round(reservoir_pixel);
+    int2 reservoir_pixel_nearest = round(canvas_reservoir_pixel);
 
     float VOLUME_TO_EMIT_TARGET = pickup_volume(
         distance,
@@ -104,7 +104,7 @@ void emit(float2 reservoir_pixel, int2 radius, float distance)
             // calculate part
             int2 coord = reservoir_pixel_nearest + int2(x, y);
             if (pixel_in_reservoir_range(coord)) { // Prevent out of bounds access to reservoir. Also, if it's not in range, this overlap part is not (and must not be!) used anyways.
-                Rectangle fragment_rectangle = create_rectangle(reservoir_pixel, RakelRotation, RakelTilt);
+                Rectangle fragment_rectangle = create_rectangle(canvas_reservoir_pixel, RakelRotation, RakelTilt);
                 Rectangle reservoir_rectangle = create_rectangle(coord, 0, 0);
                 float overlap = calculate_exact_overlap(fragment_rectangle, reservoir_rectangle);
 
