@@ -3,7 +3,7 @@ public class EmitVolumePickupReservoirController : InputFieldController
 {
     public void Start()
     {
-        InputField.SetTextWithoutNotify("" + OilPaintEngine.Configuration.TransferConfiguration.EmitVolumePickupReservoir_MAX);
+        InputField.SetTextWithoutNotify("" + OilPaintEngine.Configuration.TransferConfiguration.EmitVolumePickupReservoirRate);
     }
 
     override public void OnValueChanged(string arg0)

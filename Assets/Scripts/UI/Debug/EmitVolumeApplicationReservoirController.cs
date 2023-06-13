@@ -3,7 +3,7 @@ public class EmitVolumeApplicationReservoirController : InputFieldController
 {
     public void Start()
     {
-        InputField.SetTextWithoutNotify("" + OilPaintEngine.Configuration.TransferConfiguration.EmitVolumeApplicationReservoir_MAX);
+        InputField.SetTextWithoutNotify("" + OilPaintEngine.Configuration.TransferConfiguration.EmitVolumeApplicationReservoirRate);
     }
 
     override public void OnValueChanged(string arg0)

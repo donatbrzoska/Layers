@@ -73,10 +73,10 @@ public class TransferEngine
             rakelEmitSR,
             wsc,
             transferConfiguration.EmitDistance_MAX,
-            transferConfiguration.EmitVolumeApplicationReservoir_MIN,
-            transferConfiguration.EmitVolumeApplicationReservoir_MAX,
-            transferConfiguration.EmitVolumePickupReservoir_MIN,
-            transferConfiguration.EmitVolumePickupReservoir_MAX,
+            transferConfiguration.EmitVolume_MIN,
+            transferConfiguration.EmitVolume_MAX,
+            transferConfiguration.EmitVolumeApplicationReservoirRate,
+            transferConfiguration.EmitVolumePickupReservoirRate,
             DebugShader);
 
         canvas.ApplyPaint(

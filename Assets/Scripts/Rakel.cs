@@ -146,10 +146,10 @@ public class Rakel
         ShaderRegion shaderRegion,
         WorldSpaceCanvas wsc,
         float emitDistance_MAX,
-        float emitVolumeApplicationReservoir_MIN,
-        float emitVolumeApplicationReservoir_MAX,
-        float emitVolumePickupReservoir_MIN,
-        float emitVolumePickupReservoir_MAX,
+        float emitVolume_MIN,
+        float emitVolume_MAX,
+        float emitVolumeApplicationReservoirRate,
+        float emitVolumePickupReservoirRate,
         bool debugEnabled = false)
     {
         ComputeBuffer rakelEmittedPaint = new ComputeBuffer(shaderRegion.PixelCount, Paint.SizeInBytes);
@@ -179,10 +179,10 @@ public class Rakel
             new CSInt("ClipRadiusX", clipRadiusX),
             new CSFloat("RakelTilt_MAX", MAX_SUPPORTED_TILT),
             new CSFloat("EmitDistance_MAX", emitDistance_MAX),
-            new CSFloat("EmitVolumeApplicationReservoir_MIN", emitVolumeApplicationReservoir_MIN),
-            new CSFloat("EmitVolumeApplicationReservoir_MAX", emitVolumeApplicationReservoir_MAX),
-            new CSFloat("EmitVolumePickupReservoir_MIN", emitVolumePickupReservoir_MIN),
-            new CSFloat("EmitVolumePickupReservoir_MAX", emitVolumePickupReservoir_MAX),
+            new CSFloat("EmitVolume_MIN", emitVolume_MIN),
+            new CSFloat("EmitVolume_MAX", emitVolume_MAX),
+            new CSFloat("EmitVolumeApplicationReservoirRate", emitVolumeApplicationReservoirRate),
+            new CSFloat("EmitVolumePickupReservoirRate", emitVolumePickupReservoirRate),
 
             new CSComputeBuffer("DistortionMap", DistortionMap),
             new CSInt2("DistortionMapSize", DistortionMapSize),

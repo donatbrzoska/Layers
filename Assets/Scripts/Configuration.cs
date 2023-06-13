@@ -32,8 +32,8 @@ public class Configuration
         FillConfiguration.VolumeMode = VolumeMode.Flat;
         FillConfiguration.ColorMode = ColorMode.Colorful;
 
-        TransferConfiguration.EmitVolumeApplicationReservoir_MAX = 1;
-        TransferConfiguration.EmitVolumePickupReservoir_MAX = 0;
+        TransferConfiguration.EmitVolumeApplicationReservoirRate = 1;
+        TransferConfiguration.EmitVolumePickupReservoirRate = 0;
         TransferConfiguration.PickupVolume_MAX = 0;
     }
 
@@ -51,7 +51,7 @@ public class Configuration
 
         InputConfiguration.RakelRotation.Source = InputSourceType.Mouse;
 
-        TransferConfiguration.EmitVolumePickupReservoir_MAX = 0;
+        TransferConfiguration.EmitVolumePickupReservoirRate = 0;
         TransferConfiguration.PickupVolume_MAX = 0;
 
         FillConfiguration.Color = Color_.CadmiumGreen;
@@ -147,10 +147,10 @@ public class TransferConfiguration
 {
     public float EmitDistance_MAX;
     public float PickupDistance_MAX;
-    public float EmitVolumeApplicationReservoir_MIN;
-    public float EmitVolumeApplicationReservoir_MAX;
-    public float EmitVolumePickupReservoir_MIN;
-    public float EmitVolumePickupReservoir_MAX;
+    public float EmitVolume_MIN;
+    public float EmitVolume_MAX;
+    public float EmitVolumeApplicationReservoirRate;
+    public float EmitVolumePickupReservoirRate;
     public float PickupVolume_MIN;
     public float PickupVolume_MAX;
 
@@ -159,8 +159,11 @@ public class TransferConfiguration
         EmitDistance_MAX = 0.1f;
         PickupDistance_MAX = EmitDistance_MAX;
 
-        EmitVolumeApplicationReservoir_MAX = 1;
-        EmitVolumePickupReservoir_MAX = 1.2f;
-        PickupVolume_MAX = 1.3f;
+        EmitVolume_MIN = 0;
+        EmitVolume_MAX = 1;
+
+        EmitVolumeApplicationReservoirRate = 1;
+        EmitVolumePickupReservoirRate = 1.2f;
+        PickupVolume_MAX = 0.65f;
     }
 }

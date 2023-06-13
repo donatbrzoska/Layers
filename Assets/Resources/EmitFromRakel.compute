@@ -53,10 +53,10 @@ uint2 RakelReservoirSize;
 int ClipRadiusX;
 float RakelTilt_MAX;
 float EmitDistance_MAX;
-float EmitVolumeApplicationReservoir_MIN;
-float EmitVolumeApplicationReservoir_MAX;
-float EmitVolumePickupReservoir_MIN;
-float EmitVolumePickupReservoir_MAX;
+float EmitVolume_MIN;
+float EmitVolume_MAX;
+float EmitVolumeApplicationReservoirRate;
+float EmitVolumePickupReservoirRate;
 
 RWStructuredBuffer<float> DistortionMap;
 uint2 DistortionMapSize;
@@ -78,25 +78,13 @@ void emit(float2 rakel_reservoir_pixel, int2 radius, float distance)
 {
     int2 rakel_reservoir_pixel_nearest = round(rakel_reservoir_pixel);
 
-    // TODO single target volume and determine ratio further below
-    float VOLUME_TO_EMIT_TARGET_APP = emit_volume(
+    float volume_to_emit = emit_volume(
         distance,
         EmitDistance_MAX,
         RakelTilt,
         RakelTilt_MAX,
-        EmitVolumeApplicationReservoir_MIN * PAINT_UNIT(),
-        EmitVolumeApplicationReservoir_MAX * PAINT_UNIT());
-
-    // TODO there might be problems with rounding to negative indizes
-    // VOLUME_TO_EMIT_TARGET_APP *= DistortionMap[XY(rakel_reservoir_pixel_nearest.x + DistortionMapIndex, rakel_reservoir_pixel_nearest.y, DistortionMapSize.x)];
-
-    float VOLUME_TO_EMIT_TARGET_PU = emit_volume(
-        distance,
-        EmitDistance_MAX,
-        RakelTilt,
-        RakelTilt_MAX,
-        EmitVolumePickupReservoir_MIN * PAINT_UNIT(),
-        EmitVolumePickupReservoir_MAX * PAINT_UNIT());
+        EmitVolume_MIN * PAINT_UNIT(),
+        EmitVolume_MAX * PAINT_UNIT());
 
     //TODO there might be problems with rounding to negative indizes
     // VOLUME_TO_EMIT_TARGET_PU *= DistortionMap[XY(rakel_reservoir_pixel_nearest.x + DistortionMapIndex, rakel_reservoir_pixel_nearest.y, DistortionMapSize.x)];
@@ -141,11 +129,20 @@ void emit(float2 rakel_reservoir_pixel, int2 radius, float distance)
                     Paint available_pu = RakelPickupReservoir[XYZ(coord_.x, coord_.y, 1, RakelReservoirSize)];
 
                     // calculate volume
-                    float target_volume_app = overlap * VOLUME_TO_EMIT_TARGET_APP;
-                    float target_volume_pu = overlap * VOLUME_TO_EMIT_TARGET_PU;
-                    float really_available_volume_app = overlap * available_app.volume;
+                    // .. prefer pickup reservoir with rate
+                    float pu_reservoir_rate = EmitVolumePickupReservoirRate / (EmitVolumeApplicationReservoirRate + EmitVolumePickupReservoirRate);
+                    float target_volume_pu = overlap * volume_to_emit * pu_reservoir_rate;
                     float really_available_volume_pu = overlap * available_pu.volume;
-                    // TODO mostly prefer pickup reservoir as long as it is filled?
+                    // .. take rest from application reservoir
+                    float target_volume_app = overlap * volume_to_emit - really_available_volume_pu;
+                    float really_available_volume_app = overlap * available_app.volume;
+                    // .. if this is not enough, try take rest from pickup reservoir
+                    float app_diff = target_volume_app - really_available_volume_app;
+                    if (app_diff > 0)
+                    {
+                        target_volume_pu += app_diff;
+                    }
+
                     volume_to_emit_app[i][j] = min(target_volume_app, really_available_volume_app);
                     volume_to_emit_pu[i][j] = min(target_volume_pu, really_available_volume_pu);
                     result_volume_app += volume_to_emit_app[i][j];

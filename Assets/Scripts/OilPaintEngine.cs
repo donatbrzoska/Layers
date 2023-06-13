@@ -332,12 +332,12 @@ public class OilPaintEngine : MonoBehaviour
 
     public void UpdateEmitVolumeApplicationReservoir(float value)
     {
-        Configuration.TransferConfiguration.EmitVolumeApplicationReservoir_MAX = value;
+        Configuration.TransferConfiguration.EmitVolumeApplicationReservoirRate = value;
     }
 
     public void UpdateEmitVolumePickupReservoir(float value)
     {
-        Configuration.TransferConfiguration.EmitVolumePickupReservoir_MAX = value;
+        Configuration.TransferConfiguration.EmitVolumePickupReservoirRate = value;
     }
 
     public void UpdatePickupVolume(float value)
