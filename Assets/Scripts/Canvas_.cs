@@ -100,6 +100,10 @@ public class Canvas_
             new CSFloat3("RakelAnchor", rakel.Anchor),
             new CSFloat("RakelRotation", rakel.Rotation),
             new CSFloat("RakelTilt", rakel.Tilt),
+            new CSFloat("RakelEdgeZ", rakel.LowerLeft.z),
+            new CSComputeBuffer("RakelApplicationReservoir", rakel.ApplicationReservoir.Buffer),
+            new CSComputeBuffer("RakelPickupReservoir", rakel.PickupReservoir.Buffer),
+            new CSInt2("RakelReservoirSize", rakel.ApplicationReservoir.Size),
 
             new CSFloat3("CanvasPosition", Position),
             new CSFloat2("CanvasSize", Size),

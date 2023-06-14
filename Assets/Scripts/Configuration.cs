@@ -164,6 +164,7 @@ public class TransferConfiguration
 
         EmitVolumeApplicationReservoirRate = 1;
         EmitVolumePickupReservoirRate = 1.2f;
+        PickupVolume_MIN = 0.3f;
         PickupVolume_MAX = 0.65f;
     }
 }

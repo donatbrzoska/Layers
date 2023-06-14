@@ -50,6 +50,10 @@ float3 RakelPosition;
 float3 RakelAnchor;
 float RakelRotation;
 float RakelTilt;
+float RakelEdgeZ;
+RWStructuredBuffer<Paint> RakelApplicationReservoir;
+RWStructuredBuffer<Paint> RakelPickupReservoir;
+uint2 RakelReservoirSize;
 
 float3 CanvasPosition;
 float2 CanvasSize;
@@ -73,95 +77,135 @@ bool pixel_in_reservoir_range(int2 pixel)
 }
 
 // radius of 1 does an emit on a 3x3 area from emit source grid, based on the rounded canvas_reservoir_pixel
-void emit(float2 canvas_reservoir_pixel, int2 radius, float distance)
+void emit(float2 canvas_reservoir_pixel, int2 radius, float distance, int2 rakel_pixel)
 {
     int2 canvas_reservoir_pixel_nearest = round(canvas_reservoir_pixel);
 
-    float VOLUME_TO_EMIT_TARGET = pickup_volume(
-        distance,
-        PickupDistance_MAX,
-        RakelTilt,
-        RakelTilt_MAX,
-        PickupVolume_MIN * PAINT_UNIT(),
-        PickupVolume_MAX * PAINT_UNIT());
+    // TODO For more detail, this (and the volume_to_pickup value) could also
+    //      be calculated based on the polygon overlap
+    float volume_rakel =
+        RakelApplicationReservoir[XYZ(rakel_pixel.x, rakel_pixel.y, 1, RakelReservoirSize)].volume
+        + RakelPickupReservoir[XYZ(rakel_pixel.x, rakel_pixel.y, 1, RakelReservoirSize)].volume;
+    float volume_canvas = CanvasReservoir[XYZ(canvas_reservoir_pixel_nearest.x, canvas_reservoir_pixel_nearest.y, 1, CanvasReservoirSize)].volume;
+    float paint_thickness_rakel = volume_rakel * VOLUME_THICKNESS();
+    float paint_thickness_canvas = volume_canvas * VOLUME_THICKNESS();
+    float surface_distance = distance - paint_thickness_rakel - paint_thickness_canvas;
+    bool surfaces_touch = surface_distance <= 0;
 
-    // array size should really be [1+2*radius.y][1+2*radius.x] but we can't make dynamic arrays
-    // in HLSL. 9x9 should be enough though, since with 45° tilt we will probably use 6x6 and
-    // more tilt probably won't emit anyways
-    float4 color_to_emit[9][9];
-    float volume_to_emit[9][9];
-    float4 result_color = float4(0,0,0,0);
-    float result_volume = 0;
-    int x, y;
-    for (y=-radius.y; y<=radius.y; y++) {
-        for (x=-radius.x; x<=radius.x; x++) {
-            // initialize arrays
-            uint i = y + radius.y;
-            uint j = x + radius.x;
-            volume_to_emit[i][j] = 0;
-            color_to_emit[i][j] = float4(0,0,0,0);
+    if (surfaces_touch)
+    {
+        // float VOLUME_TO_EMIT_TARGET = pickup_volume(
+        //     distance,
+        //     PickupDistance_MAX,
+        //     RakelTilt,
+        //     RakelTilt_MAX,
+        //     PickupVolume_MIN * PAINT_UNIT(),
+        //     PickupVolume_MAX * PAINT_UNIT());
 
-            // calculate part
-            int2 coord = canvas_reservoir_pixel_nearest + int2(x, y);
-            if (pixel_in_reservoir_range(coord)) { // Prevent out of bounds access to reservoir. Also, if it's not in range, this overlap part is not (and must not be!) used anyways.
-                Rectangle fragment_rectangle = create_rectangle(canvas_reservoir_pixel, RakelRotation, RakelTilt);
-                Rectangle reservoir_rectangle = create_rectangle(coord, 0, 0);
-                float overlap = calculate_exact_overlap(fragment_rectangle, reservoir_rectangle);
+        // This only really picks up paint when rakel edge is inside paint on canvas
+        // Why surfaces_touch then?
+        // - Paint is picked up only, when rakel is somehow touching canvas paint
+        //   - through paint on rakel or
+        //   - rakel surface
+        // - Maybe the condition surfaces_touch is too realistic and not helpful, instead have certain pickup distance?
+        // TODO adjust this, when implementing dried paint
+        float rakel_edge_distance_from_canvas = abs(RakelEdgeZ - CanvasPosition.z);
+        float distance_rakel_edge_2_canvas_paint_surface = rakel_edge_distance_from_canvas - paint_thickness_canvas;
+        float how_negative = abs(min(distance_rakel_edge_2_canvas_paint_surface, 0));
+        float volume_too_much_on_canvas = how_negative / VOLUME_THICKNESS();
+        float volume_to_pickup = volume_too_much_on_canvas;
+        // only add min pickup value when rakel edge is really inside paint
+        if (volume_to_pickup > 0)
+        {
+            volume_to_pickup += PickupVolume_MIN;
+        }
 
-                if (overlap > 0) {
-                    // get paint
-                    uint2 coord_ = uint2(coord.x, coord.y);
-                    Paint available = CanvasReservoir[XYZ(coord_.x, coord_.y, 1, CanvasReservoirSize)];
+        // array size should really be [1+2*radius.y][1+2*radius.x] but we can't make dynamic arrays
+        // in HLSL. 9x9 should be enough though, since with 45° tilt we will probably use 6x6 and
+        // more tilt probably won't emit anyways
+        float4 color_to_emit[9][9];
+        float volume_to_emit[9][9];
+        float4 result_color = float4(0,0,0,0);
+        float result_volume = 0;
+        int x, y;
+        for (y=-radius.y; y<=radius.y; y++) {
+            for (x=-radius.x; x<=radius.x; x++) {
+                // initialize arrays
+                uint i = y + radius.y;
+                uint j = x + radius.x;
+                volume_to_emit[i][j] = 0;
+                color_to_emit[i][j] = float4(0,0,0,0);
 
-                    // calculate volume
-                    float target_volume = overlap * VOLUME_TO_EMIT_TARGET;
-                    float really_available_volume = overlap * available.volume;
-                    volume_to_emit[i][j] = min(target_volume, really_available_volume);
-                    result_volume += volume_to_emit[i][j];
+                // calculate part
+                int2 coord = canvas_reservoir_pixel_nearest + int2(x, y);
+                if (pixel_in_reservoir_range(coord)) { // Prevent out of bounds access to reservoir. Also, if it's not in range, this overlap part is not (and must not be!) used anyways.
+                    Rectangle fragment_rectangle = create_rectangle(canvas_reservoir_pixel, RakelRotation, RakelTilt);
+                    Rectangle reservoir_rectangle = create_rectangle(coord, 0, 0);
+                    float overlap = calculate_exact_overlap(fragment_rectangle, reservoir_rectangle);
 
-                    color_to_emit[i][j] = available.color;
+                    if (overlap > 0) {
+                        // get paint
+                        uint2 coord_ = uint2(coord.x, coord.y);
+                        Paint available = CanvasReservoir[XYZ(coord_.x, coord_.y, 1, CanvasReservoirSize)];
+
+                        // calculate volume
+                        float target_volume = overlap * volume_to_pickup;
+                        float really_available_volume = overlap * available.volume;
+                        volume_to_emit[i][j] = min(target_volume, really_available_volume);
+                        result_volume += volume_to_emit[i][j];
+
+                        color_to_emit[i][j] = available.color;
+                    }
                 }
             }
         }
-    }
 
-    // determine color based on emitted volumes
-    // TODO use mix function
-    for (y=-radius.y; y<=radius.y; y++) {
-        for (x=-radius.x; x<=radius.x; x++) {
-            int2 coord = canvas_reservoir_pixel_nearest + int2(x, y);
-            if (pixel_in_reservoir_range(coord)) {
-                uint i = y + radius.y;
-                uint j = x + radius.x;
-                float volume_part = volume_to_emit[i][j] / unzero(result_volume);
-                result_color += volume_part * color_to_emit[i][j];
+        // determine color based on emitted volumes
+        // TODO use mix function
+        for (y=-radius.y; y<=radius.y; y++) {
+            for (x=-radius.x; x<=radius.x; x++) {
+                int2 coord = canvas_reservoir_pixel_nearest + int2(x, y);
+                if (pixel_in_reservoir_range(coord)) {
+                    uint i = y + radius.y;
+                    uint j = x + radius.x;
+                    float volume_part = volume_to_emit[i][j] / unzero(result_volume);
+                    result_color += volume_part * color_to_emit[i][j];
+                }
             }
         }
-    }
 
-    Paint result_paint;
-    result_paint.color = result_color;
-    result_paint.volume = result_volume;
+        Paint result_paint;
+        result_paint.color = result_color;
+        result_paint.volume = result_volume;
 
-    float deleted = 0;
-    // delete amount of taken volume from reservoir (z=0)
-    for (y=-radius.y; y<=radius.y; y++) {
-        for (x=-radius.x; x<=radius.x; x++) {
-            int2 coord = canvas_reservoir_pixel_nearest + int2(x, y);
-            if (pixel_in_reservoir_range(coord)) {
-                uint i = y + radius.y;
-                uint j = x + radius.x;
-                float to_be_deleted = volume_to_emit[i][j];
+        float deleted = 0;
+        // delete amount of taken volume from reservoir (z=0)
+        for (y=-radius.y; y<=radius.y; y++) {
+            for (x=-radius.x; x<=radius.x; x++) {
+                int2 coord = canvas_reservoir_pixel_nearest + int2(x, y);
+                if (pixel_in_reservoir_range(coord)) {
+                    uint i = y + radius.y;
+                    uint j = x + radius.x;
+                    float to_be_deleted = volume_to_emit[i][j];
 
-                uint2 coord_ = uint2(coord.x, coord.y);
-                CanvasReservoir[XYZ(coord_.x, coord_.y, 0, CanvasReservoirSize)].volume -= to_be_deleted;
-                deleted += to_be_deleted;
+                    uint2 coord_ = uint2(coord.x, coord.y);
+                    CanvasReservoir[XYZ(coord_.x, coord_.y, 0, CanvasReservoirSize)].volume -= to_be_deleted;
+                    deleted += to_be_deleted;
+                }
             }
         }
-    }
 
-    CanvasEmittedPaint[XY(id().x, id().y, CalculationSize.x)] = result_paint;
-    // log_float(deleted);
+        CanvasEmittedPaint[XY(id().x, id().y, CalculationSize.x)] = result_paint;
+        // log_float(deleted);
+    }
+    else
+    {
+        // remove previously written canvas mapped info
+        Paint resetPaint;
+        resetPaint.volume = 0;
+        resetPaint.color = float4(0,0,0,0);
+        CanvasEmittedPaint[XY(id().x, id().y, CalculationSize.x)] = resetPaint;
+    }
 }
 
 #pragma kernel main
@@ -181,6 +225,6 @@ void main(uint3 id_ : SV_DispatchThreadID)
         // was uint2 before, but negative values are possible due to padding and no prevention of that because it should not cause any more problems
         int2 rakel_pixel = id() + CalculationPosition;
         
-        emit(canvas_reservoir_pixel, int2(1, 1), distance);
+        emit(canvas_reservoir_pixel, int2(1, 1), distance, rakel_pixel);
     }
 }
