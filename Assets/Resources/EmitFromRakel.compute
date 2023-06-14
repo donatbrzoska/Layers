@@ -157,8 +157,9 @@ void emit(float2 rakel_reservoir_pixel, int2 radius, float distance, int2 canvas
                         float pu_reservoir_rate = EmitVolumePickupReservoirRate / (EmitVolumeApplicationReservoirRate + EmitVolumePickupReservoirRate);
                         float target_volume_pu = overlap * volume_to_emit * pu_reservoir_rate;
                         float really_available_volume_pu = overlap * available_pu.volume;
+                        float volume_to_emit_pu_ = min(target_volume_pu, really_available_volume_pu);
                         // .. take rest from application reservoir
-                        float target_volume_app = overlap * volume_to_emit - really_available_volume_pu;
+                        float target_volume_app = overlap * volume_to_emit - volume_to_emit_pu_;
                         float really_available_volume_app = overlap * available_app.volume;
                         // .. if this is not enough, try take rest from pickup reservoir
                         float app_diff = target_volume_app - really_available_volume_app;
