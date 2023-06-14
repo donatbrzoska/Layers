@@ -41,8 +41,7 @@ public class TransferEngine
             canvas.MapToPixelInRange(rakel.UpperLeft),
             canvas.MapToPixelInRange(rakel.UpperRight),
             canvas.MapToPixelInRange(rakel.LowerLeft),
-            canvas.MapToPixelInRange(rakel.LowerRight),
-            1 // Padding because interpolation reaches pixels that are not directly under the rakel
+            canvas.MapToPixelInRange(rakel.LowerRight)
         );
 
         ShaderRegion rerenderSR = new ShaderRegion(
@@ -50,7 +49,7 @@ public class TransferEngine
             canvas.MapToPixelInRange(rakel.UpperRight),
             canvas.MapToPixelInRange(rakel.LowerLeft),
             canvas.MapToPixelInRange(rakel.LowerRight),
-            2 // Padding of 2 because normals of the previously set pixels around also have to be recalculated
+            1 // Padding because normal calculation is also based on pixels around
         );
 
         canvas.Reservoir.Duplicate(DebugShader);
