@@ -172,10 +172,12 @@ public class Rakel
             new CSFloat3("RakelAnchor", Anchor),
             new CSFloat("RakelRotation", Rotation),
             new CSFloat("RakelTilt", Tilt),
+            new CSFloat("RakelEdgeZ", LowerLeft.z),
             new CSComputeBuffer("RakelApplicationReservoir", ApplicationReservoir.Buffer),
             new CSComputeBuffer("RakelPickupReservoir", PickupReservoir.Buffer),
             new CSInt2("RakelReservoirSize", ApplicationReservoir.Size),
 
+            new CSFloat("CanvasPositionZ", canvas.Position.z),
             new CSComputeBuffer("CanvasReservoir", canvas.Reservoir.Buffer),
             new CSInt2("CanvasReservoirSize", canvas.Reservoir.Size),
 
