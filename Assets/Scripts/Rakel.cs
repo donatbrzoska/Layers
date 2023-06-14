@@ -176,6 +176,9 @@ public class Rakel
             new CSComputeBuffer("RakelPickupReservoir", PickupReservoir.Buffer),
             new CSInt2("RakelReservoirSize", ApplicationReservoir.Size),
 
+            new CSComputeBuffer("CanvasReservoir", canvas.Reservoir.Buffer),
+            new CSInt2("CanvasReservoirSize", canvas.Reservoir.Size),
+
             new CSInt("ClipRadiusX", clipRadiusX),
             new CSFloat("RakelTilt_MAX", MAX_SUPPORTED_TILT),
             new CSFloat("EmitDistance_MAX", emitDistance_MAX),
