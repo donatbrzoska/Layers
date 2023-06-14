@@ -62,7 +62,10 @@ public class OilPaintEngine : MonoBehaviour
     {
         DisposeCanvas();
 
-        Canvas = new Canvas_(Configuration.TextureResolution, Configuration.NormalScale);
+        float width = GameObject.Find("Canvas").GetComponent<Transform>().localScale.x * 10; // convert scale attribute to world space
+        float height = GameObject.Find("Canvas").GetComponent<Transform>().localScale.y * 10; // convert scale attribute to world space
+        Vector3 position = GameObject.Find("Canvas").GetComponent<Transform>().position;
+        Canvas = new Canvas_(width, height, position, Configuration.TextureResolution, Configuration.NormalScale);
 
         Renderer renderer = GameObject.Find("Canvas").GetComponent<Renderer>();
         renderer.material.SetTexture("_MainTex", Canvas.Texture);

@@ -57,7 +57,7 @@ public class InputInterpolator
                 // 1. determine differences and steps
                 Vector3 dp = rakelPosition - PreviousRakelPosition;
                 //float dpLength = dp.magnitude;
-                Vector2 dp_ = Canvas.WorldSpaceCanvas.MapToPixel(rakelPosition) - Canvas.WorldSpaceCanvas.MapToPixel(PreviousRakelPosition);
+                Vector2 dp_ = Canvas.MapToPixel(rakelPosition) - Canvas.MapToPixel(PreviousRakelPosition);
                 float dpLength = dp_.magnitude;
                 int positionSteps = (int)(dpLength * interpolationResolution); // don't add 1 because the first one is already done when isFirstNodeOfStroke
 

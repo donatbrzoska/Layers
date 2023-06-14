@@ -20,17 +20,15 @@ public class TransferEngine
         Rakel rakel,
         Canvas_ canvas)
     {
-        WorldSpaceCanvas wsc = canvas.WorldSpaceCanvas;
-
         // prevent double application on the same pixel
-        rakelPosition = wsc.AlignToPixelGrid(rakelPosition);
-        if (wsc.MapToPixel(rakelPosition).Equals(PreviousApplyPosition))
+        rakelPosition = canvas.AlignToPixelGrid(rakelPosition);
+        if (canvas.MapToPixel(rakelPosition).Equals(PreviousApplyPosition))
         {
             return;
         }
         else
         {
-            PreviousApplyPosition = wsc.MapToPixel(rakelPosition);
+            PreviousApplyPosition = canvas.MapToPixel(rakelPosition);
         }
 
         //Debug.Log("Applying at x=" + wsc.MapToPixel(rakelPosition));
@@ -40,18 +38,18 @@ public class TransferEngine
         ShaderRegion canvasEmitSR = rakel.ApplicationReservoir.GetFullShaderRegion();
 
         ShaderRegion rakelEmitSR = new ShaderRegion(
-            wsc.MapToPixelInRange(rakel.UpperLeft),
-            wsc.MapToPixelInRange(rakel.UpperRight),
-            wsc.MapToPixelInRange(rakel.LowerLeft),
-            wsc.MapToPixelInRange(rakel.LowerRight),
+            canvas.MapToPixelInRange(rakel.UpperLeft),
+            canvas.MapToPixelInRange(rakel.UpperRight),
+            canvas.MapToPixelInRange(rakel.LowerLeft),
+            canvas.MapToPixelInRange(rakel.LowerRight),
             1 // Padding because interpolation reaches pixels that are not directly under the rakel
         );
 
         ShaderRegion rerenderSR = new ShaderRegion(
-            wsc.MapToPixelInRange(rakel.UpperLeft),
-            wsc.MapToPixelInRange(rakel.UpperRight),
-            wsc.MapToPixelInRange(rakel.LowerLeft),
-            wsc.MapToPixelInRange(rakel.LowerRight),
+            canvas.MapToPixelInRange(rakel.UpperLeft),
+            canvas.MapToPixelInRange(rakel.UpperRight),
+            canvas.MapToPixelInRange(rakel.LowerLeft),
+            canvas.MapToPixelInRange(rakel.LowerRight),
             2 // Padding of 2 because normals of the previously set pixels around also have to be recalculated
         );
 
@@ -71,7 +69,7 @@ public class TransferEngine
 
         ComputeBuffer rakelEmittedPaint = rakel.EmitPaint(
             rakelEmitSR,
-            wsc,
+            canvas,
             transferConfiguration.EmitDistance_MAX,
             transferConfiguration.EmitVolume_MIN,
             transferConfiguration.EmitVolume_MAX,

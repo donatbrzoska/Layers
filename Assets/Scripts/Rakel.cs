@@ -144,7 +144,7 @@ public class Rakel
 
     public ComputeBuffer EmitPaint(
         ShaderRegion shaderRegion,
-        WorldSpaceCanvas wsc,
+        Canvas_ canvas,
         float emitDistance_MAX,
         float emitVolume_MIN,
         float emitVolume_MAX,
@@ -157,9 +157,9 @@ public class Rakel
         Paint[] initPaint = new Paint[shaderRegion.PixelCount];
         rakelEmittedPaint.SetData(initPaint);
 
-        WriteRakelMappedInfo(rakelEmittedPaint, shaderRegion, wsc, debugEnabled);
+        WriteRakelMappedInfo(rakelEmittedPaint, shaderRegion, canvas, debugEnabled);
 
-        float pixelSize = 1 / (float) wsc.Resolution;
+        float pixelSize = 1 / (float) canvas.Resolution;
         float pixelDiag = pixelSize * Mathf.Sqrt(2);
         float tiltedPixelShortSide = Mathf.Cos(Tilt * Mathf.Deg2Rad) * pixelSize;
         int clipRadiusX = (int)Mathf.Ceil((pixelDiag / 2) / tiltedPixelShortSide);
@@ -167,7 +167,7 @@ public class Rakel
 
         List<CSAttribute> attributes = new List<CSAttribute>()
         {
-            new CSInt("TextureResolution", wsc.Resolution),
+            new CSInt("TextureResolution", canvas.Resolution),
 
             new CSFloat3("RakelAnchor", Anchor),
             new CSFloat("RakelRotation", Rotation),
@@ -207,15 +207,15 @@ public class Rakel
     private void WriteRakelMappedInfo(
         ComputeBuffer rakelMappedInfoTarget,
         ShaderRegion shaderRegion,
-        WorldSpaceCanvas wsc,
+        Canvas_ canvas,
         bool debugEnabled = false)
     {
         List<CSAttribute> attributes = new List<CSAttribute>()
         {
-            new CSInt("TextureResolution", wsc.Resolution),
+            new CSInt("TextureResolution", canvas.Resolution),
 
-            new CSFloat3("CanvasPosition", wsc.Position),
-            new CSFloat2("CanvasSize", wsc.Size),
+            new CSFloat3("CanvasPosition", canvas.Position),
+            new CSFloat2("CanvasSize", canvas.Size),
 
             new CSFloat("RakelLength", Length),
             new CSFloat3("RakelPosition", Position),

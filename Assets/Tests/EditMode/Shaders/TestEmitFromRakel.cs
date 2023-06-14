@@ -6,7 +6,7 @@ public class TestEmitFromRakel
 {
     private const float EMIT_DISTANCE_MAX = 0.1f;
 
-    WorldSpaceCanvas WorldSpaceCanvas;
+    Canvas_ Canvas;
     float RakelLength = 4;
     float RakelWidth = 2;
     Rakel Rakel;
@@ -25,7 +25,7 @@ public class TestEmitFromRakel
     [SetUp]
     public void Setup()
     {
-        WorldSpaceCanvas = new WorldSpaceCanvas(10, 15, 1, new Vector3(0, 0, 0));
+        Canvas = new Canvas_(15, 10, new Vector3(0, 0, 0), 1, 0);
 
         Rakel = new Rakel(RakelLength, RakelWidth, 1, 0.5f, 0);
 
@@ -51,10 +51,10 @@ public class TestEmitFromRakel
             0,
             0);
         ShaderRegion rakelEmitSR = new ShaderRegion(
-            WorldSpaceCanvas.MapToPixelInRange(Rakel.UpperLeft),
-            WorldSpaceCanvas.MapToPixelInRange(Rakel.UpperRight),
-            WorldSpaceCanvas.MapToPixelInRange(Rakel.LowerLeft),
-            WorldSpaceCanvas.MapToPixelInRange(Rakel.LowerRight),
+            Canvas.MapToPixelInRange(Rakel.UpperLeft),
+            Canvas.MapToPixelInRange(Rakel.UpperRight),
+            Canvas.MapToPixelInRange(Rakel.LowerLeft),
+            Canvas.MapToPixelInRange(Rakel.LowerRight),
             1 // not really needed for polygon clipping
         );
 
@@ -62,7 +62,7 @@ public class TestEmitFromRakel
         // Act
         RakelEmittedPaint = Rakel.EmitPaint(
             rakelEmitSR,
-            WorldSpaceCanvas,
+            Canvas,
             EMIT_DISTANCE_MAX,
             0,
             1,
@@ -112,10 +112,10 @@ public class TestEmitFromRakel
             30,
             0);
         ShaderRegion rakelEmitSR = new ShaderRegion(
-            WorldSpaceCanvas.MapToPixelInRange(Rakel.UpperLeft),
-            WorldSpaceCanvas.MapToPixelInRange(Rakel.UpperRight),
-            WorldSpaceCanvas.MapToPixelInRange(Rakel.LowerLeft),
-            WorldSpaceCanvas.MapToPixelInRange(Rakel.LowerRight),
+            Canvas.MapToPixelInRange(Rakel.UpperLeft),
+            Canvas.MapToPixelInRange(Rakel.UpperRight),
+            Canvas.MapToPixelInRange(Rakel.LowerLeft),
+            Canvas.MapToPixelInRange(Rakel.LowerRight),
             1 // not really needed for polygon clipping
         );
 
@@ -123,7 +123,7 @@ public class TestEmitFromRakel
         // Act
         RakelEmittedPaint = Rakel.EmitPaint(
             rakelEmitSR,
-            WorldSpaceCanvas,
+            Canvas,
             EMIT_DISTANCE_MAX,
             0,
             1,
@@ -175,17 +175,17 @@ public class TestEmitFromRakel
             60);
 
         ShaderRegion rakelEmitSR = new ShaderRegion(
-            WorldSpaceCanvas.MapToPixelInRange(Rakel.UpperLeft),
-            WorldSpaceCanvas.MapToPixelInRange(Rakel.UpperRight),
-            WorldSpaceCanvas.MapToPixelInRange(Rakel.LowerLeft),
-            WorldSpaceCanvas.MapToPixelInRange(Rakel.LowerRight),
+            Canvas.MapToPixelInRange(Rakel.UpperLeft),
+            Canvas.MapToPixelInRange(Rakel.UpperRight),
+            Canvas.MapToPixelInRange(Rakel.LowerLeft),
+            Canvas.MapToPixelInRange(Rakel.LowerRight),
             1 // not really needed for polygon clipping
         );
 
         // Act
         RakelEmittedPaint = Rakel.EmitPaint(
             rakelEmitSR,
-            WorldSpaceCanvas,
+            Canvas,
             EMIT_DISTANCE_MAX,
             0,
             1,
@@ -236,10 +236,10 @@ public class TestEmitFromRakel
             10);
 
         ShaderRegion rakelEmitSR = new ShaderRegion(
-            WorldSpaceCanvas.MapToPixelInRange(Rakel.UpperLeft),
-            WorldSpaceCanvas.MapToPixelInRange(Rakel.UpperRight),
-            WorldSpaceCanvas.MapToPixelInRange(Rakel.LowerLeft),
-            WorldSpaceCanvas.MapToPixelInRange(Rakel.LowerRight),
+            Canvas.MapToPixelInRange(Rakel.UpperLeft),
+            Canvas.MapToPixelInRange(Rakel.UpperRight),
+            Canvas.MapToPixelInRange(Rakel.LowerLeft),
+            Canvas.MapToPixelInRange(Rakel.LowerRight),
             1 // not really needed for polygon clipping
         );
 
@@ -247,7 +247,7 @@ public class TestEmitFromRakel
         // Act
         RakelEmittedPaint = Rakel.EmitPaint(
             rakelEmitSR,
-            WorldSpaceCanvas,
+            Canvas,
             EMIT_DISTANCE_MAX,
             0,
             1,

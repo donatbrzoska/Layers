@@ -3,31 +3,48 @@ using UnityEngine;
 
 public class Canvas_
 {
-    public WorldSpaceCanvas WorldSpaceCanvas { get; private set; }
+    public Vector2 Size { get; private set; }
+    public Vector3 Position { get; private set; }
+    private float XMin;
+    private float XMax;
+    private float YMin;
+    private float YMax;
+    public int Resolution { get; private set; }
+    public Vector2Int TextureSize { get; private set; }
+
     public Reservoir Reservoir { get; private set; }
     public RenderTexture Texture { get; private set; }
     public RenderTexture NormalMap { get; private set; }
 
     public float NormalScale { get; set; }
 
-    public Canvas_(int textureResolution, float normalScale)
+    // It is assumed that the canvas is perpendicular to the z axis
+    // Position is the center of the canvas
+    public Canvas_(float width, float height, Vector3 position, int textureResolution, float normalScale)
     {
+        Size = new Vector2(width, height);
+        Position = position;
+        XMin = Position.x - width / 2;
+        XMax = Position.x + width / 2;
+        YMin = Position.y - height / 2;
+        YMax = Position.y + height / 2;
+
+        Resolution = textureResolution;
+        TextureSize = new Vector2Int(
+            (int)(Resolution * Size.x),
+            (int)(Resolution * Size.y)
+        );
+
         NormalScale = normalScale;
 
-        float width = GameObject.Find("Canvas").GetComponent<Transform>().localScale.x * 10; // convert scale attribute to world space
-        float height = GameObject.Find("Canvas").GetComponent<Transform>().localScale.y * 10; // convert scale attribute to world space
-        Vector3 position = GameObject.Find("Canvas").GetComponent<Transform>().position;
+        Reservoir = new Reservoir(textureResolution, TextureSize.x, TextureSize.y);
 
-        WorldSpaceCanvas = new WorldSpaceCanvas(height, width, textureResolution, position);
-
-        Reservoir = new Reservoir(textureResolution, WorldSpaceCanvas.TextureSize.x, WorldSpaceCanvas.TextureSize.y);
-
-        Texture = new RenderTexture(WorldSpaceCanvas.TextureSize.x, WorldSpaceCanvas.TextureSize.y, 1);
+        Texture = new RenderTexture(TextureSize.x, TextureSize.y, 1);
         Texture.filterMode = FilterMode.Point;
         Texture.enableRandomWrite = true;
         Texture.Create();
 
-        NormalMap = new RenderTexture(WorldSpaceCanvas.TextureSize.x, WorldSpaceCanvas.TextureSize.y, 1);
+        NormalMap = new RenderTexture(TextureSize.x, TextureSize.y, 1);
         NormalMap.filterMode = FilterMode.Point;
         NormalMap.enableRandomWrite = true;
         NormalMap.Create();
@@ -75,7 +92,7 @@ public class Canvas_
 
         List<CSAttribute> attributes = new List<CSAttribute>()
         {
-            new CSInt("TextureResolution", WorldSpaceCanvas.Resolution),
+            new CSInt("TextureResolution", Resolution),
 
             new CSFloat("RakelLength", rakel.Length),
             new CSFloat("RakelWidth", rakel.Width),
@@ -84,10 +101,10 @@ public class Canvas_
             new CSFloat("RakelRotation", rakel.Rotation),
             new CSFloat("RakelTilt", rakel.Tilt),
 
-            new CSFloat3("CanvasPosition", WorldSpaceCanvas.Position),
-            new CSFloat2("CanvasSize", WorldSpaceCanvas.Size),
+            new CSFloat3("CanvasPosition", Position),
+            new CSFloat2("CanvasSize", Size),
             new CSComputeBuffer("CanvasReservoir", Reservoir.Buffer),
-            new CSInt2("CanvasReservoirSize", WorldSpaceCanvas.TextureSize),
+            new CSInt2("CanvasReservoirSize", TextureSize),
 
             new CSFloat("RakelTilt_MAX", Rakel.MAX_SUPPORTED_TILT),
             new CSFloat("PickupDistance_MAX", pickupDistance_MAX),
@@ -118,7 +135,7 @@ public class Canvas_
     {
         List<CSAttribute> attributes = new List<CSAttribute>()
         {
-            new CSInt("TextureResolution", WorldSpaceCanvas.Resolution),
+            new CSInt("TextureResolution", Resolution),
 
             new CSFloat("RakelLength", rakel.Length),
             new CSFloat("RakelWidth", rakel.Width),
@@ -127,9 +144,9 @@ public class Canvas_
             new CSFloat("RakelRotation", rakel.Rotation),
             new CSFloat("RakelTilt", rakel.Tilt),
 
-            new CSFloat3("CanvasPosition", WorldSpaceCanvas.Position),
-            new CSFloat2("CanvasSize", WorldSpaceCanvas.Size),
-            new CSInt2("CanvasReservoirSize", WorldSpaceCanvas.TextureSize),
+            new CSFloat3("CanvasPosition", Position),
+            new CSFloat2("CanvasSize", Size),
+            new CSInt2("CanvasReservoirSize", TextureSize),
 
             new CSComputeBuffer("CanvasMappedInfoTarget", canvasMappedInfoTarget),
         };
@@ -172,9 +189,9 @@ public class Canvas_
     {
         return new ShaderRegion(
             new Vector2Int(0, 0),
-            new Vector2Int(WorldSpaceCanvas.TextureSize.x, 0),
-            new Vector2Int(0, WorldSpaceCanvas.TextureSize.y),
-            new Vector2Int(WorldSpaceCanvas.TextureSize.x, WorldSpaceCanvas.TextureSize.y));
+            new Vector2Int(TextureSize.x, 0),
+            new Vector2Int(0, TextureSize.y),
+            new Vector2Int(TextureSize.x, TextureSize.y));
     }
 
     public void Render(
@@ -184,7 +201,7 @@ public class Canvas_
         List<CSAttribute> attributes = new List<CSAttribute>()
         {
             new CSComputeBuffer("CanvasReservoir", Reservoir.Buffer),
-            new CSInt2("TextureSize", WorldSpaceCanvas.TextureSize),
+            new CSInt2("TextureSize", TextureSize),
             new CSTexture("CanvasTexture", Texture),
             new CSTexture("NormalMap", NormalMap),
             new CSFloat("NormalScale", NormalScale),
@@ -203,5 +220,55 @@ public class Canvas_
     public void Dispose()
     {
         Reservoir.Dispose();
+    }
+
+    public Vector3 AlignToPixelGrid(Vector3 point)
+    {
+        Vector2Int pixel = MapToPixel(point);
+        Vector3 gridAlignedIncomplete = MapToWorldSpace(pixel);
+        gridAlignedIncomplete.z = point.z;
+        return gridAlignedIncomplete;
+    }
+
+    private Vector3 MapToWorldSpace(Vector2Int pixel)
+    {
+        float pixelSize = 1 / (float)Resolution;
+        Vector3 positiveCanvasAligned = new Vector3(0.5f * pixelSize + pixel.x * pixelSize,
+                                                    0.5f * pixelSize + pixel.y * pixelSize,
+                                                    0);
+
+        Vector3 canvasLowerLeft = Position - new Vector3(Size.x / 2, Size.y / 2, 0);
+        Vector3 canvasAligned = positiveCanvasAligned + canvasLowerLeft;
+
+        return canvasAligned;
+    }
+
+    public Vector2Int MapToPixel(Vector3 worldSpace)
+    {
+        Vector3 lowerLeftOriented = worldSpace + new Vector3(Size.x / 2, Size.y / 2, 0) - Position;
+        // really lowerLeftOriented / pixelSize, but that is lowerLeftOriented / (1/Resolution)
+        Vector2 floatPixel = lowerLeftOriented * Resolution;
+        return new Vector2Int((int)Mathf.Ceil(floatPixel.x), (int)Mathf.Ceil(floatPixel.y)) - new Vector2Int(1, 1);
+    }
+
+    public Vector2Int MapToPixelInRange(Vector3 worldSpace)
+    {
+        bool yTopOOB = worldSpace.y > YMax;
+        if (yTopOOB)
+            worldSpace.y = YMax;
+
+        bool yBottomOOB = worldSpace.y <= YMin;
+        if (yBottomOOB)
+            worldSpace.y = YMin + 0.0001f;
+
+        bool yRightOOB = worldSpace.x > XMax;
+        if (yRightOOB)
+            worldSpace.x = XMax;
+
+        bool xLeftOOB = worldSpace.x <= XMin;
+        if (xLeftOOB)
+            worldSpace.x = XMin + 0.0001f;
+
+        return MapToPixel(worldSpace);
     }
 }
