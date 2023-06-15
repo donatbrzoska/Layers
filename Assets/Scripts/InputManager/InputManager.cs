@@ -36,6 +36,7 @@ public class InputManager
     private FloatValueSource RakelPositionXSource;
     private FloatValueSource RakelPositionYSource;
     private FloatValueSource RakelPositionZSource;
+    private FloatValueSource RakelPressureSource;
     private FloatValueSource RakelRotationSource;
     private FloatValueSource RakelTiltSource;
 
@@ -43,7 +44,7 @@ public class InputManager
 
     private InputConfiguration InputConfiguration;
 
-    public InputManager(InputConfiguration inputConfiguration, float RakelPositionZ_MIN, float RakelPositionZ_MAX)
+    public InputManager(InputConfiguration inputConfiguration)
     {
         InputConfiguration = inputConfiguration;
 
@@ -76,14 +77,23 @@ public class InputManager
             case InputSourceType.Text:
                 RakelPositionZSource = new TextRakelPositionZ();
                 break;
-            case InputSourceType.Keyboard:
-                RakelPositionZSource = new KeyboardRakelPositionZ();
-                break;
-            case InputSourceType.Pen:
-                RakelPositionZSource = new PenRakelPositionZ(RakelPositionZ_MIN, RakelPositionZ_MAX);
-                break;
             default:
                 Debug.LogError(string.Format("Unsupported InputSourceType '{0}' for RakelPositionZSource", inputConfiguration.RakelPositionZ.Source.ToString()));
+                break;
+        }
+        switch (inputConfiguration.RakelPressure.Source)
+        {
+            case InputSourceType.Text:
+                RakelPressureSource = new TextRakelPressure();
+                break;
+            case InputSourceType.Keyboard:
+                RakelPressureSource = new KeyboardRakelPressure();
+                break;
+            case InputSourceType.Pen:
+                RakelPressureSource = new PenRakelPressure();
+                break;
+            default:
+                Debug.LogError(string.Format("Unsupported InputSourceType '{0}' for RakelPressureSource", inputConfiguration.RakelPressure.Source.ToString()));
                 break;
         }
         switch (inputConfiguration.RakelRotation.Source)
@@ -117,6 +127,7 @@ public class InputManager
         RakelPositionXSource.Value = inputConfiguration.RakelPositionX.Value;
         RakelPositionYSource.Value = inputConfiguration.RakelPositionY.Value;
         RakelPositionZSource.Value = inputConfiguration.RakelPositionZ.Value;
+        RakelPressureSource.Value = inputConfiguration.RakelPressure.Value;
         RakelRotationSource.Value = inputConfiguration.RakelRotation.Value;
         RakelTiltSource.Value = inputConfiguration.RakelTilt.Value;
 
@@ -139,6 +150,8 @@ public class InputManager
         InputConfiguration.RakelPositionY.Value = RakelPositionYSource.Value;
         RakelPositionZSource.Update();
         InputConfiguration.RakelPositionZ.Value = RakelPositionZSource.Value;
+        RakelPressureSource.Update();
+        InputConfiguration.RakelPressure.Value = RakelPressureSource.Value;
         RakelRotationSource.Update();
         InputConfiguration.RakelRotation.Value = RakelRotationSource.Value;
         RakelTiltSource.Update();
@@ -150,6 +163,7 @@ public class InputManager
     public float RakelPositionX { get { return RakelPositionXSource.Value; } }
     public float RakelPositionY { get { return RakelPositionYSource.Value; } }
     public float RakelPositionZ { get { return RakelPositionZSource.Value; } }
+    public float RakelPressure { get { return RakelPressureSource.Value; } }
     public float RakelRotation { get { return RakelRotationSource.Value; } }
     public float RakelTilt { get { return RakelTiltSource.Value; } }
 

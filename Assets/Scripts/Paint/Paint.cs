@@ -5,6 +5,8 @@ public struct Paint : IEquatable<Paint>
 {
     public static float UNIT = 1;
 
+    public static float VOLUME_THICKNESS = 0.001f;
+
     public static Paint EMPTY_PAINT { get; private set; } = new Paint(Colors.NO_PAINT_COLOR, 0);
 
     public static int SizeInBytes = 4 * sizeof(float) + sizeof(float);

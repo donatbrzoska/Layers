@@ -32,7 +32,7 @@ public class OilPaintEngine : MonoBehaviour
 
         if (USE_PEN)
         {
-            Configuration.InputConfiguration.RakelPositionZ.Source = InputSourceType.Pen;
+            Configuration.InputConfiguration.RakelPressure.Source = InputSourceType.Pen;
         }
 
         CreateInputManager();
@@ -45,7 +45,7 @@ public class OilPaintEngine : MonoBehaviour
 
     void CreateInputManager()
     {
-        InputManager = new InputManager(Configuration.InputConfiguration, 0, -Configuration.TransferConfiguration.EmitDistance_MAX);
+        InputManager = new InputManager(Configuration.InputConfiguration);
     }
 
     void Start()
@@ -138,6 +138,9 @@ public class OilPaintEngine : MonoBehaviour
                     float rotation = InputManager.RakelRotation;
                     float tilt = InputManager.RakelTilt;
 
+                    float sink = Configuration.InputConfiguration.Sink_BASE + tilt / Rakel.MAX_SUPPORTED_TILT * Configuration.InputConfiguration.Sink_MAX;
+                    position.z += InputManager.RakelPressure * sink;
+
                     InputInterpolator.AddNode(
                         position,
                         rotation,
@@ -174,6 +177,8 @@ public class OilPaintEngine : MonoBehaviour
     public bool RakelPositionYLocked { get { return Configuration.InputConfiguration.RakelPositionY.Source == InputSourceType.Text; } }
 
     public bool RakelPositionZLocked { get { return Configuration.InputConfiguration.RakelPositionZ.Source == InputSourceType.Text; } }
+
+    public bool RakelPressureLocked { get { return Configuration.InputConfiguration.RakelPressure.Source == InputSourceType.Text; } }
 
     public bool RakelRotationLocked { get { return Configuration.InputConfiguration.RakelRotation.Source == InputSourceType.Text; } }
 
@@ -213,6 +218,19 @@ public class OilPaintEngine : MonoBehaviour
     {
         InputSourceType penOrKeyboard = USE_PEN ? InputSourceType.Pen : InputSourceType.Keyboard;
         Configuration.InputConfiguration.RakelPositionZ.Source = locked ? InputSourceType.Text : penOrKeyboard;
+        CreateInputManager();
+    }
+
+    public void UpdateRakelPressure(float value)
+    {
+        Configuration.InputConfiguration.RakelPressure.Value = value;
+        CreateInputManager();
+    }
+
+    public void UpdateRakelPressureLocked(bool locked)
+    {
+        InputSourceType penOrKeyboard = USE_PEN ? InputSourceType.Pen : InputSourceType.Keyboard;
+        Configuration.InputConfiguration.RakelPressure.Source = locked ? InputSourceType.Text : penOrKeyboard;
         CreateInputManager();
     }
 
