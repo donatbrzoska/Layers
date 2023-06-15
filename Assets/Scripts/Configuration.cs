@@ -113,7 +113,7 @@ public class InputConfiguration
         Sink_BASE = 5 * Paint.VOLUME_THICKNESS;
         Sink_MAX = 10 * Paint.VOLUME_THICKNESS;
 
-        RakelRotation = new InputValue() { Source = InputSourceType.Text, Value = 0 };
+        RakelRotation = new InputValue() { Source = InputSourceType.Mouse, Value = 0 };
         RakelTilt = new InputValue() { Source = InputSourceType.Keyboard, Value = 0 };
 
         StrokeStateSource = InputSourceType.Mouse;
