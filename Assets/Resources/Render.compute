@@ -41,7 +41,7 @@ RWStructuredBuffer<Paint> CanvasReservoir;
 
 RWTexture2D<float4> NormalMap;
 float NormalScale;
-RWTexture2D<float4> CanvasTexture;
+RWTexture2D<float4> Texture;
 uint2 TextureSize;
 
 
@@ -106,7 +106,7 @@ void update_color(int2 canvas_pixel)
     }
 
     // set color
-    CanvasTexture[canvas_pixel] = p.color;
+    Texture[canvas_pixel] = p.color;
 }
 
 #pragma kernel main

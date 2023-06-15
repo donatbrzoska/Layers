@@ -206,7 +206,7 @@ public class Canvas_
         {
             new CSComputeBuffer("CanvasReservoir", Reservoir.Buffer),
             new CSInt2("TextureSize", TextureSize),
-            new CSTexture("CanvasTexture", Texture),
+            new CSTexture("Texture", Texture),
             new CSTexture("NormalMap", NormalMap),
             new CSFloat("NormalScale", NormalScale),
         };
