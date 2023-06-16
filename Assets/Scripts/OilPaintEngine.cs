@@ -140,6 +140,7 @@ public class OilPaintEngine : MonoBehaviour
 
                     float sink = Configuration.InputConfiguration.Sink_BASE + tilt / Rakel.MAX_SUPPORTED_TILT * Configuration.InputConfiguration.Sink_MAX;
                     position.z += InputManager.RakelPressure * sink;
+                    position.z = Mathf.Min(position.z, 0); // prevent sink through canvas
 
                     InputInterpolator.AddNode(
                         position,
