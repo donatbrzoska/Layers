@@ -147,6 +147,10 @@ void emit(float2 canvas_reservoir_pixel, int2 radius, float distance, int2 rakel
                         // get paint
                         uint2 coord_ = uint2(coord.x, coord.y);
                         Paint available = CanvasReservoir[XYZ(coord_.x, coord_.y, 1, CanvasReservoirSize)];
+                        // prevent complete pickup
+                        float MIN_VOLUME_TO_STAY = 0.1;
+                        // do max, in case there has never been any volume
+                        available.volume = max(available.volume - MIN_VOLUME_TO_STAY, 0);
 
                         // calculate volume
                         float target_volume = overlap * volume_to_pickup;
