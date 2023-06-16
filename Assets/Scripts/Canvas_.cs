@@ -12,6 +12,9 @@ public class Canvas_
     public int Resolution { get; private set; }
     public Vector2Int TextureSize { get; private set; }
 
+    private ComputeBuffer CanvasTexture;
+    private ComputeBuffer CanvasNormalMap;
+
     public Reservoir Reservoir { get; private set; }
     public RenderTexture Texture { get; private set; }
     public RenderTexture NormalMap { get; private set; }
@@ -51,6 +54,66 @@ public class Canvas_
 
         InitializeTexture(Texture, Vector4.one);
         InitializeTexture(NormalMap, (new Vector4(0, 0, 1, 0) + Vector4.one) / 2);
+
+        LoadDefaultTexture();
+    }
+
+    private void LoadDefaultTexture()
+    {
+        // TODO speed this up
+        Texture2D t = ScaleTexture(MakeReadable(Resources.Load("Textures/canvas_1") as Texture2D), TextureSize.x, TextureSize.y);
+        Texture2D n = ScaleTexture(MakeReadable(Resources.Load("Textures/canvas_1_normal_map") as Texture2D), TextureSize.x, TextureSize.y);
+        Color[] canvasTextureData = new Color[TextureSize.x * TextureSize.y];
+        Color[] canvasNormalMapData = new Color[TextureSize.x * TextureSize.y];
+        for (int y = 0; y < TextureSize.y; y++)
+        {
+            for (int x = 0; x < TextureSize.x; x++)
+            {
+                canvasTextureData[IndexUtil.XY(x, y, TextureSize.x)] = t.GetPixel(x, y);
+                canvasNormalMapData[IndexUtil.XY(x, y, TextureSize.x)] = n.GetPixel(x, y);
+            }
+        }
+        CanvasTexture = new ComputeBuffer(TextureSize.x * TextureSize.y, 4 * sizeof(float));
+        CanvasTexture.SetData(canvasTextureData);
+        CanvasNormalMap = new ComputeBuffer(TextureSize.x * TextureSize.y, 4 * sizeof(float));
+        CanvasNormalMap.SetData(canvasNormalMapData);
+    }
+
+    // from https://stackoverflow.com/questions/44733841/how-to-make-texture2d-readable-via-script?noredirect=1&lq=1
+    private Texture2D MakeReadable(Texture2D source)
+    {
+        RenderTexture renderTex = RenderTexture.GetTemporary(
+                    source.width,
+                    source.height,
+                    0,
+                    RenderTextureFormat.Default,
+                    RenderTextureReadWrite.Linear);
+
+        Graphics.Blit(source, renderTex);
+        RenderTexture previous = RenderTexture.active;
+        RenderTexture.active = renderTex;
+        Texture2D readableText = new Texture2D(source.width, source.height);
+        readableText.ReadPixels(new Rect(0, 0, renderTex.width, renderTex.height), 0, 0);
+        readableText.Apply();
+        RenderTexture.active = previous;
+        RenderTexture.ReleaseTemporary(renderTex);
+        return readableText;
+    }
+
+    // from http://jon-martin.com/?p=114
+    private Texture2D ScaleTexture(Texture2D source, int targetWidth, int targetHeight)
+    {
+        Texture2D result = new Texture2D(targetWidth, targetHeight, source.format, true);
+        Color[] rpixels = result.GetPixels(0);
+        float incX = (1.0f / (float)targetWidth);
+        float incY = (1.0f / (float)targetHeight);
+        for (int px = 0; px < rpixels.Length; px++)
+        {
+            rpixels[px] = source.GetPixelBilinear(incX * ((float)px % targetWidth), incY * ((float)Mathf.Floor(px / targetWidth)));
+        }
+        result.SetPixels(rpixels, 0);
+        result.Apply();
+        return result;
     }
 
     private void InitializeTexture(RenderTexture texture, Vector4 value)
@@ -206,6 +269,8 @@ public class Canvas_
         {
             new CSComputeBuffer("CanvasReservoir", Reservoir.Buffer),
             new CSInt2("TextureSize", TextureSize),
+            new CSComputeBuffer("CanvasTexture", CanvasTexture),
+            new CSComputeBuffer("CanvasNormalMap", CanvasNormalMap),
             new CSTexture("Texture", Texture),
             new CSTexture("NormalMap", NormalMap),
             new CSFloat("NormalScale", NormalScale),
@@ -224,6 +289,8 @@ public class Canvas_
     public void Dispose()
     {
         Reservoir.Dispose();
+        CanvasTexture.Dispose();
+        CanvasNormalMap.Dispose();
     }
 
     public Vector3 AlignToPixelGrid(Vector3 point)

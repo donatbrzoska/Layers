@@ -39,9 +39,13 @@ void log_(uint index, float4 f)
 
 RWStructuredBuffer<Paint> CanvasReservoir;
 
-RWTexture2D<float4> NormalMap;
-float NormalScale;
+RWStructuredBuffer<float4> CanvasTexture;
+RWStructuredBuffer<float4> CanvasNormalMap;
+
 RWTexture2D<float4> Texture;
+RWTexture2D<float4> NormalMap;
+
+float NormalScale;
 uint2 TextureSize;
 
 
@@ -90,9 +94,22 @@ void update_normal(int2 canvas_pixel)
     float4 normal = float4(scale * (float)(-normal_x), scale * (float)(normal_y), normal_z, 1);
     float4 normalized = normalize(normal);
     float4 halfed = (normalized + float4(1, 1, 1, 1)) / 2;
-    halfed.w = 1;
+    float4 paint_normal = float4(halfed.x, halfed.y, halfed.z, 1);
+    float4 result = paint_normal;
 
-    NormalMap[canvas_pixel] = halfed;
+    // let canvas normals shine through, when there is very little paint on canvas
+    float VERY_LITTLE_PAINT = PAINT_UNIT();
+    float volume_on_canvas = (vol_ul + vol_u + vol_ur + vol_l + vol_m + vol_r + vol_ll + vol_b + vol_lr) / 9;
+    if (volume_on_canvas < VERY_LITTLE_PAINT)
+    {
+        float volume_normal_part = volume_on_canvas / VERY_LITTLE_PAINT;
+        float canvas_normal_part = 1 - volume_normal_part;
+
+        float4 canvas_normal = CanvasNormalMap[XY(canvas_pixel.x, canvas_pixel.y, TextureSize.x)];
+        result = volume_normal_part * volume_on_canvas + canvas_normal_part * canvas_normal;
+    }
+
+    NormalMap[canvas_pixel] = result;
 }
 
 void update_color(int2 canvas_pixel)
@@ -102,7 +119,7 @@ void update_color(int2 canvas_pixel)
     // blend little paint with canvas color
     // we can't use alpha values, because there is nothing behind the paint - the paint is the texture
     if (p.volume < PAINT_UNIT()) {
-        p = alpha_blend(p, CANVAS_COLOR());
+        p = alpha_blend(p, CanvasTexture[XY(canvas_pixel.x, canvas_pixel.y, TextureSize.x)]);
     }
 
     // set color
