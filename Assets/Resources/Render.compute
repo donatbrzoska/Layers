@@ -102,7 +102,7 @@ void update_color(int2 canvas_pixel)
     // blend little paint with canvas color
     // we can't use alpha values, because there is nothing behind the paint - the paint is the texture
     if (p.volume < PAINT_UNIT()) {
-        p = simulate_alpha(p);
+        p = alpha_blend(p, CANVAS_COLOR());
     }
 
     // set color

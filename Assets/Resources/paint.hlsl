@@ -42,10 +42,14 @@ bool is_empty(Paint p)
     return p.volume < 0.0001;
 }
 
-Paint simulate_alpha(Paint p)
+// p.volume is assumed to be 0..1
+Paint alpha_blend(Paint p, float4 background_color)
 {
+    // 4th root makes a lot optical thickness with little volume
+    p.volume = pow(abs(p.volume), (float)1/4);
+
     Paint canvas_paint;
-    canvas_paint.color = CANVAS_COLOR();
+    canvas_paint.color = background_color;
     canvas_paint.volume = max(PAINT_UNIT() - p.volume, 0);
 
     Paint mixed = mix(canvas_paint, p);
