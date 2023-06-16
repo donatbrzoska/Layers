@@ -165,7 +165,7 @@ public class TransferConfiguration
         EmitDistance_MAX = 0.1f;
         PickupDistance_MAX = EmitDistance_MAX;
 
-        EmitVolume_MIN = 0;
+        EmitVolume_MIN = 0.1f;
         EmitVolume_MAX = 1;
 
         EmitVolumeApplicationReservoirRate = 1;
