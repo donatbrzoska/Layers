@@ -4,7 +4,7 @@ public class GradientColorFiller : ColorFiller
 {
     ColorMode ColorMode;
 
-    public GradientColorFiller(ColorMode colorMode)
+    public GradientColorFiller(ColorMode colorMode, ColorSpace colorSpace) : base(colorSpace)
     {
         ColorMode = colorMode;
     }
@@ -50,7 +50,7 @@ public class GradientColorFiller : ColorFiller
                         break;
                 }
 
-                target[IndexUtil.XY(j, i, targetSize.x)].Color = new Color(r, g, b, 1);
+                SetColor(target, IndexUtil.XY(j, i, targetSize.x), new Color(r, g, b, 1));
             }
         }
     }

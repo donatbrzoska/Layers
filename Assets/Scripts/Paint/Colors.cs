@@ -29,6 +29,12 @@ public enum Color_
     BlueBlue
 }
 
+public enum ColorSpace
+{
+    RGB,
+    RYB
+}
+
 public struct ColorInfo
 {
     public string Name;
@@ -111,4 +117,30 @@ public class Colors
         { Color_.GreenGreen, new ColorInfo() { Name = "Green Green", Color = new Color(0f, 1f, 0f) } },
         { Color_.BlueBlue, new ColorInfo() { Name = "Blue Blue", Color = new Color(0f, 0f, 1f) } },
     };
+
+    public static Color RGB2RYB(Color rgb)
+    {
+        Vector3 rgb_ = new Vector3(rgb.r, rgb.g, rgb.b);
+        Vector3 result = RGB2RYB_ST(rgb_);
+        return new Color(result.x, result.y, result.z, 1);
+    }
+
+    static Vector3 RGB2RYB_ST(Vector3 RGB)
+    {
+        float I_w = Mathf.Min(Mathf.Min(RGB.x, RGB.y), RGB.z);
+        Vector3 rgb = RGB - new Vector3(I_w, I_w, I_w);
+
+        Vector3 ryb = new Vector3(
+            rgb.x - Mathf.Min(rgb.x, rgb.y),
+            (rgb.y + Mathf.Min(rgb.x, rgb.y)) / 2,
+            (rgb.z + rgb.y - Mathf.Min(rgb.x, rgb.y)) / 2
+        );
+
+        float n = (Mathf.Max(Mathf.Max(ryb.x, ryb.y), ryb.z)) / (Mathf.Max(Mathf.Max(rgb.x, rgb.y), rgb.z) + 0.00001f);
+        Vector3 ryb_ = ryb / (n + 0.00001f);
+
+        float I_b = Mathf.Min(Mathf.Min(1 - RGB.x, 1 - RGB.y), 1 - RGB.z);
+        Vector3 RYB = ryb_ + new Vector3(I_b, I_b, I_b);
+        return RYB;
+    }
 }

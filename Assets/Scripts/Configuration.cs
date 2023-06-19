@@ -3,6 +3,7 @@
 public class Configuration
 {
     public int TextureResolution;
+    public ColorSpace ColorSpace;
     public float NormalScale;
 
     public InputConfiguration InputConfiguration;
@@ -13,6 +14,7 @@ public class Configuration
     public Configuration()
     {
         TextureResolution = 40;
+        ColorSpace = ColorSpace.RYB;
         NormalScale = 0.015f;
 
         InputConfiguration = new InputConfiguration();

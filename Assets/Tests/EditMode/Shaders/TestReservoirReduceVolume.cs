@@ -42,10 +42,12 @@ class OnesVolumeFiller : VolumeFiller
 public class TestReservoirReduceVolume
 {
     Reservoir Reservoir;
+    ColorFiller ColorFiller;
 
     [SetUp]
     public void Setup()
     {
+        ColorFiller = new FlatColorFiller(Color_.TitanWhite, ColorSpace.RGB);
         new FileLogger_().OnEnable();
     }
 
@@ -64,7 +66,7 @@ public class TestReservoirReduceVolume
 
         // Arrange
         Reservoir = new Reservoir(1, TEXTURE_SIZE.x, TEXTURE_SIZE.y);
-        Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.TitanWhite), new IndexVolumeFiller(0)));
+        Reservoir.Fill(new ReservoirFiller(ColorFiller, new IndexVolumeFiller(0)));
 
         Reservoir.Duplicate();
 
@@ -95,7 +97,7 @@ public class TestReservoirReduceVolume
 
         // Arrange
         Reservoir = new Reservoir(1, TEXTURE_SIZE.x, TEXTURE_SIZE.y);
-        Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.TitanWhite), new IndexVolumeFiller(0)));
+        Reservoir.Fill(new ReservoirFiller(ColorFiller, new IndexVolumeFiller(0)));
 
         Reservoir.Duplicate();
 
@@ -127,7 +129,7 @@ public class TestReservoirReduceVolume
 
         // Arrange
         Reservoir = new Reservoir(1, TEXTURE_SIZE.x, TEXTURE_SIZE.y);
-        Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.TitanWhite), new OnesVolumeFiller(0)));
+        Reservoir.Fill(new ReservoirFiller(ColorFiller, new OnesVolumeFiller(0)));
 
         Reservoir.Duplicate();
 
@@ -158,7 +160,7 @@ public class TestReservoirReduceVolume
 
         // Arrange
         Reservoir = new Reservoir(1, TEXTURE_SIZE.x, TEXTURE_SIZE.y);
-        Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.TitanWhite), new OnesVolumeFiller(0)));
+        Reservoir.Fill(new ReservoirFiller(ColorFiller, new OnesVolumeFiller(0)));
 
         Reservoir.Duplicate();
 

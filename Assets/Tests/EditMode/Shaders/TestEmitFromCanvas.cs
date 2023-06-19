@@ -27,7 +27,7 @@ public class TestEmitFromCanvas
     {
         Rakel = new Rakel(RakelLength, RakelWidth, 1, 0.5f, 0);
 
-        Canvas = new Canvas_(15, 10, new Vector3(0,0,0), 1, 0.015f);
+        Canvas = new Canvas_(15, 10, new Vector3(0,0,0), 1, 0.015f, 0);
 
         new FileLogger_().OnEnable();
     }
@@ -47,7 +47,7 @@ public class TestEmitFromCanvas
     {
         // Arrange
         ShaderRegion canvasEmitSR = Rakel.ApplicationReservoir.GetFullShaderRegion();
-        Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen), new FlatVolumeFiller(1)));
+        Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen, ColorSpace.RGB), new FlatVolumeFiller(1)));
         Canvas.Reservoir.Duplicate(false);
 
         Rakel.UpdateState(
@@ -94,7 +94,7 @@ public class TestEmitFromCanvas
     {
         // Arrange
         ShaderRegion canvasEmitSR = Rakel.ApplicationReservoir.GetFullShaderRegion();
-        Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen), new FlatVolumeFiller(1)));
+        Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen, ColorSpace.RGB), new FlatVolumeFiller(1)));
         Canvas.Reservoir.Duplicate(false);
 
         Rakel.UpdateState(
@@ -142,7 +142,7 @@ public class TestEmitFromCanvas
     {
         // Arrange
         ShaderRegion canvasEmitSR = Rakel.ApplicationReservoir.GetFullShaderRegion();
-        Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen), new FlatVolumeFiller(1)));
+        Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen, ColorSpace.RGB), new FlatVolumeFiller(1)));
         Canvas.Reservoir.Duplicate(false);
 
         Rakel.UpdateState(
@@ -190,7 +190,7 @@ public class TestEmitFromCanvas
     {
         // Arrange
         ShaderRegion canvasEmitSR = Rakel.ApplicationReservoir.GetFullShaderRegion();
-        Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen), new FlatVolumeFiller(1)));
+        Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen, ColorSpace.RGB), new FlatVolumeFiller(1)));
         Canvas.Reservoir.Duplicate(false);
 
         Rakel.UpdateState(new Vector3(-4, 0.5f, 0), 30, 5);

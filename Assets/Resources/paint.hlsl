@@ -1,9 +1,7 @@
-float unzero(float f);
+#include "rgb_ryb_sugita_takahashi.hlsl"
+#include "rgb_ryb_leonard.hlsl"
 
-float4 CANVAS_COLOR()
-{
-    return float4(1,1,1,1);
-}
+float unzero(float f);
 
 int PAINT_UNIT()
 {
@@ -20,6 +18,31 @@ struct Paint {
     float volume;
 };
 
+float4 rgb_to_ryb(float4 rgba)
+{
+    float3 rgb = float3(rgba.x, rgba.y, rgba.z);
+    float3 ryb = rgb_to_ryb_st(rgb);
+    // float3 ryb = rgb_to_ryb_leonard(rgb);
+    float4 ryba = float4(ryb.x, ryb.y, ryb.z, 1);
+    return ryba;
+}
+
+float4 ryb_to_rgb(float4 ryba)
+{
+    float3 ryb = float3(ryba.x, ryba.y, ryba.z);
+    float3 rgb = ryb_to_rgb_st(ryb);
+    // float3 rgb = ryb_to_rgb_leonard(ryb);
+    float4 rgba = float4(rgb.x, rgb.y, rgb.z, 1);
+    return rgba;
+}
+
+// It is assumed that part_a + part_b = 1
+float4 mix_colors(float4 a, float a_part, float4 b, float b_part)
+{
+    float4 result = a_part * a + b_part * b;
+    return float4(result.x, result.y, result.z, 1);
+}
+
 Paint mix(Paint a, Paint b)
 {
     // TODO find real source of negative values
@@ -27,12 +50,16 @@ Paint mix(Paint a, Paint b)
     a.volume = max(a.volume, 0);
     b.volume = max(b.volume, 0);
 
-    float volume = a.volume + b.volume;
-    float a_part = (float)a.volume / unzero(volume);
-    float b_part = (float)b.volume / unzero(volume);
     Paint result;
-    result.color = a_part * a.color + b_part * b.color;
-    result.volume = volume;
+    result.color = float4(0,0,0,0);
+    result.volume = a.volume + b.volume;
+
+    if (result.volume > 0)
+    {
+        float a_part = a.volume / result.volume;
+        float b_part = 1 - a_part;
+        result.color = mix_colors(a.color, a_part, b.color, b_part);
+    }
 
     return result;
 }
@@ -45,6 +72,8 @@ bool is_empty(Paint p)
 // p.volume is assumed to be 0..1
 Paint alpha_blend(Paint p, float4 background_color)
 {
+    float real_volume = p.volume;
+
     // 4th root makes a lot optical thickness with little volume
     p.volume = pow(abs(p.volume), (float)1/4);
 
@@ -53,7 +82,7 @@ Paint alpha_blend(Paint p, float4 background_color)
     canvas_paint.volume = max(PAINT_UNIT() - p.volume, 0);
 
     Paint mixed = mix(canvas_paint, p);
-    mixed.volume = p.volume;
+    mixed.volume = real_volume;
 
     return mixed;
 }

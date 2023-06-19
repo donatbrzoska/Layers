@@ -18,9 +18,11 @@ public class Canvas_
 
     public float NormalScale { get; set; }
 
+    private ColorSpace ColorSpace;
+
     // It is assumed that the canvas is perpendicular to the z axis
     // Position is the center of the canvas
-    public Canvas_(float width, float height, Vector3 position, int textureResolution, float normalScale)
+    public Canvas_(float width, float height, Vector3 position, int textureResolution, float normalScale, ColorSpace colorSpace)
     {
         Size = new Vector2(width, height);
         Position = position;
@@ -36,6 +38,7 @@ public class Canvas_
         );
 
         NormalScale = normalScale;
+        ColorSpace = colorSpace;
 
         Reservoir = new Reservoir(textureResolution, TextureSize.x, TextureSize.y);
 
@@ -173,6 +176,7 @@ public class Canvas_
         List<CSAttribute> attributes = new List<CSAttribute>()
         {
             new CSComputeBuffer("RakelEmittedPaint", rakelEmittedPaint),
+
             new CSComputeBuffer("CanvasReservoir", Reservoir.Buffer),
             new CSInt("TextureWidth", Texture.width)
         };
@@ -205,6 +209,8 @@ public class Canvas_
         List<CSAttribute> attributes = new List<CSAttribute>()
         {
             new CSComputeBuffer("CanvasReservoir", Reservoir.Buffer),
+            new CSInt("ColorSpace", (int) ColorSpace),
+
             new CSInt2("TextureSize", TextureSize),
             new CSTexture("Texture", Texture),
             new CSTexture("NormalMap", NormalMap),

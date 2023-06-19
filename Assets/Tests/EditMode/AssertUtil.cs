@@ -74,6 +74,11 @@ public class AssertUtil
         Assert.IsTrue(FloatsEqual(a.x, b.x) && FloatsEqual(a.y, b.y));
     }
 
+    public static void Vector3sEqual(Vector3 a, Vector3 b)
+    {
+        Assert.IsTrue(FloatsEqual(a.x, b.x) && FloatsEqual(a.y, b.y) && FloatsEqual(a.z, b.z));
+    }
+
     public static void AssertFloatsEqual(float a, float b, float precision = 0.001f)
     {
         if (!FloatsEqual(a, b, precision))

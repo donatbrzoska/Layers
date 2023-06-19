@@ -38,12 +38,19 @@ void log_(uint index, float4 f)
 #include "paint.hlsl"
 
 RWStructuredBuffer<Paint> CanvasReservoir;
+uint ColorSpace;
 
 RWTexture2D<float4> NormalMap;
 float NormalScale;
 RWTexture2D<float4> Texture;
 uint2 TextureSize;
 
+
+float4 CANVAS_COLOR(uint color_space)
+{
+    float4 rgb_color = float4(1,1,1,1);
+    return (color_space == 0) ? rgb_color : rgb_to_ryb(rgb_color);
+}
 
 bool pixel_in_canvas_range(int2 pixel)
 {
@@ -99,14 +106,19 @@ void update_color(int2 canvas_pixel)
 {
     // get paint from canvas
     Paint p = CanvasReservoir[XY(canvas_pixel.x, canvas_pixel.y, TextureSize.x)];
+
     // blend little paint with canvas color
     // we can't use alpha values, because there is nothing behind the paint - the paint is the texture
     if (p.volume < PAINT_UNIT()) {
-        p = alpha_blend(p, CANVAS_COLOR());
+        float4 canvas_color = CANVAS_COLOR(ColorSpace);
+        p = alpha_blend(p, canvas_color);
     }
 
+    // float3 result = ryb_to_rgb(float3(1, 1, 0));
+    // p.color = float4(result.x, result.y, result.z, 1);
+
     // set color
-    Texture[canvas_pixel] = p.color;
+    Texture[canvas_pixel] = (ColorSpace == 1) ? ryb_to_rgb(p.color) : p.color;
 }
 
 #pragma kernel main

@@ -252,6 +252,7 @@ public class Rakel
         List<CSAttribute> attributes = new List<CSAttribute>()
         {
             new CSComputeBuffer("CanvasEmittedPaint", canvasEmittedPaint),
+
             new CSComputeBuffer("RakelPickupReservoir", PickupReservoir.Buffer),
             new CSInt("RakelReservoirWidth", PickupReservoir.Size.x)
         };

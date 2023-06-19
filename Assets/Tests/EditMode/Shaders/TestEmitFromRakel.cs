@@ -11,6 +11,8 @@ public class TestEmitFromRakel
     float RakelWidth = 2;
     Rakel Rakel;
 
+    ColorFiller ColorFiller;
+
     ComputeBuffer RakelEmittedPaint;
 
     public float Sum(float[] values)
@@ -25,9 +27,11 @@ public class TestEmitFromRakel
     [SetUp]
     public void Setup()
     {
-        Canvas = new Canvas_(15, 10, new Vector3(0, 0, 0), 1, 0);
+        Canvas = new Canvas_(15, 10, new Vector3(0, 0, 0), 1, 0, 0);
 
         Rakel = new Rakel(RakelLength, RakelWidth, 1, 0.5f, 0);
+
+        ColorFiller = new FlatColorFiller(Color_.CadmiumGreen, ColorSpace.RGB);
 
         new FileLogger_().OnEnable();
     }
@@ -45,7 +49,7 @@ public class TestEmitFromRakel
     public void Volume_Unrotated_Untilted()
     {
         // Arrange
-        Rakel.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen), new FlatVolumeFiller(1)));
+        Rakel.Fill(new ReservoirFiller(ColorFiller, new FlatVolumeFiller(1)));
         Rakel.UpdateState(
             new Vector3(-3, -0.5f, -0.5f * EMIT_DISTANCE_MAX), // choose z for max paint emission
             0,
@@ -106,7 +110,7 @@ public class TestEmitFromRakel
     public void Volume_Rotated30_Untilted()
     {
         // Arrange
-        Rakel.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen), new FlatVolumeFiller(1)));
+        Rakel.Fill(new ReservoirFiller(ColorFiller, new FlatVolumeFiller(1)));
         Rakel.UpdateState(
             new Vector3(-3, -0.5f, -0.5f * EMIT_DISTANCE_MAX), // choose z for max paint emission
             30,
@@ -165,7 +169,7 @@ public class TestEmitFromRakel
     public void Volume_Unrotated_Tilted60()
     {
         // Arrange
-        Rakel.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen), new FlatVolumeFiller(1)));
+        Rakel.Fill(new ReservoirFiller(ColorFiller, new FlatVolumeFiller(1)));
         Rakel.UpdateState(
             new Vector3(
                 -4,
@@ -226,7 +230,7 @@ public class TestEmitFromRakel
     public void Volume_Rotated30_Tilted60()
     {
         // Arrange
-        Rakel.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen), new FlatVolumeFiller(1)));
+        Rakel.Fill(new ReservoirFiller(ColorFiller, new FlatVolumeFiller(1)));
         Rakel.UpdateState(
             new Vector3(
                 -3,

@@ -5,18 +5,18 @@ public class TestCanvas_
 {
     private Canvas_ CreateCentered3x3Canvas()
     {
-        return new Canvas_(3, 3, new Vector3(0, 0, 0), 1, 0);
+        return new Canvas_(3, 3, new Vector3(0, 0, 0), 1, 0, 0);
     }
 
     private Canvas_ CreateShiftedLL3x3Canvas()
     {
-        return new Canvas_(3, 3, new Vector3(-1, -1, 0), 1, 0);
+        return new Canvas_(3, 3, new Vector3(-1, -1, 0), 1, 0, 0);
     }
 
     [Test]
     public void PixelsXY()
     {
-        Canvas_ canvas = new Canvas_(3, 2, new Vector3(0, 0, 0), 4, 0);
+        Canvas_ canvas = new Canvas_(3, 2, new Vector3(0, 0, 0), 4, 0, 0);
 
         Assert.AreEqual(
             12,
@@ -45,7 +45,7 @@ public class TestCanvas_
     [Test]
     public void MapToPixel_Centered_Center_HigherResolution()
     {
-        Canvas_ canvas = new Canvas_(3, 3, new Vector3(0, 0, 0), 3, 0);
+        Canvas_ canvas = new Canvas_(3, 3, new Vector3(0, 0, 0), 3, 0, 0);
 
         Vector2Int pixel = canvas.MapToPixel(new Vector3(0, 0, 0));
 
@@ -162,7 +162,7 @@ public class TestCanvas_
     [Test]
     public void MapToPixel_EvenNumberOfPixels_Centered_Center()
     {
-        Canvas_ canvas = new Canvas_(2, 2, new Vector3(0, 0, 0), 1, 0);
+        Canvas_ canvas = new Canvas_(2, 2, new Vector3(0, 0, 0), 1, 0, 0);
 
         Vector2Int pixel = canvas.MapToPixel(new Vector3(0, 0, 0));
 
@@ -294,7 +294,7 @@ public class TestCanvas_
     [Test]
     public void MapToPixel_Shifted_UpperRight_Center()
     {
-        Canvas_ canvas = new Canvas_(3, 3, new Vector3(1, 1, 0), 1, 0);
+        Canvas_ canvas = new Canvas_(3, 3, new Vector3(1, 1, 0), 1, 0, 0);
 
         Vector2Int pixel = canvas.MapToPixel(new Vector3(1, 1, 0));
 

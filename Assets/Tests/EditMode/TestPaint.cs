@@ -93,7 +93,7 @@ public class TestPaint
     {
         Paint p = new Paint(new Color(0.4f, 0.5f, 0.6f), 2);
 
-        Assert.AreEqual("Paint(r=0.4, g=0.5, b=0.6, vol=2)", p.ToString());
+        Assert.AreEqual("Paint(r=0.4, g=0.5, b=0.6, a=1, vol=2)", p.ToString());
     }
 
     [Test]

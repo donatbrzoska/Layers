@@ -65,7 +65,7 @@ public struct Paint : IEquatable<Paint>
 
     public override string ToString()
     {
-        return string.Format("Paint(r={0}, g={1}, b={2}, vol={3})", Color.r, Color.g, Color.b, Volume);
+        return string.Format("Paint(r={0}, g={1}, b={2}, a={3}, vol={4})", Color.r, Color.g, Color.b, Color.a, Volume);
     }
 
     private static bool ColorsEqual(Color expected, Color actual)

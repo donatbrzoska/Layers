@@ -4,7 +4,7 @@ public class FlatColorFiller : ColorFiller
 {
     Color_ Color_;
 
-    public FlatColorFiller(Color_ color_)
+    public FlatColorFiller(Color_ color_, ColorSpace colorSpace) : base(colorSpace)
     {
         Color_ = color_;
     }
@@ -13,7 +13,7 @@ public class FlatColorFiller : ColorFiller
     {
         for (int i = 0; i < target.Length; i++)
         {
-            target[i].Color = Colors.GetColor(Color_);
+            SetColor(target, i, Colors.GetColor(Color_));
         }
     }
 }
