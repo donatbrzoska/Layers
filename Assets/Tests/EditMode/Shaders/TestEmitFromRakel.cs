@@ -62,11 +62,13 @@ public class TestEmitFromRakel
             1 // not really needed for polygon clipping
         );
 
+        ComputeBuffer rakelMappedInfo = Rakel.CalculateRakelMappedInfo(rakelEmitSR, Canvas, false);
 
         // Act
         RakelEmittedPaint = Rakel.EmitPaint(
             rakelEmitSR,
             Canvas,
+            rakelMappedInfo,
             EMIT_DISTANCE_MAX,
             0,
             1,
@@ -123,11 +125,13 @@ public class TestEmitFromRakel
             1 // not really needed for polygon clipping
         );
 
+        ComputeBuffer rakelMappedInfo = Rakel.CalculateRakelMappedInfo(rakelEmitSR, Canvas, false);
 
         // Act
         RakelEmittedPaint = Rakel.EmitPaint(
             rakelEmitSR,
             Canvas,
+            rakelMappedInfo,
             EMIT_DISTANCE_MAX,
             0,
             1,
@@ -186,10 +190,13 @@ public class TestEmitFromRakel
             1 // not really needed for polygon clipping
         );
 
+        ComputeBuffer rakelMappedInfo = Rakel.CalculateRakelMappedInfo(rakelEmitSR, Canvas, false);
+
         // Act
         RakelEmittedPaint = Rakel.EmitPaint(
             rakelEmitSR,
             Canvas,
+            rakelMappedInfo,
             EMIT_DISTANCE_MAX,
             0,
             1,
@@ -247,11 +254,13 @@ public class TestEmitFromRakel
             1 // not really needed for polygon clipping
         );
 
+        ComputeBuffer rakelMappedInfo = Rakel.CalculateRakelMappedInfo(rakelEmitSR, Canvas, false);
 
         // Act
         RakelEmittedPaint = Rakel.EmitPaint(
             rakelEmitSR,
             Canvas,
+            rakelMappedInfo,
             EMIT_DISTANCE_MAX,
             0,
             1,

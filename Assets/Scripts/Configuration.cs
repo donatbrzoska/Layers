@@ -157,6 +157,7 @@ public class TransferConfiguration
     public float EmitVolumePickupReservoirRate;
     public float PickupVolume_MIN;
     public float PickupVolume_MAX;
+    public float LayerThickness_MAX;
 
     public TransferConfiguration()
     {
@@ -170,5 +171,7 @@ public class TransferConfiguration
         EmitVolumePickupReservoirRate = 1.2f;
         PickupVolume_MIN = 0.3f;
         PickupVolume_MAX = 0.65f;
+
+        LayerThickness_MAX = 2 * Paint.VOLUME_THICKNESS;
     }
 }

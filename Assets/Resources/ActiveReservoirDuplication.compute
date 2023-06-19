@@ -1,0 +1,67 @@
+// ######################################## SHADER BASE ########################################
+
+#include "basic_util.hlsl"
+#include "indexing.hlsl"
+#include "logging.hlsl"
+
+uint3 id__;
+uint2 SubgridGroupSize;
+uint2 SubgridCurrentThreadID;
+
+uint2 id()
+{
+    uint2 subgrid_id = uint2(id__.x, id__.y);
+    return subgrid_id * SubgridGroupSize + SubgridCurrentThreadID;
+}
+
+int2 CalculationPosition;
+uint2 CalculationSize;
+
+RWStructuredBuffer<float4> Debug;
+RWStructuredBuffer<DebugListInfo> DebugInfo;
+
+void set_debug_list_info(uint size, uint t)
+{
+    DebugListInfo dli;
+    dli.Size = size;
+    dli.Type = t;
+    DebugInfo[0] = dli;
+}
+
+void log_(uint index, float4 f)
+{
+    Debug[XYZ(id().x, id().y, index, CalculationSize)] = f;
+}
+
+// ###################################### SHADER BASE END ######################################
+
+#include "paint.hlsl"
+#include "mapped_info.hlsl"
+
+RWStructuredBuffer<MappedInfo> PaintSourceMappedInfo;
+uint2 PaintSourceReservoirSize;
+
+RWStructuredBuffer<Paint> Reservoir;
+
+
+#pragma kernel main
+
+[numthreads(32,1,1)]
+void main (uint3 id_ : SV_DispatchThreadID)
+{
+    id__ = id_;
+    if (is_relevant_thread(id(), CalculationSize))
+    {
+        MappedInfo paint_source_mapped = PaintSourceMappedInfo[XY(id().x, id().y, CalculationSize.x)];
+        int2 reservoir_pixel_nearest = round(paint_source_mapped.reservoir_pixel);
+
+        Paint copied_value;
+        copied_value.color = float4(0,0,0,0);
+        copied_value.volume = 0;
+        if (pixel_in_array_range(reservoir_pixel_nearest, PaintSourceReservoirSize)) {
+            copied_value = Reservoir[XYZ(id().x, id().y, 0, CalculationSize)];
+        }
+
+        Reservoir[XYZ(id().x, id().y, 1, CalculationSize)] = copied_value;
+    }
+}

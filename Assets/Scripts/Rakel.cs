@@ -50,6 +50,8 @@ public class Rakel
         return Mathf.Clamp(tilt, MIN_SUPPORTED_TILT, MAX_SUPPORTED_TILT);
     }
 
+    private bool StrokeBegin;
+
     public ComputeBuffer InfoBuffer;
     public RakelInfo Info;
 
@@ -91,6 +93,8 @@ public class Rakel
 
     public void NewStroke()
     {
+        StrokeBegin = true;
+
         //float[] distortionMapData = new float[DistortionMapSize.x * DistortionMapSize.y];
 
         ////float noiseCapRatio = 0.6f;
@@ -176,16 +180,87 @@ public class Rakel
         ).Run();
     }
 
-    public void UpdatePosition(
+    public ComputeBuffer CalculateRakelMappedInfo(
+        ShaderRegion shaderRegion,
+        Canvas_ canvas,
         bool debugEnabled = false)
     {
-        // Update info on GPU for paint transfer calculations
+        ComputeBuffer rakelMappedInfo = new ComputeBuffer(shaderRegion.PixelCount, MappedInfo.SizeInBytes);
+        MappedInfo[] rakelMappedInfoData = new MappedInfo[shaderRegion.PixelCount];
+        rakelMappedInfo.SetData(rakelMappedInfoData);
+
+        new ComputeShaderTask(
+            "RakelMappedInfo",
+            shaderRegion,
+            new List<CSAttribute>()
+            {
+                new CSInt("TextureResolution", canvas.Resolution),
+
+                new CSFloat3("CanvasPosition", canvas.Position),
+                new CSFloat2("CanvasSize", canvas.Size),
+
+                new CSComputeBuffer("RakelInfo", InfoBuffer),
+                new CSInt2("RakelReservoirSize", ApplicationReservoir.Size),
+
+                new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
+            },
+            debugEnabled
+        ).Run();
+
+        return rakelMappedInfo;
+    }
+
+    public void RecalculatePosition(
+        Canvas_ canvas,
+        ComputeBuffer rakelMappedInfo,
+        ShaderRegion emitSR,
+        float layerThickness_MAX,
+        bool debugEnabled = false)
+    {
+        if (StrokeBegin)
+        {
+            canvas.Reservoir.DuplicateActive(
+                rakelMappedInfo,
+                ApplicationReservoir.Size,
+                emitSR,
+                debugEnabled);
+
+            canvas.Reservoir.ReduceVolume(
+                emitSR,
+                ReduceFunction.Max,
+                debugEnabled);
+
+            UpdatePosition(
+                canvas.Reservoir.Buffer,
+                canvas.Reservoir.Size,
+                emitSR.Position,
+                layerThickness_MAX,
+                debugEnabled);
+
+            // position was updated, so we need to recalculate
+            UpdateState(Info.Position, Info.Pressure, Info.Rotation, Info.Tilt, debugEnabled);
+
+            StrokeBegin = false;
+        }
+    }
+
+    private void UpdatePosition(
+        ComputeBuffer maxVolumeSource,
+        Vector2Int maxVolumeSourceSize,
+        Vector2Int maxVolumeSourceIndex,
+        float layerThickness_MAX,
+        bool debugEnabled = false)
+    {
         new ComputeShaderTask(
             "UpdateRakelPosition",
             new ShaderRegion(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
             new List<CSAttribute>()
             {
-                new CSFloat("PositionZ", Info.Position.z),
+                new CSComputeBuffer("MaxVolumeSource", maxVolumeSource),
+                new CSInt2("MaxVolumeSourceSize", maxVolumeSourceSize),
+                new CSInt2("MaxVolumeSourceIndex", maxVolumeSourceIndex),
+
+                new CSFloat("LayerThickness_MAX", layerThickness_MAX),
                 new CSFloat("Pressure", Info.Pressure),
                 new CSFloat("Tilt", Info.Tilt),
                 new CSFloat("MAX_SUPPORTED_TILT", MAX_SUPPORTED_TILT),
@@ -213,6 +288,7 @@ public class Rakel
     public ComputeBuffer EmitPaint(
         ShaderRegion shaderRegion,
         Canvas_ canvas,
+        ComputeBuffer rakelMappedInfo,
         float emitDistance_MAX,
         float emitVolume_MIN,
         float emitVolume_MAX,
@@ -224,8 +300,6 @@ public class Rakel
         // initialize buffer to empty values (Intel does this for you, nvidia doesn't)
         Paint[] initPaint = new Paint[shaderRegion.PixelCount];
         rakelEmittedPaint.SetData(initPaint);
-
-        ComputeBuffer rakelMappedInfo = CalculateRakelMappedInfo(shaderRegion, canvas, debugEnabled);
 
         float pixelSize = 1 / (float) canvas.Resolution;
         float pixelDiag = pixelSize * Mathf.Sqrt(2);
@@ -271,36 +345,6 @@ public class Rakel
         rakelMappedInfo.Dispose();
 
         return rakelEmittedPaint;
-    }
-
-    private ComputeBuffer CalculateRakelMappedInfo(
-        ShaderRegion shaderRegion,
-        Canvas_ canvas,
-        bool debugEnabled = false)
-    {
-        ComputeBuffer rakelMappedInfo = new ComputeBuffer(shaderRegion.PixelCount, MappedInfo.SizeInBytes);
-        MappedInfo[] rakelMappedInfoData = new MappedInfo[shaderRegion.PixelCount];
-        rakelMappedInfo.SetData(rakelMappedInfoData);
-
-        new ComputeShaderTask(
-            "RakelMappedInfo",
-            shaderRegion,
-            new List<CSAttribute>()
-            {
-                new CSInt("TextureResolution", canvas.Resolution),
-
-                new CSFloat3("CanvasPosition", canvas.Position),
-                new CSFloat2("CanvasSize", canvas.Size),
-
-                new CSComputeBuffer("RakelInfo", InfoBuffer),
-                new CSInt2("RakelReservoirSize", ApplicationReservoir.Size),
-
-                new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
-            },
-            debugEnabled
-        ).Run();
-
-        return rakelMappedInfo;
     }
 
     public void ApplyPaint(

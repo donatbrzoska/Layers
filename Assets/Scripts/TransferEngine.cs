@@ -44,11 +44,22 @@ public class TransferEngine
             canvas.MapToPixelInRange(rakel.Info.LowerRight)
         );
 
-        rakel.UpdatePosition(DebugShader);
+        ComputeBuffer rakelMappedInfo = rakel.CalculateRakelMappedInfo(
+            rakelEmitSR,
+            canvas,
+            DebugShader);
 
-        // position was updated, so we need to recalculate the rest
-        rakel.UpdateState(rakelPosition, rakelPressure, rakelRotation, rakelTilt, DebugShader);
 
+        // 1. Calculate rakel position based on paint height on canvas
+        rakel.RecalculatePosition(
+            canvas,
+            rakelMappedInfo,
+            rakelEmitSR,
+            transferConfiguration.LayerThickness_MAX,
+            DebugShader);
+
+
+        // 2. Do paint transfer and rendering
         canvas.Reservoir.Duplicate(DebugShader);
 
         ComputeBuffer canvasEmittedPaint = canvas.EmitPaint(
@@ -66,6 +77,7 @@ public class TransferEngine
         ComputeBuffer rakelEmittedPaint = rakel.EmitPaint(
             rakelEmitSR,
             canvas,
+            rakelMappedInfo,
             transferConfiguration.EmitDistance_MAX,
             transferConfiguration.EmitVolume_MIN,
             transferConfiguration.EmitVolume_MAX,

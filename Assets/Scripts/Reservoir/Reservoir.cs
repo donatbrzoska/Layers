@@ -56,6 +56,26 @@ public class Reservoir
         ).Run();
     }
 
+    public void DuplicateActive(
+        ComputeBuffer paintSourceMappedInfo,
+        Vector2Int paintSourceReservoirSize,
+        ShaderRegion shaderRegion,
+        bool debugEnabled = false)
+    {
+        new ComputeShaderTask(
+            "ActiveReservoirDuplication",
+            shaderRegion,
+            new List<CSAttribute>()
+            {
+                new CSComputeBuffer("PaintSourceMappedInfo", paintSourceMappedInfo),
+                new CSInt2("PaintSourceReservoirSize", paintSourceReservoirSize),
+
+                new CSComputeBuffer("Reservoir", Buffer)
+            },
+            debugEnabled
+        ).Run();
+    }
+
     public void PrintVolumes(int z)
     {
         Buffer.GetData(BufferData);

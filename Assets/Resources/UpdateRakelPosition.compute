@@ -35,9 +35,14 @@ void log_(uint index, float4 f)
 
 // ###################################### SHADER BASE END ######################################
 
+#include "paint.hlsl"
 #include "rakel.hlsl"
 
-float PositionZ;
+RWStructuredBuffer<Paint> MaxVolumeSource;
+uint2 MaxVolumeSourceSize;
+uint2 MaxVolumeSourceIndex;
+
+float LayerThickness_MAX;
 float Pressure;
 float Tilt;
 float MAX_SUPPORTED_TILT;
@@ -57,7 +62,8 @@ void main (uint3 id_ : SV_DispatchThreadID)
     {
         Rakel rakel = RakelInfo[0];
 
-        rakel.position.z = PositionZ;
+        float current_max_volume_on_canvas = MaxVolumeSource[XYZ(MaxVolumeSourceIndex.x, MaxVolumeSourceIndex.y, 1, MaxVolumeSourceSize)].volume;
+        rakel.position.z = - (current_max_volume_on_canvas * VOLUME_THICKNESS() + LayerThickness_MAX);
 
         float sink = SINK_BASE_MAX + rakel.tilt / MAX_SUPPORTED_TILT * SINK_TILT_MAX;
         rakel.position.z += rakel.pressure * sink;
