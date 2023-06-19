@@ -55,10 +55,10 @@ public class TestEmitFromRakel
             0,
             0);
         ShaderRegion rakelEmitSR = new ShaderRegion(
-            Canvas.MapToPixelInRange(Rakel.UpperLeft),
-            Canvas.MapToPixelInRange(Rakel.UpperRight),
-            Canvas.MapToPixelInRange(Rakel.LowerLeft),
-            Canvas.MapToPixelInRange(Rakel.LowerRight),
+            Canvas.MapToPixelInRange(Rakel.Info.UpperLeft),
+            Canvas.MapToPixelInRange(Rakel.Info.UpperRight),
+            Canvas.MapToPixelInRange(Rakel.Info.LowerLeft),
+            Canvas.MapToPixelInRange(Rakel.Info.LowerRight),
             1 // not really needed for polygon clipping
         );
 
@@ -116,10 +116,10 @@ public class TestEmitFromRakel
             30,
             0);
         ShaderRegion rakelEmitSR = new ShaderRegion(
-            Canvas.MapToPixelInRange(Rakel.UpperLeft),
-            Canvas.MapToPixelInRange(Rakel.UpperRight),
-            Canvas.MapToPixelInRange(Rakel.LowerLeft),
-            Canvas.MapToPixelInRange(Rakel.LowerRight),
+            Canvas.MapToPixelInRange(Rakel.Info.UpperLeft),
+            Canvas.MapToPixelInRange(Rakel.Info.UpperRight),
+            Canvas.MapToPixelInRange(Rakel.Info.LowerLeft),
+            Canvas.MapToPixelInRange(Rakel.Info.LowerRight),
             1 // not really needed for polygon clipping
         );
 
@@ -179,10 +179,10 @@ public class TestEmitFromRakel
             60);
 
         ShaderRegion rakelEmitSR = new ShaderRegion(
-            Canvas.MapToPixelInRange(Rakel.UpperLeft),
-            Canvas.MapToPixelInRange(Rakel.UpperRight),
-            Canvas.MapToPixelInRange(Rakel.LowerLeft),
-            Canvas.MapToPixelInRange(Rakel.LowerRight),
+            Canvas.MapToPixelInRange(Rakel.Info.UpperLeft),
+            Canvas.MapToPixelInRange(Rakel.Info.UpperRight),
+            Canvas.MapToPixelInRange(Rakel.Info.LowerLeft),
+            Canvas.MapToPixelInRange(Rakel.Info.LowerRight),
             1 // not really needed for polygon clipping
         );
 
@@ -240,10 +240,10 @@ public class TestEmitFromRakel
             10);
 
         ShaderRegion rakelEmitSR = new ShaderRegion(
-            Canvas.MapToPixelInRange(Rakel.UpperLeft),
-            Canvas.MapToPixelInRange(Rakel.UpperRight),
-            Canvas.MapToPixelInRange(Rakel.LowerLeft),
-            Canvas.MapToPixelInRange(Rakel.LowerRight),
+            Canvas.MapToPixelInRange(Rakel.Info.UpperLeft),
+            Canvas.MapToPixelInRange(Rakel.Info.UpperRight),
+            Canvas.MapToPixelInRange(Rakel.Info.LowerLeft),
+            Canvas.MapToPixelInRange(Rakel.Info.LowerRight),
             1 // not really needed for polygon clipping
         );
 

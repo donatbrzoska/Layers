@@ -38,17 +38,17 @@ public class TransferEngine
         ShaderRegion canvasEmitSR = rakel.ApplicationReservoir.GetFullShaderRegion();
 
         ShaderRegion rakelEmitSR = new ShaderRegion(
-            canvas.MapToPixelInRange(rakel.UpperLeft),
-            canvas.MapToPixelInRange(rakel.UpperRight),
-            canvas.MapToPixelInRange(rakel.LowerLeft),
-            canvas.MapToPixelInRange(rakel.LowerRight)
+            canvas.MapToPixelInRange(rakel.Info.UpperLeft),
+            canvas.MapToPixelInRange(rakel.Info.UpperRight),
+            canvas.MapToPixelInRange(rakel.Info.LowerLeft),
+            canvas.MapToPixelInRange(rakel.Info.LowerRight)
         );
 
         ShaderRegion rerenderSR = new ShaderRegion(
-            canvas.MapToPixelInRange(rakel.UpperLeft),
-            canvas.MapToPixelInRange(rakel.UpperRight),
-            canvas.MapToPixelInRange(rakel.LowerLeft),
-            canvas.MapToPixelInRange(rakel.LowerRight),
+            canvas.MapToPixelInRange(rakel.Info.UpperLeft),
+            canvas.MapToPixelInRange(rakel.Info.UpperRight),
+            canvas.MapToPixelInRange(rakel.Info.LowerLeft),
+            canvas.MapToPixelInRange(rakel.Info.LowerRight),
             1 // Padding because normal calculation is also based on pixels around
         );
 

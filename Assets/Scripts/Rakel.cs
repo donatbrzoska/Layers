@@ -1,6 +1,30 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
+public struct RakelInfo
+{
+    public const int SizeInBytes = 4 * sizeof(float) + 10 * 3 * sizeof(float);
+
+    public float Length;
+    public float Width;
+
+    public Vector3 Anchor;
+
+    public Vector3 Position;
+    public float Rotation;
+    public float Tilt;
+
+    public Vector3 UpperLeft;
+    public Vector3 UpperRight;
+    public Vector3 LowerLeft;
+    public Vector3 LowerRight;
+
+    public Vector3 ULTilted;
+    public Vector3 URTilted;
+    public Vector3 LLTilted;
+    public Vector3 LRTilted;
+}
+
 public class Rakel
 {
     // see EmitFromRakel shader for details (look for "79 degree tilt")
@@ -15,24 +39,7 @@ public class Rakel
         return Mathf.Clamp(tilt, MIN_SUPPORTED_TILT, MAX_SUPPORTED_TILT);
     }
 
-    public float Length { get; private set; }
-    public float Width { get; private set; }
-
-    public Vector3 Anchor { get; }
-
-    public Vector3 Position;
-    public float Rotation;
-    public float Tilt;
-
-    public Vector3 UpperLeft { get; private set; }
-    public Vector3 UpperRight { get; private set; }
-    public Vector3 LowerLeft { get; private set; }
-    public Vector3 LowerRight { get; private set; }
-
-    public Vector3 ulTilted { get; private set; }
-    public Vector3 urTilted { get; private set; }
-    public Vector3 llTilted { get; private set; }
-    public Vector3 lrTilted { get; private set; }
+    public RakelInfo Info;
 
     public Reservoir ApplicationReservoir;
     public Reservoir PickupReservoir;
@@ -60,11 +67,11 @@ public class Rakel
         DistortionMap = new ComputeBuffer(DistortionMapSize.x * DistortionMapSize.y , sizeof(float));
 
         // make sure Rakel is not bigger than its reservoir
-        Length = ApplicationReservoir.Size.y * ApplicationReservoir.PixelSize;
-        Width = ApplicationReservoir.Size.x * ApplicationReservoir.PixelSize;
+        Info.Length = ApplicationReservoir.Size.y * ApplicationReservoir.PixelSize;
+        Info.Width = ApplicationReservoir.Size.x * ApplicationReservoir.PixelSize;
 
         // NOTE this has to be set after Width and Length were corrected
-        Anchor = new Vector3(anchorRatioWidth * Width, anchorRatioLength * Length, 0);
+        Info.Anchor = new Vector3(anchorRatioWidth * Info.Width, anchorRatioLength * Info.Length, 0);
     }
 
     public void NewStroke()
@@ -110,38 +117,38 @@ public class Rakel
         // TODO include canvas position -> this would also require info about the direction the canvas is oriented
         // TODO include anchor ratio, right now this only works for anchors located on rakel edge
         position.z = Mathf.Min(position.z, 0);
-        Position = position;
+        Info.Position = position;
 
-        Rotation = rotation;
-        Tilt = ClampTilt(Mathf.Max(Mathf.Min(tilt, MAX_SUPPORTED_TILT), MIN_SUPPORTED_TILT));
+        Info.Rotation = rotation;
+        Info.Tilt = ClampTilt(Mathf.Max(Mathf.Min(tilt, MAX_SUPPORTED_TILT), MIN_SUPPORTED_TILT));
 
-        Vector3 ulOrigin = new Vector3(0, Length, 0);
-        Vector3 urOrigin = new Vector3(Width, Length, 0);
+        Vector3 ulOrigin = new Vector3(0, Info.Length, 0);
+        Vector3 urOrigin = new Vector3(Info.Width, Info.Length, 0);
         Vector3 llOrigin = new Vector3(0, 0, 0);
-        Vector3 lrOrigin = new Vector3(Width, 0, 0);
+        Vector3 lrOrigin = new Vector3(Info.Width, 0, 0);
 
-        Quaternion tiltQuaternion = Quaternion.AngleAxis(Tilt, Vector3.up);
-        ulTilted = tiltQuaternion * (ulOrigin - Anchor) + Anchor; // tilt around anchor
-        urTilted = tiltQuaternion * (urOrigin - Anchor) + Anchor; // tilt around anchor
-        llTilted = tiltQuaternion * (llOrigin - Anchor) + Anchor; // tilt around anchor
-        lrTilted = tiltQuaternion * (lrOrigin - Anchor) + Anchor; // tilt around anchor
+        Quaternion tiltQuaternion = Quaternion.AngleAxis(Info.Tilt, Vector3.up);
+        Info.ULTilted = tiltQuaternion * (ulOrigin - Info.Anchor) + Info.Anchor; // tilt around anchor
+        Info.URTilted = tiltQuaternion * (urOrigin - Info.Anchor) + Info.Anchor; // tilt around anchor
+        Info.LLTilted = tiltQuaternion * (llOrigin - Info.Anchor) + Info.Anchor; // tilt around anchor
+        Info.LRTilted = tiltQuaternion * (lrOrigin - Info.Anchor) + Info.Anchor; // tilt around anchor
 
-        Quaternion rotationQuaternion = Quaternion.AngleAxis(Rotation, Vector3.back);
-        Vector3 ulRotated = rotationQuaternion * (ulTilted - Anchor) + Anchor; // rotate around anchor
-        Vector3 urRotated = rotationQuaternion * (urTilted - Anchor) + Anchor; // rotate around anchor
-        Vector3 llRotated = rotationQuaternion * (llTilted - Anchor) + Anchor; // rotate around anchor
-        Vector3 lrRotated = rotationQuaternion * (lrTilted - Anchor) + Anchor; // rotate around anchor
+        Quaternion rotationQuaternion = Quaternion.AngleAxis(Info.Rotation, Vector3.back);
+        Vector3 ulRotated = rotationQuaternion * (Info.ULTilted - Info.Anchor) + Info.Anchor; // rotate around anchor
+        Vector3 urRotated = rotationQuaternion * (Info.URTilted - Info.Anchor) + Info.Anchor; // rotate around anchor
+        Vector3 llRotated = rotationQuaternion * (Info.LLTilted - Info.Anchor) + Info.Anchor; // rotate around anchor
+        Vector3 lrRotated = rotationQuaternion * (Info.LRTilted - Info.Anchor) + Info.Anchor; // rotate around anchor
 
-        Vector3 positionTranslation = Position - Anchor;
-        UpperLeft = ulRotated + positionTranslation;
-        UpperRight = urRotated + positionTranslation;
-        LowerLeft = llRotated + positionTranslation;
-        LowerRight = lrRotated + positionTranslation;
+        Vector3 positionTranslation = Info.Position - Info.Anchor;
+        Info.UpperLeft = ulRotated + positionTranslation;
+        Info.UpperRight = urRotated + positionTranslation;
+        Info.LowerLeft = llRotated + positionTranslation;
+        Info.LowerRight = lrRotated + positionTranslation;
     }
 
     public override string ToString()
     {
-        return base.ToString() + string.Format("\nPosition={0}, Rotation={1}, Tilt={2}\nUL={3}, UR={4}\nLL={5}, LR={6}, ", Position, Rotation, Tilt, UpperLeft, UpperRight, LowerLeft, LowerRight);
+        return base.ToString() + string.Format("\nPosition={0}, Rotation={1}, Tilt={2}\nUL={3}, UR={4}\nLL={5}, LR={6}, ", Info.Position, Info.Rotation, Info.Tilt, Info.UpperLeft, Info.UpperRight, Info.LowerLeft, Info.LowerRight);
     }
 
     public void Fill(ReservoirFiller filler)
@@ -170,7 +177,7 @@ public class Rakel
 
         float pixelSize = 1 / (float) canvas.Resolution;
         float pixelDiag = pixelSize * Mathf.Sqrt(2);
-        float tiltedPixelShortSide = Mathf.Cos(Tilt * Mathf.Deg2Rad) * pixelSize;
+        float tiltedPixelShortSide = Mathf.Cos(Info.Tilt * Mathf.Deg2Rad) * pixelSize;
         int clipRadiusX = (int)Mathf.Ceil((pixelDiag / 2) / tiltedPixelShortSide);
         Vector2Int subgridGroupSize = new Vector2Int(clipRadiusX * 2 + 1, 3);
 
@@ -178,10 +185,10 @@ public class Rakel
         {
             new CSInt("TextureResolution", canvas.Resolution),
 
-            new CSFloat3("RakelAnchor", Anchor),
-            new CSFloat("RakelRotation", Rotation),
-            new CSFloat("RakelTilt", Tilt),
-            new CSFloat("RakelEdgeZ", LowerLeft.z),
+            new CSFloat3("RakelAnchor", Info.Anchor),
+            new CSFloat("RakelRotation", Info.Rotation),
+            new CSFloat("RakelTilt", Info.Tilt),
+            new CSFloat("RakelEdgeZ", Info.LowerLeft.z),
             new CSComputeBuffer("RakelApplicationReservoir", ApplicationReservoir.Buffer),
             new CSComputeBuffer("RakelPickupReservoir", PickupReservoir.Buffer),
             new CSInt2("RakelReservoirSize", ApplicationReservoir.Size),
@@ -231,13 +238,13 @@ public class Rakel
             new CSFloat3("CanvasPosition", canvas.Position),
             new CSFloat2("CanvasSize", canvas.Size),
 
-            new CSFloat("RakelLength", Length),
-            new CSFloat3("RakelPosition", Position),
-            new CSFloat3("RakelAnchor", Anchor),
-            new CSFloat("RakelRotation", Rotation),
-            new CSFloat("RakelTilt", Tilt),
-            new CSFloat3("RakelLLTilted", llTilted),
-            new CSFloat3("RakelLRTilted", lrTilted),
+            new CSFloat("RakelLength", Info.Length),
+            new CSFloat3("RakelPosition", Info.Position),
+            new CSFloat3("RakelAnchor", Info.Anchor),
+            new CSFloat("RakelRotation", Info.Rotation),
+            new CSFloat("RakelTilt", Info.Tilt),
+            new CSFloat3("RakelLLTilted", Info.LLTilted),
+            new CSFloat3("RakelLRTilted", Info.LRTilted),
             new CSInt2("RakelReservoirSize", ApplicationReservoir.Size),
 
             new CSComputeBuffer("RakelMappedInfoTarget", rakelMappedInfoTarget),

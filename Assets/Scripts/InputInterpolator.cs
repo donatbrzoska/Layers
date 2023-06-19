@@ -82,11 +82,11 @@ public class InputInterpolator
                         dr = dr - 360;
                     }
                 }
-                float arcLength = Mathf.PI * (Rakel.Length / 2) * (Mathf.Abs(dr)/180);
+                float arcLength = Mathf.PI * (Rakel.Info.Length / 2) * (Mathf.Abs(dr)/180);
                 int rotationSteps = (int)(arcLength * interpolationResolution);
 
                 float dt = rakelTilt - PreviousRakelTilt;
-                arcLength = Mathf.PI * Rakel.Width * (Mathf.Abs(dt)/180);
+                arcLength = Mathf.PI * Rakel.Info.Width * (Mathf.Abs(dt)/180);
                 int tiltSteps = (int)(arcLength * interpolationResolution);
 
                 int steps = Mathf.Max(1, Mathf.Max(Mathf.Max(positionSteps, rotationSteps), tiltSteps));
