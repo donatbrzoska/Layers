@@ -89,7 +89,7 @@ public class InputInterpolator
                 arcLength = Mathf.PI * Rakel.Width * (Mathf.Abs(dt)/180);
                 int tiltSteps = (int)(arcLength * interpolationResolution);
 
-                int steps = Mathf.Max(1, Mathf.Max(Mathf.Max(positionSteps, rotationSteps), tiltSteps))*10;
+                int steps = Mathf.Max(1, Mathf.Max(Mathf.Max(positionSteps, rotationSteps), tiltSteps));
 
 
                 // 2. interpolate
