@@ -4,6 +4,7 @@ using UnityEngine;
 public class Canvas_
 {
     public Vector2 Size { get; private set; }
+    // TODO It is not tested, whether positions other than the default (0,0,0) actually fully work
     public Vector3 Position { get; private set; }
     private float XMin;
     private float XMax;
