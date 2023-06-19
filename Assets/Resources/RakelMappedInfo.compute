@@ -40,6 +40,7 @@ void log_(uint index, float4 f)
 #include "paint.hlsl"
 #include "math.hlsl"
 #include "rakel.hlsl"
+#include "mapped_info.hlsl"
 
 uint TextureResolution;
 
@@ -49,14 +50,14 @@ float2 CanvasSize;
 RWStructuredBuffer<Rakel> RakelInfo;
 uint2 RakelReservoirSize;
 
-RWStructuredBuffer<Paint> RakelMappedInfoTarget;
+RWStructuredBuffer<MappedInfo> RakelMappedInfo;
 
 
 // returns:
 // - x: exact projection of canvas pixel.x to rakel reservoir index space
 // - y: exact projection of canvas pixel.y to rakel reservoir index space
 // - z: distance from rakel: -inf .. +inf
-float3 rakel_mapped(int2 pos_pixel)
+MappedInfo rakel_mapped(int2 pos_pixel)
 {
     Rakel rakel = RakelInfo[0];
 
@@ -84,8 +85,11 @@ float3 rakel_mapped(int2 pos_pixel)
     // reservoir_pixel is -0.5 for part_k == 0 and RakelReservoirSize.k - 1 + 0.5 for part_k == 1
     float2 reservoir_pixel = float2(part_x * RakelReservoirSize.x - 0.5,
                                     part_y * RakelReservoirSize.y - 0.5);
-                                    
-    return float3(reservoir_pixel.x, reservoir_pixel.y, dist);
+
+    MappedInfo mapped_info;
+    mapped_info.reservoir_pixel = reservoir_pixel;
+    mapped_info.distance = dist;
+    return mapped_info;
 }
 
 #pragma kernel main
@@ -99,17 +103,7 @@ void main (uint3 id_ : SV_DispatchThreadID)
         // calculate pixel position on canvas
         // was uint2 before, but negative values are possible due to padding and no prevention of that because it should not cause any more problems
         int2 canvas_pixel = id() + CalculationPosition;
-        float3 rakel_mapped_info = rakel_mapped(canvas_pixel);
-        
-        // use paint struct to store result
-        Paint p;
-        p.color = float4(
-            rakel_mapped_info.x,
-            rakel_mapped_info.y,
-            rakel_mapped_info.z,
-            0 // unused
-        );
-        p.volume = 0; // unused
-        RakelMappedInfoTarget[XY(id().x, id().y, CalculationSize.x)] = p;
+
+        RakelMappedInfo[XY(id().x, id().y, CalculationSize.x)] = rakel_mapped(canvas_pixel);
     }
 }

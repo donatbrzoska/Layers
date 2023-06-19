@@ -28,6 +28,14 @@ public struct RakelInfo
     public Vector3 LRTilted;
 }
 
+public struct MappedInfo
+{
+    public const int SizeInBytes = 3 * sizeof(float);
+
+    public Vector2 ReservoirPixel;
+    public float Distance;
+}
+
 public class Rakel
 {
     // see EmitFromRakel shader for details (look for "79 degree tilt")
@@ -217,7 +225,7 @@ public class Rakel
         Paint[] initPaint = new Paint[shaderRegion.PixelCount];
         rakelEmittedPaint.SetData(initPaint);
 
-        WriteRakelMappedInfo(rakelEmittedPaint, shaderRegion, canvas, debugEnabled);
+        ComputeBuffer rakelMappedInfo = CalculateRakelMappedInfo(shaderRegion, canvas, debugEnabled);
 
         float pixelSize = 1 / (float) canvas.Resolution;
         float pixelDiag = pixelSize * Mathf.Sqrt(2);
@@ -241,6 +249,7 @@ public class Rakel
                 new CSFloat("CanvasPositionZ", canvas.Position.z),
                 new CSComputeBuffer("CanvasReservoir", canvas.Reservoir.Buffer),
                 new CSInt2("CanvasReservoirSize", canvas.Reservoir.Size),
+                new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
 
                 new CSInt("ClipRadiusX", clipRadiusX),
                 new CSFloat("RakelTilt_MAX", MAX_SUPPORTED_TILT),
@@ -259,15 +268,20 @@ public class Rakel
             debugEnabled
         ).Run();
 
+        rakelMappedInfo.Dispose();
+
         return rakelEmittedPaint;
     }
 
-    private void WriteRakelMappedInfo(
-        ComputeBuffer rakelMappedInfoTarget,
+    private ComputeBuffer CalculateRakelMappedInfo(
         ShaderRegion shaderRegion,
         Canvas_ canvas,
         bool debugEnabled = false)
     {
+        ComputeBuffer rakelMappedInfo = new ComputeBuffer(shaderRegion.PixelCount, MappedInfo.SizeInBytes);
+        MappedInfo[] rakelMappedInfoData = new MappedInfo[shaderRegion.PixelCount];
+        rakelMappedInfo.SetData(rakelMappedInfoData);
+
         new ComputeShaderTask(
             "RakelMappedInfo",
             shaderRegion,
@@ -281,10 +295,12 @@ public class Rakel
                 new CSComputeBuffer("RakelInfo", InfoBuffer),
                 new CSInt2("RakelReservoirSize", ApplicationReservoir.Size),
 
-                new CSComputeBuffer("RakelMappedInfoTarget", rakelMappedInfoTarget),
+                new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
             },
             debugEnabled
         ).Run();
+
+        return rakelMappedInfo;
     }
 
     public void ApplyPaint(

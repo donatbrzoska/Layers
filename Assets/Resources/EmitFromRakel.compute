@@ -41,6 +41,7 @@ void log_(uint index, float4 f)
 #include "math.hlsl"
 #include "sutherland_hodgman.hlsl"
 #include "rakel.hlsl"
+#include "mapped_info.hlsl"
 
 uint TextureResolution;
 
@@ -52,6 +53,7 @@ uint2 RakelReservoirSize;
 float CanvasPositionZ;
 RWStructuredBuffer<Paint> CanvasReservoir;
 uint2 CanvasReservoirSize;
+RWStructuredBuffer<MappedInfo> RakelMappedInfo;
 
 int ClipRadiusX;
 float RakelTilt_MAX;
@@ -226,14 +228,6 @@ void emit(float2 rakel_reservoir_pixel, int2 radius, float distance, int2 canvas
         RakelEmittedPaint[XY(id().x, id().y, CalculationSize.x)] = result_paint;
         // log_float(deleted);
     }
-    else
-    {
-        // remove previously written rakel mapped info
-        Paint resetPaint;
-        resetPaint.volume = 0;
-        resetPaint.color = float4(0,0,0,0);
-        RakelEmittedPaint[XY(id().x, id().y, CalculationSize.x)] = resetPaint;
-    }
 }
 
 #pragma kernel main
@@ -244,15 +238,11 @@ void main (uint3 id_ : SV_DispatchThreadID)
     id__ = id_;
     if (is_relevant_thread(id(), CalculationSize))
     {
-        // extract rakel mapped info from previous step
-        Paint p = RakelEmittedPaint[XY(id().x, id().y, CalculationSize.x)];
-        float2 rakel_reservoir_pixel = float2(p.color.x, p.color.y);
-        float distance = p.color.z;
-
         // calculate pixel position on canvas
         // was uint2 before, but negative values are possible due to padding and no prevention of that because it should not cause any more problems
         int2 canvas_pixel = id() + CalculationPosition;
-        
-        emit(rakel_reservoir_pixel, uint2(ClipRadiusX, 1), distance, canvas_pixel);
+
+        MappedInfo rakel_mapped_info = RakelMappedInfo[XY(id().x, id().y, CalculationSize.x)];
+        emit(rakel_mapped_info.reservoir_pixel, uint2(ClipRadiusX, 1), rakel_mapped_info.distance, canvas_pixel);
     }
 }
