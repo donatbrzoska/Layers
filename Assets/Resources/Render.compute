@@ -52,14 +52,6 @@ float4 CANVAS_COLOR(uint color_space)
     return (color_space == 0) ? rgb_color : rgb_to_ryb(rgb_color);
 }
 
-bool pixel_in_canvas_range(int2 pixel)
-{
-    return pixel.x >= 0
-        && pixel.x < (int)TextureSize.x
-        && pixel.y >= 0
-        && pixel.y < (int)TextureSize.y;
-}
-
 void update_normal(int2 canvas_pixel)
 {
     // calculate normal
@@ -131,7 +123,7 @@ void main (uint3 id_ : SV_DispatchThreadID)
     {
         // calculate pixel position on canvas
         int2 canvas_pixel = id() + CalculationPosition;
-        if (pixel_in_canvas_range(canvas_pixel))
+        if (pixel_in_array_range(canvas_pixel, TextureSize))
         {
             update_normal(canvas_pixel);
             update_color(canvas_pixel);
