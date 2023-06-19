@@ -44,14 +44,6 @@ public class TransferEngine
             canvas.MapToPixelInRange(rakel.Info.LowerRight)
         );
 
-        ShaderRegion rerenderSR = new ShaderRegion(
-            canvas.MapToPixelInRange(rakel.Info.UpperLeft),
-            canvas.MapToPixelInRange(rakel.Info.UpperRight),
-            canvas.MapToPixelInRange(rakel.Info.LowerLeft),
-            canvas.MapToPixelInRange(rakel.Info.LowerRight),
-            1 // Padding because normal calculation is also based on pixels around
-        );
-
         canvas.Reservoir.Duplicate(DebugShader);
 
         ComputeBuffer canvasEmittedPaint = canvas.EmitPaint(
@@ -87,7 +79,12 @@ public class TransferEngine
             DebugShader);
 
         canvas.Render(
-            rerenderSR,
+            new ShaderRegion(
+                canvas.MapToPixelInRange(rakel.Info.UpperLeft),
+                canvas.MapToPixelInRange(rakel.Info.UpperRight),
+                canvas.MapToPixelInRange(rakel.Info.LowerLeft),
+                canvas.MapToPixelInRange(rakel.Info.LowerRight),
+                1), // Padding because normal calculation is also based on pixels around
             DebugShader);
     }
 }
