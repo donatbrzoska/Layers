@@ -168,6 +168,28 @@ public class Rakel
         ).Run();
     }
 
+    public void UpdatePosition(
+        bool debugEnabled = false)
+    {
+        // Update info on GPU for paint transfer calculations
+        new ComputeShaderTask(
+            "UpdateRakelPosition",
+            new ShaderRegion(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
+            new List<CSAttribute>()
+            {
+                new CSFloat("PositionZ", Info.Position.z),
+                new CSFloat("Pressure", Info.Pressure),
+                new CSFloat("Tilt", Info.Tilt),
+                new CSFloat("MAX_SUPPORTED_TILT", MAX_SUPPORTED_TILT),
+                new CSFloat("SINK_BASE_MAX", SINK_BASE_MAX),
+                new CSFloat("SINK_TILT_MAX", SINK_TILT_MAX),
+
+                new CSComputeBuffer("RakelInfo", InfoBuffer),
+            },
+            debugEnabled
+        ).Run();
+    }
+
     public override string ToString()
     {
         return base.ToString() + string.Format("\nPosition={0}, Rotation={1}, Tilt={2}\nUL={3}, UR={4}\nLL={5}, LR={6}, ", Info.Position, Info.Rotation, Info.Tilt, Info.UpperLeft, Info.UpperRight, Info.LowerLeft, Info.LowerRight);

@@ -44,6 +44,11 @@ public class TransferEngine
             canvas.MapToPixelInRange(rakel.Info.LowerRight)
         );
 
+        rakel.UpdatePosition(DebugShader);
+
+        // position was updated, so we need to recalculate the rest
+        rakel.UpdateState(rakelPosition, rakelPressure, rakelRotation, rakelTilt, DebugShader);
+
         canvas.Reservoir.Duplicate(DebugShader);
 
         ComputeBuffer canvasEmittedPaint = canvas.EmitPaint(

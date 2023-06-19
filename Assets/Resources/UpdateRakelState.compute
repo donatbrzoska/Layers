@@ -42,9 +42,6 @@ float3 Position;
 float Pressure;
 float Rotation;
 float Tilt;
-float MAX_SUPPORTED_TILT;
-float SINK_BASE_MAX;
-float SINK_TILT_MAX;
 
 RWStructuredBuffer<Rakel> RakelInfo;
 
@@ -59,14 +56,8 @@ void main (uint3 id_ : SV_DispatchThreadID)
     {
         Rakel rakel = RakelInfo[0];
 
-        float sink = SINK_BASE_MAX + Tilt / MAX_SUPPORTED_TILT * SINK_TILT_MAX;
-        Position.z += Pressure * sink;
-        // prevent sink through canvas
-        // TODO include canvas position -> this would also require info about the direction the canvas is oriented
-        // TODO include anchor ratio, right now this only works for anchors located on rakel edge
-        Position.z = min(Position.z, 0);
-
-        rakel.position = Position;
+        // use z from RakelInfo, since this is where we write it in UpdateRakelPosition
+        rakel.position = float3(Position.x, Position.y, rakel.position.z);
         rakel.pressure = Pressure;
         rakel.rotation = Rotation;
         rakel.tilt = Tilt;

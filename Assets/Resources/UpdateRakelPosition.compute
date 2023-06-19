@@ -1,0 +1,71 @@
+// ######################################## SHADER BASE ########################################
+
+#include "basic_util.hlsl"
+#include "indexing.hlsl"
+#include "logging.hlsl"
+
+uint3 id__;
+uint2 SubgridGroupSize;
+uint2 SubgridCurrentThreadID;
+
+uint2 id()
+{
+    uint2 subgrid_id = uint2(id__.x, id__.y);
+    return subgrid_id * SubgridGroupSize + SubgridCurrentThreadID;
+}
+
+int2 CalculationPosition;
+uint2 CalculationSize;
+
+RWStructuredBuffer<float4> Debug;
+RWStructuredBuffer<DebugListInfo> DebugInfo;
+
+void set_debug_list_info(uint size, uint t)
+{
+    DebugListInfo dli;
+    dli.Size = size;
+    dli.Type = t;
+    DebugInfo[0] = dli;
+}
+
+void log_(uint index, float4 f)
+{
+    Debug[XYZ(id().x, id().y, index, CalculationSize)] = f;
+}
+
+// ###################################### SHADER BASE END ######################################
+
+#include "rakel.hlsl"
+
+float PositionZ;
+float Pressure;
+float Tilt;
+float MAX_SUPPORTED_TILT;
+float SINK_BASE_MAX;
+float SINK_TILT_MAX;
+
+RWStructuredBuffer<Rakel> RakelInfo;
+
+
+#pragma kernel main
+
+[numthreads(32,1,1)]
+void main (uint3 id_ : SV_DispatchThreadID)
+{
+    id__ = id_;
+    if (is_relevant_thread(id(), CalculationSize))
+    {
+        Rakel rakel = RakelInfo[0];
+
+        rakel.position.z = PositionZ;
+
+        float sink = SINK_BASE_MAX + rakel.tilt / MAX_SUPPORTED_TILT * SINK_TILT_MAX;
+        rakel.position.z += rakel.pressure * sink;
+        // prevent sink through canvas
+        // TODO include canvas position -> this would also require info about the direction the canvas is oriented
+        // TODO include anchor ratio, right now this only works for anchors located on rakel edge
+        rakel.position.z = min(rakel.position.z, 0);
+
+        RakelInfo[0] = rakel;
+    }
+}
