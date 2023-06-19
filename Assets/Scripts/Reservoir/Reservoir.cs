@@ -45,21 +45,15 @@ public class Reservoir
 
     public void Duplicate(bool debugEnabled = false)
     {
-        ShaderRegion duplicateSR = GetFullShaderRegion();
-
-        List<CSAttribute> attributes = new List<CSAttribute>()
-        {
-            new CSComputeBuffer("Reservoir", Buffer)
-        };
-
-        ComputeShaderTask cst = new ComputeShaderTask(
+        new ComputeShaderTask(
             "ReservoirDuplication",
-            duplicateSR,
-            attributes,
+            GetFullShaderRegion(),
+            new List<CSAttribute>()
+            {
+                new CSComputeBuffer("Reservoir", Buffer)
+            },
             debugEnabled
-        );
-
-        cst.Run();
+        ).Run();
     }
 
     public void PrintVolumes(int z)
@@ -88,22 +82,18 @@ public class Reservoir
                 reduceRegion.Size,
                 REDUCE_BLOCK_SIZE);
 
-            List<CSAttribute> attributes = new List<CSAttribute>()
-            {
-                new CSComputeBuffer("Reservoir", Buffer),
-                new CSInt2("ReservoirSize", Size),
-                new CSInt2("ReduceRegionSize", reduceRegion.Size),
-                new CSInt("ReduceFunction", (int) reduceFunction)
-            };
-
-            ComputeShaderTask cst = new ComputeShaderTask(
+            new ComputeShaderTask(
                 "ReduceVolume",
                 reduceShaderRegion,
-                attributes,
+                new List<CSAttribute>()
+                {
+                    new CSComputeBuffer("Reservoir", Buffer),
+                    new CSInt2("ReservoirSize", Size),
+                    new CSInt2("ReduceRegionSize", reduceRegion.Size),
+                    new CSInt("ReduceFunction", (int) reduceFunction)
+                },
                 debugEnabled
-            );
-
-            cst.Run();
+            ).Run();
 
             // current reduceShaderRegion is new reduceRegion
             reduceRegion = reduceShaderRegion;

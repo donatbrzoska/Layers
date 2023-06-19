@@ -66,17 +66,16 @@ public class Canvas_
             new Vector2Int(texture.width-1, 0)
         );
 
-        ComputeShaderTask cst = new ComputeShaderTask(
+        new ComputeShaderTask(
             "SetTexture",
             sr,
-            new List<CSAttribute>() {
+            new List<CSAttribute>()
+            {
                 new CSFloat4("Value", value),
                 new CSTexture("Target", texture)
             },
             false
-        );
-
-        cst.Run();
+        ).Run();
     }
 
     public ComputeBuffer EmitPaint(
@@ -94,37 +93,33 @@ public class Canvas_
 
         WriteCanvasMappedInfo(canvasEmittedPaint, rakel, shaderRegion, debugEnabled);
 
-        List<CSAttribute> attributes = new List<CSAttribute>()
-        {
-            new CSInt("TextureResolution", Resolution),
-
-            new CSComputeBuffer("RakelInfo", rakel.InfoBuffer),
-            new CSComputeBuffer("RakelApplicationReservoir", rakel.ApplicationReservoir.Buffer),
-            new CSComputeBuffer("RakelPickupReservoir", rakel.PickupReservoir.Buffer),
-            new CSInt2("RakelReservoirSize", rakel.ApplicationReservoir.Size),
-
-            new CSFloat3("CanvasPosition", Position),
-            new CSFloat2("CanvasSize", Size),
-            new CSComputeBuffer("CanvasReservoir", Reservoir.Buffer),
-            new CSInt2("CanvasReservoirSize", TextureSize),
-
-            new CSFloat("RakelTilt_MAX", Rakel.MAX_SUPPORTED_TILT),
-            new CSFloat("PickupDistance_MAX", pickupDistance_MAX),
-            new CSFloat("PickupVolume_MIN", pickupVolume_MIN),
-            new CSFloat("PickupVolume_MAX", pickupVolume_MAX),
-
-            new CSComputeBuffer("CanvasEmittedPaint", canvasEmittedPaint),
-        };
-
-        ComputeShaderTask cst = new ComputeShaderTask(
+        new ComputeShaderTask(
             "EmitFromCanvas",
             shaderRegion,
             new Vector2Int(3, 3),
-            attributes,
-            debugEnabled
-        );
+            new List<CSAttribute>()
+            {
+                new CSInt("TextureResolution", Resolution),
 
-        cst.Run();
+                new CSComputeBuffer("RakelInfo", rakel.InfoBuffer),
+                new CSComputeBuffer("RakelApplicationReservoir", rakel.ApplicationReservoir.Buffer),
+                new CSComputeBuffer("RakelPickupReservoir", rakel.PickupReservoir.Buffer),
+                new CSInt2("RakelReservoirSize", rakel.ApplicationReservoir.Size),
+
+                new CSFloat3("CanvasPosition", Position),
+                new CSFloat2("CanvasSize", Size),
+                new CSComputeBuffer("CanvasReservoir", Reservoir.Buffer),
+                new CSInt2("CanvasReservoirSize", TextureSize),
+
+                new CSFloat("RakelTilt_MAX", Rakel.MAX_SUPPORTED_TILT),
+                new CSFloat("PickupDistance_MAX", pickupDistance_MAX),
+                new CSFloat("PickupVolume_MIN", pickupVolume_MIN),
+                new CSFloat("PickupVolume_MAX", pickupVolume_MAX),
+
+                new CSComputeBuffer("CanvasEmittedPaint", canvasEmittedPaint),
+            },
+            debugEnabled
+        ).Run();
 
         return canvasEmittedPaint;
     }
@@ -135,27 +130,23 @@ public class Canvas_
         ShaderRegion shaderRegion,
         bool debugEnabled = false)
     {
-        List<CSAttribute> attributes = new List<CSAttribute>()
-        {
-            new CSInt("TextureResolution", Resolution),
-
-            new CSComputeBuffer("RakelInfo", rakel.InfoBuffer),
-
-            new CSFloat3("CanvasPosition", Position),
-            new CSFloat2("CanvasSize", Size),
-            new CSInt2("CanvasReservoirSize", TextureSize),
-
-            new CSComputeBuffer("CanvasMappedInfoTarget", canvasMappedInfoTarget),
-        };
-
-        ComputeShaderTask cst = new ComputeShaderTask(
+        new ComputeShaderTask(
             "CanvasMappedInfo",
             shaderRegion,
-            attributes,
-            debugEnabled
-        );
+            new List<CSAttribute>()
+            {
+                new CSInt("TextureResolution", Resolution),
 
-        cst.Run();
+                new CSComputeBuffer("RakelInfo", rakel.InfoBuffer),
+
+                new CSFloat3("CanvasPosition", Position),
+                new CSFloat2("CanvasSize", Size),
+                new CSInt2("CanvasReservoirSize", TextureSize),
+
+                new CSComputeBuffer("CanvasMappedInfoTarget", canvasMappedInfoTarget),
+            },
+            debugEnabled
+        ).Run();
     }
 
     public void ApplyPaint(
@@ -163,22 +154,18 @@ public class Canvas_
         ComputeBuffer rakelEmittedPaint,
         bool debugEnabled = false)
     {
-        List<CSAttribute> attributes = new List<CSAttribute>()
-        {
-            new CSComputeBuffer("RakelEmittedPaint", rakelEmittedPaint),
-
-            new CSComputeBuffer("CanvasReservoir", Reservoir.Buffer),
-            new CSInt("TextureWidth", Texture.width)
-        };
-
-        ComputeShaderTask cst = new ComputeShaderTask(
+        new ComputeShaderTask(
             "ApplyBufferToCanvas",
             shaderRegion,
-            attributes,
-            debugEnabled
-        );
+            new List<CSAttribute>()
+            {
+                new CSComputeBuffer("RakelEmittedPaint", rakelEmittedPaint),
 
-        cst.Run();
+                new CSComputeBuffer("CanvasReservoir", Reservoir.Buffer),
+                new CSInt("TextureWidth", Texture.width)
+            },
+            debugEnabled
+        ).Run();
 
         rakelEmittedPaint.Dispose();
     }
@@ -196,25 +183,21 @@ public class Canvas_
         ShaderRegion shaderRegion,
         bool debugEnabled = false)
     {
-        List<CSAttribute> attributes = new List<CSAttribute>()
-        {
-            new CSComputeBuffer("CanvasReservoir", Reservoir.Buffer),
-            new CSInt("ColorSpace", (int) ColorSpace),
-
-            new CSInt2("TextureSize", TextureSize),
-            new CSTexture("Texture", Texture),
-            new CSTexture("NormalMap", NormalMap),
-            new CSFloat("NormalScale", NormalScale),
-        };
-
-        ComputeShaderTask cst = new ComputeShaderTask(
+        new ComputeShaderTask(
             "Render",
             shaderRegion,
-            attributes,
-            debugEnabled
-        );
+            new List<CSAttribute>()
+            {
+                new CSComputeBuffer("CanvasReservoir", Reservoir.Buffer),
+                new CSInt("ColorSpace", (int) ColorSpace),
 
-        cst.Run();
+                new CSInt2("TextureSize", TextureSize),
+                new CSTexture("Texture", Texture),
+                new CSTexture("NormalMap", NormalMap),
+                new CSFloat("NormalScale", NormalScale),
+            },
+            debugEnabled
+        ).Run();
     }
 
     public void Dispose()
