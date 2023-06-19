@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 public class Rakel
 {
-
     // see EmitFromRakel shader for details (look for "79 degree tilt")
     private const int MIN_SUPPORTED_TILT = 0;
     public const int MAX_SUPPORTED_TILT = 79;
