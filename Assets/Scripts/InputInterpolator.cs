@@ -85,7 +85,7 @@ public class InputInterpolator
                 float arcLength = Mathf.PI * (Rakel.Length / 2) * (Mathf.Abs(dr)/180);
                 int rotationSteps = (int)(arcLength * interpolationResolution);
 
-                float dt = Mathf.Abs(PreviousRakelTilt - rakelTilt);
+                float dt = rakelTilt - PreviousRakelTilt;
                 arcLength = Mathf.PI * Rakel.Width * (Mathf.Abs(dt)/180);
                 int tiltSteps = (int)(arcLength * interpolationResolution);
 
