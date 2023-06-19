@@ -116,6 +116,7 @@ public class OilPaintEngine : MonoBehaviour
                     new Vector3(x, y, 0),
                     0,
                     0,
+                    0,
                     Configuration.TransferConfiguration,
                     Rakel,
                     Canvas);
@@ -135,15 +136,13 @@ public class OilPaintEngine : MonoBehaviour
                 if (InputManager.InStroke)
                 {
                     Vector3 position = new Vector3(InputManager.RakelPositionX, InputManager.RakelPositionY, InputManager.RakelPositionZ);
+                    float pressure = InputManager.RakelPressure;
                     float rotation = InputManager.RakelRotation;
                     float tilt = InputManager.RakelTilt;
 
-                    float sink = Configuration.InputConfiguration.Sink_BASE + tilt / Rakel.MAX_SUPPORTED_TILT * Configuration.InputConfiguration.Sink_MAX;
-                    position.z += InputManager.RakelPressure * sink;
-                    position.z = Mathf.Min(position.z, 0); // prevent sink through canvas
-
                     InputInterpolator.AddNode(
                         position,
+                        pressure,
                         rotation,
                         tilt,
                         Configuration.TransferConfiguration,
@@ -380,7 +379,7 @@ public class OilPaintEngine : MonoBehaviour
 
         InputInterpolator.NewStroke();
         InputInterpolator.AddNode(
-            new Vector3(-3, 0, -0.10f),
+            new Vector3(-3, 0, -0.10f), 0,
             0,
             0,
             Configuration.TransferConfiguration,

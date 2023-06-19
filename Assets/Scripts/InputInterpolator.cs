@@ -7,10 +7,11 @@ public class InputInterpolator
     private Canvas_ Canvas;
 
     private Vector3 PreviousRakelPosition;
+    private float PreviousRakelPressure;
     private float PreviousRakelRotation;
     private float PreviousRakelTilt;
 
-    private float NO_ANGLE = float.NaN;
+    private float NO_VALUE = float.NaN;
     private Vector3 NO_POSITION = Vector3.negativeInfinity;
 
     public InputInterpolator(TransferEngine transferEngine, Rakel rakel, Canvas_ canvas)
@@ -23,28 +24,32 @@ public class InputInterpolator
     public void NewStroke()
     {
         PreviousRakelPosition = NO_POSITION;
-        PreviousRakelRotation = NO_ANGLE;
-        PreviousRakelTilt = NO_ANGLE;
+        PreviousRakelPressure = NO_VALUE;
+        PreviousRakelRotation = NO_VALUE;
+        PreviousRakelTilt = NO_VALUE;
 
         Rakel.NewStroke();
     }
 
-    public void AddNode(Vector3 rakelPosition, float rakelRotation, float rakelTilt, TransferConfiguration transferConfiguration, int interpolationResolution)
+    public void AddNode(Vector3 rakelPosition, float rakelPressure, float rakelRotation, float rakelTilt, TransferConfiguration transferConfiguration, int interpolationResolution)
     {
         // only reapply if there are changes
         if (!rakelPosition.Equals(PreviousRakelPosition)
+            || !rakelPressure.Equals(PreviousRakelPressure)
             || !rakelRotation.Equals(PreviousRakelRotation)
             || !rakelTilt.Equals(PreviousRakelTilt))
         {
             //Stopwatch sw = new Stopwatch();
             //sw.Start();
             bool isFirstNodeOfStroke = PreviousRakelPosition.Equals(NO_POSITION)
-                && PreviousRakelRotation.Equals(NO_ANGLE)
-                && PreviousRakelTilt.Equals(NO_ANGLE);
+                && PreviousRakelPressure.Equals(NO_VALUE)
+                && PreviousRakelRotation.Equals(NO_VALUE)
+                && PreviousRakelTilt.Equals(NO_VALUE);
             if (isFirstNodeOfStroke)
             {
                 TransferEngine.SimulateStep(
                     rakelPosition,
+                    rakelPressure,
                     rakelRotation,
                     rakelTilt,
                     transferConfiguration,
@@ -60,6 +65,8 @@ public class InputInterpolator
                 Vector2 dp_ = Canvas.MapToPixel(rakelPosition) - Canvas.MapToPixel(PreviousRakelPosition);
                 float dpLength = dp_.magnitude;
                 int positionSteps = (int)(dpLength * interpolationResolution); // don't add 1 because the first one is already done when isFirstNodeOfStroke
+
+                float dpr = rakelPressure - PreviousRakelPressure;
 
                 float dr = rakelRotation - PreviousRakelRotation;
                 if (Mathf.Abs(dr) >= 300){
@@ -87,6 +94,7 @@ public class InputInterpolator
 
                 // 2. interpolate
                 Vector3 previousPosition = PreviousRakelPosition;
+                float previousPressure = PreviousRakelPressure;
                 float previousRotation = PreviousRakelRotation;
                 float previousTilt = PreviousRakelTilt;
 
@@ -96,6 +104,8 @@ public class InputInterpolator
 
                     Vector3 currentPosition = previousPosition + dp / steps;
                     //Vector3 currentPosition = PreviousRakelPosition + (i+1) * (dp / steps); // doesn't seem to make a difference
+
+                    float currentPressure = previousPressure + dpr / steps;
 
                     float currentRotation = previousRotation + dr / steps;
                     if (currentRotation >= 360) { // fix turnover case 1
@@ -109,6 +119,7 @@ public class InputInterpolator
 
                     TransferEngine.SimulateStep(
                         currentPosition,
+                        currentPressure,
                         currentRotation,
                         currentTilt,
                         transferConfiguration,
@@ -123,6 +134,7 @@ public class InputInterpolator
             }
 
             PreviousRakelPosition = rakelPosition;
+            PreviousRakelPressure = rakelPressure;
             PreviousRakelRotation = rakelRotation;
             PreviousRakelTilt = rakelTilt;
             //if (logTime)

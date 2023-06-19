@@ -51,7 +51,7 @@ public class TestEmitFromCanvas
         Canvas.Reservoir.Duplicate(false);
 
         Rakel.UpdateState(
-            new Vector3(-8, 0.5f, 0), // choose z for max paint pickup
+            new Vector3(-8, 0.5f, 0), 1, // choose z for max paint pickup
             0, 0);
 
         // Act
@@ -98,7 +98,7 @@ public class TestEmitFromCanvas
         Canvas.Reservoir.Duplicate(false);
 
         Rakel.UpdateState(
-            new Vector3(-8, 0.5f, 0), // choose z for max paint pickup
+            new Vector3(-8, 0.5f, 0), 1, // choose z for max paint pickup
             30, 0);
 
 
@@ -146,7 +146,7 @@ public class TestEmitFromCanvas
         Canvas.Reservoir.Duplicate(false);
 
         Rakel.UpdateState(
-            new Vector3(-4, -0.5f, 0), // choose z for max paint pickup
+            new Vector3(-4, -0.5f, 0), 1, // choose z for max paint pickup
             0, 5);
 
 
@@ -193,7 +193,7 @@ public class TestEmitFromCanvas
         Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen, ColorSpace.RGB), new FlatVolumeFiller(1)));
         Canvas.Reservoir.Duplicate(false);
 
-        Rakel.UpdateState(new Vector3(-4, 0.5f, 0), 30, 5);
+        Rakel.UpdateState(new Vector3(-4, 0.5f, 0), 1, 30, 5);
 
 
         // Act

@@ -51,7 +51,7 @@ public class TestEmitFromRakel
         // Arrange
         Rakel.Fill(new ReservoirFiller(ColorFiller, new FlatVolumeFiller(1)));
         Rakel.UpdateState(
-            new Vector3(-3, -0.5f, -0.5f * EMIT_DISTANCE_MAX), // choose z for max paint emission
+            new Vector3(-3, -0.5f, -0.5f * EMIT_DISTANCE_MAX), 0, // choose z for max paint emission
             0,
             0);
         ShaderRegion rakelEmitSR = new ShaderRegion(
@@ -112,7 +112,7 @@ public class TestEmitFromRakel
         // Arrange
         Rakel.Fill(new ReservoirFiller(ColorFiller, new FlatVolumeFiller(1)));
         Rakel.UpdateState(
-            new Vector3(-3, -0.5f, -0.5f * EMIT_DISTANCE_MAX), // choose z for max paint emission
+            new Vector3(-3, -0.5f, -0.5f * EMIT_DISTANCE_MAX), 0, // choose z for max paint emission
             30,
             0);
         ShaderRegion rakelEmitSR = new ShaderRegion(
@@ -174,7 +174,7 @@ public class TestEmitFromRakel
             new Vector3(
                 -4,
                 -0.5f,
-                -0.5f * EMIT_DISTANCE_MAX),
+                -0.5f * EMIT_DISTANCE_MAX), 0,
             0,
             60);
 
@@ -235,7 +235,7 @@ public class TestEmitFromRakel
             new Vector3(
                 -3,
                 -0.5f,
-                -0.1f * EMIT_DISTANCE_MAX),
+                -0.1f * EMIT_DISTANCE_MAX), 0,
             30,
             10);
 

@@ -8,6 +8,9 @@ public class Rakel
     private const int MIN_SUPPORTED_TILT = 0;
     public const int MAX_SUPPORTED_TILT = 79;
 
+    private float SINK_BASE = 5 * Paint.VOLUME_THICKNESS;
+    private float SINK_TILT = 10 * Paint.VOLUME_THICKNESS;
+
     public static float ClampTilt(float tilt)
     {
         return Mathf.Clamp(tilt, MIN_SUPPORTED_TILT, MAX_SUPPORTED_TILT);
@@ -100,9 +103,16 @@ public class Rakel
         return oldValue;
     }
 
-    public void UpdateState(Vector3 position, float rotation, float tilt)
+    public void UpdateState(Vector3 position, float pressure, float rotation, float tilt)
     {
+        float sink = SINK_BASE + tilt / MAX_SUPPORTED_TILT * SINK_TILT;
+        position.z += pressure * sink;
+        // prevent sink through canvas
+        // TODO include canvas position -> this would also require info about the direction the canvas is oriented
+        // TODO include anchor ratio, right now this only works for anchors located on rakel edge
+        position.z = Mathf.Min(position.z, 0);
         Position = position;
+
         Rotation = rotation;
         Tilt = ClampTilt(Mathf.Max(Mathf.Min(tilt, MAX_SUPPORTED_TILT), MIN_SUPPORTED_TILT));
 

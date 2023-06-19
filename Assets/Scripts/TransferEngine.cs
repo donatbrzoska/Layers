@@ -15,7 +15,7 @@ public class TransferEngine
     // Rotation 0 means Rakel is directed to the right
     // Tilt 0 means Rakel is parallel to canvas
     public void SimulateStep(
-        Vector3 rakelPosition, float rakelRotation, float rakelTilt,
+        Vector3 rakelPosition, float rakelPressure, float rakelRotation, float rakelTilt,
         TransferConfiguration transferConfiguration,
         Rakel rakel,
         Canvas_ canvas)
@@ -33,7 +33,7 @@ public class TransferEngine
 
         //Debug.Log("Applying at x=" + wsc.MapToPixel(rakelPosition));
 
-        rakel.UpdateState(rakelPosition, rakelRotation, rakelTilt);
+        rakel.UpdateState(rakelPosition, rakelPressure, rakelRotation, rakelTilt);
 
         ShaderRegion canvasEmitSR = rakel.ApplicationReservoir.GetFullShaderRegion();
 
