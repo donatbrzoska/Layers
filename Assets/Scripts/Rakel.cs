@@ -39,7 +39,7 @@ public class Rakel
 
     private ComputeBuffer DistortionMap;
     private int DistortionMapIndex;
-    private const int MAX_STROKE_LENGTH = 3000; // should always be bigger than Rakel width
+    private const int MAX_STROKE_LENGTH = 3000; // should always be bigger than Rakel reservoir size.x
     private Vector2Int DistortionMapSize;
 
     public Rakel(float length, float width, int resolution, float anchorRatioLength = 0.5f, float anchorRatioWidth = 1)
