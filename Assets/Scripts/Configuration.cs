@@ -14,7 +14,7 @@ public class Configuration
     public Configuration()
     {
         TextureResolution = 40;
-        ColorSpace = ColorSpace.RYB;
+        ColorSpace = ColorSpace.RGB;
         NormalScale = 0.015f;
 
         InputConfiguration = new InputConfiguration();
@@ -172,6 +172,6 @@ public class TransferConfiguration
         PickupVolume_MIN = 0.3f;
         PickupVolume_MAX = 0.65f;
 
-        LayerThickness_MAX = 2 * Paint.VOLUME_THICKNESS;
+        LayerThickness_MAX = 4 * Paint.VOLUME_THICKNESS;
     }
 }
