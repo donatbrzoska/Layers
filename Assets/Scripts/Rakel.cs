@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 public struct RakelInfo
 {
-    public const int SizeInBytes = 4 * sizeof(float) + 10 * 3 * sizeof(float);
+    public const int SizeInBytes = 6 * sizeof(float) + 10 * 3 * sizeof(float);
 
     public float Length;
     public float Width;
@@ -11,8 +11,11 @@ public struct RakelInfo
     public Vector3 Anchor;
 
     public Vector3 Position;
+    public float Pressure;
     public float Rotation;
     public float Tilt;
+
+    public float EdgeZ;
 
     public Vector3 UpperLeft;
     public Vector3 UpperRight;
@@ -31,14 +34,15 @@ public class Rakel
     private const int MIN_SUPPORTED_TILT = 0;
     public const int MAX_SUPPORTED_TILT = 79;
 
-    private float SINK_BASE = 5 * Paint.VOLUME_THICKNESS;
-    private float SINK_TILT = 10 * Paint.VOLUME_THICKNESS;
+    private float SINK_BASE_MAX = 5 * Paint.VOLUME_THICKNESS;
+    private float SINK_TILT_MAX = 10 * Paint.VOLUME_THICKNESS;
 
     public static float ClampTilt(float tilt)
     {
         return Mathf.Clamp(tilt, MIN_SUPPORTED_TILT, MAX_SUPPORTED_TILT);
     }
 
+    public ComputeBuffer InfoBuffer;
     public RakelInfo Info;
 
     public Reservoir ApplicationReservoir;
@@ -72,6 +76,9 @@ public class Rakel
 
         // NOTE this has to be set after Width and Length were corrected
         Info.Anchor = new Vector3(anchorRatioWidth * Info.Width, anchorRatioLength * Info.Length, 0);
+
+        InfoBuffer = new ComputeBuffer(1, RakelInfo.SizeInBytes);
+        InfoBuffer.SetData(new RakelInfo[] { Info });
     }
 
     public void NewStroke()
@@ -109,16 +116,11 @@ public class Rakel
         return oldValue;
     }
 
-    public void UpdateState(Vector3 position, float pressure, float rotation, float tilt)
+    public void UpdateState(Vector3 position, float pressure, float rotation, float tilt, bool debugEnabled = false)
     {
-        float sink = SINK_BASE + tilt / MAX_SUPPORTED_TILT * SINK_TILT;
-        position.z += pressure * sink;
-        // prevent sink through canvas
-        // TODO include canvas position -> this would also require info about the direction the canvas is oriented
-        // TODO include anchor ratio, right now this only works for anchors located on rakel edge
-        position.z = Mathf.Min(position.z, 0);
+        // Update info on CPU for rakel rendering
         Info.Position = position;
-
+        Info.Pressure = pressure;
         Info.Rotation = rotation;
         Info.Tilt = ClampTilt(Mathf.Max(Mathf.Min(tilt, MAX_SUPPORTED_TILT), MIN_SUPPORTED_TILT));
 
@@ -144,6 +146,30 @@ public class Rakel
         Info.UpperRight = urRotated + positionTranslation;
         Info.LowerLeft = llRotated + positionTranslation;
         Info.LowerRight = lrRotated + positionTranslation;
+
+
+        // Update info on GPU for paint transfer calculations
+        List<CSAttribute> attributes = new List<CSAttribute>()
+        {
+            new CSFloat3("Position", Info.Position),
+            new CSFloat("Pressure", Info.Pressure),
+            new CSFloat("Rotation", Info.Rotation),
+            new CSFloat("Tilt", Info.Tilt),
+            new CSFloat("MAX_SUPPORTED_TILT", MAX_SUPPORTED_TILT),
+            new CSFloat("SINK_BASE_MAX", SINK_BASE_MAX),
+            new CSFloat("SINK_TILT_MAX", SINK_TILT_MAX),
+
+            new CSComputeBuffer("RakelInfo", InfoBuffer),
+        };
+
+        ComputeShaderTask cst = new ComputeShaderTask(
+            "UpdateRakelState",
+            new ShaderRegion(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
+            attributes,
+            debugEnabled
+        );
+
+        cst.Run();
     }
 
     public override string ToString()
@@ -185,10 +211,7 @@ public class Rakel
         {
             new CSInt("TextureResolution", canvas.Resolution),
 
-            new CSFloat3("RakelAnchor", Info.Anchor),
-            new CSFloat("RakelRotation", Info.Rotation),
-            new CSFloat("RakelTilt", Info.Tilt),
-            new CSFloat("RakelEdgeZ", Info.LowerLeft.z),
+            new CSComputeBuffer("RakelInfo", InfoBuffer),
             new CSComputeBuffer("RakelApplicationReservoir", ApplicationReservoir.Buffer),
             new CSComputeBuffer("RakelPickupReservoir", PickupReservoir.Buffer),
             new CSInt2("RakelReservoirSize", ApplicationReservoir.Size),
@@ -238,13 +261,7 @@ public class Rakel
             new CSFloat3("CanvasPosition", canvas.Position),
             new CSFloat2("CanvasSize", canvas.Size),
 
-            new CSFloat("RakelLength", Info.Length),
-            new CSFloat3("RakelPosition", Info.Position),
-            new CSFloat3("RakelAnchor", Info.Anchor),
-            new CSFloat("RakelRotation", Info.Rotation),
-            new CSFloat("RakelTilt", Info.Tilt),
-            new CSFloat3("RakelLLTilted", Info.LLTilted),
-            new CSFloat3("RakelLRTilted", Info.LRTilted),
+            new CSComputeBuffer("RakelInfo", InfoBuffer),
             new CSInt2("RakelReservoirSize", ApplicationReservoir.Size),
 
             new CSComputeBuffer("RakelMappedInfoTarget", rakelMappedInfoTarget),
@@ -289,7 +306,7 @@ public class Rakel
     {
         ApplicationReservoir.Dispose();
         PickupReservoir.Dispose();
-
+        InfoBuffer.Dispose();
         DistortionMap.Dispose();
     }
 }

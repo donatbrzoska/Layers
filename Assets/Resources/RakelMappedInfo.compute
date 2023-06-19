@@ -39,19 +39,14 @@ void log_(uint index, float4 f)
 #include "convert.hlsl"
 #include "paint.hlsl"
 #include "math.hlsl"
+#include "rakel.hlsl"
 
 uint TextureResolution;
 
 float3 CanvasPosition;
 float2 CanvasSize;
 
-float RakelLength;
-float3 RakelPosition;
-float3 RakelAnchor;
-float RakelRotation;
-float RakelTilt;
-float3 RakelLLTilted;
-float3 RakelLRTilted;
+RWStructuredBuffer<Rakel> RakelInfo;
 uint2 RakelReservoirSize;
 
 RWStructuredBuffer<Paint> RakelMappedInfoTarget;
@@ -63,24 +58,26 @@ RWStructuredBuffer<Paint> RakelMappedInfoTarget;
 // - z: distance from rakel: -inf .. +inf
 float3 rakel_mapped(int2 pos_pixel)
 {
+    Rakel rakel = RakelInfo[0];
+
     // translate pixel to world space
     float3 pos_world_space = pixel_to_world_space(pos_pixel, TextureResolution, CanvasPosition, CanvasSize);
 
     // translate back so pixel is anchor aligned
-    float3 back_translation_position = RakelAnchor - float3(RakelPosition.x, RakelPosition.y, 0);
+    float3 back_translation_position = rakel.anchor - float3(rakel.position.x, rakel.position.y, 0);
     float3 pos_back_translated_position = pos_world_space + back_translation_position;
 
     // rotate back around anchor
-    float3 pos_back_rotated = rotate_by_z(pos_back_translated_position, - RakelRotation, RakelAnchor);
+    float3 pos_back_rotated = rotate_by_z(pos_back_translated_position, - rakel.rotation, rakel.anchor);
 
     // calculate results
-    float rakel_tilted_x_max = RakelLRTilted.x;
-    float rakel_tilted_x_min = RakelLLTilted.x;
+    float rakel_tilted_x_max = rakel.lr_tilted.x;
+    float rakel_tilted_x_min = rakel.ll_tilted.x;
     float rakel_tilted_dx = rakel_tilted_x_max - rakel_tilted_x_min;
     float part_x = (pos_back_rotated.x - rakel_tilted_x_min) / rakel_tilted_dx;
-    float part_y = pos_back_rotated.y / RakelLength; // currently easy, because there is no length tilt
+    float part_y = pos_back_rotated.y / rakel.length; // currently easy, because there is no length tilt
 
-    float dist = distance_from_rakel(pos_back_rotated, RakelLLTilted, RakelLRTilted, float3(RakelAnchor.x, RakelAnchor.y, RakelPosition.z));
+    float dist = distance_from_rakel(pos_back_rotated, rakel.ll_tilted, rakel.lr_tilted, float3(rakel.anchor.x, rakel.anchor.y, rakel.position.z));
     
     // NOTE: this calculation does not work for a curved rakel
     // part_x 0 means actually left from the pixel center, because the part_ info is about world space

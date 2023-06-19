@@ -98,13 +98,7 @@ public class Canvas_
         {
             new CSInt("TextureResolution", Resolution),
 
-            new CSFloat("RakelLength", rakel.Info.Length),
-            new CSFloat("RakelWidth", rakel.Info.Width),
-            new CSFloat3("RakelPosition", rakel.Info.Position),
-            new CSFloat3("RakelAnchor", rakel.Info.Anchor),
-            new CSFloat("RakelRotation", rakel.Info.Rotation),
-            new CSFloat("RakelTilt", rakel.Info.Tilt),
-            new CSFloat("RakelEdgeZ", rakel.Info.LowerLeft.z),
+            new CSComputeBuffer("RakelInfo", rakel.InfoBuffer),
             new CSComputeBuffer("RakelApplicationReservoir", rakel.ApplicationReservoir.Buffer),
             new CSComputeBuffer("RakelPickupReservoir", rakel.PickupReservoir.Buffer),
             new CSInt2("RakelReservoirSize", rakel.ApplicationReservoir.Size),
@@ -145,12 +139,7 @@ public class Canvas_
         {
             new CSInt("TextureResolution", Resolution),
 
-            new CSFloat("RakelLength", rakel.Info.Length),
-            new CSFloat("RakelWidth", rakel.Info.Width),
-            new CSFloat3("RakelPosition", rakel.Info.Position),
-            new CSFloat3("RakelAnchor", rakel.Info.Anchor),
-            new CSFloat("RakelRotation", rakel.Info.Rotation),
-            new CSFloat("RakelTilt", rakel.Info.Tilt),
+            new CSComputeBuffer("RakelInfo", rakel.InfoBuffer),
 
             new CSFloat3("CanvasPosition", Position),
             new CSFloat2("CanvasSize", Size),

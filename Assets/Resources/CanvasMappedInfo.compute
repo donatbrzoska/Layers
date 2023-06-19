@@ -40,15 +40,11 @@ void log_(uint index, float4 f)
 #include "volume.hlsl"
 #include "paint.hlsl"
 #include "math.hlsl"
+#include "rakel.hlsl"
 
 uint TextureResolution;
 
-float RakelLength;
-float RakelWidth;
-float3 RakelPosition;
-float3 RakelAnchor;
-float RakelRotation;
-float RakelTilt;
+RWStructuredBuffer<Rakel> RakelInfo;
 
 float3 CanvasPosition;
 float2 CanvasSize;
@@ -63,19 +59,21 @@ RWStructuredBuffer<Paint> CanvasMappedInfoTarget;
 // - z: distance from canvas: -inf .. +inf
 float3 canvas_mapped(int2 pos_pixel)
 {
+    Rakel rakel = RakelInfo[0];
+
     // convert pixel to world space
     float3 pos_world_space = pixel_to_world_space(
         pos_pixel,
         TextureResolution,
-        float3(RakelWidth/2, RakelLength/2, 0),
-        float2(RakelWidth, RakelLength));
+        float3(rakel.width/2, rakel.length/2, 0),
+        float2(rakel.width, rakel.length));
 
     // tilt and rotate around anchor
-    float3 pos_tilted = rotate_by_y(pos_world_space, RakelTilt, RakelAnchor);
-    float3 pos_rotated = rotate_by_z(pos_tilted, RakelRotation, RakelAnchor);
+    float3 pos_tilted = rotate_by_y(pos_world_space, rakel.tilt, rakel.anchor);
+    float3 pos_rotated = rotate_by_z(pos_tilted, rakel.rotation, rakel.anchor);
 
     // translate to actual rakel position
-    float3 anchor_cleaned_translation = float3(RakelPosition.x, RakelPosition.y, 0) - RakelAnchor;
+    float3 anchor_cleaned_translation = float3(rakel.position.x, rakel.position.y, 0) - rakel.anchor;
     float3 pos_translated = pos_rotated + anchor_cleaned_translation;
 
     // calculate results
