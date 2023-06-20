@@ -20,7 +20,7 @@ public class TestVolume_emit_tilt
     private ComputeShaderTask Execute(int kernelID)
     {
         ComputeShaderTask cst = new ComputeShaderTask(
-            "TestVolume_emit",
+            "Tests/TestVolume_emit",
             new ShaderRegion(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
             Attributes,
             true,

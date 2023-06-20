@@ -1,0 +1,39 @@
+#include "../ShaderBase/shader_base.hlsl"
+
+#include "../convert.hlsl"
+
+
+int2 Pixel;
+uint TextureResolution;
+float3 SurfacePosition;
+float2 SurfaceSize;
+
+#pragma kernel test_pixel_to_world_space
+
+[numthreads(32,1,1)]
+void test_pixel_to_world_space(uint3 id_ : SV_DispatchThreadID)
+{
+    id__ = id_;
+    if (is_relevant_thread(id(), CalculationSize))
+    {
+        float3 pixel_to_world_space_result = pixel_to_world_space(Pixel, TextureResolution, SurfacePosition, SurfaceSize);
+        log_float3(pixel_to_world_space_result);
+    }
+}
+
+
+float3 WorldSpacePosition;
+// uint TextureResolution;
+
+#pragma kernel test_rakel_anchor_to_index_space
+
+[numthreads(32,1,1)]
+void test_rakel_anchor_to_index_space(uint3 id_ : SV_DispatchThreadID)
+{
+    id__ = id_;
+    if (is_relevant_thread(id(), CalculationSize))
+    {
+        float2 test_rakel_anchor_to_index_space_result = rakel_anchor_to_index_space(WorldSpacePosition, TextureResolution);
+        log_float2(test_rakel_anchor_to_index_space_result);
+    }
+}

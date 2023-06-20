@@ -1,0 +1,40 @@
+#include "../ShaderBase/shader_base.hlsl"
+
+#include "../distance.hlsl"
+
+
+float3 PointPos;
+float3 RakelLLTilted;
+float3 RakelLRTilted;
+float3 RakelPosition;
+
+#pragma kernel test_distance_from_rakel
+
+[numthreads(32,1,1)]
+void test_distance_from_rakel(uint3 id_ : SV_DispatchThreadID)
+{
+    id__ = id_;
+    if (is_relevant_thread(id(), CalculationSize))
+    {
+        float distance_from_rakel_result = distance_from_rakel(PointPos, RakelLLTilted, RakelLRTilted, RakelPosition);
+        log_float(distance_from_rakel_result);
+    }
+}
+
+
+// float3 PointPos;
+float3 CanvasNormal;
+float3 CanvasPosition;
+
+#pragma kernel test_distance_from_canvas
+
+[numthreads(32,1,1)]
+void test_distance_from_canvas(uint3 id_ : SV_DispatchThreadID)
+{
+    id__ = id_;
+    if (is_relevant_thread(id(), CalculationSize))
+    {
+        float distance_from_canvas_result = distance_from_canvas(PointPos, CanvasPosition, CanvasNormal);
+        log_float(distance_from_canvas_result);
+    }
+}

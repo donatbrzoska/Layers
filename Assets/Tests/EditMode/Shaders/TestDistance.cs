@@ -18,7 +18,7 @@ public class TestDistance
     private ComputeShaderTask Execute(int kernelID)
     {
         ComputeShaderTask cst = new ComputeShaderTask(
-            "TestDistance",
+            "Tests/TestDistance",
             new ShaderRegion(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
             Attributes,
             true,

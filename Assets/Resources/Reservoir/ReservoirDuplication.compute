@@ -1,0 +1,19 @@
+#include "../ShaderBase/shader_base.hlsl"
+
+#include "../Paint/paint.hlsl"
+
+RWStructuredBuffer<Paint> Reservoir;
+
+
+#pragma kernel main
+
+[numthreads(32,1,1)]
+void main (uint3 id_ : SV_DispatchThreadID)
+{
+    id__ = id_;
+    if (is_relevant_thread(id(), CalculationSize))
+    {
+        Reservoir[XYZ(id().x, id().y, 1, CalculationSize)] = Reservoir[XYZ(id().x, id().y, 0, CalculationSize)];
+        // Reservoir[XYZ(id().x, id().y, 0, CalculationSize)] = available; // also update source for corrections // TODO find out why this is not necessary
+    }
+}

@@ -17,7 +17,7 @@ public class TestPaint_ryb_to_rgb
     private ComputeShaderTask Execute(int kernelID)
     {
         ComputeShaderTask cst = new ComputeShaderTask(
-            "TestPaint",
+            "Tests/TestPaint",
             new ShaderRegion(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
             Attributes,
             true,

@@ -1,6 +1,6 @@
-#include "shader_base.hlsl"
+#include "ShaderBase/shader_base.hlsl"
 
-#include "paint.hlsl"
+#include "Paint/paint.hlsl"
 
 RWStructuredBuffer<Paint> CanvasReservoir;
 uint ColorSpace;

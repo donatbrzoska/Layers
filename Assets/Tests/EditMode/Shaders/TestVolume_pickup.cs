@@ -23,7 +23,7 @@ public class TestVolume_pickup
     private ComputeShaderTask Execute(int kernelID)
     {
         ComputeShaderTask cst = new ComputeShaderTask(
-            "TestVolume_pickup",
+            "Tests/TestVolume_pickup",
             new ShaderRegion(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
             Attributes,
             true,

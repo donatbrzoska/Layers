@@ -1,0 +1,42 @@
+#include "../ShaderBase/shader_base.hlsl"
+
+#include "../Paint/paint.hlsl"
+#include "../rakel.hlsl"
+
+RWStructuredBuffer<Paint> MaxVolumeSource;
+uint2 MaxVolumeSourceSize;
+uint2 MaxVolumeSourceIndex;
+
+float LayerThickness_MAX;
+float Pressure;
+float Tilt;
+float MAX_SUPPORTED_TILT;
+float SINK_BASE_MAX;
+float SINK_TILT_MAX;
+
+RWStructuredBuffer<Rakel> RakelInfo;
+
+
+#pragma kernel main
+
+[numthreads(32,1,1)]
+void main (uint3 id_ : SV_DispatchThreadID)
+{
+    id__ = id_;
+    if (is_relevant_thread(id(), CalculationSize))
+    {
+        Rakel rakel = RakelInfo[0];
+
+        float current_max_volume_on_canvas = MaxVolumeSource[XYZ(MaxVolumeSourceIndex.x, MaxVolumeSourceIndex.y, 1, MaxVolumeSourceSize)].volume;
+        rakel.position.z = - (current_max_volume_on_canvas * VOLUME_THICKNESS() + LayerThickness_MAX);
+
+        float sink = SINK_BASE_MAX + rakel.tilt / MAX_SUPPORTED_TILT * SINK_TILT_MAX;
+        rakel.position.z += rakel.pressure * sink;
+        // prevent sink through canvas
+        // TODO include canvas position -> this would also require info about the direction the canvas is oriented
+        // TODO include anchor ratio, right now this only works for anchors located on rakel edge
+        rakel.position.z = min(rakel.position.z, 0);
+
+        RakelInfo[0] = rakel;
+    }
+}

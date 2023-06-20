@@ -1,0 +1,28 @@
+#include "../ShaderBase/shader_base.hlsl"
+
+#include "../Paint/paint.hlsl"
+
+RWStructuredBuffer<Paint> RakelEmittedPaint;
+
+RWStructuredBuffer<Paint> CanvasReservoir;
+uint TextureWidth;
+
+
+#pragma kernel main
+
+[numthreads(32,1,1)]
+void main (uint3 id_ : SV_DispatchThreadID)
+{
+    id__ = id_;
+    if (is_relevant_thread(id(), CalculationSize))
+    {
+        // calculate pixel position on canvas
+        int2 canvas_pixel = id() + CalculationPosition;
+
+        Paint emitted = RakelEmittedPaint[XY(id().x, id().y, CalculationSize.x)];
+        Paint on_canvas = CanvasReservoir[XY(canvas_pixel.x, canvas_pixel.y, TextureWidth)];
+        Paint mixed = mix(emitted, on_canvas);
+
+        CanvasReservoir[XY(canvas_pixel.x, canvas_pixel.y, TextureWidth)] = mixed;
+    }
+}

@@ -1,0 +1,62 @@
+#include "../ShaderBase/shader_base.hlsl"
+
+#include "../volume.hlsl"
+
+
+float Distance;
+float PickupDistance_MAX;
+float PickupVolume_MIN;
+float PickupVolume_MAX;
+
+#pragma kernel test_pickup_volume_distance
+
+[numthreads(32,1,1)]
+void test_pickup_volume_distance(uint3 id_ : SV_DispatchThreadID)
+{
+    id__ = id_;
+    if (is_relevant_thread(id(), CalculationSize))
+    {
+        float pickup_volume_distance_result = pickup_volume_distance(Distance, PickupDistance_MAX, PickupVolume_MIN, PickupVolume_MAX);
+        log_float(pickup_volume_distance_result);
+    }
+}
+
+
+float Tilt;
+float Tilt_MAX;
+// float PickupVolume_MIN;
+// float PickupVolume_MAX;
+
+#pragma kernel test_pickup_volume_tilt
+
+[numthreads(32,1,1)]
+void test_pickup_volume_tilt(uint3 id_ : SV_DispatchThreadID)
+{
+    id__ = id_;
+    if (is_relevant_thread(id(), CalculationSize))
+    {
+        float pickup_volume_tilt_result = pickup_volume_tilt(Tilt, Tilt_MAX, PickupVolume_MIN, PickupVolume_MAX);
+        log_float(pickup_volume_tilt_result);
+    }
+}
+
+
+// float Distance;
+// float PickupDistance_MAX;
+// float Tilt;
+// float Tilt_MAX;
+// float PickupVolume_MIN;
+// float PickupVolume_MAX;
+
+#pragma kernel test_pickup_volume
+
+[numthreads(32,1,1)]
+void test_pickup_volume(uint3 id_ : SV_DispatchThreadID)
+{
+    id__ = id_;
+    if (is_relevant_thread(id(), CalculationSize))
+    {
+        float pickup_volume_result = pickup_volume(Distance, PickupDistance_MAX, Tilt, Tilt_MAX, PickupVolume_MIN, PickupVolume_MAX);
+        log_float(pickup_volume_result);
+    }
+}

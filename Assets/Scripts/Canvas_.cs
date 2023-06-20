@@ -94,7 +94,7 @@ public class Canvas_
         WriteCanvasMappedInfo(canvasEmittedPaint, rakel, shaderRegion, debugEnabled);
 
         new ComputeShaderTask(
-            "EmitFromCanvas",
+            "Pickup/EmitFromCanvas",
             shaderRegion,
             new Vector2Int(3, 3),
             new List<CSAttribute>()
@@ -131,7 +131,7 @@ public class Canvas_
         bool debugEnabled = false)
     {
         new ComputeShaderTask(
-            "CanvasMappedInfo",
+            "Pickup/CanvasMappedInfo",
             shaderRegion,
             new List<CSAttribute>()
             {
@@ -155,7 +155,7 @@ public class Canvas_
         bool debugEnabled = false)
     {
         new ComputeShaderTask(
-            "ApplyBufferToCanvas",
+            "Emit/ApplyBufferToCanvas",
             shaderRegion,
             new List<CSAttribute>()
             {

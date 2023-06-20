@@ -162,7 +162,7 @@ public class Rakel
 
         // Update info on GPU for paint transfer calculations
         new ComputeShaderTask(
-            "UpdateRakelState",
+            "RakelState/UpdateRakelState",
             new ShaderRegion(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
             new List<CSAttribute>()
             {
@@ -190,7 +190,7 @@ public class Rakel
         rakelMappedInfo.SetData(rakelMappedInfoData);
 
         new ComputeShaderTask(
-            "RakelMappedInfo",
+            "Emit/RakelMappedInfo",
             shaderRegion,
             new List<CSAttribute>()
             {
@@ -252,7 +252,7 @@ public class Rakel
         bool debugEnabled = false)
     {
         new ComputeShaderTask(
-            "UpdateRakelPositionZ",
+            "RakelState/UpdateRakelPositionZ",
             new ShaderRegion(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
             new List<CSAttribute>()
             {
@@ -308,7 +308,7 @@ public class Rakel
         Vector2Int subgridGroupSize = new Vector2Int(clipRadiusX * 2 + 1, 3);
 
         new ComputeShaderTask(
-            "EmitFromRakel",
+            "Emit/EmitFromRakel",
             shaderRegion,
             subgridGroupSize,
             new List<CSAttribute>()
@@ -353,7 +353,7 @@ public class Rakel
         bool debugEnabled = false)
     {
         new ComputeShaderTask(
-            "ApplyBufferToRakel",
+            "Pickup/ApplyBufferToRakel",
             shaderRegion,
             new List<CSAttribute>
             {

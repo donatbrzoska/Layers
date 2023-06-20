@@ -46,7 +46,7 @@ public class Reservoir
     public void Duplicate(bool debugEnabled = false)
     {
         new ComputeShaderTask(
-            "ReservoirDuplication",
+            "Reservoir/ReservoirDuplication",
             GetFullShaderRegion(),
             new List<CSAttribute>()
             {
@@ -63,7 +63,7 @@ public class Reservoir
         bool debugEnabled = false)
     {
         new ComputeShaderTask(
-            "ActiveReservoirDuplication",
+            "Reservoir/ActiveReservoirDuplication",
             shaderRegion,
             new List<CSAttribute>()
             {
@@ -103,7 +103,7 @@ public class Reservoir
                 REDUCE_BLOCK_SIZE);
 
             new ComputeShaderTask(
-                "ReduceVolume",
+                "Reservoir/ReduceVolume",
                 reduceShaderRegion,
                 new List<CSAttribute>()
                 {

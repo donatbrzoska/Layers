@@ -22,7 +22,7 @@ public class TestVolume_emit_distance
     private ComputeShaderTask Execute(int kernelID)
     {
         ComputeShaderTask cst = new ComputeShaderTask(
-            "TestVolume_emit",
+            "Tests/TestVolume_emit",
             new ShaderRegion(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
             Attributes,
             true,

@@ -1,0 +1,62 @@
+#include "../ShaderBase/shader_base.hlsl"
+
+#include "../volume.hlsl"
+
+
+float Distance;
+float EmitDistance_MAX;
+float EmitVolume_MIN;
+float EmitVolume_MAX;
+
+#pragma kernel test_emit_volume_distance
+
+[numthreads(32,1,1)]
+void test_emit_volume_distance(uint3 id_ : SV_DispatchThreadID)
+{
+    id__ = id_;
+    if (is_relevant_thread(id(), CalculationSize))
+    {
+        float emit_volume_distance_result = emit_volume_distance(Distance, EmitDistance_MAX, EmitVolume_MIN, EmitVolume_MAX);
+        log_float(emit_volume_distance_result);
+    }
+}
+
+
+float Tilt;
+float Tilt_MAX;
+// float EmitVolume_MIN;
+// float EmitVolume_MAX;
+
+#pragma kernel test_emit_volume_tilt
+
+[numthreads(32,1,1)]
+void test_emit_volume_tilt(uint3 id_ : SV_DispatchThreadID)
+{
+    id__ = id_;
+    if (is_relevant_thread(id(), CalculationSize))
+    {
+        float emit_volume_tilt_result = emit_volume_tilt(Tilt, Tilt_MAX, EmitVolume_MIN, EmitVolume_MAX);
+        log_float(emit_volume_tilt_result);
+    }
+}
+
+
+// float Distance;
+// float EmitDistance_MAX;
+// float Tilt;
+// float Tilt_MAX;
+// float EmitVolume_MIN;
+// float EmitVolume_MAX;
+
+#pragma kernel test_emit_volume
+
+[numthreads(32,1,1)]
+void test_emit_volume(uint3 id_ : SV_DispatchThreadID)
+{
+    id__ = id_;
+    if (is_relevant_thread(id(), CalculationSize))
+    {
+        float emit_volume_result = emit_volume(Distance, EmitDistance_MAX, Tilt, Tilt_MAX, EmitVolume_MIN, EmitVolume_MAX);
+        log_float(emit_volume_result);
+    }
+}
