@@ -44,9 +44,14 @@ public class TransferEngine
             canvas.MapToPixelInRange(rakel.Info.LowerRight)
         );
 
-        ComputeBuffer rakelMappedInfo = rakel.CalculateRakelMappedInfo(
+        ComputeBuffer rakelMappedInfo = rakel.TransformToRakelOrigin(
             rakelEmitSR,
             canvas,
+            DebugShader);
+
+        rakel.CalculateReservoirPixel(
+            rakelMappedInfo,
+            rakelEmitSR,
             DebugShader);
 
 
@@ -56,6 +61,11 @@ public class TransferEngine
             rakelMappedInfo,
             rakelEmitSR,
             transferConfiguration.LayerThickness_MAX,
+            DebugShader);
+
+        rakel.CalculateDistanceFromRakel(
+            rakelMappedInfo,
+            rakelEmitSR,
             DebugShader);
 
 

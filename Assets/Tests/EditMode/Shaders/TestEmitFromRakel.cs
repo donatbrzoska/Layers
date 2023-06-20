@@ -62,7 +62,8 @@ public class TestEmitFromRakel
             1 // not really needed for polygon clipping
         );
 
-        ComputeBuffer rakelMappedInfo = Rakel.CalculateRakelMappedInfo(rakelEmitSR, Canvas, false);
+        ComputeBuffer rakelMappedInfo = Rakel.TransformToRakelOrigin(rakelEmitSR, Canvas, false);
+        Rakel.CalculateReservoirPixel(rakelMappedInfo, rakelEmitSR, false);
 
         // Act
         RakelEmittedPaint = Rakel.EmitPaint(
@@ -125,7 +126,8 @@ public class TestEmitFromRakel
             1 // not really needed for polygon clipping
         );
 
-        ComputeBuffer rakelMappedInfo = Rakel.CalculateRakelMappedInfo(rakelEmitSR, Canvas, false);
+        ComputeBuffer rakelMappedInfo = Rakel.TransformToRakelOrigin(rakelEmitSR, Canvas, false);
+        Rakel.CalculateReservoirPixel(rakelMappedInfo, rakelEmitSR, false);
 
         // Act
         RakelEmittedPaint = Rakel.EmitPaint(
@@ -190,7 +192,8 @@ public class TestEmitFromRakel
             1 // not really needed for polygon clipping
         );
 
-        ComputeBuffer rakelMappedInfo = Rakel.CalculateRakelMappedInfo(rakelEmitSR, Canvas, false);
+        ComputeBuffer rakelMappedInfo = Rakel.TransformToRakelOrigin(rakelEmitSR, Canvas, false);
+        Rakel.CalculateReservoirPixel(rakelMappedInfo, rakelEmitSR, false);
 
         // Act
         RakelEmittedPaint = Rakel.EmitPaint(
@@ -254,7 +257,8 @@ public class TestEmitFromRakel
             1 // not really needed for polygon clipping
         );
 
-        ComputeBuffer rakelMappedInfo = Rakel.CalculateRakelMappedInfo(rakelEmitSR, Canvas, false);
+        ComputeBuffer rakelMappedInfo = Rakel.TransformToRakelOrigin(rakelEmitSR, Canvas, false);
+        Rakel.CalculateReservoirPixel(rakelMappedInfo, rakelEmitSR, false);
 
         // Act
         RakelEmittedPaint = Rakel.EmitPaint(

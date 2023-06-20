@@ -1,0 +1,46 @@
+#include "../ShaderBase/shader_base.hlsl"
+
+#include "../rakel.hlsl"
+#include "../mapped_info.hlsl"
+
+RWStructuredBuffer<Rakel> RakelInfo;
+uint2 RakelReservoirSize;
+
+RWStructuredBuffer<MappedInfo> RakelMappedInfo;
+
+
+// returns:
+// - x: exact projection of canvas pixel.x to rakel reservoir index space
+// - y: exact projection of canvas pixel.y to rakel reservoir index space
+float2 project_into_rakel_reservoir(float3 back_tranformed_canvas_pixel)
+{
+    Rakel rakel = RakelInfo[0];
+
+    // calculate results
+    float rakel_tilted_x_max = rakel.lr_tilted.x;
+    float rakel_tilted_x_min = rakel.ll_tilted.x;
+    float rakel_tilted_dx = rakel_tilted_x_max - rakel_tilted_x_min;
+    float part_x = (back_tranformed_canvas_pixel.x - rakel_tilted_x_min) / rakel_tilted_dx;
+    float part_y = back_tranformed_canvas_pixel.y / rakel.length; // currently easy, because there is no length tilt
+
+    // NOTE: this calculation does not work for a curved rakel
+    // part_x 0 means actually left from the pixel center, because the part_ info is about world space
+    // reservoir_pixel is -0.5 for part_k == 0 and RakelReservoirSize.k - 1 + 0.5 for part_k == 1
+    float2 rakel_reservoir_pixel = float2(part_x * RakelReservoirSize.x - 0.5,
+                                    part_y * RakelReservoirSize.y - 0.5);
+
+    return rakel_reservoir_pixel;
+}
+
+#pragma kernel main
+
+[numthreads(32,1,1)]
+void main (uint3 id_ : SV_DispatchThreadID)
+{
+    id__ = id_;
+    if (is_relevant_thread(id(), CalculationSize))
+    {
+        float3 back_tranformed_canvas_pixel = RakelMappedInfo[XY(id().x, id().y, CalculationSize.x)].back_transformed_pixel;
+        RakelMappedInfo[XY(id().x, id().y, CalculationSize.x)].reservoir_pixel = project_into_rakel_reservoir(back_tranformed_canvas_pixel);
+    }
+}

@@ -30,8 +30,9 @@ public struct RakelInfo
 
 public struct MappedInfo
 {
-    public const int SizeInBytes = 3 * sizeof(float);
+    public const int SizeInBytes = 6 * sizeof(float);
 
+    public Vector3 BackTransformedPixel;
     public Vector2 ReservoirPixel;
     public float Distance;
 }
@@ -180,7 +181,7 @@ public class Rakel
         ).Run();
     }
 
-    public ComputeBuffer CalculateRakelMappedInfo(
+    public ComputeBuffer TransformToRakelOrigin(
         ShaderRegion shaderRegion,
         Canvas_ canvas,
         bool debugEnabled = false)
@@ -190,7 +191,7 @@ public class Rakel
         rakelMappedInfo.SetData(rakelMappedInfoData);
 
         new ComputeShaderTask(
-            "Emit/RakelMappedInfo",
+            "Emit/TransformToRakelOrigin",
             shaderRegion,
             new List<CSAttribute>()
             {
@@ -200,7 +201,6 @@ public class Rakel
                 new CSFloat2("CanvasSize", canvas.Size),
 
                 new CSComputeBuffer("RakelInfo", InfoBuffer),
-                new CSInt2("RakelReservoirSize", ApplicationReservoir.Size),
 
                 new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
             },
@@ -208,6 +208,43 @@ public class Rakel
         ).Run();
 
         return rakelMappedInfo;
+    }
+
+    public void CalculateReservoirPixel(
+        ComputeBuffer rakelMappedInfo,
+        ShaderRegion shaderRegion,
+        bool debugEnabled = false)
+    {
+        new ComputeShaderTask(
+            "Emit/RakelReservoirPixel",
+            shaderRegion,
+            new List<CSAttribute>()
+            {
+                new CSComputeBuffer("RakelInfo", InfoBuffer),
+                new CSInt2("RakelReservoirSize", ApplicationReservoir.Size),
+
+                new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
+            },
+            debugEnabled
+        ).Run();
+    }
+
+    public void CalculateDistanceFromRakel(
+        ComputeBuffer rakelMappedInfo,
+        ShaderRegion shaderRegion,
+        bool debugEnabled = false)
+    {
+        new ComputeShaderTask(
+            "Emit/DistanceFromRakel",
+            shaderRegion,
+            new List<CSAttribute>()
+            {
+                new CSComputeBuffer("RakelInfo", InfoBuffer),
+
+                new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
+            },
+            debugEnabled
+        ).Run();
     }
 
     public void RecalculatePositionZ(

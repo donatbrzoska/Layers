@@ -1,0 +1,48 @@
+#include "../ShaderBase/shader_base.hlsl"
+
+#include "../convert.hlsl"
+#include "../math.hlsl"
+#include "../rakel.hlsl"
+#include "../mapped_info.hlsl"
+
+uint TextureResolution;
+
+float3 CanvasPosition;
+float2 CanvasSize;
+
+RWStructuredBuffer<Rakel> RakelInfo;
+
+RWStructuredBuffer<MappedInfo> RakelMappedInfo;
+
+
+float3 transform_to_rakel_origin(int2 pos_pixel)
+{
+    Rakel rakel = RakelInfo[0];
+
+    // translate pixel to world space
+    float3 pos_world_space = pixel_to_world_space(pos_pixel, TextureResolution, CanvasPosition, CanvasSize);
+
+    // translate back so pixel is anchor aligned
+    float3 back_translation_position = rakel.anchor - float3(rakel.position.x, rakel.position.y, 0);
+    float3 pos_back_translated_position = pos_world_space + back_translation_position;
+
+    // rotate back around anchor
+    float3 pos_back_rotated = rotate_by_z(pos_back_translated_position, - rakel.rotation, rakel.anchor);
+
+    return pos_back_rotated;
+}
+
+#pragma kernel main
+
+[numthreads(32,1,1)]
+void main (uint3 id_ : SV_DispatchThreadID)
+{
+    id__ = id_;
+    if (is_relevant_thread(id(), CalculationSize))
+    {
+        // calculate pixel position on canvas
+        // was uint2 before, but negative values are possible due to padding and no prevention of that because it should not cause any more problems
+        int2 canvas_pixel = id() + CalculationPosition;
+        RakelMappedInfo[XY(id().x, id().y, CalculationSize.x)].back_transformed_pixel = transform_to_rakel_origin(canvas_pixel);
+    }
+}
