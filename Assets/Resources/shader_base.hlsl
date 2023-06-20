@@ -1,5 +1,3 @@
-// ######################################## SHADER BASE ########################################
-
 #include "basic_util.hlsl"
 #include "indexing.hlsl"
 #include "logging.hlsl"
@@ -32,5 +30,3 @@ void log_(uint index, float4 f)
 {
     Debug[XYZ(id().x, id().y, index, CalculationSize)] = f;
 }
-
-// ###################################### SHADER BASE END ######################################
