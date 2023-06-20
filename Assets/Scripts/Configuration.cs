@@ -111,7 +111,7 @@ public class InputConfiguration
         RakelPositionZ = new InputValue() { Source = InputSourceType.Text, Value = -0.008f };
         RakelPressure = new InputValue() { Source = InputSourceType.Text, Value = 0.5f };
 
-        RakelRotation = new InputValue() { Source = InputSourceType.Mouse, Value = 0 };
+        RakelRotation = new InputValue() { Source = InputSourceType.Text, Value = 0 };
         RakelTilt = new InputValue() { Source = InputSourceType.Keyboard, Value = 0 };
 
         StrokeStateSource = InputSourceType.Mouse;
