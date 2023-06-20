@@ -5,6 +5,7 @@ struct Rakel {
     float3 anchor;
 
     float3 position;
+    float position_base_z;
     float pressure;
     float rotation;
     float tilt;

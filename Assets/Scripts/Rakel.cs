@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 public struct RakelInfo
 {
-    public const int SizeInBytes = 6 * sizeof(float) + 10 * 3 * sizeof(float);
+    public const int SizeInBytes = 7 * sizeof(float) + 10 * 3 * sizeof(float);
 
     public float Length;
     public float Width;
@@ -11,6 +11,7 @@ public struct RakelInfo
     public Vector3 Anchor;
 
     public Vector3 Position;
+    public float PositionBaseZ;
     public float Pressure;
     public float Rotation;
     public float Tilt;
@@ -289,7 +290,7 @@ public class Rakel
         bool debugEnabled = false)
     {
         new ComputeShaderTask(
-            "RakelState/UpdateRakelPositionZ",
+            "RakelState/UpdateRakelPositionBaseZ",
             new ShaderRegion(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
             new List<CSAttribute>()
             {
@@ -298,11 +299,6 @@ public class Rakel
                 new CSInt2("MaxVolumeSourceIndex", maxVolumeSourceIndex),
 
                 new CSFloat("LayerThickness_MAX", layerThickness_MAX),
-                new CSFloat("Pressure", Info.Pressure),
-                new CSFloat("Tilt", Info.Tilt),
-                new CSFloat("MAX_SUPPORTED_TILT", MAX_SUPPORTED_TILT),
-                new CSFloat("SINK_BASE_MAX", SINK_BASE_MAX),
-                new CSFloat("SINK_TILT_MAX", SINK_TILT_MAX),
 
                 new CSComputeBuffer("RakelInfo", InfoBuffer),
             },
