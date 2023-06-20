@@ -210,7 +210,7 @@ public class Rakel
         return rakelMappedInfo;
     }
 
-    public void RecalculatePosition(
+    public void RecalculatePositionZ(
         Canvas_ canvas,
         ComputeBuffer rakelMappedInfo,
         ShaderRegion emitSR,
@@ -230,7 +230,7 @@ public class Rakel
                 ReduceFunction.Max,
                 debugEnabled);
 
-            UpdatePosition(
+            UpdatePositionZ(
                 canvas.Reservoir.Buffer,
                 canvas.Reservoir.Size,
                 emitSR.Position,
@@ -244,7 +244,7 @@ public class Rakel
         }
     }
 
-    private void UpdatePosition(
+    private void UpdatePositionZ(
         ComputeBuffer maxVolumeSource,
         Vector2Int maxVolumeSourceSize,
         Vector2Int maxVolumeSourceIndex,
@@ -252,7 +252,7 @@ public class Rakel
         bool debugEnabled = false)
     {
         new ComputeShaderTask(
-            "UpdateRakelPosition",
+            "UpdateRakelPositionZ",
             new ShaderRegion(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
             new List<CSAttribute>()
             {

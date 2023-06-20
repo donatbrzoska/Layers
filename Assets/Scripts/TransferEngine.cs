@@ -51,7 +51,7 @@ public class TransferEngine
 
 
         // 1. Calculate rakel position based on paint height on canvas
-        rakel.RecalculatePosition(
+        rakel.RecalculatePositionZ(
             canvas,
             rakelMappedInfo,
             rakelEmitSR,
