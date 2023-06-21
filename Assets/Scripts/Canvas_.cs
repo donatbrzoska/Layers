@@ -87,7 +87,6 @@ public class Canvas_
         bool debugEnabled = false)
     {
         ComputeBuffer canvasEmittedPaint = new ComputeBuffer(shaderRegion.PixelCount, Paint.SizeInBytes);
-        // initialize buffer to empty values (Intel does this for you, nvidia doesn't)
         Paint[] initPaint = new Paint[shaderRegion.PixelCount];
         canvasEmittedPaint.SetData(initPaint);
 

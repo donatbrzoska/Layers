@@ -330,7 +330,6 @@ public class Rakel
         bool debugEnabled = false)
     {
         ComputeBuffer rakelEmittedPaint = new ComputeBuffer(shaderRegion.PixelCount, Paint.SizeInBytes);
-        // initialize buffer to empty values (Intel does this for you, nvidia doesn't)
         Paint[] initPaint = new Paint[shaderRegion.PixelCount];
         rakelEmittedPaint.SetData(initPaint);
 

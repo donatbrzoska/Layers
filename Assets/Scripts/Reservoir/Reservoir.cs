@@ -22,7 +22,6 @@ public class Reservoir
         Size = new Vector2Int(width, height);
 
         Buffer = new ComputeBuffer(width * height * 2, Paint.SizeInBytes);
-        // initialize buffer to empty values (Intel does this for you, nvidia doesn't)
         BufferData = new Paint[width * height * 2];
         Buffer.SetData(BufferData);
     }
