@@ -57,8 +57,7 @@ public class Rakel
     public ComputeBuffer InfoBuffer;
     public RakelInfo Info;
 
-    public Reservoir ApplicationReservoir;
-    public Reservoir PickupReservoir;
+    public Reservoir Reservoir;
 
     private ComputeBuffer DistortionMap;
     private int DistortionMapIndex;
@@ -69,12 +68,7 @@ public class Rakel
     {
         Vector2Int reservoirSize = new Vector2Int((int)(width * resolution), (int)(length * resolution));
 
-        ApplicationReservoir = new Reservoir(
-            resolution,
-            reservoirSize.x,
-            reservoirSize.y);
-
-        PickupReservoir = new Reservoir(
+        Reservoir = new Reservoir(
             resolution,
             reservoirSize.x,
             reservoirSize.y);
@@ -83,8 +77,8 @@ public class Rakel
         DistortionMap = new ComputeBuffer(DistortionMapSize.x * DistortionMapSize.y , sizeof(float));
 
         // make sure Rakel is not bigger than its reservoir
-        Info.Length = ApplicationReservoir.Size.y * ApplicationReservoir.PixelSize;
-        Info.Width = ApplicationReservoir.Size.x * ApplicationReservoir.PixelSize;
+        Info.Length = Reservoir.Size.y * Reservoir.PixelSize;
+        Info.Width = Reservoir.Size.x * Reservoir.PixelSize;
 
         // NOTE this has to be set after Width and Length were corrected
         Info.Anchor = new Vector3(anchorRatioWidth * Info.Width, anchorRatioLength * Info.Length, 0);
@@ -122,7 +116,7 @@ public class Rakel
 
         DistortionMapIndex++;
         // wrap around
-        if (DistortionMapIndex > DistortionMapSize.x - ApplicationReservoir.Size.x - 1)
+        if (DistortionMapIndex > DistortionMapSize.x - Reservoir.Size.x - 1)
         {
             DistortionMapIndex = 0;
         }
@@ -222,7 +216,7 @@ public class Rakel
             new List<CSAttribute>()
             {
                 new CSComputeBuffer("RakelInfo", InfoBuffer),
-                new CSInt2("RakelReservoirSize", ApplicationReservoir.Size),
+                new CSInt2("RakelReservoirSize", Reservoir.Size),
 
                 new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
             },
@@ -259,7 +253,7 @@ public class Rakel
         {
             canvas.Reservoir.DuplicateActive(
                 rakelMappedInfo,
-                ApplicationReservoir.Size,
+                Reservoir.Size,
                 emitSR,
                 debugEnabled);
 
@@ -313,7 +307,7 @@ public class Rakel
 
     public void Fill(ReservoirFiller filler)
     {
-        ApplicationReservoir.Fill(filler);
+        Reservoir.Fill(filler);
 
         //PickupReservoir.Fill(Color_.CadmiumRed, volume / 2, filler);
     }
@@ -325,8 +319,6 @@ public class Rakel
         float emitDistance_MAX,
         float emitVolume_MIN,
         float emitVolume_MAX,
-        float emitVolumeApplicationReservoirRate,
-        float emitVolumePickupReservoirRate,
         bool debugEnabled = false)
     {
         ComputeBuffer rakelEmittedPaint = new ComputeBuffer(shaderRegion.PixelCount, Paint.SizeInBytes);
@@ -348,11 +340,9 @@ public class Rakel
                 new CSInt("TextureResolution", canvas.Resolution),
 
                 new CSComputeBuffer("RakelInfo", InfoBuffer),
-                new CSComputeBuffer("RakelApplicationReservoir", ApplicationReservoir.Buffer),
-                new CSComputeBuffer("RakelApplicationReservoirDuplicate", ApplicationReservoir.BufferDuplicate),
-                new CSComputeBuffer("RakelPickupReservoir", PickupReservoir.Buffer),
-                new CSComputeBuffer("RakelPickupReservoirDuplicate", PickupReservoir.BufferDuplicate),
-                new CSInt2("RakelReservoirSize", ApplicationReservoir.Size),
+                new CSComputeBuffer("RakelReservoir", Reservoir.Buffer),
+                new CSComputeBuffer("RakelReservoirDuplicate", Reservoir.BufferDuplicate),
+                new CSInt2("RakelReservoirSize", Reservoir.Size),
 
                 new CSFloat("CanvasPositionZ", canvas.Position.z),
                 new CSComputeBuffer("CanvasReservoirDuplicate", canvas.Reservoir.BufferDuplicate),
@@ -364,8 +354,6 @@ public class Rakel
                 new CSFloat("EmitDistance_MAX", emitDistance_MAX),
                 new CSFloat("EmitVolume_MIN", emitVolume_MIN),
                 new CSFloat("EmitVolume_MAX", emitVolume_MAX),
-                new CSFloat("EmitVolumeApplicationReservoirRate", emitVolumeApplicationReservoirRate),
-                new CSFloat("EmitVolumePickupReservoirRate", emitVolumePickupReservoirRate),
 
                 new CSComputeBuffer("DistortionMap", DistortionMap),
                 new CSInt2("DistortionMapSize", DistortionMapSize),
@@ -393,8 +381,8 @@ public class Rakel
             {
                 new CSComputeBuffer("CanvasEmittedPaint", canvasEmittedPaint),
 
-                new CSComputeBuffer("RakelPickupReservoir", PickupReservoir.Buffer),
-                new CSInt("RakelReservoirWidth", PickupReservoir.Size.x)
+                new CSComputeBuffer("RakelReservoir", Reservoir.Buffer),
+                new CSInt("RakelReservoirWidth", Reservoir.Size.x)
             },
             debugEnabled
         ).Run();
@@ -404,8 +392,7 @@ public class Rakel
 
     public void Dispose()
     {
-        ApplicationReservoir.Dispose();
-        PickupReservoir.Dispose();
+        Reservoir.Dispose();
         InfoBuffer.Dispose();
         DistortionMap.Dispose();
     }

@@ -35,7 +35,7 @@ public class TransferEngine
 
         rakel.UpdateState(rakelPosition, rakelPressure, rakelRotation, rakelTilt, DebugShader);
 
-        ShaderRegion canvasEmitSR = rakel.ApplicationReservoir.GetFullShaderRegion();
+        ShaderRegion canvasEmitSR = rakel.Reservoir.GetFullShaderRegion();
 
         ShaderRegion rakelEmitSR = new ShaderRegion(
             canvas.MapToPixelInRange(rakel.Info.UpperLeft),
@@ -71,8 +71,7 @@ public class TransferEngine
 
         // 2. Do paint transfer and rendering
         canvas.Reservoir.Duplicate(DebugShader);
-        rakel.ApplicationReservoir.Duplicate(DebugShader);
-        rakel.PickupReservoir.Duplicate(DebugShader);
+        rakel.Reservoir.Duplicate(DebugShader);
 
         ComputeBuffer canvasEmittedPaint = canvas.EmitPaint(
             rakel,
@@ -89,8 +88,6 @@ public class TransferEngine
             transferConfiguration.EmitDistance_MAX,
             transferConfiguration.EmitVolume_MIN,
             transferConfiguration.EmitVolume_MAX,
-            transferConfiguration.EmitVolumeApplicationReservoirRate,
-            transferConfiguration.EmitVolumePickupReservoirRate,
             DebugShader);
 
         canvas.ApplyPaint(

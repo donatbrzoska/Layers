@@ -73,8 +73,6 @@ public class TestEmitFromRakel
             EMIT_DISTANCE_MAX,
             0,
             1,
-            0,
-            1, // unused
             false);
 
 
@@ -137,8 +135,6 @@ public class TestEmitFromRakel
             EMIT_DISTANCE_MAX,
             0,
             1,
-            0,
-            1, // unused
             false);
 
 
@@ -203,8 +199,6 @@ public class TestEmitFromRakel
             EMIT_DISTANCE_MAX,
             0,
             1,
-            0,
-            1, // unused
             false);
 
 
@@ -268,8 +262,6 @@ public class TestEmitFromRakel
             EMIT_DISTANCE_MAX,
             0,
             1,
-            0,
-            1, // unused
             false);
 
 

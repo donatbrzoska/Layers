@@ -11,10 +11,8 @@
 uint TextureResolution;
 
 RWStructuredBuffer<Rakel> RakelInfo;
-RWStructuredBuffer<Paint> RakelApplicationReservoir;
-RWStructuredBuffer<Paint> RakelApplicationReservoirDuplicate;
-RWStructuredBuffer<Paint> RakelPickupReservoir;
-RWStructuredBuffer<Paint> RakelPickupReservoirDuplicate;
+RWStructuredBuffer<Paint> RakelReservoir;
+RWStructuredBuffer<Paint> RakelReservoirDuplicate;
 uint2 RakelReservoirSize;
 
 float CanvasPositionZ;
@@ -27,8 +25,6 @@ float RakelTilt_MAX;
 float EmitDistance_MAX;
 float EmitVolume_MIN;
 float EmitVolume_MAX;
-float EmitVolumeApplicationReservoirRate;
-float EmitVolumePickupReservoirRate;
 
 RWStructuredBuffer<float> DistortionMap;
 uint2 DistortionMapSize;
@@ -44,9 +40,7 @@ void emit(float2 rakel_reservoir_pixel, int2 radius, float distance, int2 canvas
 
     // TODO For more detail, this (and the volume_to_emit value) could also
     //      be calculated based on the polygon overlap
-    float volume_rakel =
-        RakelApplicationReservoirDuplicate[XY(rakel_reservoir_pixel_nearest.x, rakel_reservoir_pixel_nearest.y, RakelReservoirSize.x)].volume
-        + RakelPickupReservoirDuplicate[XY(rakel_reservoir_pixel_nearest.x, rakel_reservoir_pixel_nearest.y, RakelReservoirSize.x)].volume;
+    float volume_rakel = RakelReservoirDuplicate[XY(rakel_reservoir_pixel_nearest.x, rakel_reservoir_pixel_nearest.y, RakelReservoirSize.x)].volume;
     float volume_canvas = CanvasReservoirDuplicate[XY(canvas_pixel.x, canvas_pixel.y, CanvasReservoirSize.x)].volume;
     float paint_thickness_rakel = volume_rakel * VOLUME_THICKNESS();
     float paint_thickness_canvas = volume_canvas * VOLUME_THICKNESS();
@@ -77,24 +71,18 @@ void emit(float2 rakel_reservoir_pixel, int2 radius, float distance, int2 canvas
         // in HLSL. So we do 9x9, which is enough for 79 degree tilt and more is not useful for emitting anyways.
         // Also, with 11x11 we would get the following warning:
         // Shader warning in 'EmitFromRakel': Program 'main', warning X4714: sum of temp registers and indexable temp registers times 32 threads exceeds the recommended total 16384.  Performance may be reduced at kernel main (on metal)
-        float4 color_to_emit_app[9][9];
-        float4 color_to_emit_pu[9][9];
-        float volume_to_emit_app[9][9];
-        float volume_to_emit_pu[9][9];
-        float4 result_color_app = float4(0,0,0,0);
-        float4 result_color_pu = float4(0,0,0,0);
-        float result_volume_app = 0;
-        float result_volume_pu = 0;
+        float4 colors_to_emit[9][9];
+        float volumes_to_emit[9][9];
+        float4 result_color = float4(0,0,0,0);
+        float result_volume = 0;
         int y, x; // declare loop variables here so the compiler won't complain about double declaration of y
         for (y=-radius.y; y<=radius.y; y++) {
             for (x=-radius.x; x<=radius.x; x++) {
                 // initialize arrays
                 uint i = y + radius.y;
                 uint j = x + radius.x;
-                volume_to_emit_app[i][j] = 0;
-                volume_to_emit_pu[i][j] = 0;
-                color_to_emit_app[i][j] = float4(0,0,0,0);
-                color_to_emit_pu[i][j] = float4(0,0,0,0);
+                volumes_to_emit[i][j] = 0;
+                colors_to_emit[i][j] = float4(0,0,0,0);
 
                 // calculate part
                 int2 coord = rakel_reservoir_pixel_nearest + int2(x, y);
@@ -109,32 +97,16 @@ void emit(float2 rakel_reservoir_pixel, int2 radius, float distance, int2 canvas
                     if (overlap > 0) {
                         // get paint
                         uint2 coord_ = uint2(coord.x, coord.y);
-                        Paint available_app = RakelApplicationReservoirDuplicate[XY(coord_.x, coord_.y, RakelReservoirSize.x)];
-                        Paint available_pu = RakelPickupReservoirDuplicate[XY(coord_.x, coord_.y, RakelReservoirSize.x)];
+                        Paint available = RakelReservoirDuplicate[XY(coord_.x, coord_.y, RakelReservoirSize.x)];
 
                         // calculate volume
-                        // .. prefer pickup reservoir with rate
-                        float pu_reservoir_rate = EmitVolumePickupReservoirRate / (EmitVolumeApplicationReservoirRate + EmitVolumePickupReservoirRate);
-                        float target_volume_pu = overlap * volume_to_emit * pu_reservoir_rate;
-                        float really_available_volume_pu = overlap * available_pu.volume;
-                        float volume_to_emit_pu_ = min(target_volume_pu, really_available_volume_pu);
-                        // .. take rest from application reservoir
-                        float target_volume_app = overlap * volume_to_emit - volume_to_emit_pu_;
-                        float really_available_volume_app = overlap * available_app.volume;
-                        // .. if this is not enough, try take rest from pickup reservoir
-                        float app_diff = target_volume_app - really_available_volume_app;
-                        if (app_diff > 0)
-                        {
-                            target_volume_pu += app_diff;
-                        }
+                        float target_volume = overlap * volume_to_emit;
+                        float really_available_volume = overlap * available.volume;
 
-                        volume_to_emit_app[i][j] = min(target_volume_app, really_available_volume_app);
-                        volume_to_emit_pu[i][j] = min(target_volume_pu, really_available_volume_pu);
-                        result_volume_app += volume_to_emit_app[i][j];
-                        result_volume_pu += volume_to_emit_pu[i][j];
+                        volumes_to_emit[i][j] = min(target_volume, really_available_volume);
+                        result_volume += volumes_to_emit[i][j];
 
-                        color_to_emit_app[i][j] = available_app.color;
-                        color_to_emit_pu[i][j] = available_pu.color;
+                        colors_to_emit[i][j] = available.color;
                     }
                 }
             }
@@ -148,22 +120,15 @@ void emit(float2 rakel_reservoir_pixel, int2 radius, float distance, int2 canvas
                 if (pixel_in_array_range(coord, RakelReservoirSize)) {
                     uint i = y + radius.y;
                     uint j = x + radius.x;
-                    float volume_part_app = volume_to_emit_app[i][j] / unzero(result_volume_app);
-                    float volume_part_pu = volume_to_emit_pu[i][j] / unzero(result_volume_pu);
-                    result_color_app += volume_part_app * color_to_emit_app[i][j];
-                    result_color_pu += volume_part_pu * color_to_emit_pu[i][j];
+                    float volume_part = volumes_to_emit[i][j] / unzero(result_volume);
+                    result_color += volume_part * colors_to_emit[i][j];
                 }
             }
         }
 
-        Paint result_paint_app;
-        Paint result_paint_pu;
-        result_paint_app.color = result_color_app;
-        result_paint_pu.color = result_color_pu;
-        result_paint_app.volume = result_volume_app;
-        result_paint_pu.volume = result_volume_pu;
-
-        Paint result_paint = mix(result_paint_app, result_paint_pu);
+        Paint result_paint;
+        result_paint.color = result_color;
+        result_paint.volume = result_volume;
 
         // delete amount of taken volume from reservoir (z=0)
         float deleted = 0;
@@ -173,13 +138,11 @@ void emit(float2 rakel_reservoir_pixel, int2 radius, float distance, int2 canvas
                 if (pixel_in_array_range(coord, RakelReservoirSize)) {
                     uint i = y + radius.y;
                     uint j = x + radius.x;
-                    float to_be_deleted_app = volume_to_emit_app[i][j];
-                    float to_be_deleted_pu = volume_to_emit_pu[i][j];
+                    float to_be_deleted = volumes_to_emit[i][j];
 
                     uint2 coord_ = uint2(coord.x, coord.y);
-                    RakelApplicationReservoir[XY(coord_.x, coord_.y, RakelReservoirSize.x)].volume -= to_be_deleted_app;
-                    deleted += to_be_deleted_app;
-                    RakelPickupReservoir[XY(coord_.x, coord_.y, RakelReservoirSize.x)].volume -= to_be_deleted_pu;
+                    RakelReservoir[XY(coord_.x, coord_.y, RakelReservoirSize.x)].volume -= to_be_deleted;
+                    deleted += to_be_deleted;
                 }
             }
         }

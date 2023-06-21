@@ -46,7 +46,7 @@ public class TestEmitFromCanvas
     public void Volume_Unrotated_Untilted()
     {
         // Arrange
-        ShaderRegion canvasEmitSR = Rakel.ApplicationReservoir.GetFullShaderRegion();
+        ShaderRegion canvasEmitSR = Rakel.Reservoir.GetFullShaderRegion();
         Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen, ColorSpace.RGB), new FlatVolumeFiller(1)));
         Canvas.Reservoir.Duplicate(false);
 
@@ -93,7 +93,7 @@ public class TestEmitFromCanvas
     public void Volume_Rotated30_Untilted()
     {
         // Arrange
-        ShaderRegion canvasEmitSR = Rakel.ApplicationReservoir.GetFullShaderRegion();
+        ShaderRegion canvasEmitSR = Rakel.Reservoir.GetFullShaderRegion();
         Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen, ColorSpace.RGB), new FlatVolumeFiller(1)));
         Canvas.Reservoir.Duplicate(false);
 
@@ -141,7 +141,7 @@ public class TestEmitFromCanvas
     public void Volume_Unrotated_Tilted5()
     {
         // Arrange
-        ShaderRegion canvasEmitSR = Rakel.ApplicationReservoir.GetFullShaderRegion();
+        ShaderRegion canvasEmitSR = Rakel.Reservoir.GetFullShaderRegion();
         Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen, ColorSpace.RGB), new FlatVolumeFiller(1)));
         Canvas.Reservoir.Duplicate(false);
 
@@ -189,7 +189,7 @@ public class TestEmitFromCanvas
     public void Volume_Rotated30_Tilted5()
     {
         // Arrange
-        ShaderRegion canvasEmitSR = Rakel.ApplicationReservoir.GetFullShaderRegion();
+        ShaderRegion canvasEmitSR = Rakel.Reservoir.GetFullShaderRegion();
         Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen, ColorSpace.RGB), new FlatVolumeFiller(1)));
         Canvas.Reservoir.Duplicate(false);
 

@@ -11,8 +11,7 @@
 uint TextureResolution;
 
 RWStructuredBuffer<Rakel> RakelInfo;
-RWStructuredBuffer<Paint> RakelApplicationReservoirDuplicate;
-RWStructuredBuffer<Paint> RakelPickupReservoirDuplicate;
+RWStructuredBuffer<Paint> RakelReservoirDuplicate;
 uint2 RakelReservoirSize;
 
 float3 CanvasPosition;
@@ -36,9 +35,7 @@ void emit(float2 canvas_reservoir_pixel, int2 radius, float distance, int2 rakel
 
     // TODO For more detail, this (and the volume_to_pickup value) could also
     //      be calculated based on the polygon overlap
-    float volume_rakel =
-        RakelApplicationReservoirDuplicate[XY(rakel_pixel.x, rakel_pixel.y, RakelReservoirSize.x)].volume
-        + RakelPickupReservoirDuplicate[XY(rakel_pixel.x, rakel_pixel.y, RakelReservoirSize.x)].volume;
+    float volume_rakel = RakelReservoirDuplicate[XY(rakel_pixel.x, rakel_pixel.y, RakelReservoirSize.x)].volume;
     float volume_canvas = CanvasReservoirDuplicate[XY(canvas_reservoir_pixel_nearest.x, canvas_reservoir_pixel_nearest.y, CanvasReservoirSize.x)].volume;
     float paint_thickness_rakel = volume_rakel * VOLUME_THICKNESS();
     float paint_thickness_canvas = volume_canvas * VOLUME_THICKNESS();

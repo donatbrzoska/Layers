@@ -34,8 +34,8 @@ public class Configuration
         FillConfiguration.VolumeMode = VolumeMode.Flat;
         FillConfiguration.ColorMode = ColorMode.Colorful;
 
-        TransferConfiguration.EmitVolumeApplicationReservoirRate = 1;
-        TransferConfiguration.EmitVolumePickupReservoirRate = 0;
+        TransferConfiguration.EmitVolumeApplicationReservoirRate = 1; // unused
+        TransferConfiguration.EmitVolumePickupReservoirRate = 0; // unused
         TransferConfiguration.PickupVolume_MAX = 0;
     }
 
