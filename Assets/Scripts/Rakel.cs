@@ -269,7 +269,7 @@ public class Rakel
                 debugEnabled);
 
             UpdatePositionZ(
-                canvas.Reservoir.Buffer,
+                canvas.Reservoir.BufferDuplicate,
                 canvas.Reservoir.Size,
                 emitSR.Position,
                 layerThickness_MAX,
@@ -349,11 +349,13 @@ public class Rakel
 
                 new CSComputeBuffer("RakelInfo", InfoBuffer),
                 new CSComputeBuffer("RakelApplicationReservoir", ApplicationReservoir.Buffer),
+                new CSComputeBuffer("RakelApplicationReservoirDuplicate", ApplicationReservoir.BufferDuplicate),
                 new CSComputeBuffer("RakelPickupReservoir", PickupReservoir.Buffer),
+                new CSComputeBuffer("RakelPickupReservoirDuplicate", PickupReservoir.BufferDuplicate),
                 new CSInt2("RakelReservoirSize", ApplicationReservoir.Size),
 
                 new CSFloat("CanvasPositionZ", canvas.Position.z),
-                new CSComputeBuffer("CanvasReservoir", canvas.Reservoir.Buffer),
+                new CSComputeBuffer("CanvasReservoirDuplicate", canvas.Reservoir.BufferDuplicate),
                 new CSInt2("CanvasReservoirSize", canvas.Reservoir.Size),
                 new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
 

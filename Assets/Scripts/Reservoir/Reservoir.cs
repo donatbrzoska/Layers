@@ -11,7 +11,8 @@ public class Reservoir
 {
     public int Resolution;
     public Vector2Int Size;
-    public ComputeBuffer Buffer; // 3D array, z=1 is for duplication for correct interpolation
+    public ComputeBuffer Buffer;
+    public ComputeBuffer BufferDuplicate;
     private Paint[] BufferData;
 
     public float PixelSize { get { return 1 / (float) Resolution; } }
@@ -21,8 +22,9 @@ public class Reservoir
         Resolution = resolution;
         Size = new Vector2Int(width, height);
 
-        Buffer = new ComputeBuffer(width * height * 2, Paint.SizeInBytes);
-        BufferData = new Paint[width * height * 2];
+        Buffer = new ComputeBuffer(width * height, Paint.SizeInBytes);
+        BufferDuplicate = new ComputeBuffer(width * height, Paint.SizeInBytes);
+        BufferData = new Paint[width * height];
         Buffer.SetData(BufferData);
     }
 
@@ -49,7 +51,8 @@ public class Reservoir
             GetFullShaderRegion(),
             new List<CSAttribute>()
             {
-                new CSComputeBuffer("Reservoir", Buffer)
+                new CSComputeBuffer("Reservoir", Buffer),
+                new CSComputeBuffer("ReservoirDuplicate", BufferDuplicate)
             },
             debugEnabled
         ).Run();
@@ -69,7 +72,8 @@ public class Reservoir
                 new CSComputeBuffer("PaintSourceMappedInfo", paintSourceMappedInfo),
                 new CSInt2("PaintSourceReservoirSize", paintSourceReservoirSize),
 
-                new CSComputeBuffer("Reservoir", Buffer)
+                new CSComputeBuffer("Reservoir", Buffer),
+                new CSComputeBuffer("ReservoirDuplicate", BufferDuplicate)
             },
             debugEnabled
         ).Run();
@@ -106,7 +110,7 @@ public class Reservoir
                 reduceShaderRegion,
                 new List<CSAttribute>()
                 {
-                    new CSComputeBuffer("Reservoir", Buffer),
+                    new CSComputeBuffer("ReservoirDuplicate", BufferDuplicate),
                     new CSInt2("ReservoirSize", Size),
                     new CSInt2("ReduceRegionSize", reduceRegion.Size),
                     new CSInt("ReduceFunction", (int) reduceFunction)
@@ -122,17 +126,18 @@ public class Reservoir
     // Only used for testing purposes
     public void Readback()
     {
-        Buffer.GetData(BufferData);
+        BufferDuplicate.GetData(BufferData);
     }
 
     // Only used for testing purposes
-    public Paint Get(int x, int y, int z)
+    public Paint GetFromDuplicate(int x, int y)
     {
-        return BufferData[IndexUtil.XYZ(x, y, z, Size.x, Size.y)];
+        return BufferData[IndexUtil.XY(x, y, Size.x)];
     }
 
     public void Dispose()
     {
         Buffer.Dispose();
+        BufferDuplicate.Dispose();
     }
 }

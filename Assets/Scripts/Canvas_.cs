@@ -101,13 +101,14 @@ public class Canvas_
                 new CSInt("TextureResolution", Resolution),
 
                 new CSComputeBuffer("RakelInfo", rakel.InfoBuffer),
-                new CSComputeBuffer("RakelApplicationReservoir", rakel.ApplicationReservoir.Buffer),
-                new CSComputeBuffer("RakelPickupReservoir", rakel.PickupReservoir.Buffer),
+                new CSComputeBuffer("RakelApplicationReservoirDuplicate", rakel.ApplicationReservoir.BufferDuplicate),
+                new CSComputeBuffer("RakelPickupReservoirDuplicate", rakel.PickupReservoir.BufferDuplicate),
                 new CSInt2("RakelReservoirSize", rakel.ApplicationReservoir.Size),
 
                 new CSFloat3("CanvasPosition", Position),
                 new CSFloat2("CanvasSize", Size),
                 new CSComputeBuffer("CanvasReservoir", Reservoir.Buffer),
+                new CSComputeBuffer("CanvasReservoirDuplicate", Reservoir.BufferDuplicate),
                 new CSInt2("CanvasReservoirSize", TextureSize),
 
                 new CSFloat("RakelTilt_MAX", Rakel.MAX_SUPPORTED_TILT),

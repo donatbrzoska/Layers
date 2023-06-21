@@ -7,6 +7,7 @@ RWStructuredBuffer<MappedInfo> PaintSourceMappedInfo;
 uint2 PaintSourceReservoirSize;
 
 RWStructuredBuffer<Paint> Reservoir;
+RWStructuredBuffer<Paint> ReservoirDuplicate;
 
 
 #pragma kernel main
@@ -24,9 +25,9 @@ void main (uint3 id_ : SV_DispatchThreadID)
         copied_value.color = float4(0,0,0,0);
         copied_value.volume = 0;
         if (pixel_in_array_range(reservoir_pixel_nearest, PaintSourceReservoirSize)) {
-            copied_value = Reservoir[XYZ(id().x, id().y, 0, CalculationSize)];
+            copied_value = Reservoir[XY(id().x, id().y, CalculationSize.x)];
         }
 
-        Reservoir[XYZ(id().x, id().y, 1, CalculationSize)] = copied_value;
+        ReservoirDuplicate[XY(id().x, id().y, CalculationSize.x)] = copied_value;
     }
 }

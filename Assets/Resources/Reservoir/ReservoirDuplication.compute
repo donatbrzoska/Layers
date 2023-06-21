@@ -3,6 +3,7 @@
 #include "../Paint/paint.hlsl"
 
 RWStructuredBuffer<Paint> Reservoir;
+RWStructuredBuffer<Paint> ReservoirDuplicate;
 
 
 #pragma kernel main
@@ -13,7 +14,7 @@ void main (uint3 id_ : SV_DispatchThreadID)
     id__ = id_;
     if (is_relevant_thread(id(), CalculationSize))
     {
-        Reservoir[XYZ(id().x, id().y, 1, CalculationSize)] = Reservoir[XYZ(id().x, id().y, 0, CalculationSize)];
+        ReservoirDuplicate[XY(id().x, id().y, CalculationSize.x)] = Reservoir[XY(id().x, id().y, CalculationSize.x)];
         // Reservoir[XYZ(id().x, id().y, 0, CalculationSize)] = available; // also update source for corrections // TODO find out why this is not necessary
     }
 }

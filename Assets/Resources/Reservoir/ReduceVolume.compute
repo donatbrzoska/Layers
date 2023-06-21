@@ -2,7 +2,7 @@
 
 #include "../Paint/paint.hlsl"
 
-RWStructuredBuffer<Paint> Reservoir;
+RWStructuredBuffer<Paint> ReservoirDuplicate;
 uint2 ReservoirSize;
 
 uint2 ReduceRegionSize;
@@ -33,10 +33,10 @@ void reduce_volume(uint3 id_ : SV_DispatchThreadID)
         uint2 i_ul = i_base + upper;
         uint2 i_ur = i_base + right + upper;
 
-        float value_ll = Reservoir[XYZ(i_ll.x, i_ll.y, 1, ReservoirSize)].volume * in_reduce_bounds(i_ll, i_base);
-        float value_lr = Reservoir[XYZ(i_lr.x, i_lr.y, 1, ReservoirSize)].volume * in_reduce_bounds(i_lr, i_base);
-        float value_ul = Reservoir[XYZ(i_ul.x, i_ul.y, 1, ReservoirSize)].volume * in_reduce_bounds(i_ul, i_base);
-        float value_ur = Reservoir[XYZ(i_ur.x, i_ur.y, 1, ReservoirSize)].volume * in_reduce_bounds(i_ur, i_base);
+        float value_ll = ReservoirDuplicate[XY(i_ll.x, i_ll.y, ReservoirSize.x)].volume * in_reduce_bounds(i_ll, i_base);
+        float value_lr = ReservoirDuplicate[XY(i_lr.x, i_lr.y, ReservoirSize.x)].volume * in_reduce_bounds(i_lr, i_base);
+        float value_ul = ReservoirDuplicate[XY(i_ul.x, i_ul.y, ReservoirSize.x)].volume * in_reduce_bounds(i_ul, i_base);
+        float value_ur = ReservoirDuplicate[XY(i_ur.x, i_ur.y, ReservoirSize.x)].volume * in_reduce_bounds(i_ur, i_base);
 
         float result = 0;
         if (ReduceFunction == 0) // max
@@ -47,6 +47,6 @@ void reduce_volume(uint3 id_ : SV_DispatchThreadID)
         {
             result = value_ll + value_lr + value_ul + value_ur;
         }
-        Reservoir[XYZ(i_ll.x, i_ll.y, 1, ReservoirSize)].volume = result;
+        ReservoirDuplicate[XY(i_ll.x, i_ll.y, ReservoirSize.x)].volume = result;
     }
 }

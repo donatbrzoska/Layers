@@ -22,7 +22,7 @@ void main (uint3 id_ : SV_DispatchThreadID)
     {
         Rakel rakel = RakelInfo[0];
 
-        float current_max_volume_on_canvas = MaxVolumeSource[XYZ(MaxVolumeSourceIndex.x, MaxVolumeSourceIndex.y, 1, MaxVolumeSourceSize)].volume;
+        float current_max_volume_on_canvas = MaxVolumeSource[XY(MaxVolumeSourceIndex.x, MaxVolumeSourceIndex.y, MaxVolumeSourceSize.x)].volume;
         rakel.position_base_z = - (current_max_volume_on_canvas * VOLUME_THICKNESS() + LayerThickness_MAX);
 
         RakelInfo[0] = rakel;

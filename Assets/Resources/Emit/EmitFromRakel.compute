@@ -12,11 +12,13 @@ uint TextureResolution;
 
 RWStructuredBuffer<Rakel> RakelInfo;
 RWStructuredBuffer<Paint> RakelApplicationReservoir;
+RWStructuredBuffer<Paint> RakelApplicationReservoirDuplicate;
 RWStructuredBuffer<Paint> RakelPickupReservoir;
+RWStructuredBuffer<Paint> RakelPickupReservoirDuplicate;
 uint2 RakelReservoirSize;
 
 float CanvasPositionZ;
-RWStructuredBuffer<Paint> CanvasReservoir;
+RWStructuredBuffer<Paint> CanvasReservoirDuplicate;
 uint2 CanvasReservoirSize;
 RWStructuredBuffer<MappedInfo> RakelMappedInfo;
 
@@ -43,9 +45,9 @@ void emit(float2 rakel_reservoir_pixel, int2 radius, float distance, int2 canvas
     // TODO For more detail, this (and the volume_to_emit value) could also
     //      be calculated based on the polygon overlap
     float volume_rakel =
-        RakelApplicationReservoir[XYZ(rakel_reservoir_pixel_nearest.x, rakel_reservoir_pixel_nearest.y, 1, RakelReservoirSize)].volume
-        + RakelPickupReservoir[XYZ(rakel_reservoir_pixel_nearest.x, rakel_reservoir_pixel_nearest.y, 1, RakelReservoirSize)].volume;
-    float volume_canvas = CanvasReservoir[XYZ(canvas_pixel.x, canvas_pixel.y, 1, CanvasReservoirSize)].volume;
+        RakelApplicationReservoirDuplicate[XY(rakel_reservoir_pixel_nearest.x, rakel_reservoir_pixel_nearest.y, RakelReservoirSize.x)].volume
+        + RakelPickupReservoirDuplicate[XY(rakel_reservoir_pixel_nearest.x, rakel_reservoir_pixel_nearest.y, RakelReservoirSize.x)].volume;
+    float volume_canvas = CanvasReservoirDuplicate[XY(canvas_pixel.x, canvas_pixel.y, CanvasReservoirSize.x)].volume;
     float paint_thickness_rakel = volume_rakel * VOLUME_THICKNESS();
     float paint_thickness_canvas = volume_canvas * VOLUME_THICKNESS();
     float surface_distance = distance - paint_thickness_rakel - paint_thickness_canvas;
@@ -107,8 +109,8 @@ void emit(float2 rakel_reservoir_pixel, int2 radius, float distance, int2 canvas
                     if (overlap > 0) {
                         // get paint
                         uint2 coord_ = uint2(coord.x, coord.y);
-                        Paint available_app = RakelApplicationReservoir[XYZ(coord_.x, coord_.y, 1, RakelReservoirSize)];
-                        Paint available_pu = RakelPickupReservoir[XYZ(coord_.x, coord_.y, 1, RakelReservoirSize)];
+                        Paint available_app = RakelApplicationReservoirDuplicate[XY(coord_.x, coord_.y, RakelReservoirSize.x)];
+                        Paint available_pu = RakelPickupReservoirDuplicate[XY(coord_.x, coord_.y, RakelReservoirSize.x)];
 
                         // calculate volume
                         // .. prefer pickup reservoir with rate
@@ -175,9 +177,9 @@ void emit(float2 rakel_reservoir_pixel, int2 radius, float distance, int2 canvas
                     float to_be_deleted_pu = volume_to_emit_pu[i][j];
 
                     uint2 coord_ = uint2(coord.x, coord.y);
-                    RakelApplicationReservoir[XYZ(coord_.x, coord_.y, 0, RakelReservoirSize)].volume -= to_be_deleted_app;
+                    RakelApplicationReservoir[XY(coord_.x, coord_.y, RakelReservoirSize.x)].volume -= to_be_deleted_app;
                     deleted += to_be_deleted_app;
-                    RakelPickupReservoir[XYZ(coord_.x, coord_.y, 0, RakelReservoirSize)].volume -= to_be_deleted_pu;
+                    RakelPickupReservoir[XY(coord_.x, coord_.y, RakelReservoirSize.x)].volume -= to_be_deleted_pu;
                 }
             }
         }
