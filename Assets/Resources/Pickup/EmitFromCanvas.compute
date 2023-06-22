@@ -31,10 +31,21 @@ void emit(int2 radius, int2 rakel_pixel)
 
     int2 canvas_reservoir_pixel_nearest = round(canvasMappedInfo.reservoir_pixel);
 
-    // TODO For more detail, this (and the volume_to_pickup value) could also
-    //      be calculated based on the polygon overlap
     float volume_rakel = RakelReservoirDuplicate[XY(rakel_pixel.x, rakel_pixel.y, RakelReservoirSize.x)].volume;
-    float volume_canvas = CanvasReservoirDuplicate[XY(canvas_reservoir_pixel_nearest.x, canvas_reservoir_pixel_nearest.y, CanvasReservoirSize.x)].volume;
+    float volume_canvas = 0;
+    int y, x; // declare loop variables here so the compiler won't complain about double declaration of y
+    for (y=-radius.y; y<=radius.y; y++) {
+        for (x=-radius.x; x<=radius.x; x++) {
+            uint i = y + radius.y;
+            uint j = x + radius.x;
+
+            int2 coord = canvas_reservoir_pixel_nearest + int2(x, y);
+            if (pixel_in_array_range(coord, CanvasReservoirSize)) { // Prevent out of bounds access to reservoir. Also, if it's not in range, this overlap part is not (and must not be!) used anyways.
+                uint2 coord_ = uint2(coord.x, coord.y);
+                volume_canvas += canvasMappedInfo.overlap[i][j] * CanvasReservoirDuplicate[XY(coord_.x, coord_.y, CanvasReservoirSize.x)].volume;
+            }
+        }
+    }
     float paint_thickness_rakel = volume_rakel * VOLUME_THICKNESS();
     float paint_thickness_canvas = volume_canvas * VOLUME_THICKNESS();
     float surface_distance = canvasMappedInfo.distance - paint_thickness_rakel - paint_thickness_canvas;
