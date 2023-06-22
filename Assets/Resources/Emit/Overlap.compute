@@ -10,7 +10,7 @@ uint TextureResolution;
 
 RWStructuredBuffer<Rakel> RakelInfo;
 
-int ClipRadiusX;
+int2 ReservoirPixelEmitRadius;
 RWStructuredBuffer<MappedInfo> RakelMappedInfo;
 
 
@@ -26,7 +26,7 @@ void main (uint3 id_ : SV_DispatchThreadID)
         Rakel rakel = RakelInfo[0];
 
         // radius of 1 does an emit on a 3x3 area from emit source grid, based on the rounded rakel_reservoir_pixel
-        int2 radius = int2(ClipRadiusX, 1);
+        int2 radius = ReservoirPixelEmitRadius;
 
         int2 rakel_reservoir_pixel_nearest = round(rakel_mapped_info.reservoir_pixel);
 

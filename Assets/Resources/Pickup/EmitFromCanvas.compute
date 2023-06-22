@@ -3,6 +3,7 @@
 #include "../Paint/paint.hlsl"
 #include "../mapped_info.hlsl"
 
+int2 ReservoirPixelPickupRadius;
 RWStructuredBuffer<MappedInfo> CanvasMappedInfo;
 
 RWStructuredBuffer<Paint> CanvasReservoir;
@@ -116,6 +117,6 @@ void main(uint3 id_ : SV_DispatchThreadID)
         // was uint2 before, but negative values are possible due to padding and no prevention of that because it should not cause any more problems
         int2 rakel_pixel = id() + CalculationPosition;
 
-        emit(int2(1, 1), rakel_pixel);
+        emit(ReservoirPixelPickupRadius, rakel_pixel);
     }
 }

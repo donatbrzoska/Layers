@@ -55,6 +55,8 @@ public class Rakel
     private const int MAX_STROKE_LENGTH = 3000; // should always be bigger than Rakel reservoir size.x
     private Vector2Int DistortionMapSize;
 
+    private Vector2Int ReservoirPixelEmitRadius;
+
     public Rakel(float length, float width, int resolution, float anchorRatioLength = 0.5f, float anchorRatioWidth = 1)
     {
         Vector2Int reservoirSize = new Vector2Int((int)(width * resolution), (int)(length * resolution));
@@ -146,6 +148,11 @@ public class Rakel
         Info.LowerLeft = llRotated + positionTranslation;
         Info.LowerRight = lrRotated + positionTranslation;
 
+        float pixelSize = 1 / (float)Reservoir.Resolution;
+        float pixelDiag = pixelSize * Mathf.Sqrt(2);
+        float tiltedPixelShortSide = Mathf.Cos(Info.Tilt * Mathf.Deg2Rad) * pixelSize;
+        ReservoirPixelEmitRadius = new Vector2Int((int)Mathf.Ceil((pixelDiag / 2) / tiltedPixelShortSide), 1);
+
 
         // Update info on GPU for paint transfer calculations
         new ComputeShaderTask(
@@ -206,11 +213,6 @@ public class Rakel
             debugEnabled
         ).Run();
 
-        float pixelSize = 1 / (float)canvas.Resolution;
-        float pixelDiag = pixelSize * Mathf.Sqrt(2);
-        float tiltedPixelShortSide = Mathf.Cos(Info.Tilt * Mathf.Deg2Rad) * pixelSize;
-        int clipRadiusX = (int)Mathf.Ceil((pixelDiag / 2) / tiltedPixelShortSide);
-
         new ComputeShaderTask(
             "Emit/Overlap",
             shaderRegion,
@@ -220,7 +222,7 @@ public class Rakel
 
                 new CSComputeBuffer("RakelInfo", InfoBuffer),
 
-                new CSInt("ClipRadiusX", clipRadiusX),
+                new CSInt2("ReservoirPixelEmitRadius", ReservoirPixelEmitRadius),
                 new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
             },
             debugEnabled
@@ -291,11 +293,6 @@ public class Rakel
             debugEnabled
         ).Run();
 
-        float pixelSize = 1 / (float)canvas.Resolution;
-        float pixelDiag = pixelSize * Mathf.Sqrt(2);
-        float tiltedPixelShortSide = Mathf.Cos(Info.Tilt * Mathf.Deg2Rad) * pixelSize;
-        int clipRadiusX = (int)Mathf.Ceil((pixelDiag / 2) / tiltedPixelShortSide);
-
         new ComputeShaderTask(
             "Emit/VolumeToEmit",
             shaderRegion,
@@ -310,7 +307,7 @@ public class Rakel
                 new CSInt2("CanvasReservoirSize", canvas.Reservoir.Size),
                 new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
 
-                new CSInt("ClipRadiusX", clipRadiusX),
+                new CSInt2("ReservoirPixelEmitRadius", ReservoirPixelEmitRadius),
                 //new CSFloat("RakelTilt_MAX", MAX_SUPPORTED_TILT),
                 //new CSFloat("EmitDistance_MAX", emitDistance_MAX),
                 new CSFloat("EmitVolume_MIN", emitVolume_MIN),
@@ -346,16 +343,12 @@ public class Rakel
         Paint[] initPaint = new Paint[shaderRegion.PixelCount];
         rakelEmittedPaint.SetData(initPaint);
 
-        float pixelSize = 1 / (float) canvas.Resolution;
-        float pixelDiag = pixelSize * Mathf.Sqrt(2);
-        float tiltedPixelShortSide = Mathf.Cos(Info.Tilt * Mathf.Deg2Rad) * pixelSize;
-        int clipRadiusX = (int)Mathf.Ceil((pixelDiag / 2) / tiltedPixelShortSide);
-        Vector2Int subgridGroupSize = new Vector2Int(clipRadiusX * 2 + 1, 3);
+        Vector2Int reservoirPixelEmitArea = new Vector2Int(ReservoirPixelEmitRadius.x * 2 + 1, ReservoirPixelEmitRadius.y * 2 + 1);
 
         new ComputeShaderTask(
             "Emit/EmitFromRakel",
             shaderRegion,
-            subgridGroupSize,
+            reservoirPixelEmitArea,
             new List<CSAttribute>()
             {
                 new CSComputeBuffer("RakelReservoir", Reservoir.Buffer),
@@ -364,7 +357,7 @@ public class Rakel
 
                 new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
 
-                new CSInt("ClipRadiusX", clipRadiusX),
+                new CSInt2("ReservoirPixelEmitRadius", ReservoirPixelEmitRadius),
 
                 new CSComputeBuffer("RakelEmittedPaint", rakelEmittedPaint),
             },

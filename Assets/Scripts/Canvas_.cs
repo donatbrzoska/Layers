@@ -21,6 +21,8 @@ public class Canvas_
 
     private ColorSpace ColorSpace;
 
+    private Vector2Int RESERVOIR_PIXEL_PICKUP_RADIUS = new Vector2Int(1, 1);
+
     // It is assumed that the canvas is perpendicular to the z axis
     // Position is the center of the canvas
     public Canvas_(float width, float height, Vector3 position, int textureResolution, float normalScale, ColorSpace colorSpace)
@@ -140,6 +142,7 @@ public class Canvas_
             new List<CSAttribute>()
             {
                 new CSComputeBuffer("RakelInfo", rakel.InfoBuffer),
+                new CSInt2("ReservoirPixelPickupRadius", RESERVOIR_PIXEL_PICKUP_RADIUS),
                 new CSComputeBuffer("CanvasMappedInfo", canvasMappedInfo),
             },
             debugEnabled
@@ -153,6 +156,7 @@ public class Canvas_
                 new CSComputeBuffer("RakelInfo", rakel.InfoBuffer),
                 new CSComputeBuffer("RakelReservoirDuplicate", rakel.Reservoir.BufferDuplicate),
                 new CSInt2("RakelReservoirSize", rakel.Reservoir.Size),
+                new CSInt2("ReservoirPixelPickupRadius", RESERVOIR_PIXEL_PICKUP_RADIUS),
                 new CSComputeBuffer("CanvasMappedInfo", canvasMappedInfo),
 
                 new CSFloat3("CanvasPosition", Position),
@@ -171,12 +175,15 @@ public class Canvas_
         Paint[] initPaint = new Paint[shaderRegion.PixelCount];
         canvasEmittedPaint.SetData(initPaint);
 
+        Vector2Int reservoirPixelPickupArea = new Vector2Int(RESERVOIR_PIXEL_PICKUP_RADIUS.x * 2 + 1, RESERVOIR_PIXEL_PICKUP_RADIUS.y * 2 + 1);
+
         new ComputeShaderTask(
             "Pickup/EmitFromCanvas",
             shaderRegion,
-            new Vector2Int(3, 3),
+            reservoirPixelPickupArea,
             new List<CSAttribute>()
             {
+                new CSInt2("ReservoirPixelPickupRadius", RESERVOIR_PIXEL_PICKUP_RADIUS),
                 new CSComputeBuffer("CanvasMappedInfo", canvasMappedInfo),
 
                 new CSComputeBuffer("CanvasReservoir", Reservoir.Buffer),

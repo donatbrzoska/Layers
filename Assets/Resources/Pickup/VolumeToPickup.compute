@@ -8,6 +8,7 @@
 RWStructuredBuffer<Rakel> RakelInfo;
 RWStructuredBuffer<Paint> RakelReservoirDuplicate;
 uint2 RakelReservoirSize;
+int2 ReservoirPixelPickupRadius;
 RWStructuredBuffer<MappedInfo> CanvasMappedInfo;
 
 float3 CanvasPosition;
@@ -90,7 +91,6 @@ void main(uint3 id_ : SV_DispatchThreadID)
         // calculate pixel position in reservoir
         // was uint2 before, but negative values are possible due to padding and no prevention of that because it should not cause any more problems
         int2 rakel_pixel = id() + CalculationPosition;
-        CanvasMappedInfo[XY(id().x, id().y, CalculationSize.x)].volume_to_transfer = volume_to_pickup_(uint2(1, 1), rakel_pixel);
-
+        CanvasMappedInfo[XY(id().x, id().y, CalculationSize.x)].volume_to_transfer = volume_to_pickup_(ReservoirPixelPickupRadius, rakel_pixel);
     }
 }

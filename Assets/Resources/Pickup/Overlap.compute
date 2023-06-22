@@ -6,6 +6,7 @@
 #include "../mapped_info.hlsl"
 
 RWStructuredBuffer<Rakel> RakelInfo;
+int2 ReservoirPixelPickupRadius;
 RWStructuredBuffer<MappedInfo> CanvasMappedInfo;
 
 
@@ -21,7 +22,7 @@ void main(uint3 id_ : SV_DispatchThreadID)
         Rakel rakel = RakelInfo[0];
 
         // radius of 1 does an emit on a 3x3 area from emit source grid, based on the rounded canvas_reservoir_pixel
-        int2 radius = int2(1, 1);
+        int2 radius = ReservoirPixelPickupRadius;
 
         int2 canvas_reservoir_pixel_nearest = round(canvasMappedInfo.reservoir_pixel);
 
