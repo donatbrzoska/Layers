@@ -44,26 +44,23 @@ public class TransferEngine
             canvas.MapToPixelInRange(rakel.Info.LowerRight)
         );
 
-        ComputeBuffer rakelMappedInfo = rakel.TransformToRakelOrigin(
+        ComputeBuffer rakelMappedInfo = rakel.CalculateRakelMappedInfo(
             rakelEmitSR,
             canvas,
             DebugShader);
 
-        rakel.CalculateReservoirPixel(
-            rakelMappedInfo,
-            rakelEmitSR,
-            DebugShader);
-
 
         // 1. Calculate rakel position based on paint height on canvas
-        rakel.RecalculatePositionZ(
+        rakel.RecalculatePositionBaseZ(
             canvas,
             rakelMappedInfo,
             rakelEmitSR,
             transferConfiguration.LayerThickness_MAX,
             DebugShader);
 
-        rakel.CalculateDistanceFromRakel(
+        // Now that the rakel position is calculated, we can actually
+        // determine the distance to the rakel
+        rakel.CalculateRakelMappedInfo_Distance(
             rakelMappedInfo,
             rakelEmitSR,
             DebugShader);

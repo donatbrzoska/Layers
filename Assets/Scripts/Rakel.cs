@@ -167,7 +167,7 @@ public class Rakel
         ).Run();
     }
 
-    public ComputeBuffer TransformToRakelOrigin(
+    public ComputeBuffer CalculateRakelMappedInfo(
         ShaderRegion shaderRegion,
         Canvas_ canvas,
         bool debugEnabled = false)
@@ -193,14 +193,6 @@ public class Rakel
             debugEnabled
         ).Run();
 
-        return rakelMappedInfo;
-    }
-
-    public void CalculateReservoirPixel(
-        ComputeBuffer rakelMappedInfo,
-        ShaderRegion shaderRegion,
-        bool debugEnabled = false)
-    {
         new ComputeShaderTask(
             "Emit/RakelReservoirPixel",
             shaderRegion,
@@ -213,27 +205,11 @@ public class Rakel
             },
             debugEnabled
         ).Run();
+
+        return rakelMappedInfo;
     }
 
-    public void CalculateDistanceFromRakel(
-        ComputeBuffer rakelMappedInfo,
-        ShaderRegion shaderRegion,
-        bool debugEnabled = false)
-    {
-        new ComputeShaderTask(
-            "Emit/DistanceFromRakel",
-            shaderRegion,
-            new List<CSAttribute>()
-            {
-                new CSComputeBuffer("RakelInfo", InfoBuffer),
-
-                new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
-            },
-            debugEnabled
-        ).Run();
-    }
-
-    public void RecalculatePositionZ(
+    public void RecalculatePositionBaseZ(
         Canvas_ canvas,
         ComputeBuffer rakelMappedInfo,
         ShaderRegion emitSR,
@@ -253,12 +229,21 @@ public class Rakel
                 ReduceFunction.Max,
                 debugEnabled);
 
-            UpdatePositionZ(
-                canvas.Reservoir.BufferDuplicate,
-                canvas.Reservoir.Size,
-                emitSR.Position,
-                layerThickness_MAX,
-                debugEnabled);
+            new ComputeShaderTask(
+                "RakelState/UpdateRakelPositionBaseZ",
+                new ShaderRegion(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
+                new List<CSAttribute>()
+                {
+                    new CSComputeBuffer("MaxVolumeSource", canvas.Reservoir.BufferDuplicate),
+                    new CSInt2("MaxVolumeSourceSize", canvas.Reservoir.Size),
+                    new CSInt2("MaxVolumeSourceIndex", emitSR.Position),
+
+                    new CSFloat("LayerThickness_MAX", layerThickness_MAX),
+
+                    new CSComputeBuffer("RakelInfo", InfoBuffer),
+                },
+                debugEnabled
+            ).Run();
 
             // position was updated, so we need to recalculate
             UpdateState(Info.Position, Info.Pressure, Info.Rotation, Info.Tilt, debugEnabled);
@@ -267,25 +252,19 @@ public class Rakel
         }
     }
 
-    private void UpdatePositionZ(
-        ComputeBuffer maxVolumeSource,
-        Vector2Int maxVolumeSourceSize,
-        Vector2Int maxVolumeSourceIndex,
-        float layerThickness_MAX,
+    public void CalculateRakelMappedInfo_Distance(
+        ComputeBuffer rakelMappedInfo,
+        ShaderRegion shaderRegion,
         bool debugEnabled = false)
     {
         new ComputeShaderTask(
-            "RakelState/UpdateRakelPositionBaseZ",
-            new ShaderRegion(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
+            "Emit/DistanceFromRakel",
+            shaderRegion,
             new List<CSAttribute>()
             {
-                new CSComputeBuffer("MaxVolumeSource", maxVolumeSource),
-                new CSInt2("MaxVolumeSourceSize", maxVolumeSourceSize),
-                new CSInt2("MaxVolumeSourceIndex", maxVolumeSourceIndex),
-
-                new CSFloat("LayerThickness_MAX", layerThickness_MAX),
-
                 new CSComputeBuffer("RakelInfo", InfoBuffer),
+
+                new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
             },
             debugEnabled
         ).Run();
