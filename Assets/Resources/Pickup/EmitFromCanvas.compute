@@ -155,14 +155,6 @@ void emit(float2 canvas_reservoir_pixel, int2 radius, float distance, int2 rakel
         CanvasEmittedPaint[XY(id().x, id().y, CalculationSize.x)] = result_paint;
         // log_float(deleted);
     }
-    else
-    {
-        // remove previously written canvas mapped info
-        Paint resetPaint;
-        resetPaint.volume = 0;
-        resetPaint.color = float4(0,0,0,0);
-        CanvasEmittedPaint[XY(id().x, id().y, CalculationSize.x)] = resetPaint;
-    }
 }
 
 #pragma kernel main

@@ -91,7 +91,7 @@ public class Canvas_
         canvasMappedInfo.SetData(canvasMappedInfoData);
 
         new ComputeShaderTask(
-            "Pickup/CanvasMappedInfo",
+            "Pickup/TransformToRakelPosition",
             shaderRegion,
             new List<CSAttribute>()
             {
@@ -99,9 +99,35 @@ public class Canvas_
 
                 new CSComputeBuffer("RakelInfo", rakel.InfoBuffer),
 
+                new CSComputeBuffer("CanvasMappedInfo", canvasMappedInfo),
+            },
+            debugEnabled
+        ).Run();
+
+        new ComputeShaderTask(
+            "Pickup/CanvasReservoirPixel",
+            shaderRegion,
+            new List<CSAttribute>()
+            {
+                new CSComputeBuffer("RakelInfo", rakel.InfoBuffer),
+
                 new CSFloat3("CanvasPosition", Position),
                 new CSFloat2("CanvasSize", Size),
                 new CSInt2("CanvasReservoirSize", TextureSize),
+
+                new CSComputeBuffer("CanvasMappedInfo", canvasMappedInfo),
+            },
+            debugEnabled
+        ).Run();
+
+        new ComputeShaderTask(
+            "Pickup/DistanceFromCanvas",
+            shaderRegion,
+            new List<CSAttribute>()
+            {
+                new CSComputeBuffer("RakelInfo", rakel.InfoBuffer),
+
+                new CSFloat3("CanvasPosition", Position),
 
                 new CSComputeBuffer("CanvasMappedInfo", canvasMappedInfo),
             },

@@ -24,7 +24,7 @@ void main (uint3 id_ : SV_DispatchThreadID)
     id__ = id_;
     if (is_relevant_thread(id(), CalculationSize))
     {
-        float3 back_tranformed_canvas_pixel = RakelMappedInfo[XY(id().x, id().y, CalculationSize.x)].back_transformed_pixel;
+        float3 back_tranformed_canvas_pixel = RakelMappedInfo[XY(id().x, id().y, CalculationSize.x)].transformed_pixel;
         RakelMappedInfo[XY(id().x, id().y, CalculationSize.x)].distance = distance_from_rakel_(back_tranformed_canvas_pixel);
     }
 }

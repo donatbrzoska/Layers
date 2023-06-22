@@ -1,0 +1,51 @@
+#include "../ShaderBase/shader_base.hlsl"
+
+#include "../rakel.hlsl"
+#include "../mapped_info.hlsl"
+
+RWStructuredBuffer<Rakel> RakelInfo;
+
+float3 CanvasPosition;
+float2 CanvasSize;
+uint2 CanvasReservoirSize;
+
+RWStructuredBuffer<MappedInfo> CanvasMappedInfo;
+
+
+// returns:
+// - x: exact projection of rakel pixel.x to canvas reservoir index space
+// - y: exact projection of rakel pixel.y to canvas reservoir index space
+float2 project_into_canvas_reservoir(float3 forward_tranformed_rakel_pixel)
+{
+    Rakel rakel = RakelInfo[0];
+
+    float canvas_x_max = CanvasPosition.x + CanvasSize.x / 2;
+    float canvas_x_min = CanvasPosition.x - CanvasSize.x / 2;
+    float canvas_dx = canvas_x_max - canvas_x_min;
+    float part_x = (forward_tranformed_rakel_pixel.x - canvas_x_min) / canvas_dx;
+
+    float canvas_y_max = CanvasPosition.y + CanvasSize.y / 2;
+    float canvas_y_min = CanvasPosition.y - CanvasSize.y / 2;
+    float canvas_dy = canvas_y_max - canvas_y_min;
+    float part_y = (forward_tranformed_rakel_pixel.y - canvas_y_min) / canvas_dy;
+
+    // part_x 0 means actually left from the pixel, because the part_ info is about world space
+    // canvas_reservoir_pixel is -0.5 for part_k == 0 and CanvasReservoirSize.k - 1 + 0.5 for part_k == 1
+    float2 canvas_reservoir_pixel = float2(part_x * CanvasReservoirSize.x - 0.5,
+                                           part_y * CanvasReservoirSize.y - 0.5);
+
+    return canvas_reservoir_pixel;
+}
+
+#pragma kernel main
+
+[numthreads(32,1,1)]
+void main(uint3 id_ : SV_DispatchThreadID)
+{
+    id__ = id_;
+    if (is_relevant_thread(id(), CalculationSize))
+    {
+        float3 forward_transformed_rakel_pixel = CanvasMappedInfo[XY(id().x, id().y, CalculationSize.x)].transformed_pixel;
+        CanvasMappedInfo[XY(id().x, id().y, CalculationSize.x)].reservoir_pixel = project_into_canvas_reservoir(forward_transformed_rakel_pixel);
+    }
+}

@@ -1,0 +1,32 @@
+#include "../ShaderBase/shader_base.hlsl"
+
+#include "../distance.hlsl"
+#include "../rakel.hlsl"
+#include "../mapped_info.hlsl"
+
+RWStructuredBuffer<Rakel> RakelInfo;
+
+float3 CanvasPosition;
+
+RWStructuredBuffer<MappedInfo> CanvasMappedInfo;
+
+
+float distance_from_canvas_(float3 forward_transformed_rakel_pixel)
+{
+    Rakel rakel = RakelInfo[0];
+    float dist = distance_from_canvas(forward_transformed_rakel_pixel, CanvasPosition, float3(0, 0, -1));
+    return dist;
+}
+
+#pragma kernel main
+
+[numthreads(32,1,1)]
+void main(uint3 id_ : SV_DispatchThreadID)
+{
+    id__ = id_;
+    if (is_relevant_thread(id(), CalculationSize))
+    {
+        float3 forward_transformed_rakel_pixel = CanvasMappedInfo[XY(id().x, id().y, CalculationSize.x)].transformed_pixel;
+        CanvasMappedInfo[XY(id().x, id().y, CalculationSize.x)].distance = distance_from_canvas_(forward_transformed_rakel_pixel);
+    }
+}
