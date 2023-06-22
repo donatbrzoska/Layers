@@ -81,9 +81,9 @@ public class Canvas_
     public ComputeBuffer EmitPaint(
         Rakel rakel,
         ShaderRegion shaderRegion,
-        float pickupDistance_MAX,
+        //float pickupDistance_MAX,
         float pickupVolume_MIN,
-        float pickupVolume_MAX,
+        //float pickupVolume_MAX,
         bool debugEnabled = false)
     {
         ComputeBuffer canvasMappedInfo = new ComputeBuffer(shaderRegion.PixelCount, MappedInfo.SizeInBytes);
@@ -145,6 +145,28 @@ public class Canvas_
             debugEnabled
         ).Run();
 
+        new ComputeShaderTask(
+            "Pickup/VolumeToPickup",
+            shaderRegion,
+            new List<CSAttribute>()
+            {
+                new CSComputeBuffer("RakelInfo", rakel.InfoBuffer),
+                new CSComputeBuffer("RakelReservoirDuplicate", rakel.Reservoir.BufferDuplicate),
+                new CSInt2("RakelReservoirSize", rakel.Reservoir.Size),
+                new CSComputeBuffer("CanvasMappedInfo", canvasMappedInfo),
+
+                new CSFloat3("CanvasPosition", Position),
+                new CSComputeBuffer("CanvasReservoirDuplicate", Reservoir.BufferDuplicate),
+                new CSInt2("CanvasReservoirSize", TextureSize),
+
+                //new CSFloat("RakelTilt_MAX", Rakel.MAX_SUPPORTED_TILT),
+                //new CSFloat("PickupDistance_MAX", pickupDistance_MAX),
+                new CSFloat("PickupVolume_MIN", pickupVolume_MIN),
+                //new CSFloat("PickupVolume_MAX", pickupVolume_MAX),
+            },
+            debugEnabled
+        ).Run();
+
         ComputeBuffer canvasEmittedPaint = new ComputeBuffer(shaderRegion.PixelCount, Paint.SizeInBytes);
         Paint[] initPaint = new Paint[shaderRegion.PixelCount];
         canvasEmittedPaint.SetData(initPaint);
@@ -155,20 +177,11 @@ public class Canvas_
             new Vector2Int(3, 3),
             new List<CSAttribute>()
             {
-                new CSComputeBuffer("RakelInfo", rakel.InfoBuffer),
-                new CSComputeBuffer("RakelReservoirDuplicate", rakel.Reservoir.BufferDuplicate),
-                new CSInt2("RakelReservoirSize", rakel.Reservoir.Size),
                 new CSComputeBuffer("CanvasMappedInfo", canvasMappedInfo),
 
-                new CSFloat3("CanvasPosition", Position),
                 new CSComputeBuffer("CanvasReservoir", Reservoir.Buffer),
                 new CSComputeBuffer("CanvasReservoirDuplicate", Reservoir.BufferDuplicate),
                 new CSInt2("CanvasReservoirSize", TextureSize),
-
-                new CSFloat("RakelTilt_MAX", Rakel.MAX_SUPPORTED_TILT),
-                new CSFloat("PickupDistance_MAX", pickupDistance_MAX),
-                new CSFloat("PickupVolume_MIN", pickupVolume_MIN),
-                new CSFloat("PickupVolume_MAX", pickupVolume_MAX),
 
                 new CSComputeBuffer("CanvasEmittedPaint", canvasEmittedPaint),
             },

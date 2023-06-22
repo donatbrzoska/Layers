@@ -59,32 +59,31 @@ public class TransferEngine
             DebugShader);
 
         // Now that the rakel position is calculated, we can actually
-        // determine the distance to the rakel
-        rakel.CalculateRakelMappedInfo_Distance(
+        // determine the distance to the rakel and the volume to emit also
+        rakel.Reservoir.Duplicate(DebugShader);
+        canvas.Reservoir.Duplicate(DebugShader);
+
+        rakel.CalculateRakelMappedInfo_Part2(
+            canvas,
             rakelMappedInfo,
             rakelEmitSR,
+            transferConfiguration.EmitVolume_MIN,
             DebugShader);
 
 
         // 2. Do paint transfer and rendering
-        canvas.Reservoir.Duplicate(DebugShader);
-        rakel.Reservoir.Duplicate(DebugShader);
-
         ComputeBuffer canvasEmittedPaint = canvas.EmitPaint(
             rakel,
             canvasEmitSR,
-            transferConfiguration.PickupDistance_MAX,
+            //transferConfiguration.PickupDistance_MAX,
             transferConfiguration.PickupVolume_MIN,
-            transferConfiguration.PickupVolume_MAX,
+            //transferConfiguration.PickupVolume_MAX,
             DebugShader);
 
         ComputeBuffer rakelEmittedPaint = rakel.EmitPaint(
             rakelEmitSR,
             canvas,
             rakelMappedInfo,
-            transferConfiguration.EmitDistance_MAX,
-            transferConfiguration.EmitVolume_MIN,
-            transferConfiguration.EmitVolume_MAX,
             DebugShader);
 
         canvas.ApplyPaint(

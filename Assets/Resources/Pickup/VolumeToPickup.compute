@@ -1,0 +1,96 @@
+#include "../ShaderBase/shader_base.hlsl"
+
+// #include "../volume.hlsl"
+#include "../Paint/paint.hlsl"
+#include "../rakel.hlsl"
+#include "../mapped_info.hlsl"
+
+RWStructuredBuffer<Rakel> RakelInfo;
+RWStructuredBuffer<Paint> RakelReservoirDuplicate;
+uint2 RakelReservoirSize;
+RWStructuredBuffer<MappedInfo> CanvasMappedInfo;
+
+float3 CanvasPosition;
+RWStructuredBuffer<Paint> CanvasReservoirDuplicate;
+uint2 CanvasReservoirSize;
+
+// float RakelTilt_MAX;
+// float PickupDistance_MAX;
+float PickupVolume_MIN;
+// float PickupVolume_MAX;
+
+
+// radius of 1 does an emit on a 3x3 area from emit source grid, based on the rounded canvas_reservoir_pixel
+float volume_to_pickup_(int2 radius, int2 rakel_pixel)
+{
+    MappedInfo canvasMappedInfo = CanvasMappedInfo[XY(id().x, id().y, CalculationSize.x)];
+
+    int2 canvas_reservoir_pixel_nearest = round(canvasMappedInfo.reservoir_pixel);
+
+    float volume_rakel = RakelReservoirDuplicate[XY(rakel_pixel.x, rakel_pixel.y, RakelReservoirSize.x)].volume;
+    float volume_canvas = 0;
+    for (int y=-radius.y; y<=radius.y; y++) {
+        for (int x=-radius.x; x<=radius.x; x++) {
+            uint i = y + radius.y;
+            uint j = x + radius.x;
+
+            int2 coord = canvas_reservoir_pixel_nearest + int2(x, y);
+            if (pixel_in_array_range(coord, CanvasReservoirSize)) { // Prevent out of bounds access to reservoir. Also, if it's not in range, this overlap part is not (and must not be!) used anyways.
+                uint2 coord_ = uint2(coord.x, coord.y);
+                volume_canvas += canvasMappedInfo.overlap[i][j] * CanvasReservoirDuplicate[XY(coord_.x, coord_.y, CanvasReservoirSize.x)].volume;
+            }
+        }
+    }
+    float paint_thickness_rakel = volume_rakel * VOLUME_THICKNESS();
+    float paint_thickness_canvas = volume_canvas * VOLUME_THICKNESS();
+    float surface_distance = canvasMappedInfo.distance - paint_thickness_rakel - paint_thickness_canvas;
+    bool surfaces_touch = surface_distance <= 0;
+
+    float volume_to_pickup = 0;
+    if (surfaces_touch)
+    {
+        Rakel rakel = RakelInfo[0];
+        // float VOLUME_TO_EMIT_TARGET = pickup_volume(
+        //     distance,
+        //     PickupDistance_MAX,
+        //     RakelTilt,
+        //     RakelTilt_MAX,
+        //     PickupVolume_MIN * PAINT_UNIT(),
+        //     PickupVolume_MAX * PAINT_UNIT());
+
+        // This only really picks up paint when rakel edge is inside paint on canvas
+        // Why surfaces_touch then?
+        // - Paint is picked up only, when rakel is somehow touching canvas paint
+        //   - through paint on rakel or
+        //   - rakel surface
+        // - Maybe the condition surfaces_touch is too realistic and not helpful, instead have certain pickup distance?
+        // TODO adjust this, when implementing dried paint
+        float rakel_edge_distance_from_canvas = abs(rakel.edge_z - CanvasPosition.z);
+        float rakel_edge_distance_from_canvas_paint_surface = rakel_edge_distance_from_canvas - paint_thickness_canvas;
+        float how_negative = abs(min(rakel_edge_distance_from_canvas_paint_surface, 0));
+        float volume_too_much_on_canvas = how_negative / VOLUME_THICKNESS();
+        volume_to_pickup = volume_too_much_on_canvas;
+        // only add min pickup value when rakel edge is really inside paint
+        if (volume_to_pickup > 0)
+        {
+            volume_to_pickup += PickupVolume_MIN;
+        }
+    }
+    return volume_to_pickup;
+}
+
+#pragma kernel main
+
+[numthreads(32,1,1)]
+void main(uint3 id_ : SV_DispatchThreadID)
+{
+    id__ = id_;
+    if (is_relevant_thread(id(), CalculationSize))
+    {
+        // calculate pixel position in reservoir
+        // was uint2 before, but negative values are possible due to padding and no prevention of that because it should not cause any more problems
+        int2 rakel_pixel = id() + CalculationPosition;
+        CanvasMappedInfo[XY(id().x, id().y, CalculationSize.x)].volume_to_transfer = volume_to_pickup_(uint2(1, 1), rakel_pixel);
+
+    }
+}

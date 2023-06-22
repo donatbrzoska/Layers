@@ -1,0 +1,92 @@
+#include "../ShaderBase/shader_base.hlsl"
+
+// #include "../volume.hlsl"
+#include "../Paint/paint.hlsl"
+#include "../rakel.hlsl"
+#include "../mapped_info.hlsl"
+
+RWStructuredBuffer<Rakel> RakelInfo;
+RWStructuredBuffer<Paint> RakelReservoirDuplicate;
+uint2 RakelReservoirSize;
+
+float CanvasPositionZ;
+RWStructuredBuffer<Paint> CanvasReservoirDuplicate;
+uint2 CanvasReservoirSize;
+RWStructuredBuffer<MappedInfo> RakelMappedInfo;
+
+int ClipRadiusX;
+// float RakelTilt_MAX;
+// float EmitDistance_MAX;
+float EmitVolume_MIN;
+// float EmitVolume_MAX;
+
+// RWStructuredBuffer<float> DistortionMap;
+// uint2 DistortionMapSize;
+// uint DistortionMapIndex;
+
+
+// radius of 1 does an emit on a 3x3 area from emit source grid, based on the rounded rakel_reservoir_pixel
+float volume_to_emit_(int2 radius, int2 canvas_pixel)
+{
+    MappedInfo rakel_mapped_info = RakelMappedInfo[XY(id().x, id().y, CalculationSize.x)];
+
+    int2 rakel_reservoir_pixel_nearest = round(rakel_mapped_info.reservoir_pixel);
+
+    float volume_rakel = 0;
+    for (int y=-radius.y; y<=radius.y; y++) {
+        for (int x=-radius.x; x<=radius.x; x++) {
+            uint i = y + radius.y;
+            uint j = x + radius.x;
+
+            int2 coord = rakel_reservoir_pixel_nearest + int2(x, y);
+            if (pixel_in_array_range(coord, RakelReservoirSize)) { // Prevent out of bounds access to reservoir. Also, if it's not in range, this overlap part is not (and must not be!) used anyways.
+                uint2 coord_ = uint2(coord.x, coord.y);
+                volume_rakel += rakel_mapped_info.overlap[i][j] * RakelReservoirDuplicate[XY(coord_.x, coord_.y, RakelReservoirSize.x)].volume;
+            }
+        }
+    }
+    float volume_canvas = CanvasReservoirDuplicate[XY(canvas_pixel.x, canvas_pixel.y, CanvasReservoirSize.x)].volume;
+    float paint_thickness_rakel = volume_rakel * VOLUME_THICKNESS();
+    float paint_thickness_canvas = volume_canvas * VOLUME_THICKNESS();
+    float surface_distance = rakel_mapped_info.distance - paint_thickness_rakel - paint_thickness_canvas;
+    bool surfaces_touch = surface_distance <= 0;
+
+    float volume_to_emit = 0;
+    if (surfaces_touch)
+    {
+        Rakel rakel = RakelInfo[0];
+        // float volume_to_emit = emit_volume(
+        //     distance,
+        //     EmitDistance_MAX,
+        //     RakelTilt,
+        //     RakelTilt_MAX,
+        //     EmitVolume_MIN * PAINT_UNIT(),
+        //     EmitVolume_MAX * PAINT_UNIT());
+
+        // TODO adjust this, when implementing dried paint
+        float rakel_edge_distance_from_canvas = abs(rakel.edge_z - CanvasPositionZ);
+        float rakel_edge_distance_from_canvas_paint_surface = rakel_edge_distance_from_canvas - paint_thickness_canvas;
+        float volume_fitting_between = max(rakel_edge_distance_from_canvas_paint_surface, 0) / VOLUME_THICKNESS();
+        volume_to_emit = volume_fitting_between + EmitVolume_MIN;
+        
+        //TODO there might be problems with rounding to negative indizes
+        // VOLUME_TO_EMIT_TARGET_PU *= DistortionMap[XY(rakel_reservoir_pixel_nearest.x + DistortionMapIndex, rakel_reservoir_pixel_nearest.y, DistortionMapSize.x)];
+
+    }
+    return volume_to_emit;
+}
+
+#pragma kernel main
+
+[numthreads(32,1,1)]
+void main (uint3 id_ : SV_DispatchThreadID)
+{
+    id__ = id_;
+    if (is_relevant_thread(id(), CalculationSize))
+    {
+        // calculate pixel position on canvas
+        // was uint2 before, but negative values are possible due to padding and no prevention of that because it should not cause any more problems
+        int2 canvas_pixel = id() + CalculationPosition;
+        RakelMappedInfo[XY(id().x, id().y, CalculationSize.x)].volume_to_transfer = volume_to_emit_(uint2(ClipRadiusX, 1), canvas_pixel);
+    }
+}

@@ -69,9 +69,6 @@ public class TestEmitFromRakel
             rakelEmitSR,
             Canvas,
             rakelMappedInfo,
-            EMIT_DISTANCE_MAX,
-            0,
-            1,
             false);
 
 
@@ -130,9 +127,6 @@ public class TestEmitFromRakel
             rakelEmitSR,
             Canvas,
             rakelMappedInfo,
-            EMIT_DISTANCE_MAX,
-            0,
-            1,
             false);
 
 
@@ -193,9 +187,6 @@ public class TestEmitFromRakel
             rakelEmitSR,
             Canvas,
             rakelMappedInfo,
-            EMIT_DISTANCE_MAX,
-            0,
-            1,
             false);
 
 
@@ -255,9 +246,6 @@ public class TestEmitFromRakel
             rakelEmitSR,
             Canvas,
             rakelMappedInfo,
-            EMIT_DISTANCE_MAX,
-            0,
-            1,
             false);
 
 

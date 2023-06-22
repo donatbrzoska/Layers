@@ -272,9 +272,11 @@ public class Rakel
         }
     }
 
-    public void CalculateRakelMappedInfo_Distance(
+    public void CalculateRakelMappedInfo_Part2(
+        Canvas_ canvas,
         ComputeBuffer rakelMappedInfo,
         ShaderRegion shaderRegion,
+        float emitVolume_MIN,
         bool debugEnabled = false)
     {
         new ComputeShaderTask(
@@ -285,6 +287,38 @@ public class Rakel
                 new CSComputeBuffer("RakelInfo", InfoBuffer),
 
                 new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
+            },
+            debugEnabled
+        ).Run();
+
+        float pixelSize = 1 / (float)canvas.Resolution;
+        float pixelDiag = pixelSize * Mathf.Sqrt(2);
+        float tiltedPixelShortSide = Mathf.Cos(Info.Tilt * Mathf.Deg2Rad) * pixelSize;
+        int clipRadiusX = (int)Mathf.Ceil((pixelDiag / 2) / tiltedPixelShortSide);
+
+        new ComputeShaderTask(
+            "Emit/VolumeToEmit",
+            shaderRegion,
+            new List<CSAttribute>()
+            {
+                new CSComputeBuffer("RakelInfo", InfoBuffer),
+                new CSComputeBuffer("RakelReservoirDuplicate", Reservoir.BufferDuplicate),
+                new CSInt2("RakelReservoirSize", Reservoir.Size),
+
+                new CSFloat("CanvasPositionZ", canvas.Position.z),
+                new CSComputeBuffer("CanvasReservoirDuplicate", canvas.Reservoir.BufferDuplicate),
+                new CSInt2("CanvasReservoirSize", canvas.Reservoir.Size),
+                new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
+
+                new CSInt("ClipRadiusX", clipRadiusX),
+                //new CSFloat("RakelTilt_MAX", MAX_SUPPORTED_TILT),
+                //new CSFloat("EmitDistance_MAX", emitDistance_MAX),
+                new CSFloat("EmitVolume_MIN", emitVolume_MIN),
+                //new CSFloat("EmitVolume_MAX", emitVolume_MAX),
+
+                //new CSComputeBuffer("DistortionMap", DistortionMap),
+                //new CSInt2("DistortionMapSize", DistortionMapSize),
+                //new CSInt("DistortionMapIndex", IncrementDistortionMapIndex()),
             },
             debugEnabled
         ).Run();
@@ -306,9 +340,6 @@ public class Rakel
         ShaderRegion shaderRegion,
         Canvas_ canvas,
         ComputeBuffer rakelMappedInfo,
-        float emitDistance_MAX,
-        float emitVolume_MIN,
-        float emitVolume_MAX,
         bool debugEnabled = false)
     {
         ComputeBuffer rakelEmittedPaint = new ComputeBuffer(shaderRegion.PixelCount, Paint.SizeInBytes);
@@ -327,25 +358,13 @@ public class Rakel
             subgridGroupSize,
             new List<CSAttribute>()
             {
-                new CSComputeBuffer("RakelInfo", InfoBuffer),
                 new CSComputeBuffer("RakelReservoir", Reservoir.Buffer),
                 new CSComputeBuffer("RakelReservoirDuplicate", Reservoir.BufferDuplicate),
                 new CSInt2("RakelReservoirSize", Reservoir.Size),
 
-                new CSFloat("CanvasPositionZ", canvas.Position.z),
-                new CSComputeBuffer("CanvasReservoirDuplicate", canvas.Reservoir.BufferDuplicate),
-                new CSInt2("CanvasReservoirSize", canvas.Reservoir.Size),
                 new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
 
                 new CSInt("ClipRadiusX", clipRadiusX),
-                new CSFloat("RakelTilt_MAX", MAX_SUPPORTED_TILT),
-                new CSFloat("EmitDistance_MAX", emitDistance_MAX),
-                new CSFloat("EmitVolume_MIN", emitVolume_MIN),
-                new CSFloat("EmitVolume_MAX", emitVolume_MAX),
-
-                new CSComputeBuffer("DistortionMap", DistortionMap),
-                new CSInt2("DistortionMapSize", DistortionMapSize),
-                new CSInt("DistortionMapIndex", IncrementDistortionMapIndex()),
 
                 new CSComputeBuffer("RakelEmittedPaint", rakelEmittedPaint),
             },

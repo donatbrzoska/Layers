@@ -58,9 +58,9 @@ public class TestEmitFromCanvas
         CanvasEmittedPaint = Canvas.EmitPaint(
             Rakel,
             canvasEmitSR,
-            PICKUP_DISTANCE_MAX,
+            //PICKUP_DISTANCE_MAX,
             0,
-            1,
+            //1,
             false);
 
 
@@ -106,9 +106,9 @@ public class TestEmitFromCanvas
         CanvasEmittedPaint = Canvas.EmitPaint(
             Rakel,
             canvasEmitSR,
-            PICKUP_DISTANCE_MAX,
+            //PICKUP_DISTANCE_MAX,
             0,
-            1,
+            //1,
             false);
 
 
@@ -154,9 +154,9 @@ public class TestEmitFromCanvas
         CanvasEmittedPaint = Canvas.EmitPaint(
             Rakel,
             canvasEmitSR,
-            PICKUP_DISTANCE_MAX,
+            //PICKUP_DISTANCE_MAX,
             0,
-            1,
+            //1,
             false);
 
 
@@ -200,9 +200,9 @@ public class TestEmitFromCanvas
         CanvasEmittedPaint = Canvas.EmitPaint(
             Rakel,
             canvasEmitSR,
-            PICKUP_DISTANCE_MAX,
+            //PICKUP_DISTANCE_MAX,
             0,
-            1,
+            //1,
             false);
 
 
