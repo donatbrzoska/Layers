@@ -80,7 +80,7 @@ public class TransferEngine
             transferConfiguration.PickupDistance_MAX,
             transferConfiguration.PickupVolume_MIN,
             transferConfiguration.PickupVolume_MAX,
-            DebugShader); ;
+            DebugShader);
 
         ComputeBuffer rakelEmittedPaint = rakel.EmitPaint(
             rakelEmitSR,
