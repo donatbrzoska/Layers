@@ -1,0 +1,53 @@
+#include "../ShaderBase/shader_base.hlsl"
+
+#include "../convert.hlsl"
+#include "../math.hlsl"
+#include "../sutherland_hodgman.hlsl"
+#include "../rakel.hlsl"
+#include "../mapped_info.hlsl"
+
+uint TextureResolution;
+
+RWStructuredBuffer<Rakel> RakelInfo;
+
+int ClipRadiusX;
+RWStructuredBuffer<MappedInfo> RakelMappedInfo;
+
+
+#pragma kernel main
+
+[numthreads(32,1,1)]
+void main (uint3 id_ : SV_DispatchThreadID)
+{
+    id__ = id_;
+    if (is_relevant_thread(id(), CalculationSize))
+    {
+        MappedInfo rakel_mapped_info = RakelMappedInfo[XY(id().x, id().y, CalculationSize.x)];
+        Rakel rakel = RakelInfo[0];
+
+        // radius of 1 does an emit on a 3x3 area from emit source grid, based on the rounded rakel_reservoir_pixel
+        int2 radius = int2(ClipRadiusX, 1);
+
+        int2 rakel_reservoir_pixel_nearest = round(rakel_mapped_info.reservoir_pixel);
+
+        int y, x; // declare loop variables here so the compiler won't complain about double declaration of y
+        for (y=-radius.y; y<=radius.y; y++) {
+            for (x=-radius.x; x<=radius.x; x++) {
+                // initialize arrays
+                uint i = y + radius.y;
+                uint j = x + radius.x;
+
+                // calculate part
+                int2 coord = rakel_reservoir_pixel_nearest + int2(x, y);
+                float2 rakel_anchor_index_space = rakel_anchor_to_index_space(rakel.anchor, TextureResolution);
+                float2 rect_rakel_reservoir_pixel = rotate_by_y_2D(rakel_mapped_info.reservoir_pixel, rakel.tilt, rakel_anchor_index_space);
+                float2 rect_coord = rotate_by_y_2D(coord, rakel.tilt, rakel_anchor_index_space);
+                Rectangle fragment_rectangle = create_rectangle(rect_rakel_reservoir_pixel, -rakel.rotation, 0);
+                Rectangle reservoir_rectangle = create_rectangle(rect_coord, 0, rakel.tilt);
+                float overlap = calculate_exact_overlap(fragment_rectangle, reservoir_rectangle);
+
+                RakelMappedInfo[XY(id().x, id().y, CalculationSize.x)].overlap[i][j] = overlap;
+            }
+        }
+    }
+}

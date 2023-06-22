@@ -134,6 +134,17 @@ public class Canvas_
             debugEnabled
         ).Run();
 
+        new ComputeShaderTask(
+            "Pickup/Overlap",
+            shaderRegion,
+            new List<CSAttribute>()
+            {
+                new CSComputeBuffer("RakelInfo", rakel.InfoBuffer),
+                new CSComputeBuffer("CanvasMappedInfo", canvasMappedInfo),
+            },
+            debugEnabled
+        ).Run();
+
         ComputeBuffer canvasEmittedPaint = new ComputeBuffer(shaderRegion.PixelCount, Paint.SizeInBytes);
         Paint[] initPaint = new Paint[shaderRegion.PixelCount];
         canvasEmittedPaint.SetData(initPaint);
@@ -144,15 +155,12 @@ public class Canvas_
             new Vector2Int(3, 3),
             new List<CSAttribute>()
             {
-                new CSInt("TextureResolution", Resolution),
-
                 new CSComputeBuffer("RakelInfo", rakel.InfoBuffer),
                 new CSComputeBuffer("RakelReservoirDuplicate", rakel.Reservoir.BufferDuplicate),
                 new CSInt2("RakelReservoirSize", rakel.Reservoir.Size),
                 new CSComputeBuffer("CanvasMappedInfo", canvasMappedInfo),
 
                 new CSFloat3("CanvasPosition", Position),
-                new CSFloat2("CanvasSize", Size),
                 new CSComputeBuffer("CanvasReservoir", Reservoir.Buffer),
                 new CSComputeBuffer("CanvasReservoirDuplicate", Reservoir.BufferDuplicate),
                 new CSInt2("CanvasReservoirSize", TextureSize),

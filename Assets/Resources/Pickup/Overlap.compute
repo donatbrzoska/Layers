@@ -1,0 +1,43 @@
+#include "../ShaderBase/shader_base.hlsl"
+
+#include "../math.hlsl"
+#include "../sutherland_hodgman.hlsl"
+#include "../rakel.hlsl"
+#include "../mapped_info.hlsl"
+
+RWStructuredBuffer<Rakel> RakelInfo;
+RWStructuredBuffer<MappedInfo> CanvasMappedInfo;
+
+
+#pragma kernel main
+
+[numthreads(32,1,1)]
+void main(uint3 id_ : SV_DispatchThreadID)
+{
+    id__ = id_;
+    if (is_relevant_thread(id(), CalculationSize))
+    {
+        MappedInfo canvasMappedInfo = CanvasMappedInfo[XY(id().x, id().y, CalculationSize.x)];
+        Rakel rakel = RakelInfo[0];
+
+        // radius of 1 does an emit on a 3x3 area from emit source grid, based on the rounded canvas_reservoir_pixel
+        int2 radius = int2(1, 1);
+
+        int2 canvas_reservoir_pixel_nearest = round(canvasMappedInfo.reservoir_pixel);
+
+        int x, y;
+        for (y=-radius.y; y<=radius.y; y++) {
+            for (x=-radius.x; x<=radius.x; x++) {
+                // initialize arrays
+                uint i = y + radius.y;
+                uint j = x + radius.x;
+
+                // calculate part
+                int2 coord = canvas_reservoir_pixel_nearest + int2(x, y);
+                Rectangle fragment_rectangle = create_rectangle(canvasMappedInfo.reservoir_pixel, rakel.rotation, rakel.tilt);
+                Rectangle reservoir_rectangle = create_rectangle(coord, 0, 0);
+                CanvasMappedInfo[XY(id().x, id().y, CalculationSize.x)].overlap[i][j] = calculate_exact_overlap(fragment_rectangle, reservoir_rectangle);
+            }
+        }
+    }
+}

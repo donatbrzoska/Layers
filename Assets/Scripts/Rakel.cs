@@ -206,6 +206,26 @@ public class Rakel
             debugEnabled
         ).Run();
 
+        float pixelSize = 1 / (float)canvas.Resolution;
+        float pixelDiag = pixelSize * Mathf.Sqrt(2);
+        float tiltedPixelShortSide = Mathf.Cos(Info.Tilt * Mathf.Deg2Rad) * pixelSize;
+        int clipRadiusX = (int)Mathf.Ceil((pixelDiag / 2) / tiltedPixelShortSide);
+
+        new ComputeShaderTask(
+            "Emit/Overlap",
+            shaderRegion,
+            new List<CSAttribute>()
+            {
+                new CSInt("TextureResolution", canvas.Resolution),
+
+                new CSComputeBuffer("RakelInfo", InfoBuffer),
+
+                new CSInt("ClipRadiusX", clipRadiusX),
+                new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
+            },
+            debugEnabled
+        ).Run();
+
         return rakelMappedInfo;
     }
 
@@ -307,8 +327,6 @@ public class Rakel
             subgridGroupSize,
             new List<CSAttribute>()
             {
-                new CSInt("TextureResolution", canvas.Resolution),
-
                 new CSComputeBuffer("RakelInfo", InfoBuffer),
                 new CSComputeBuffer("RakelReservoir", Reservoir.Buffer),
                 new CSComputeBuffer("RakelReservoirDuplicate", Reservoir.BufferDuplicate),

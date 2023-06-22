@@ -1,14 +1,10 @@
 #include "../ShaderBase/shader_base.hlsl"
 
-#include "../convert.hlsl"
 #include "../volume.hlsl"
 #include "../Paint/paint.hlsl"
 #include "../math.hlsl"
-#include "../sutherland_hodgman.hlsl"
 #include "../rakel.hlsl"
 #include "../mapped_info.hlsl"
-
-uint TextureResolution;
 
 RWStructuredBuffer<Rakel> RakelInfo;
 RWStructuredBuffer<Paint> RakelReservoir;
@@ -34,9 +30,11 @@ RWStructuredBuffer<Paint> RakelEmittedPaint;
 
 
 // radius of 1 does an emit on a 3x3 area from emit source grid, based on the rounded rakel_reservoir_pixel
-void emit(float2 rakel_reservoir_pixel, int2 radius, float distance, int2 canvas_pixel)
+void emit(int2 radius, int2 canvas_pixel)
 {
-    int2 rakel_reservoir_pixel_nearest = round(rakel_reservoir_pixel);
+    MappedInfo rakel_mapped_info = RakelMappedInfo[XY(id().x, id().y, CalculationSize.x)];
+
+    int2 rakel_reservoir_pixel_nearest = round(rakel_mapped_info.reservoir_pixel);
 
     // TODO For more detail, this (and the volume_to_emit value) could also
     //      be calculated based on the polygon overlap
@@ -44,7 +42,7 @@ void emit(float2 rakel_reservoir_pixel, int2 radius, float distance, int2 canvas
     float volume_canvas = CanvasReservoirDuplicate[XY(canvas_pixel.x, canvas_pixel.y, CanvasReservoirSize.x)].volume;
     float paint_thickness_rakel = volume_rakel * VOLUME_THICKNESS();
     float paint_thickness_canvas = volume_canvas * VOLUME_THICKNESS();
-    float surface_distance = distance - paint_thickness_rakel - paint_thickness_canvas;
+    float surface_distance = rakel_mapped_info.distance - paint_thickness_rakel - paint_thickness_canvas;
     bool surfaces_touch = surface_distance <= 0;
 
     if (surfaces_touch)
@@ -87,12 +85,7 @@ void emit(float2 rakel_reservoir_pixel, int2 radius, float distance, int2 canvas
                 // calculate part
                 int2 coord = rakel_reservoir_pixel_nearest + int2(x, y);
                 if (pixel_in_array_range(coord, RakelReservoirSize)) { // Prevent out of bounds access to reservoir. Also, if it's not in range, this overlap part is not (and must not be!) used anyways.
-                    float2 rakel_anchor_index_space = rakel_anchor_to_index_space(rakel.anchor, TextureResolution);
-                    float2 rect_rakel_reservoir_pixel = rotate_by_y_2D(rakel_reservoir_pixel, rakel.tilt, rakel_anchor_index_space);
-                    float2 rect_coord = rotate_by_y_2D(coord, rakel.tilt, rakel_anchor_index_space);
-                    Rectangle fragment_rectangle = create_rectangle(rect_rakel_reservoir_pixel, -rakel.rotation, 0);
-                    Rectangle reservoir_rectangle = create_rectangle(rect_coord, 0, rakel.tilt);
-                    float overlap = calculate_exact_overlap(fragment_rectangle, reservoir_rectangle);
+                    float overlap = rakel_mapped_info.overlap[i][j];
 
                     if (overlap > 0) {
                         // get paint
@@ -164,7 +157,6 @@ void main (uint3 id_ : SV_DispatchThreadID)
         // was uint2 before, but negative values are possible due to padding and no prevention of that because it should not cause any more problems
         int2 canvas_pixel = id() + CalculationPosition;
 
-        MappedInfo rakel_mapped_info = RakelMappedInfo[XY(id().x, id().y, CalculationSize.x)];
-        emit(rakel_mapped_info.reservoir_pixel, uint2(ClipRadiusX, 1), rakel_mapped_info.distance, canvas_pixel);
+        emit(uint2(ClipRadiusX, 1), canvas_pixel);
     }
 }
