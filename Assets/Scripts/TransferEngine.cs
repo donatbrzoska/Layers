@@ -71,6 +71,8 @@ public class TransferEngine
 
         // 2. Do paint transfer and rendering
         canvas.Reservoir.Duplicate(DebugShader);
+        rakel.ApplicationReservoir.Duplicate(DebugShader);
+        rakel.PickupReservoir.Duplicate(DebugShader);
 
         ComputeBuffer canvasEmittedPaint = canvas.EmitPaint(
             rakel,
@@ -79,10 +81,6 @@ public class TransferEngine
             transferConfiguration.PickupVolume_MIN,
             transferConfiguration.PickupVolume_MAX,
             DebugShader); ;
-
-        rakel.ApplicationReservoir.Duplicate(DebugShader);
-
-        rakel.PickupReservoir.Duplicate(DebugShader);
 
         ComputeBuffer rakelEmittedPaint = rakel.EmitPaint(
             rakelEmitSR,
