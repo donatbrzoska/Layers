@@ -139,9 +139,9 @@ public class FillConfiguration
 
     public FillConfiguration()
     {
-        Color = Color_.CadmiumGreen;
-        ColorMode = ColorMode.Colorful;
-        Volume = 120;
+        Color = Color_.UltramarineBlueRAL;
+        ColorMode = ColorMode.Flat;
+        Volume = 60;
         VolumeMode = VolumeMode.Perlin;
     }
 
