@@ -7,12 +7,14 @@
 #include "../math.hlsl"
 #include "../sutherland_hodgman.hlsl"
 #include "../rakel.hlsl"
+#include "../mapped_info.hlsl"
 
 uint TextureResolution;
 
 RWStructuredBuffer<Rakel> RakelInfo;
 RWStructuredBuffer<Paint> RakelReservoirDuplicate;
 uint2 RakelReservoirSize;
+RWStructuredBuffer<MappedInfo> CanvasMappedInfo;
 
 float3 CanvasPosition;
 float2 CanvasSize;
@@ -171,15 +173,11 @@ void main(uint3 id_ : SV_DispatchThreadID)
     id__ = id_;
     if (is_relevant_thread(id(), CalculationSize))
     {
-        // extract canvas mapped info from previous step
-        Paint p = CanvasEmittedPaint[XY(id().x, id().y, CalculationSize.x)];
-        float2 canvas_reservoir_pixel = float2(p.color.x, p.color.y);
-        float distance = p.color.z;
-
         // calculate pixel position in reservoir
         // was uint2 before, but negative values are possible due to padding and no prevention of that because it should not cause any more problems
         int2 rakel_pixel = id() + CalculationPosition;
-        
-        emit(canvas_reservoir_pixel, int2(1, 1), distance, rakel_pixel);
+
+        MappedInfo canvasMappedInfo = CanvasMappedInfo[XY(id().x, id().y, CalculationSize.x)];
+        emit(canvasMappedInfo.reservoir_pixel, int2(1, 1), canvasMappedInfo.distance, rakel_pixel);
     }
 }

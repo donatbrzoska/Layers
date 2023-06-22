@@ -86,11 +86,11 @@ public class Canvas_
         float pickupVolume_MAX,
         bool debugEnabled = false)
     {
+        ComputeBuffer canvasMappedInfo = CalculateCanvasMappedInfo(rakel, shaderRegion, debugEnabled);
+
         ComputeBuffer canvasEmittedPaint = new ComputeBuffer(shaderRegion.PixelCount, Paint.SizeInBytes);
         Paint[] initPaint = new Paint[shaderRegion.PixelCount];
         canvasEmittedPaint.SetData(initPaint);
-
-        WriteCanvasMappedInfo(canvasEmittedPaint, rakel, shaderRegion, debugEnabled);
 
         new ComputeShaderTask(
             "Pickup/EmitFromCanvas",
@@ -103,6 +103,7 @@ public class Canvas_
                 new CSComputeBuffer("RakelInfo", rakel.InfoBuffer),
                 new CSComputeBuffer("RakelReservoirDuplicate", rakel.Reservoir.BufferDuplicate),
                 new CSInt2("RakelReservoirSize", rakel.Reservoir.Size),
+                new CSComputeBuffer("CanvasMappedInfo", canvasMappedInfo),
 
                 new CSFloat3("CanvasPosition", Position),
                 new CSFloat2("CanvasSize", Size),
@@ -120,15 +121,20 @@ public class Canvas_
             debugEnabled
         ).Run();
 
+        canvasMappedInfo.Dispose();
+
         return canvasEmittedPaint;
     }
 
-    private void WriteCanvasMappedInfo(
-        ComputeBuffer canvasMappedInfoTarget,
+    private ComputeBuffer CalculateCanvasMappedInfo(
         Rakel rakel,
         ShaderRegion shaderRegion,
         bool debugEnabled = false)
     {
+        ComputeBuffer canvasMappedInfo = new ComputeBuffer(shaderRegion.PixelCount, MappedInfo.SizeInBytes);
+        MappedInfo[] canvasMappedInfoData = new MappedInfo[shaderRegion.PixelCount];
+        canvasMappedInfo.SetData(canvasMappedInfoData);
+
         new ComputeShaderTask(
             "Pickup/CanvasMappedInfo",
             shaderRegion,
@@ -142,10 +148,12 @@ public class Canvas_
                 new CSFloat2("CanvasSize", Size),
                 new CSInt2("CanvasReservoirSize", TextureSize),
 
-                new CSComputeBuffer("CanvasMappedInfoTarget", canvasMappedInfoTarget),
+                new CSComputeBuffer("CanvasMappedInfo", canvasMappedInfo),
             },
             debugEnabled
         ).Run();
+
+        return canvasMappedInfo;
     }
 
     public void ApplyPaint(

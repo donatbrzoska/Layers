@@ -6,6 +6,7 @@
 #include "../Paint/paint.hlsl"
 #include "../math.hlsl"
 #include "../rakel.hlsl"
+#include "../mapped_info.hlsl"
 
 uint TextureResolution;
 
@@ -15,7 +16,7 @@ float3 CanvasPosition;
 float2 CanvasSize;
 uint2 CanvasReservoirSize;
 
-RWStructuredBuffer<Paint> CanvasMappedInfoTarget;
+RWStructuredBuffer<MappedInfo> CanvasMappedInfo;
 
 
 // returns:
@@ -74,15 +75,7 @@ void main(uint3 id_ : SV_DispatchThreadID)
         int2 rakel_pixel = id() + CalculationPosition;
         float3 canvas_mapped_info = canvas_mapped(rakel_pixel);
         
-        // use paint struct to store result
-        Paint p;
-        p.color = float4(
-            canvas_mapped_info.x,
-            canvas_mapped_info.y,
-            canvas_mapped_info.z,
-            0 // unused
-        );
-        p.volume = 0; // unused
-        CanvasMappedInfoTarget[XY(id().x, id().y, CalculationSize.x)] = p;
+        CanvasMappedInfo[XY(id().x, id().y, CalculationSize.x)].reservoir_pixel = float2(canvas_mapped_info.x, canvas_mapped_info.y);
+        CanvasMappedInfo[XY(id().x, id().y, CalculationSize.x)].distance = canvas_mapped_info.z;
     }
 }

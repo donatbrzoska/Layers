@@ -29,15 +29,6 @@ public struct RakelInfo
     public Vector3 LRTilted;
 }
 
-public struct MappedInfo
-{
-    public const int SizeInBytes = 6 * sizeof(float);
-
-    public Vector3 BackTransformedPixel;
-    public Vector2 ReservoirPixel;
-    public float Distance;
-}
-
 public class Rakel
 {
     // see EmitFromRakel shader for details (look for "79 degree tilt")
