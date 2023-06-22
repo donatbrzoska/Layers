@@ -36,14 +36,7 @@ public struct Paint : IEquatable<Paint>
 
     public Paint(Color color, float volume)
     {
-        if (volume == 0)
-        {
-            Color = Colors.NO_PAINT_COLOR;
-        }
-        else
-        {
-            Color = color;
-        }
+        Color = color;
         Volume = volume;
     }
 
@@ -55,7 +48,7 @@ public struct Paint : IEquatable<Paint>
 
     public bool IsEmpty()
     {
-        return this.Equals(EMPTY_PAINT);
+        return Volume == 0;
     }
 
     public bool Equals(Paint other)

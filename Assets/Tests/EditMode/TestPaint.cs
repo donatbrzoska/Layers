@@ -32,14 +32,6 @@ public class TestPaint
     }
 
     [Test]
-    public void Constructor_ZeroVolumeResultsInEmptyPaint()
-    {
-        Paint p = new Paint(new Color(0.2f, 0.2f, 0.2f), 0);
-
-        Assert.AreEqual(p, Paint.EMPTY_PAINT);
-    }
-
-    [Test]
     public void IsEmpty()
     {
         Paint p = new Paint(Colors.NO_PAINT_COLOR, 0);
