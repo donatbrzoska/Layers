@@ -86,7 +86,27 @@ public class Canvas_
         float pickupVolume_MAX,
         bool debugEnabled = false)
     {
-        ComputeBuffer canvasMappedInfo = CalculateCanvasMappedInfo(rakel, shaderRegion, debugEnabled);
+        ComputeBuffer canvasMappedInfo = new ComputeBuffer(shaderRegion.PixelCount, MappedInfo.SizeInBytes);
+        MappedInfo[] canvasMappedInfoData = new MappedInfo[shaderRegion.PixelCount];
+        canvasMappedInfo.SetData(canvasMappedInfoData);
+
+        new ComputeShaderTask(
+            "Pickup/CanvasMappedInfo",
+            shaderRegion,
+            new List<CSAttribute>()
+            {
+                new CSInt("TextureResolution", Resolution),
+
+                new CSComputeBuffer("RakelInfo", rakel.InfoBuffer),
+
+                new CSFloat3("CanvasPosition", Position),
+                new CSFloat2("CanvasSize", Size),
+                new CSInt2("CanvasReservoirSize", TextureSize),
+
+                new CSComputeBuffer("CanvasMappedInfo", canvasMappedInfo),
+            },
+            debugEnabled
+        ).Run();
 
         ComputeBuffer canvasEmittedPaint = new ComputeBuffer(shaderRegion.PixelCount, Paint.SizeInBytes);
         Paint[] initPaint = new Paint[shaderRegion.PixelCount];
@@ -124,36 +144,6 @@ public class Canvas_
         canvasMappedInfo.Dispose();
 
         return canvasEmittedPaint;
-    }
-
-    private ComputeBuffer CalculateCanvasMappedInfo(
-        Rakel rakel,
-        ShaderRegion shaderRegion,
-        bool debugEnabled = false)
-    {
-        ComputeBuffer canvasMappedInfo = new ComputeBuffer(shaderRegion.PixelCount, MappedInfo.SizeInBytes);
-        MappedInfo[] canvasMappedInfoData = new MappedInfo[shaderRegion.PixelCount];
-        canvasMappedInfo.SetData(canvasMappedInfoData);
-
-        new ComputeShaderTask(
-            "Pickup/CanvasMappedInfo",
-            shaderRegion,
-            new List<CSAttribute>()
-            {
-                new CSInt("TextureResolution", Resolution),
-
-                new CSComputeBuffer("RakelInfo", rakel.InfoBuffer),
-
-                new CSFloat3("CanvasPosition", Position),
-                new CSFloat2("CanvasSize", Size),
-                new CSInt2("CanvasReservoirSize", TextureSize),
-
-                new CSComputeBuffer("CanvasMappedInfo", canvasMappedInfo),
-            },
-            debugEnabled
-        ).Run();
-
-        return canvasMappedInfo;
     }
 
     public void ApplyPaint(
