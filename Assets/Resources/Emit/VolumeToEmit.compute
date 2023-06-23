@@ -87,6 +87,6 @@ void main (uint3 id_ : SV_DispatchThreadID)
         // calculate pixel position on canvas
         // was uint2 before, but negative values are possible due to padding and no prevention of that because it should not cause any more problems
         int2 canvas_pixel = id() + CalculationPosition;
-        RakelMappedInfo[XY(id().x, id().y, CalculationSize.x)].volume_to_transfer = volume_to_emit_(ReservoirPixelEmitRadius, canvas_pixel);
+        RakelMappedInfo[XY(id().x, id().y, CalculationSize.x)].target_volume_to_transfer = volume_to_emit_(ReservoirPixelEmitRadius, canvas_pixel);
     }
 }

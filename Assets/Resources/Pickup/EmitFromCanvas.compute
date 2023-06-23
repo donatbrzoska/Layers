@@ -18,8 +18,8 @@ void emit(int2 radius, int2 rakel_pixel)
 {
     MappedInfo canvasMappedInfo = CanvasMappedInfo[XY(id().x, id().y, CalculationSize.x)];
 
-    float volume_to_pickup = canvasMappedInfo.volume_to_transfer;
-    if (volume_to_pickup > 0)
+    float target_volume_to_pickup = canvasMappedInfo.target_volume_to_transfer;
+    if (target_volume_to_pickup > 0)
     {
         int2 canvas_reservoir_pixel_nearest = round(canvasMappedInfo.reservoir_pixel);
 
@@ -54,7 +54,7 @@ void emit(int2 radius, int2 rakel_pixel)
                         available.volume = max(available.volume - MIN_VOLUME_TO_STAY, 0);
 
                         // calculate volume
-                        float target_volume = overlap * volume_to_pickup;
+                        float target_volume = overlap * target_volume_to_pickup;
                         float really_available_volume = overlap * available.volume;
                         volume_to_emit[i][j] = min(target_volume, really_available_volume);
                         result_volume += volume_to_emit[i][j];

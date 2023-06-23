@@ -92,5 +92,5 @@ public struct MappedInfo
     public float Overlap80;
     public float Overlap81;
 
-    public float VolumeToTransfer;
+    public float TargetVolumeToTransfer;
 }
