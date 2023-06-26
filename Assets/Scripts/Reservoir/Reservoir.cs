@@ -7,6 +7,50 @@ public enum ReduceFunction
     Add,
 }
 
+public struct StackInfo
+{
+    public static int SizeInBytes = 3 * sizeof(int) + sizeof(float);
+
+    public int Size;
+    public int MaxSize;
+    public int WriteIndex;
+    public float Volume;
+
+    public StackInfo(int size, int maxSize, int writeIndex, float volume)
+    {
+        Size = size;
+        MaxSize = maxSize;
+        WriteIndex = writeIndex;
+        Volume = volume;
+    }
+
+    public override bool Equals(object other_)
+    {
+        StackInfo other = (StackInfo)other_;
+        return Size == other.Size && MaxSize == other.MaxSize && WriteIndex == other.WriteIndex && Mathf.Abs(other.Volume - Volume) < 0.0001f;
+    }
+
+    public override int GetHashCode()
+    {
+        return base.GetHashCode();
+    }
+
+    public override string ToString()
+    {
+        return base.ToString() + string.Format("(Size={0}, MaxSize={1}, WriteIndex={2}, Volume={3})", Size, MaxSize, WriteIndex, Volume);
+    }
+
+    public static bool operator ==(StackInfo a, StackInfo b)
+    {
+        return a.Equals(b);
+    }
+
+    public static bool operator !=(StackInfo a, StackInfo b)
+    {
+        return !a.Equals(b);
+    }
+}
+
 public class Reservoir
 {
     public int Resolution;

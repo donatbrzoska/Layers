@@ -5,6 +5,11 @@ bool f2_eq(float2 a, float2 b)
         && abs(a.y - b.y) < err;
 }
 
+bool floats_equal(float a, float b)
+{
+    return abs(a - b) < 0.0001;
+}
+
 // rotates clockwise
 float3 rotate_by_z(float3 vec, float angle, float3 around)
 {

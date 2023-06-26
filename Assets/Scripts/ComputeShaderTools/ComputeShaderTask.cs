@@ -59,6 +59,21 @@ public class CSInt : CSAttribute
     }
 }
 
+public class CSInt3 : CSAttribute
+{
+    private Vector3Int Values;
+
+    public CSInt3(string key, Vector3Int values) : base(key)
+    {
+        Values = values;
+    }
+
+    public override void ApplyTo(ComputeShader computeShader, int kernelID)
+    {
+        computeShader.SetInts(Key, Values.x, Values.y, Values.z);
+    }
+}
+
 public class CSInt2 : CSAttribute
 {
     private Vector2Int Values;

@@ -1,0 +1,130 @@
+#include "../ShaderBase/shader_base.hlsl"
+
+#include "../Paint/paint.hlsl"
+#include "../stack.hlsl"
+#include "../math.hlsl"
+
+
+RWStructuredBuffer<StackInfo> Source2DInfo;
+RWStructuredBuffer<Paint> Source2DContent;
+RWStructuredBuffer<StackInfo> Target2DInfo;
+RWStructuredBuffer<Paint> Target2DContent;
+
+#pragma kernel test_stack_2D_copy
+
+[numthreads(32,1,1)]
+void test_stack_2D_copy(uint3 id_ : SV_DispatchThreadID)
+{
+    id__ = id_;
+    if (is_relevant_thread(id(), CalculationSize))
+    {
+        stack_2D_copy(
+            Source2DInfo, Source2DContent, CalculationSize, id().xy,
+            Target2DInfo, Target2DContent, CalculationSize, id().xy);
+    }
+}
+
+
+RWStructuredBuffer<StackInfo> Stack2DInfo;
+RWStructuredBuffer<Paint> Stack2DContent;
+uint2 Stack2DSize;
+
+uint2 NewElementPosition;
+RWStructuredBuffer<Paint> NewElement;
+
+#pragma kernel test_stack_2D_push
+
+[numthreads(32,1,1)]
+void test_stack_2D_push(uint3 id_ : SV_DispatchThreadID)
+{
+    id__ = id_;
+    if (is_relevant_thread(id(), CalculationSize))
+    {
+        stack_2D_push(Stack2DInfo, Stack2DContent, Stack2DSize, NewElementPosition, NewElement[0]);
+    }
+}
+
+
+// RWStructuredBuffer<StackInfo> Stack2DInfo;
+// RWStructuredBuffer<Paint> Stack2DContent;
+// uint2 Stack2DSize;
+
+// uint2 NewElementPosition;
+// RWStructuredBuffer<Paint> NewElement;
+
+#pragma kernel test_stack_2D_raw_push
+
+[numthreads(32,1,1)]
+void test_stack_2D_raw_push(uint3 id_ : SV_DispatchThreadID)
+{
+    id__ = id_;
+    if (is_relevant_thread(id(), CalculationSize))
+    {
+        stack_2D_raw_push(Stack2DInfo, Stack2DContent, Stack2DSize, NewElementPosition, NewElement[0]);
+    }
+}
+
+
+// RWStructuredBuffer<StackInfo> Source2DInfo;
+// RWStructuredBuffer<Paint> Source2DContent;
+uint2 Source2DSize;
+// RWStructuredBuffer<StackInfo> Target2DInfo;
+// RWStructuredBuffer<Paint> Target2DContent;
+uint2 Target2DSize;
+uint2 Target2DPosition;
+
+#pragma kernel test_stack_2D_reverse_transfer
+
+[numthreads(32,1,1)]
+void test_stack_2D_reverse_transfer(uint3 id_ : SV_DispatchThreadID)
+{
+    id__ = id_;
+    if (is_relevant_thread(id(), CalculationSize))
+    {
+        uint2 src_2D_position = id().xy;
+        uint2 dst_2d_position = id().xy + Target2DPosition;
+        stack_2D_reverse_transfer(
+            Source2DInfo, Source2DContent, Source2DSize, src_2D_position,
+            Target2DInfo, Target2DContent, Target2DSize, dst_2d_position);
+    }
+}
+
+
+// RWStructuredBuffer<StackInfo> Stack2DInfo;
+// RWStructuredBuffer<Paint> Stack2DContent;
+// uint2 Stack2DSize;
+
+uint3 DeletePosition;
+float DeleteVolume;
+
+#pragma kernel test_stack_2D_delete
+
+[numthreads(32,1,1)]
+void test_stack_2D_delete(uint3 id_ : SV_DispatchThreadID)
+{
+    id__ = id_;
+    if (is_relevant_thread(id(), CalculationSize))
+    {
+        stack_2D_delete(Stack2DInfo, Stack2DContent, Stack2DSize, DeletePosition, DeleteVolume);
+    }
+}
+
+
+// RWStructuredBuffer<StackInfo> Stack2DInfo;
+// RWStructuredBuffer<Paint> Stack2DContent;
+// uint2 Stack2DSize;
+
+uint3 GetPosition;
+RWStructuredBuffer<Paint> GetResult;
+
+#pragma kernel test_stack_2D_get
+
+[numthreads(32,1,1)]
+void test_stack_2D_get(uint3 id_ : SV_DispatchThreadID)
+{
+    id__ = id_;
+    if (is_relevant_thread(id(), CalculationSize))
+    {
+        GetResult[0] = stack_2D_get(Stack2DInfo, Stack2DContent, Stack2DSize, GetPosition);
+    }
+}

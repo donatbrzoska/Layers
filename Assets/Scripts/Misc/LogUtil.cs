@@ -135,6 +135,35 @@ public class LogUtil
         Debug.Log(result);
     }
 
+    public static void Log(StackInfo[] values, Vector3Int dimensions, int usedDepth, string descr = "")
+    {
+        if (descr != "")
+        {
+            Debug.Log(descr);
+        }
+
+        string result = "";
+        for (int row = dimensions.y - 1; row >= 0; row--)
+        {
+            for (int col = 0; col < dimensions.x; col++)
+            {
+                result += "[";
+                for (int k = 0; k < usedDepth; k++)
+                {
+                    int index = k * dimensions.y * dimensions.x + row * dimensions.x + col;
+                    result += values[index].ToString();
+                    if (k < usedDepth - 1)
+                    {
+                        result += " ";
+                    }
+                }
+                result += "]  ";
+            }
+            result += "\n\n";
+        }
+        Debug.Log(result);
+    }
+
     private static string Float4ToString(Vector4 value, DebugListType debugType)
     {
         string result = "(";
