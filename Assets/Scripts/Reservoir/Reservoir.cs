@@ -7,7 +7,7 @@ public enum ReduceFunction
     Add,
 }
 
-public struct StackInfo
+public struct ColumnInfo
 {
     public static int SizeInBytes = 3 * sizeof(int) + sizeof(float);
 
@@ -16,7 +16,7 @@ public struct StackInfo
     public int WriteIndex;
     public float Volume;
 
-    public StackInfo(int size, int maxSize, int writeIndex, float volume)
+    public ColumnInfo(int size, int maxSize, int writeIndex, float volume)
     {
         Size = size;
         MaxSize = maxSize;
@@ -26,7 +26,7 @@ public struct StackInfo
 
     public override bool Equals(object other_)
     {
-        StackInfo other = (StackInfo)other_;
+        ColumnInfo other = (ColumnInfo)other_;
         return Size == other.Size && MaxSize == other.MaxSize && WriteIndex == other.WriteIndex && Mathf.Abs(other.Volume - Volume) < 0.0001f;
     }
 
@@ -40,12 +40,12 @@ public struct StackInfo
         return base.ToString() + string.Format("(Size={0}, MaxSize={1}, WriteIndex={2}, Volume={3})", Size, MaxSize, WriteIndex, Volume);
     }
 
-    public static bool operator ==(StackInfo a, StackInfo b)
+    public static bool operator ==(ColumnInfo a, ColumnInfo b)
     {
         return a.Equals(b);
     }
 
-    public static bool operator !=(StackInfo a, StackInfo b)
+    public static bool operator !=(ColumnInfo a, ColumnInfo b)
     {
         return !a.Equals(b);
     }

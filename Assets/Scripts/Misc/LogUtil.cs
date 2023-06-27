@@ -135,7 +135,7 @@ public class LogUtil
         Debug.Log(result);
     }
 
-    public static void Log(StackInfo[] values, Vector3Int dimensions, int usedDepth, string descr = "")
+    public static void Log(ColumnInfo[] values, Vector3Int dimensions, int usedDepth, string descr = "")
     {
         if (descr != "")
         {

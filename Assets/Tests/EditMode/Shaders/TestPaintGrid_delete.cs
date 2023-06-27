@@ -2,22 +2,22 @@
 using NUnit.Framework;
 using UnityEngine;
 
-public class TestStack_delete
+public class TestPaintGrid_delete
 {
     private const int KERNEL_ID_delete = 4;
 
-    ComputeBuffer Stack2DInfo;
-    StackInfo[] Stack2DInfoData;
-    ComputeBuffer Stack2DContent;
-    Paint[] Stack2DContentData;
-    Vector2Int Stack2DSize;
+    ComputeBuffer PaintGridInfo;
+    ColumnInfo[] PaintGridInfoData;
+    ComputeBuffer PaintGridContent;
+    Paint[] PaintGridContentData;
+    Vector2Int PaintGridSize;
     Vector3Int DeletePosition;
     float DeleteVolume;
 
     [SetUp]
     public void Setup()
     {
-        Stack2DSize = new Vector2Int(1, 1);
+        PaintGridSize = new Vector2Int(1, 1);
 
         new FileLogger_().OnEnable();
     }
@@ -25,31 +25,31 @@ public class TestStack_delete
     [TearDown]
     public void Teardown()
     {
-        Stack2DInfo.Dispose();
-        Stack2DContent.Dispose();
+        PaintGridInfo.Dispose();
+        PaintGridContent.Dispose();
 
         new FileLogger_().OnDisable();
     }
 
     private ComputeShaderTask Execute(int kernelID)
     {
-        Stack2DInfo?.Dispose();
-        Stack2DInfo = new ComputeBuffer(Stack2DSize.x * Stack2DSize.y, StackInfo.SizeInBytes);
-        Stack2DInfo.SetData(Stack2DInfoData);
+        PaintGridInfo?.Dispose();
+        PaintGridInfo = new ComputeBuffer(PaintGridSize.x * PaintGridSize.y, ColumnInfo.SizeInBytes);
+        PaintGridInfo.SetData(PaintGridInfoData);
 
-        Stack2DContent?.Dispose();
-        Stack2DContent = new ComputeBuffer(Stack2DSize.x * Stack2DSize.y * Stack2DInfoData[0].MaxSize, Paint.SizeInBytes);
-        Stack2DContent.SetData(Stack2DContentData);
+        PaintGridContent?.Dispose();
+        PaintGridContent = new ComputeBuffer(PaintGridSize.x * PaintGridSize.y * PaintGridInfoData[0].MaxSize, Paint.SizeInBytes);
+        PaintGridContent.SetData(PaintGridContentData);
 
         List<CSAttribute> Attributes = new List<CSAttribute>();
-        Attributes.Add(new CSComputeBuffer("Stack2DInfo", Stack2DInfo));
-        Attributes.Add(new CSComputeBuffer("Stack2DContent", Stack2DContent));
-        Attributes.Add(new CSInt2("Stack2DSize", Stack2DSize));
+        Attributes.Add(new CSComputeBuffer("PaintGridInfo", PaintGridInfo));
+        Attributes.Add(new CSComputeBuffer("PaintGridContent", PaintGridContent));
+        Attributes.Add(new CSInt2("PaintGridSize", PaintGridSize));
         Attributes.Add(new CSInt3("DeletePosition", DeletePosition));
         Attributes.Add(new CSFloat("DeleteVolume", DeleteVolume));
 
         ComputeShaderTask cst = new ComputeShaderTask(
-            "Tests/TestStack",
+            "Tests/TestPaintGrid",
             new ShaderRegion(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
             Attributes,
             true,
@@ -57,8 +57,8 @@ public class TestStack_delete
 
         cst.Run();
 
-        Stack2DContent.GetData(Stack2DContentData);
-        Stack2DInfo.GetData(Stack2DInfoData);
+        PaintGridContent.GetData(PaintGridContentData);
+        PaintGridInfo.GetData(PaintGridInfoData);
 
         return cst;
     }
@@ -74,14 +74,14 @@ public class TestStack_delete
     }
 
     [Test]
-    public void empty_stack_does_nothing()
+    public void empty_column_does_nothing()
     {
         // Arrange
-        Stack2DInfoData = new StackInfo[]
+        PaintGridInfoData = new ColumnInfo[]
         {
-            new StackInfo { Size = 0, MaxSize = 1, WriteIndex = 0, Volume = 0 }
+            new ColumnInfo { Size = 0, MaxSize = 1, WriteIndex = 0, Volume = 0 }
         };
-        Stack2DContentData = new Paint[]
+        PaintGridContentData = new Paint[]
         {
             P(0),
         };
@@ -95,18 +95,18 @@ public class TestStack_delete
 
         // Assert
         Assert.AreEqual(
-            new StackInfo[]
+            new ColumnInfo[]
             {
-                new StackInfo { Size = 0, MaxSize = 1, WriteIndex = 0, Volume = 0 }
+                new ColumnInfo { Size = 0, MaxSize = 1, WriteIndex = 0, Volume = 0 }
             },
-            Stack2DInfoData);
+            PaintGridInfoData);
 
         Assert.AreEqual(
             new Paint[]
             {
                 P(0)
             },
-            Stack2DContentData);
+            PaintGridContentData);
     }
 
     [Test]
@@ -115,13 +115,13 @@ public class TestStack_delete
         int MS = 2;
 
         // Arrange
-        Stack2DInfoData = new StackInfo[]
+        PaintGridInfoData = new ColumnInfo[]
         {
-            new StackInfo { Size = 1, MaxSize = MS, WriteIndex = 1, Volume = 1 }, new StackInfo { Size = 1, MaxSize = MS, WriteIndex = 1, Volume = 1 },
-            new StackInfo { Size = 1, MaxSize = MS, WriteIndex = 1, Volume = 1 }, new StackInfo { Size = 1, MaxSize = MS, WriteIndex = 1, Volume = 1 },
-            new StackInfo { Size = 1, MaxSize = MS, WriteIndex = 1, Volume = 1 }, new StackInfo { Size = 1, MaxSize = MS, WriteIndex = 1, Volume = 1.2f },
+            new ColumnInfo { Size = 1, MaxSize = MS, WriteIndex = 1, Volume = 1 }, new ColumnInfo { Size = 1, MaxSize = MS, WriteIndex = 1, Volume = 1 },
+            new ColumnInfo { Size = 1, MaxSize = MS, WriteIndex = 1, Volume = 1 }, new ColumnInfo { Size = 1, MaxSize = MS, WriteIndex = 1, Volume = 1 },
+            new ColumnInfo { Size = 1, MaxSize = MS, WriteIndex = 1, Volume = 1 }, new ColumnInfo { Size = 1, MaxSize = MS, WriteIndex = 1, Volume = 1.2f },
         };
-        Stack2DContentData = new Paint[]
+        PaintGridContentData = new Paint[]
         {
             P(1), P(1),
             P(1), P(1),
@@ -131,7 +131,7 @@ public class TestStack_delete
             P(-1), P(-1),
             P(-1), P(0.4f, 0.2f),
         };
-        Stack2DSize = new Vector2Int(2, 3);
+        PaintGridSize = new Vector2Int(2, 3);
         DeletePosition = new Vector3Int(1, 2, 1);
         DeleteVolume = 0.1f;
 
@@ -142,13 +142,13 @@ public class TestStack_delete
 
         // Assert
         Assert.AreEqual(
-            new StackInfo[]
+            new ColumnInfo[]
             {
-                new StackInfo { Size = 1, MaxSize = MS, WriteIndex = 1, Volume = 1 }, new StackInfo { Size = 1, MaxSize = MS, WriteIndex = 1, Volume = 1 },
-                new StackInfo { Size = 1, MaxSize = MS, WriteIndex = 1, Volume = 1 }, new StackInfo { Size = 1, MaxSize = MS, WriteIndex = 1, Volume = 1 },
-                new StackInfo { Size = 1, MaxSize = MS, WriteIndex = 1, Volume = 1 }, new StackInfo { Size = 1, MaxSize = MS, WriteIndex = 1, Volume = 1.1f },
+                new ColumnInfo { Size = 1, MaxSize = MS, WriteIndex = 1, Volume = 1 }, new ColumnInfo { Size = 1, MaxSize = MS, WriteIndex = 1, Volume = 1 },
+                new ColumnInfo { Size = 1, MaxSize = MS, WriteIndex = 1, Volume = 1 }, new ColumnInfo { Size = 1, MaxSize = MS, WriteIndex = 1, Volume = 1 },
+                new ColumnInfo { Size = 1, MaxSize = MS, WriteIndex = 1, Volume = 1 }, new ColumnInfo { Size = 1, MaxSize = MS, WriteIndex = 1, Volume = 1.1f },
             },
-            Stack2DInfoData);
+            PaintGridInfoData);
 
         Assert.AreEqual(
             new Paint[]
@@ -161,18 +161,18 @@ public class TestStack_delete
                 P(-1), P(-1),
                 P(-1),  P(0.4f, 0.1f),
             },
-            Stack2DContentData);
+            PaintGridContentData);
     }
 
     [Test]
     public void usual_delete_complete_cell_or_more()
     {
         // Arrange
-        Stack2DInfoData = new StackInfo[]
+        PaintGridInfoData = new ColumnInfo[]
         {
-            new StackInfo { Size = 2, MaxSize = 2, WriteIndex = 1, Volume = 1.3f }
+            new ColumnInfo { Size = 2, MaxSize = 2, WriteIndex = 1, Volume = 1.3f }
         };
-        Stack2DContentData = new Paint[]
+        PaintGridContentData = new Paint[]
         {
             P(1),
 
@@ -188,11 +188,11 @@ public class TestStack_delete
 
         // Assert
         Assert.AreEqual(
-            new StackInfo[]
+            new ColumnInfo[]
             {
-                new StackInfo { Size = 1, MaxSize = 2, WriteIndex = 1, Volume = 1 }
+                new ColumnInfo { Size = 1, MaxSize = 2, WriteIndex = 1, Volume = 1 }
             },
-            Stack2DInfoData);
+            PaintGridInfoData);
 
         Assert.AreEqual(
             new Paint[]
@@ -201,18 +201,18 @@ public class TestStack_delete
 
                 P(0.3f, 0), // Notice that the color stays, doesn't matter because there is zero volume
             },
-            Stack2DContentData);
+            PaintGridContentData);
     }
 
     [Test]
     public void delete_complete_lowest_cell()
     {
         // Arrange
-        Stack2DInfoData = new StackInfo[]
+        PaintGridInfoData = new ColumnInfo[]
         {
-            new StackInfo { Size = 1, MaxSize = 1, WriteIndex = 0, Volume = 0.3f }
+            new ColumnInfo { Size = 1, MaxSize = 1, WriteIndex = 0, Volume = 0.3f }
         };
-        Stack2DContentData = new Paint[]
+        PaintGridContentData = new Paint[]
         {
             P(0.3f),
         };
@@ -226,29 +226,29 @@ public class TestStack_delete
 
         // Assert
         Assert.AreEqual(
-            new StackInfo[]
+            new ColumnInfo[]
             {
-                new StackInfo { Size = 0, MaxSize = 1, WriteIndex = 0, Volume = 0 }
+                new ColumnInfo { Size = 0, MaxSize = 1, WriteIndex = 0, Volume = 0 }
             },
-            Stack2DInfoData);
+            PaintGridInfoData);
 
         Assert.AreEqual(
             new Paint[]
             {
                 P(0.3f, 0) // Notice that the color stays, doesn't matter because there is zero volume
             },
-            Stack2DContentData);
+            PaintGridContentData);
     }
 
     [Test]
     public void auto_update_write_index()
     {
         // Arrange
-        Stack2DInfoData = new StackInfo[]
+        PaintGridInfoData = new ColumnInfo[]
         {
-            new StackInfo { Size = 2, MaxSize = 2, WriteIndex = 1, Volume = 1.3f }
+            new ColumnInfo { Size = 2, MaxSize = 2, WriteIndex = 1, Volume = 1.3f }
         };
-        Stack2DContentData = new Paint[]
+        PaintGridContentData = new Paint[]
         {
             P(0.2f, 1),
 
@@ -268,11 +268,11 @@ public class TestStack_delete
 
         // Assert
         Assert.AreEqual(
-            new StackInfo[]
+            new ColumnInfo[]
             {
-                new StackInfo { Size = 0, MaxSize = 2, WriteIndex = 0, Volume = 0 }
+                new ColumnInfo { Size = 0, MaxSize = 2, WriteIndex = 0, Volume = 0 }
             },
-            Stack2DInfoData);
+            PaintGridInfoData);
 
         Assert.AreEqual(
             new Paint[]
@@ -281,7 +281,7 @@ public class TestStack_delete
 
                 P(0.2f, 0), // Notice that the color stays, doesn't matter because there is zero volume
             },
-            Stack2DContentData);
+            PaintGridContentData);
     }
 
     // Test: delete cell at write_index is not filled -> shouldn't matter because we don't use the stack functionality for delete

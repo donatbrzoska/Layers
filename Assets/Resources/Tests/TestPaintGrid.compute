@@ -1,0 +1,130 @@
+#include "../ShaderBase/shader_base.hlsl"
+
+#include "../Paint/paint.hlsl"
+#include "../paint_grid.hlsl"
+#include "../math.hlsl"
+
+
+RWStructuredBuffer<ColumnInfo> SourcePGInfo;
+RWStructuredBuffer<Paint> SourcePGContent;
+RWStructuredBuffer<ColumnInfo> TargetPGInfo;
+RWStructuredBuffer<Paint> TargetPGContent;
+
+#pragma kernel test_paint_grid_copy
+
+[numthreads(32,1,1)]
+void test_paint_grid_copy(uint3 id_ : SV_DispatchThreadID)
+{
+    id__ = id_;
+    if (is_relevant_thread(id(), CalculationSize))
+    {
+        paint_grid_copy(
+            SourcePGInfo, SourcePGContent, CalculationSize, id().xy,
+            TargetPGInfo, TargetPGContent, CalculationSize, id().xy);
+    }
+}
+
+
+RWStructuredBuffer<ColumnInfo> PaintGridInfo;
+RWStructuredBuffer<Paint> PaintGridContent;
+uint2 PaintGridSize;
+
+uint2 NewElementPosition;
+RWStructuredBuffer<Paint> NewElement;
+
+#pragma kernel test_paint_grid_fill
+
+[numthreads(32,1,1)]
+void test_paint_grid_fill(uint3 id_ : SV_DispatchThreadID)
+{
+    id__ = id_;
+    if (is_relevant_thread(id(), CalculationSize))
+    {
+        paint_grid_fill(PaintGridInfo, PaintGridContent, PaintGridSize, NewElementPosition, NewElement[0]);
+    }
+}
+
+
+// RWStructuredBuffer<ColumnInfo> PaintGridInfo;
+// RWStructuredBuffer<Paint> PaintGridContent;
+// uint2 PaintGridSize;
+
+// uint2 NewElementPosition;
+// RWStructuredBuffer<Paint> NewElement;
+
+#pragma kernel test_paint_grid_push
+
+[numthreads(32,1,1)]
+void test_paint_grid_push(uint3 id_ : SV_DispatchThreadID)
+{
+    id__ = id_;
+    if (is_relevant_thread(id(), CalculationSize))
+    {
+        paint_grid_push(PaintGridInfo, PaintGridContent, PaintGridSize, NewElementPosition, NewElement[0]);
+    }
+}
+
+
+// RWStructuredBuffer<ColumnInfo> SourcePGInfo;
+// RWStructuredBuffer<Paint> SourcePGContent;
+uint2 SourcePGSize;
+// RWStructuredBuffer<ColumnInfo> TargetPGInfo;
+// RWStructuredBuffer<Paint> TargetPGContent;
+uint2 TargetPGSize;
+uint2 TargetPGPosition;
+
+#pragma kernel test_stack_2D_reverse_transfer
+
+[numthreads(32,1,1)]
+void test_stack_2D_reverse_transfer(uint3 id_ : SV_DispatchThreadID)
+{
+    id__ = id_;
+    if (is_relevant_thread(id(), CalculationSize))
+    {
+        uint2 src_pg_position = id().xy;
+        uint2 dst_pg_position = id().xy + TargetPGPosition;
+        paint_grid_reverse_transfer(
+            SourcePGInfo, SourcePGContent, SourcePGSize, src_pg_position,
+            TargetPGInfo, TargetPGContent, TargetPGSize, dst_pg_position);
+    }
+}
+
+
+// RWStructuredBuffer<ColumnInfo> PaintGridInfo;
+// RWStructuredBuffer<Paint> PaintGridContent;
+// uint2 PaintGridSize;
+
+uint3 DeletePosition;
+float DeleteVolume;
+
+#pragma kernel test_paint_grid_delete
+
+[numthreads(32,1,1)]
+void test_paint_grid_delete(uint3 id_ : SV_DispatchThreadID)
+{
+    id__ = id_;
+    if (is_relevant_thread(id(), CalculationSize))
+    {
+        paint_grid_delete(PaintGridInfo, PaintGridContent, PaintGridSize, DeletePosition, DeleteVolume);
+    }
+}
+
+
+// RWStructuredBuffer<ColumnInfo> PaintGridInfo;
+// RWStructuredBuffer<Paint> PaintGridContent;
+// uint2 PaintGridSize;
+
+uint3 GetPosition;
+RWStructuredBuffer<Paint> GetResult;
+
+#pragma kernel test_paint_grid_get
+
+[numthreads(32,1,1)]
+void test_paint_grid_get(uint3 id_ : SV_DispatchThreadID)
+{
+    id__ = id_;
+    if (is_relevant_thread(id(), CalculationSize))
+    {
+        GetResult[0] = paint_grid_get(PaintGridInfo, PaintGridContent, PaintGridSize, GetPosition);
+    }
+}

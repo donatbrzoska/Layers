@@ -2,16 +2,16 @@
 using NUnit.Framework;
 using UnityEngine;
 
-public class TestStack_raw_push
+public class TestPaintGrid_push
 {
-    private const int KERNEL_ID_raw_push = 2;
+    private const int KERNEL_ID_push = 2;
 
     List<CSAttribute> Attributes;
 
-    ComputeBuffer Stack2DInfo;
-    StackInfo[] Stack2DInfoData;
-    ComputeBuffer Stack2DContent;
-    Paint[] Stack2DContentData;
+    ComputeBuffer PaintGridInfo;
+    ColumnInfo[] PaintGridInfoData;
+    ComputeBuffer PaintGridContent;
+    Paint[] PaintGridContentData;
     ComputeBuffer NewElement;
     Paint[] NewElementData;
 
@@ -26,8 +26,8 @@ public class TestStack_raw_push
     [TearDown]
     public void Teardown()
     {
-        Stack2DInfo.Dispose();
-        Stack2DContent.Dispose();
+        PaintGridInfo.Dispose();
+        PaintGridContent.Dispose();
         NewElement.Dispose();
 
         new FileLogger_().OnDisable();
@@ -35,26 +35,26 @@ public class TestStack_raw_push
 
     private ComputeShaderTask Execute(int kernelID)
     {
-        Vector2Int stack2DSize = new Vector2Int(1, 1);
+        Vector2Int paintGridSize = new Vector2Int(1, 1);
         Vector2Int newElementPosition = Vector2Int.zero;
 
-        Stack2DInfo = new ComputeBuffer(stack2DSize.x * stack2DSize.y, StackInfo.SizeInBytes);
-        Stack2DInfo.SetData(Stack2DInfoData);
+        PaintGridInfo = new ComputeBuffer(paintGridSize.x * paintGridSize.y, ColumnInfo.SizeInBytes);
+        PaintGridInfo.SetData(PaintGridInfoData);
 
-        Stack2DContent = new ComputeBuffer(stack2DSize.x * stack2DSize.y * Stack2DInfoData[0].MaxSize, Paint.SizeInBytes);
-        Stack2DContent.SetData(Stack2DContentData);
+        PaintGridContent = new ComputeBuffer(paintGridSize.x * paintGridSize.y * PaintGridInfoData[0].MaxSize, Paint.SizeInBytes);
+        PaintGridContent.SetData(PaintGridContentData);
 
         NewElement = new ComputeBuffer(1, Paint.SizeInBytes);
         NewElement.SetData(NewElementData);
 
-        Attributes.Add(new CSComputeBuffer("Stack2DInfo", Stack2DInfo));
-        Attributes.Add(new CSComputeBuffer("Stack2DContent", Stack2DContent));
-        Attributes.Add(new CSInt2("Stack2DSize", stack2DSize));
+        Attributes.Add(new CSComputeBuffer("PaintGridInfo", PaintGridInfo));
+        Attributes.Add(new CSComputeBuffer("PaintGridContent", PaintGridContent));
+        Attributes.Add(new CSInt2("PaintGridSize", paintGridSize));
         Attributes.Add(new CSInt2("NewElementPosition", newElementPosition));
         Attributes.Add(new CSComputeBuffer("NewElement", NewElement));
 
         ComputeShaderTask cst = new ComputeShaderTask(
-            "Tests/TestStack",
+            "Tests/TestPaintGrid",
             new ShaderRegion(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
             Attributes,
             true,
@@ -62,8 +62,8 @@ public class TestStack_raw_push
 
         cst.Run();
 
-        Stack2DContent.GetData(Stack2DContentData);
-        Stack2DInfo.GetData(Stack2DInfoData);
+        PaintGridContent.GetData(PaintGridContentData);
+        PaintGridInfo.GetData(PaintGridInfoData);
 
         return cst;
     }
@@ -82,11 +82,11 @@ public class TestStack_raw_push
     public void empty_element_does_nothing()
     {
         // Arrange
-        Stack2DInfoData = new StackInfo[]
+        PaintGridInfoData = new ColumnInfo[]
         {
-            new StackInfo { Size = 0, MaxSize = 1, WriteIndex = 0, Volume = 0 }
+            new ColumnInfo { Size = 0, MaxSize = 1, WriteIndex = 0, Volume = 0 }
         };
-        Stack2DContentData = new Paint[]
+        PaintGridContentData = new Paint[]
         {
             P(0),
         };
@@ -97,34 +97,34 @@ public class TestStack_raw_push
 
 
         // Act
-        Execute(KERNEL_ID_raw_push);
+        Execute(KERNEL_ID_push);
 
 
         // Assert
         Assert.AreEqual(
-            new StackInfo[]
+            new ColumnInfo[]
             {
-                new StackInfo { Size = 0, MaxSize = 1, WriteIndex = 0, Volume = 0 }
+                new ColumnInfo { Size = 0, MaxSize = 1, WriteIndex = 0, Volume = 0 }
             },
-            Stack2DInfoData);
+            PaintGridInfoData);
 
         Assert.AreEqual(
             new Paint[]
             {
                 P(0)
             },
-            Stack2DContentData);
+            PaintGridContentData);
     }
 
     [Test]
     public void voxel_empty_enough_space()
     {
         // Arrange
-        Stack2DInfoData = new StackInfo[]
+        PaintGridInfoData = new ColumnInfo[]
         {
-            new StackInfo { Size = 0, MaxSize = 1, WriteIndex = 0, Volume = 0 }
+            new ColumnInfo { Size = 0, MaxSize = 1, WriteIndex = 0, Volume = 0 }
         };
-        Stack2DContentData = new Paint[]
+        PaintGridContentData = new Paint[]
         {
             P(-1),
         };
@@ -135,34 +135,34 @@ public class TestStack_raw_push
 
 
         // Act
-        Execute(KERNEL_ID_raw_push);
+        Execute(KERNEL_ID_push);
 
 
         // Assert
         Assert.AreEqual(
-            new StackInfo[]
+            new ColumnInfo[]
             {
-                new StackInfo { Size = 1, MaxSize = 1, WriteIndex = 1, Volume = 0.6f }
+                new ColumnInfo { Size = 1, MaxSize = 1, WriteIndex = 1, Volume = 0.6f }
             },
-            Stack2DInfoData);
+            PaintGridInfoData);
 
         Assert.AreEqual(
             new Paint[]
             {
                 P(0.6f),
             },
-            Stack2DContentData);
+            PaintGridContentData);
     }
 
     [Test]
     public void voxel_filled_enough_space()
     {
         // Arrange
-        Stack2DInfoData = new StackInfo[]
+        PaintGridInfoData = new ColumnInfo[]
         {
-            new StackInfo { Size = 1, MaxSize = 2, WriteIndex = 1, Volume = 1 }
+            new ColumnInfo { Size = 1, MaxSize = 2, WriteIndex = 1, Volume = 1 }
         };
-        Stack2DContentData = new Paint[]
+        PaintGridContentData = new Paint[]
         {
             P( 1),
 
@@ -175,16 +175,16 @@ public class TestStack_raw_push
 
 
         // Act
-        Execute(KERNEL_ID_raw_push);
+        Execute(KERNEL_ID_push);
 
 
         // Assert
         Assert.AreEqual(
-            new StackInfo[]
+            new ColumnInfo[]
             {
-                new StackInfo { Size = 2, MaxSize = 2, WriteIndex = 2, Volume = 1.6f }
+                new ColumnInfo { Size = 2, MaxSize = 2, WriteIndex = 2, Volume = 1.6f }
             },
-            Stack2DInfoData);
+            PaintGridInfoData);
 
         Assert.AreEqual(
             new Paint[]
@@ -193,17 +193,17 @@ public class TestStack_raw_push
 
                 P(0.6f),
             },
-            Stack2DContentData);
+            PaintGridContentData);
     }
 
     [Test]
     public void voxel_filled_not_enough_space_does_nothing()
     {
-        Stack2DInfoData = new StackInfo[]
+        PaintGridInfoData = new ColumnInfo[]
         {
-            new StackInfo { Size = 1, MaxSize = 1, WriteIndex = 1, Volume = 1 },
+            new ColumnInfo { Size = 1, MaxSize = 1, WriteIndex = 1, Volume = 1 },
         };
-        Stack2DContentData = new Paint[]
+        PaintGridContentData = new Paint[]
         {
             P(1),
         };
@@ -214,34 +214,34 @@ public class TestStack_raw_push
 
 
         // Act
-        Execute(KERNEL_ID_raw_push);
+        Execute(KERNEL_ID_push);
 
 
         // Assert
         Assert.AreEqual(
-            new StackInfo[]
+            new ColumnInfo[]
             {
-                new StackInfo { Size = 1, MaxSize = 1, WriteIndex = 1, Volume = 1 },
+                new ColumnInfo { Size = 1, MaxSize = 1, WriteIndex = 1, Volume = 1 },
             },
-            Stack2DInfoData);
+            PaintGridInfoData);
 
         Assert.AreEqual(
             new Paint[]
             {
                 P(1),
             },
-            Stack2DContentData);
+            PaintGridContentData);
     }
 
     [Test]
     public void voxel_half_filled_enough_space()
     {
         // Arrange
-        Stack2DInfoData = new StackInfo[]
+        PaintGridInfoData = new ColumnInfo[]
         {
-            new StackInfo { Size = 1, MaxSize = 2, WriteIndex = 1, Volume = 0.5f }
+            new ColumnInfo { Size = 1, MaxSize = 2, WriteIndex = 1, Volume = 0.5f }
         };
-        Stack2DContentData = new Paint[]
+        PaintGridContentData = new Paint[]
         {
             P(1, 0.5f),
 
@@ -254,16 +254,16 @@ public class TestStack_raw_push
 
 
         // Act
-        Execute(KERNEL_ID_raw_push);
+        Execute(KERNEL_ID_push);
 
 
         // Assert
         Assert.AreEqual(
-            new StackInfo[]
+            new ColumnInfo[]
             {
-            new StackInfo { Size = 2, MaxSize = 2, WriteIndex = 2, Volume = 1 }
+            new ColumnInfo { Size = 2, MaxSize = 2, WriteIndex = 2, Volume = 1 }
             },
-            Stack2DInfoData);
+            PaintGridInfoData);
 
         Assert.AreEqual(
             new Paint[]
@@ -272,18 +272,18 @@ public class TestStack_raw_push
 
                 P(1, 0.5f),
             },
-            Stack2DContentData);
+            PaintGridContentData);
     }
 
     [Test]
     public void voxel_half_filled_not_enough_space()
     {
         // Arrange
-        Stack2DInfoData = new StackInfo[]
+        PaintGridInfoData = new ColumnInfo[]
         {
-            new StackInfo { Size = 1, MaxSize = 1, WriteIndex = 1, Volume = 0.2f }
+            new ColumnInfo { Size = 1, MaxSize = 1, WriteIndex = 1, Volume = 0.2f }
         };
-        Stack2DContentData = new Paint[]
+        PaintGridContentData = new Paint[]
         {
             P(1, 0.2f),
         };
@@ -294,22 +294,22 @@ public class TestStack_raw_push
 
 
         // Act
-        Execute(KERNEL_ID_raw_push);
+        Execute(KERNEL_ID_push);
 
 
         // Assert
         Assert.AreEqual(
-            new StackInfo[]
+            new ColumnInfo[]
             {
-            new StackInfo { Size = 1, MaxSize = 1, WriteIndex = 1, Volume = 0.2f }
+            new ColumnInfo { Size = 1, MaxSize = 1, WriteIndex = 1, Volume = 0.2f }
             },
-            Stack2DInfoData);
+            PaintGridInfoData);
 
         Assert.AreEqual(
             new Paint[]
             {
                 P(1, 0.2f),
             },
-            Stack2DContentData);
+            PaintGridContentData);
     }
 }
