@@ -67,57 +67,6 @@ void stack_2D_push(
     }
 }
 
-// void stack_2D_push_(
-//     RWStructuredBuffer<StackInfo> stack_2D_info, RWStructuredBuffer<Paint> stack_2D_content, uint2 stack_2D_size,
-//     uint2 pos, Paint element)
-// {
-//     if (!stack_is_full(stack_2D_info[XY(pos.x, pos.y, stack_2D_size.x)]) && !is_empty(element))
-//     {
-//         uint z = stack_2D_info[XY(pos.x, pos.y, stack_2D_size.x)].write_index;
-//         Paint top = stack_2D_content[XYZ(pos.x, pos.y, z, stack_2D_size)];
-
-//         // try fill up top element
-//         float fits_into_top = PAINT_UNIT() - top.volume;
-//         Paint element_part_1;
-//         element_part_1.color = element.color;
-//         element_part_1.volume = min(fits_into_top, element.volume);
-
-//         Paint updated_top = mix(top, element_part_1);
-
-//         stack_2D_content[XYZ(pos.x, pos.y, z, stack_2D_size)] = updated_top;
-//         stack_2D_info[XY(pos.x, pos.y, stack_2D_size.x)].volume += element_part_1.volume;
-
-//         // update stack info
-//         bool top_empty_before = is_empty(top);
-//         if (top_empty_before)
-//         {
-//             stack_2D_info[XY(pos.x, pos.y, stack_2D_size.x)].size++;
-//         }
-//         bool top_was_filled = floats_equal(updated_top.volume, PAINT_UNIT());
-//         if (top_was_filled)
-//         {
-//             stack_2D_info[XY(pos.x, pos.y, stack_2D_size.x)].write_index++;
-//         }
-
-//         // add rest as new element
-//         float remaining = max(element.volume - fits_into_top, 0);
-//         if (remaining > 0 && !stack_is_full(stack_2D_info[XY(pos.x, pos.y, stack_2D_size.x)]))
-//         {
-//             if (top_was_filled)
-//             {
-//                 stack_2D_info[XY(pos.x, pos.y, stack_2D_size.x)].size++;
-//             }
-//             Paint element_part_2;
-//             element_part_2.color = element.color;
-//             element_part_2.volume = remaining;
-
-//             z = stack_2D_info[XY(pos.x, pos.y, stack_2D_size.x)].write_index;
-//             stack_2D_content[XYZ(pos.x, pos.y, z, stack_2D_size)] = element_part_2;
-//             stack_2D_info[XY(pos.x, pos.y, stack_2D_size.x)].volume += element_part_2.volume;
-//         }
-//     }
-// }
-
 void stack_2D_raw_push(
     RWStructuredBuffer<StackInfo> stack_2D_info, RWStructuredBuffer<Paint> stack_2D_content, uint2 stack_2D_size,
     uint2 pos, Paint element)
