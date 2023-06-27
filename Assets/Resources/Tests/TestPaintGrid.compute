@@ -9,6 +9,7 @@ RWStructuredBuffer<ColumnInfo> SourcePGInfo;
 RWStructuredBuffer<Paint> SourcePGContent;
 RWStructuredBuffer<ColumnInfo> TargetPGInfo;
 RWStructuredBuffer<Paint> TargetPGContent;
+uint3 PGSize;
 
 #pragma kernel test_paint_grid_copy
 
@@ -19,15 +20,15 @@ void test_paint_grid_copy(uint3 id_ : SV_DispatchThreadID)
     if (is_relevant_thread(id(), CalculationSize))
     {
         paint_grid_copy(
-            SourcePGInfo, SourcePGContent, CalculationSize, id().xy,
-            TargetPGInfo, TargetPGContent, CalculationSize, id().xy);
+            SourcePGInfo, SourcePGContent, PGSize, id().xy,
+            TargetPGInfo, TargetPGContent, PGSize, id().xy);
     }
 }
 
 
 RWStructuredBuffer<ColumnInfo> PaintGridInfo;
 RWStructuredBuffer<Paint> PaintGridContent;
-uint2 PaintGridSize;
+uint3 PaintGridSize;
 
 uint2 NewElementPosition;
 RWStructuredBuffer<Paint> NewElement;
@@ -47,7 +48,7 @@ void test_paint_grid_fill(uint3 id_ : SV_DispatchThreadID)
 
 // RWStructuredBuffer<ColumnInfo> PaintGridInfo;
 // RWStructuredBuffer<Paint> PaintGridContent;
-// uint2 PaintGridSize;
+// uint3 PaintGridSize;
 
 // uint2 NewElementPosition;
 // RWStructuredBuffer<Paint> NewElement;
@@ -67,10 +68,10 @@ void test_paint_grid_push(uint3 id_ : SV_DispatchThreadID)
 
 // RWStructuredBuffer<ColumnInfo> SourcePGInfo;
 // RWStructuredBuffer<Paint> SourcePGContent;
-uint2 SourcePGSize;
+uint3 SourcePGSize;
 // RWStructuredBuffer<ColumnInfo> TargetPGInfo;
 // RWStructuredBuffer<Paint> TargetPGContent;
-uint2 TargetPGSize;
+uint3 TargetPGSize;
 uint2 TargetPGPosition;
 
 #pragma kernel test_stack_2D_reverse_transfer
@@ -92,7 +93,7 @@ void test_stack_2D_reverse_transfer(uint3 id_ : SV_DispatchThreadID)
 
 // RWStructuredBuffer<ColumnInfo> PaintGridInfo;
 // RWStructuredBuffer<Paint> PaintGridContent;
-// uint2 PaintGridSize;
+// uint3 PaintGridSize;
 
 uint3 DeletePosition;
 float DeleteVolume;
@@ -112,7 +113,7 @@ void test_paint_grid_delete(uint3 id_ : SV_DispatchThreadID)
 
 // RWStructuredBuffer<ColumnInfo> PaintGridInfo;
 // RWStructuredBuffer<Paint> PaintGridContent;
-// uint2 PaintGridSize;
+// uint3 PaintGridSize;
 
 uint3 GetPosition;
 RWStructuredBuffer<Paint> GetResult;

@@ -10,15 +10,13 @@ public class TestPaintGrid_delete
     ColumnInfo[] PaintGridInfoData;
     ComputeBuffer PaintGridContent;
     Paint[] PaintGridContentData;
-    Vector2Int PaintGridSize;
+    Vector3Int PaintGridSize;
     Vector3Int DeletePosition;
     float DeleteVolume;
 
     [SetUp]
     public void Setup()
     {
-        PaintGridSize = new Vector2Int(1, 1);
-
         new FileLogger_().OnEnable();
     }
 
@@ -38,13 +36,13 @@ public class TestPaintGrid_delete
         PaintGridInfo.SetData(PaintGridInfoData);
 
         PaintGridContent?.Dispose();
-        PaintGridContent = new ComputeBuffer(PaintGridSize.x * PaintGridSize.y * PaintGridInfoData[0].MaxSize, Paint.SizeInBytes);
+        PaintGridContent = new ComputeBuffer(PaintGridSize.x * PaintGridSize.y * PaintGridSize.z, Paint.SizeInBytes);
         PaintGridContent.SetData(PaintGridContentData);
 
         List<CSAttribute> Attributes = new List<CSAttribute>();
         Attributes.Add(new CSComputeBuffer("PaintGridInfo", PaintGridInfo));
         Attributes.Add(new CSComputeBuffer("PaintGridContent", PaintGridContent));
-        Attributes.Add(new CSInt2("PaintGridSize", PaintGridSize));
+        Attributes.Add(new CSInt3("PaintGridSize", PaintGridSize));
         Attributes.Add(new CSInt3("DeletePosition", DeletePosition));
         Attributes.Add(new CSFloat("DeleteVolume", DeleteVolume));
 
@@ -79,12 +77,13 @@ public class TestPaintGrid_delete
         // Arrange
         PaintGridInfoData = new ColumnInfo[]
         {
-            new ColumnInfo { Size = 0, MaxSize = 1, WriteIndex = 0, Volume = 0 }
+            new ColumnInfo { Size = 0, WriteIndex = 0, Volume = 0 }
         };
         PaintGridContentData = new Paint[]
         {
             P(0),
         };
+        PaintGridSize = new Vector3Int(1, 1, 1);
         DeletePosition = Vector3Int.zero;
         DeleteVolume = 0.4f;
 
@@ -97,7 +96,7 @@ public class TestPaintGrid_delete
         Assert.AreEqual(
             new ColumnInfo[]
             {
-                new ColumnInfo { Size = 0, MaxSize = 1, WriteIndex = 0, Volume = 0 }
+                new ColumnInfo { Size = 0, WriteIndex = 0, Volume = 0 }
             },
             PaintGridInfoData);
 
@@ -112,14 +111,12 @@ public class TestPaintGrid_delete
     [Test]
     public void delete_correct_position_also()
     {
-        int MS = 2;
-
         // Arrange
         PaintGridInfoData = new ColumnInfo[]
         {
-            new ColumnInfo { Size = 1, MaxSize = MS, WriteIndex = 1, Volume = 1 }, new ColumnInfo { Size = 1, MaxSize = MS, WriteIndex = 1, Volume = 1 },
-            new ColumnInfo { Size = 1, MaxSize = MS, WriteIndex = 1, Volume = 1 }, new ColumnInfo { Size = 1, MaxSize = MS, WriteIndex = 1, Volume = 1 },
-            new ColumnInfo { Size = 1, MaxSize = MS, WriteIndex = 1, Volume = 1 }, new ColumnInfo { Size = 1, MaxSize = MS, WriteIndex = 1, Volume = 1.2f },
+            new ColumnInfo { Size = 1, WriteIndex = 1, Volume = 1 }, new ColumnInfo { Size = 1, WriteIndex = 1, Volume = 1 },
+            new ColumnInfo { Size = 1, WriteIndex = 1, Volume = 1 }, new ColumnInfo { Size = 1, WriteIndex = 1, Volume = 1 },
+            new ColumnInfo { Size = 1, WriteIndex = 1, Volume = 1 }, new ColumnInfo { Size = 1, WriteIndex = 1, Volume = 1.2f },
         };
         PaintGridContentData = new Paint[]
         {
@@ -131,7 +128,7 @@ public class TestPaintGrid_delete
             P(-1), P(-1),
             P(-1), P(0.4f, 0.2f),
         };
-        PaintGridSize = new Vector2Int(2, 3);
+        PaintGridSize = new Vector3Int(2, 3, 2);
         DeletePosition = new Vector3Int(1, 2, 1);
         DeleteVolume = 0.1f;
 
@@ -144,9 +141,9 @@ public class TestPaintGrid_delete
         Assert.AreEqual(
             new ColumnInfo[]
             {
-                new ColumnInfo { Size = 1, MaxSize = MS, WriteIndex = 1, Volume = 1 }, new ColumnInfo { Size = 1, MaxSize = MS, WriteIndex = 1, Volume = 1 },
-                new ColumnInfo { Size = 1, MaxSize = MS, WriteIndex = 1, Volume = 1 }, new ColumnInfo { Size = 1, MaxSize = MS, WriteIndex = 1, Volume = 1 },
-                new ColumnInfo { Size = 1, MaxSize = MS, WriteIndex = 1, Volume = 1 }, new ColumnInfo { Size = 1, MaxSize = MS, WriteIndex = 1, Volume = 1.1f },
+                new ColumnInfo { Size = 1, WriteIndex = 1, Volume = 1 }, new ColumnInfo { Size = 1, WriteIndex = 1, Volume = 1 },
+                new ColumnInfo { Size = 1, WriteIndex = 1, Volume = 1 }, new ColumnInfo { Size = 1, WriteIndex = 1, Volume = 1 },
+                new ColumnInfo { Size = 1, WriteIndex = 1, Volume = 1 }, new ColumnInfo { Size = 1, WriteIndex = 1, Volume = 1.1f },
             },
             PaintGridInfoData);
 
@@ -170,7 +167,7 @@ public class TestPaintGrid_delete
         // Arrange
         PaintGridInfoData = new ColumnInfo[]
         {
-            new ColumnInfo { Size = 2, MaxSize = 2, WriteIndex = 1, Volume = 1.3f }
+            new ColumnInfo { Size = 2, WriteIndex = 1, Volume = 1.3f }
         };
         PaintGridContentData = new Paint[]
         {
@@ -178,6 +175,7 @@ public class TestPaintGrid_delete
 
             P(0.3f),
         };
+        PaintGridSize = new Vector3Int(1, 1, 2);
         DeletePosition = new Vector3Int(0, 0, 1);
         DeleteVolume = 0.4f;
 
@@ -190,7 +188,7 @@ public class TestPaintGrid_delete
         Assert.AreEqual(
             new ColumnInfo[]
             {
-                new ColumnInfo { Size = 1, MaxSize = 2, WriteIndex = 1, Volume = 1 }
+                new ColumnInfo { Size = 1, WriteIndex = 1, Volume = 1 }
             },
             PaintGridInfoData);
 
@@ -210,12 +208,13 @@ public class TestPaintGrid_delete
         // Arrange
         PaintGridInfoData = new ColumnInfo[]
         {
-            new ColumnInfo { Size = 1, MaxSize = 1, WriteIndex = 0, Volume = 0.3f }
+            new ColumnInfo { Size = 1, WriteIndex = 0, Volume = 0.3f }
         };
         PaintGridContentData = new Paint[]
         {
             P(0.3f),
         };
+        PaintGridSize = new Vector3Int(1, 1, 1);
         DeletePosition = Vector3Int.zero;
         DeleteVolume = 0.3f;
 
@@ -228,7 +227,7 @@ public class TestPaintGrid_delete
         Assert.AreEqual(
             new ColumnInfo[]
             {
-                new ColumnInfo { Size = 0, MaxSize = 1, WriteIndex = 0, Volume = 0 }
+                new ColumnInfo { Size = 0, WriteIndex = 0, Volume = 0 }
             },
             PaintGridInfoData);
 
@@ -246,7 +245,7 @@ public class TestPaintGrid_delete
         // Arrange
         PaintGridInfoData = new ColumnInfo[]
         {
-            new ColumnInfo { Size = 2, MaxSize = 2, WriteIndex = 1, Volume = 1.3f }
+            new ColumnInfo { Size = 2, WriteIndex = 1, Volume = 1.3f }
         };
         PaintGridContentData = new Paint[]
         {
@@ -254,6 +253,7 @@ public class TestPaintGrid_delete
 
             P(0.2f, 0.3f),
         };
+        PaintGridSize = new Vector3Int(1, 1, 2);
 
 
         // Act
@@ -270,7 +270,7 @@ public class TestPaintGrid_delete
         Assert.AreEqual(
             new ColumnInfo[]
             {
-                new ColumnInfo { Size = 0, MaxSize = 2, WriteIndex = 0, Volume = 0 }
+                new ColumnInfo { Size = 0, WriteIndex = 0, Volume = 0 }
             },
             PaintGridInfoData);
 

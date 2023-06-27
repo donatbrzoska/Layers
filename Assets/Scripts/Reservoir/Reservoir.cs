@@ -9,17 +9,15 @@ public enum ReduceFunction
 
 public struct ColumnInfo
 {
-    public static int SizeInBytes = 3 * sizeof(int) + sizeof(float);
+    public static int SizeInBytes = 2 * sizeof(int) + sizeof(float);
 
     public int Size;
-    public int MaxSize;
     public int WriteIndex;
     public float Volume;
 
-    public ColumnInfo(int size, int maxSize, int writeIndex, float volume)
+    public ColumnInfo(int size, int writeIndex, float volume)
     {
         Size = size;
-        MaxSize = maxSize;
         WriteIndex = writeIndex;
         Volume = volume;
     }
@@ -27,7 +25,7 @@ public struct ColumnInfo
     public override bool Equals(object other_)
     {
         ColumnInfo other = (ColumnInfo)other_;
-        return Size == other.Size && MaxSize == other.MaxSize && WriteIndex == other.WriteIndex && Mathf.Abs(other.Volume - Volume) < 0.0001f;
+        return Size == other.Size && WriteIndex == other.WriteIndex && Mathf.Abs(other.Volume - Volume) < 0.0001f;
     }
 
     public override int GetHashCode()
@@ -37,7 +35,7 @@ public struct ColumnInfo
 
     public override string ToString()
     {
-        return base.ToString() + string.Format("(Size={0}, MaxSize={1}, WriteIndex={2}, Volume={3})", Size, MaxSize, WriteIndex, Volume);
+        return base.ToString() + string.Format("(Size={0}, WriteIndex={1}, Volume={2})", Size, WriteIndex, Volume);
     }
 
     public static bool operator ==(ColumnInfo a, ColumnInfo b)

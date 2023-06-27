@@ -12,7 +12,7 @@ public class TestPaintGrid_fill
     ColumnInfo[] PaintGridInfoData;
     ComputeBuffer PaintGridContent;
     Paint[] PaintGridContentData;
-    Vector2Int PaintGridSize;
+    Vector3Int PaintGridSize;
     Vector2Int NewElementPosition;
     ComputeBuffer NewElement;
     Paint[] NewElementData;
@@ -22,7 +22,6 @@ public class TestPaintGrid_fill
     {
         Attributes = new List<CSAttribute>();
 
-        PaintGridSize = new Vector2Int(1, 1);
         NewElementPosition = Vector2Int.zero;
 
         new FileLogger_().OnEnable();
@@ -43,7 +42,7 @@ public class TestPaintGrid_fill
         PaintGridInfo = new ComputeBuffer(PaintGridSize.x * PaintGridSize.y, ColumnInfo.SizeInBytes);
         PaintGridInfo.SetData(PaintGridInfoData);
 
-        PaintGridContent = new ComputeBuffer(PaintGridSize.x * PaintGridSize.y * PaintGridInfoData[0].MaxSize, Paint.SizeInBytes);
+        PaintGridContent = new ComputeBuffer(PaintGridSize.x * PaintGridSize.y * PaintGridSize.z, Paint.SizeInBytes);
         PaintGridContent.SetData(PaintGridContentData);
 
         NewElement = new ComputeBuffer(1, Paint.SizeInBytes);
@@ -51,7 +50,7 @@ public class TestPaintGrid_fill
 
         Attributes.Add(new CSComputeBuffer("PaintGridInfo", PaintGridInfo));
         Attributes.Add(new CSComputeBuffer("PaintGridContent", PaintGridContent));
-        Attributes.Add(new CSInt2("PaintGridSize", PaintGridSize));
+        Attributes.Add(new CSInt3("PaintGridSize", PaintGridSize));
         Attributes.Add(new CSInt2("NewElementPosition", NewElementPosition));
         Attributes.Add(new CSComputeBuffer("NewElement", NewElement));
 
@@ -83,14 +82,12 @@ public class TestPaintGrid_fill
     [Test]
     public void voxel_empty_enough_space_correct_position_also()
     {
-        PaintGridSize = new Vector2Int(2, 3);
-
         // Arrange
         PaintGridInfoData = new ColumnInfo[]
         {
-            new ColumnInfo { Size = 0, MaxSize = 1, WriteIndex = 0, Volume = 0 }, new ColumnInfo { Size = 0, MaxSize = 1, WriteIndex = 0, Volume = 0 },
-            new ColumnInfo { Size = 0, MaxSize = 1, WriteIndex = 0, Volume = 0 }, new ColumnInfo { Size = 0, MaxSize = 1, WriteIndex = 0, Volume = 0 },
-            new ColumnInfo { Size = 0, MaxSize = 1, WriteIndex = 0, Volume = 0 }, new ColumnInfo { Size = 0, MaxSize = 1, WriteIndex = 0, Volume = 0 },
+            new ColumnInfo { Size = 0, WriteIndex = 0, Volume = 0 }, new ColumnInfo { Size = 0, WriteIndex = 0, Volume = 0 },
+            new ColumnInfo { Size = 0, WriteIndex = 0, Volume = 0 }, new ColumnInfo { Size = 0, WriteIndex = 0, Volume = 0 },
+            new ColumnInfo { Size = 0, WriteIndex = 0, Volume = 0 }, new ColumnInfo { Size = 0, WriteIndex = 0, Volume = 0 },
         };
         PaintGridContentData = new Paint[]
         {
@@ -98,6 +95,7 @@ public class TestPaintGrid_fill
             P(0), P(0),
             P(0), P(0)
         };
+        PaintGridSize = new Vector3Int(2, 3, 1);
         NewElementPosition = new Vector2Int(1, 2);
         NewElementData = new Paint[]
         {
@@ -113,9 +111,9 @@ public class TestPaintGrid_fill
         Assert.AreEqual(
             new ColumnInfo[]
             {
-                new ColumnInfo { Size = 0, MaxSize = 1, WriteIndex = 0, Volume = 0 }, new ColumnInfo { Size = 0, MaxSize = 1, WriteIndex = 0, Volume = 0 },
-                new ColumnInfo { Size = 0, MaxSize = 1, WriteIndex = 0, Volume = 0 }, new ColumnInfo { Size = 0, MaxSize = 1, WriteIndex = 0, Volume = 0 },
-                new ColumnInfo { Size = 0, MaxSize = 1, WriteIndex = 0, Volume = 0 }, new ColumnInfo { Size = 1, MaxSize = 1, WriteIndex = 0, Volume = 0.6f }
+                new ColumnInfo { Size = 0, WriteIndex = 0, Volume = 0 }, new ColumnInfo { Size = 0, WriteIndex = 0, Volume = 0 },
+                new ColumnInfo { Size = 0, WriteIndex = 0, Volume = 0 }, new ColumnInfo { Size = 0, WriteIndex = 0, Volume = 0 },
+                new ColumnInfo { Size = 0, WriteIndex = 0, Volume = 0 }, new ColumnInfo { Size = 1, WriteIndex = 0, Volume = 0.6f }
             },
             PaintGridInfoData);
 
@@ -132,17 +130,16 @@ public class TestPaintGrid_fill
     [Test]
     public void empty_element_does_nothing()
     {
-        PaintGridSize = new Vector2Int(2, 3);
-
         // Arrange
         PaintGridInfoData = new ColumnInfo[]
         {
-            new ColumnInfo { Size = 0, MaxSize = 1, WriteIndex = 0, Volume = 0 }
+            new ColumnInfo { Size = 0, WriteIndex = 0, Volume = 0 }
         };
         PaintGridContentData = new Paint[]
         {
             P(0),
         };
+        PaintGridSize = new Vector3Int(2, 3, 1);
         NewElementData = new Paint[]
         {
             P(0)
@@ -157,7 +154,7 @@ public class TestPaintGrid_fill
         Assert.AreEqual(
             new ColumnInfo[]
             {
-                new ColumnInfo { Size = 0, MaxSize = 1, WriteIndex = 0, Volume = 0 }
+                new ColumnInfo { Size = 0, WriteIndex = 0, Volume = 0 }
             },
             PaintGridInfoData);
 
@@ -175,7 +172,7 @@ public class TestPaintGrid_fill
         // Arrange
         PaintGridInfoData = new ColumnInfo[]
         {
-            new ColumnInfo { Size = 1, MaxSize = 2, WriteIndex = 1, Volume = 1 }
+            new ColumnInfo { Size = 1, WriteIndex = 1, Volume = 1 }
         };
         PaintGridContentData = new Paint[]
         {
@@ -183,6 +180,7 @@ public class TestPaintGrid_fill
 
             P(-1),
         };
+        PaintGridSize = new Vector3Int(1, 1, 2);
         NewElementData = new Paint[]
         {
             P(0.6f)
@@ -197,7 +195,7 @@ public class TestPaintGrid_fill
         Assert.AreEqual(
             new ColumnInfo[]
             {
-                new ColumnInfo { Size = 2, MaxSize = 2, WriteIndex = 1, Volume = 1.6f }
+                new ColumnInfo { Size = 2, WriteIndex = 1, Volume = 1.6f }
             },
             PaintGridInfoData);
 
@@ -217,12 +215,13 @@ public class TestPaintGrid_fill
     {
         PaintGridInfoData = new ColumnInfo[]
         {
-            new ColumnInfo { Size = 1, MaxSize = 1, WriteIndex = 1, Volume = 1 },
+            new ColumnInfo { Size = 1, WriteIndex = 1, Volume = 1 },
         };
         PaintGridContentData = new Paint[]
         {
             P(1),
         };
+        PaintGridSize = new Vector3Int(1, 1, 1);
         NewElementData = new Paint[]
         {
             P(0.6f)
@@ -237,7 +236,7 @@ public class TestPaintGrid_fill
         Assert.AreEqual(
             new ColumnInfo[]
             {
-                new ColumnInfo { Size = 1, MaxSize = 1, WriteIndex = 1, Volume = 1 },
+                new ColumnInfo { Size = 1, WriteIndex = 1, Volume = 1 },
             },
             PaintGridInfoData);
 
@@ -255,7 +254,7 @@ public class TestPaintGrid_fill
         // Arrange
         PaintGridInfoData = new ColumnInfo[]
         {
-            new ColumnInfo { Size = 2, MaxSize = 2, WriteIndex = 1, Volume = 1.5f }
+            new ColumnInfo { Size = 2, WriteIndex = 1, Volume = 1.5f }
         };
         PaintGridContentData = new Paint[]
         {
@@ -263,6 +262,7 @@ public class TestPaintGrid_fill
 
             P(0, 0.5f),
         };
+        PaintGridSize = new Vector3Int(1, 1, 2);
         NewElementData = new Paint[]
         {
             P(1, 0.5f)
@@ -277,7 +277,7 @@ public class TestPaintGrid_fill
         Assert.AreEqual(
             new ColumnInfo[]
             {
-                new ColumnInfo { Size = 2, MaxSize = 2, WriteIndex = 2, Volume = 2 }
+                new ColumnInfo { Size = 2, WriteIndex = 2, Volume = 2 }
             },
             PaintGridInfoData);
 
@@ -297,12 +297,13 @@ public class TestPaintGrid_fill
         // Arrange
         PaintGridInfoData = new ColumnInfo[]
         {
-            new ColumnInfo { Size = 1, MaxSize = 1, WriteIndex = 0, Volume = 0.2f }
+            new ColumnInfo { Size = 1, WriteIndex = 0, Volume = 0.2f }
         };
         PaintGridContentData = new Paint[]
         {
             P(0, 0.2f),
         };
+        PaintGridSize = new Vector3Int(1, 1, 1);
         NewElementData = new Paint[]
         {
             P(1, 0.6f)
@@ -317,7 +318,7 @@ public class TestPaintGrid_fill
         Assert.AreEqual(
             new ColumnInfo[]
             {
-                new ColumnInfo { Size = 1, MaxSize = 1, WriteIndex = 0, Volume = 0.8f }
+                new ColumnInfo { Size = 1, WriteIndex = 0, Volume = 0.8f }
             },
             PaintGridInfoData);
 
@@ -335,7 +336,7 @@ public class TestPaintGrid_fill
         // Arrange
         PaintGridInfoData = new ColumnInfo[]
         {
-            new ColumnInfo { Size = 1, MaxSize = 2, WriteIndex = 0, Volume = 0.5f }
+            new ColumnInfo { Size = 1, WriteIndex = 0, Volume = 0.5f }
         };
         PaintGridContentData = new Paint[]
         {
@@ -343,6 +344,7 @@ public class TestPaintGrid_fill
 
             P(-1),
         };
+        PaintGridSize = new Vector3Int(1, 1, 2);
         NewElementData = new Paint[]
         {
             P(1, 1)
@@ -357,7 +359,7 @@ public class TestPaintGrid_fill
         Assert.AreEqual(
             new ColumnInfo[]
             {
-                new ColumnInfo { Size = 2, MaxSize = 2, WriteIndex = 1, Volume = 1.5f }
+                new ColumnInfo { Size = 2, WriteIndex = 1, Volume = 1.5f }
             },
             PaintGridInfoData);
 
@@ -377,12 +379,13 @@ public class TestPaintGrid_fill
         // Arrange
         PaintGridInfoData = new ColumnInfo[]
         {
-            new ColumnInfo { Size = 1, MaxSize = 1, WriteIndex = 0, Volume = 0.5f }
+            new ColumnInfo { Size = 1, WriteIndex = 0, Volume = 0.5f }
         };
         PaintGridContentData = new Paint[]
         {
             P(0, 0.5f),
         };
+        PaintGridSize = new Vector3Int(1, 1, 1);
         NewElementData = new Paint[]
         {
             P(1, 1)
@@ -397,7 +400,7 @@ public class TestPaintGrid_fill
         Assert.AreEqual(
             new ColumnInfo[]
             {
-                new ColumnInfo { Size = 1, MaxSize = 1, WriteIndex = 1, Volume = 1 }
+                new ColumnInfo { Size = 1, WriteIndex = 1, Volume = 1 }
             },
             PaintGridInfoData);
 
@@ -415,7 +418,7 @@ public class TestPaintGrid_fill
         // Arrange
         PaintGridInfoData = new ColumnInfo[]
         {
-            new ColumnInfo { Size = 3, MaxSize = 4, WriteIndex = 0, Volume = 2.4f }
+            new ColumnInfo { Size = 3, WriteIndex = 0, Volume = 2.4f }
         };
         PaintGridContentData = new Paint[]
         {
@@ -427,6 +430,7 @@ public class TestPaintGrid_fill
 
             P(-1),
         };
+        PaintGridSize = new Vector3Int(1, 1, 4);
         NewElementData = new Paint[]
         {
             P(1, 1)
@@ -441,7 +445,7 @@ public class TestPaintGrid_fill
         Assert.AreEqual(
             new ColumnInfo[]
             {
-                new ColumnInfo { Size = 4, MaxSize = 4, WriteIndex = 3, Volume = 3.4f }
+                new ColumnInfo { Size = 4, WriteIndex = 3, Volume = 3.4f }
             },
             PaintGridInfoData);
 

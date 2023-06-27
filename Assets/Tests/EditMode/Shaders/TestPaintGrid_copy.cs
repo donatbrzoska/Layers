@@ -44,18 +44,17 @@ public class TestPaintGrid_copy
     [Test]
     public void copy()
     {
-        Vector2Int ARRAY_SIZE = new Vector2Int(2, 2);
-        int COLUMN_SIZE = 2;
+        Vector3Int paintGridSize = new Vector3Int(2, 2, 2);
 
         // Arrange
-        ComputeBuffer sourcePGInfo = new ComputeBuffer(ARRAY_SIZE.x * ARRAY_SIZE.y, ColumnInfo.SizeInBytes);
+        ComputeBuffer sourcePGInfo = new ComputeBuffer(paintGridSize.x * paintGridSize.y, ColumnInfo.SizeInBytes);
         ColumnInfo[] sourcePGInfoData = new ColumnInfo[]
         {
             new ColumnInfo { Size = 0, WriteIndex = 0, Volume = 0 }, new ColumnInfo { Size = 1, WriteIndex = 0, Volume = 0.2f },
             new ColumnInfo { Size = 2, WriteIndex = 1, Volume = 1.4f }, new ColumnInfo { Size = 0, WriteIndex = 0, Volume = 0 },
         };
         sourcePGInfo.SetData(sourcePGInfoData);
-        ComputeBuffer sourcePGContent = new ComputeBuffer(ARRAY_SIZE.x * ARRAY_SIZE.y * COLUMN_SIZE, Paint.SizeInBytes);
+        ComputeBuffer sourcePGContent = new ComputeBuffer(paintGridSize.x * paintGridSize.y * paintGridSize.z, Paint.SizeInBytes);
         Paint[] sourcePGContentData = new Paint[] // negative values should not be copied because out of range (see sourceInfoData)
         {
               P(-10),  P(0.2f),
@@ -66,14 +65,14 @@ public class TestPaintGrid_copy
         };
         sourcePGContent.SetData(sourcePGContentData);
 
-        ComputeBuffer targetPGInfo = new ComputeBuffer(ARRAY_SIZE.x * ARRAY_SIZE.y, ColumnInfo.SizeInBytes);
+        ComputeBuffer targetPGInfo = new ComputeBuffer(paintGridSize.x * paintGridSize.y, ColumnInfo.SizeInBytes);
         ColumnInfo[] targetPGInfoData = new ColumnInfo[]
         {
             new ColumnInfo { Size = 0, WriteIndex = 0, Volume = 0 }, new ColumnInfo { Size = 0, WriteIndex = 0, Volume = 0 },
             new ColumnInfo { Size = 0, WriteIndex = 0, Volume = 0 }, new ColumnInfo { Size = 0, WriteIndex = 0, Volume = 0 },
         };
         targetPGInfo.SetData(targetPGInfoData);
-        ComputeBuffer targetPGContent = new ComputeBuffer(ARRAY_SIZE.x * ARRAY_SIZE.y * COLUMN_SIZE, Paint.SizeInBytes);
+        ComputeBuffer targetPGContent = new ComputeBuffer(paintGridSize.x * paintGridSize.y * paintGridSize.z, Paint.SizeInBytes);
         Paint[] targetPGContentData = new Paint[]
         {
             P(-1), P(-2),
@@ -88,6 +87,7 @@ public class TestPaintGrid_copy
         Attributes.Add(new CSComputeBuffer("SourcePGContent", sourcePGContent));
         Attributes.Add(new CSComputeBuffer("TargetPGInfo", targetPGInfo));
         Attributes.Add(new CSComputeBuffer("TargetPGContent", targetPGContent));
+        Attributes.Add(new CSInt3("PGSize", paintGridSize));
 
 
         // Act

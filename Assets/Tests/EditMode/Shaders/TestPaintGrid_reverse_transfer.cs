@@ -12,13 +12,13 @@ public class TestPaintGrid_reverse_transfer
     ColumnInfo[] SourcePaintGridInfoData;
     ComputeBuffer SourcePaintGridContent;
     Paint[] SourcePaintGridContentData;
-    Vector2Int SourcePaintGridSize;
+    Vector3Int SourcePaintGridSize;
 
     ComputeBuffer TargetPaintGridInfo;
     ColumnInfo[] TargetPaintGridInfoData;
     ComputeBuffer TargetPaintGridContent;
     Paint[] TargetPaintGridContentData;
-    Vector2Int TargetPaintGridSize;
+    Vector3Int TargetPaintGridSize;
     Vector2Int TargetPaintGridPosition;
 
 
@@ -45,21 +45,21 @@ public class TestPaintGrid_reverse_transfer
     {
         SourcePaintGridInfo = new ComputeBuffer(SourcePaintGridSize.x * SourcePaintGridSize.y, ColumnInfo.SizeInBytes);
         SourcePaintGridInfo.SetData(SourcePaintGridInfoData);
-        SourcePaintGridContent = new ComputeBuffer(SourcePaintGridSize.x * SourcePaintGridSize.y * SourcePaintGridInfoData[0].MaxSize, Paint.SizeInBytes);
+        SourcePaintGridContent = new ComputeBuffer(SourcePaintGridSize.x * SourcePaintGridSize.y * SourcePaintGridSize.z, Paint.SizeInBytes);
         SourcePaintGridContent.SetData(SourcePaintGridContentData);
 
         TargetPaintGridInfo = new ComputeBuffer(TargetPaintGridSize.x * TargetPaintGridSize.y, ColumnInfo.SizeInBytes);
         TargetPaintGridInfo.SetData(TargetPaintGridInfoData);
-        TargetPaintGridContent = new ComputeBuffer(TargetPaintGridSize.x * TargetPaintGridSize.y * TargetPaintGridInfoData[0].MaxSize, Paint.SizeInBytes);
+        TargetPaintGridContent = new ComputeBuffer(TargetPaintGridSize.x * TargetPaintGridSize.y * TargetPaintGridSize.z, Paint.SizeInBytes);
         TargetPaintGridContent.SetData(TargetPaintGridContentData);
 
         Attributes.Add(new CSComputeBuffer("SourcePGInfo", SourcePaintGridInfo));
         Attributes.Add(new CSComputeBuffer("SourcePGContent", SourcePaintGridContent));
-        Attributes.Add(new CSInt2("SourcePGSize", SourcePaintGridSize));
+        Attributes.Add(new CSInt3("SourcePGSize", SourcePaintGridSize));
 
         Attributes.Add(new CSComputeBuffer("TargetPGInfo", TargetPaintGridInfo));
         Attributes.Add(new CSComputeBuffer("TargetPGContent", TargetPaintGridContent));
-        Attributes.Add(new CSInt2("TargetPGSize", TargetPaintGridSize));
+        Attributes.Add(new CSInt3("TargetPGSize", TargetPaintGridSize));
         Attributes.Add(new CSInt2("TargetPGPosition", TargetPaintGridPosition));
 
         ComputeShaderTask cst = new ComputeShaderTask(
@@ -93,23 +93,23 @@ public class TestPaintGrid_reverse_transfer
         // Arrange
         SourcePaintGridInfoData = new ColumnInfo[]
         {
-            new ColumnInfo { Size = 0, MaxSize = 1, WriteIndex = 0, Volume = 0 }
+            new ColumnInfo { Size = 0, WriteIndex = 0, Volume = 0 }
         };
         SourcePaintGridContentData = new Paint[]
         {
             P(0),
         };
-        SourcePaintGridSize = new Vector2Int(1, 1);
+        SourcePaintGridSize = new Vector3Int(1, 1, 1);
 
         TargetPaintGridInfoData = new ColumnInfo[]
         {
-            new ColumnInfo { Size = 0, MaxSize = 1, WriteIndex = 0, Volume = 0 }
+            new ColumnInfo { Size = 0, WriteIndex = 0, Volume = 0 }
         };
         TargetPaintGridContentData = new Paint[]
         {
             P(-1),
         };
-        TargetPaintGridSize = new Vector2Int(1, 1);
+        TargetPaintGridSize = new Vector3Int(1, 1, 1);
         TargetPaintGridPosition = Vector2Int.zero;
 
 
@@ -121,7 +121,7 @@ public class TestPaintGrid_reverse_transfer
         Assert.AreEqual(
             new ColumnInfo[]
             {
-                new ColumnInfo { Size = 0, MaxSize = 1, WriteIndex = 0, Volume = 0 }
+                new ColumnInfo { Size = 0, WriteIndex = 0, Volume = 0 }
             },
             TargetPaintGridInfoData);
 
@@ -140,19 +140,19 @@ public class TestPaintGrid_reverse_transfer
         SourcePaintGridInfoData = new ColumnInfo[]
         {
             // Notice that write index is 1 because we simulate a preceding raw_push
-            new ColumnInfo { Size = 1, MaxSize = 1, WriteIndex = 1, Volume = 0.6f } 
+            new ColumnInfo { Size = 1, WriteIndex = 1, Volume = 0.6f } 
         };
         SourcePaintGridContentData = new Paint[]
         {
             P(0.6f),
         };
-        SourcePaintGridSize = new Vector2Int(1, 1);
+        SourcePaintGridSize = new Vector3Int(1, 1, 1);
 
         TargetPaintGridInfoData = new ColumnInfo[]
         {
-                new ColumnInfo { Size = 0, MaxSize = 1, WriteIndex = 0, Volume = 0 }, new ColumnInfo { Size = 0, MaxSize = 1, WriteIndex = 0, Volume = 0 },
-                new ColumnInfo { Size = 0, MaxSize = 1, WriteIndex = 0, Volume = 0 }, new ColumnInfo { Size = 0, MaxSize = 1, WriteIndex = 0, Volume = 0 },
-                new ColumnInfo { Size = 0, MaxSize = 1, WriteIndex = 0, Volume = 0 }, new ColumnInfo { Size = 0, MaxSize = 1, WriteIndex = 0, Volume = 0 },
+                new ColumnInfo { Size = 0, WriteIndex = 0, Volume = 0 }, new ColumnInfo { Size = 0, WriteIndex = 0, Volume = 0 },
+                new ColumnInfo { Size = 0, WriteIndex = 0, Volume = 0 }, new ColumnInfo { Size = 0, WriteIndex = 0, Volume = 0 },
+                new ColumnInfo { Size = 0, WriteIndex = 0, Volume = 0 }, new ColumnInfo { Size = 0, WriteIndex = 0, Volume = 0 },
         };
         TargetPaintGridContentData = new Paint[]
         {
@@ -160,7 +160,7 @@ public class TestPaintGrid_reverse_transfer
             P(-1), P(-1),
             P(-1), P(-1)
         };
-        TargetPaintGridSize = new Vector2Int(2, 3);
+        TargetPaintGridSize = new Vector3Int(2, 3, 1);
         TargetPaintGridPosition = new Vector2Int(1, 2);
 
 
@@ -172,9 +172,9 @@ public class TestPaintGrid_reverse_transfer
         Assert.AreEqual(
             new ColumnInfo[]
             {
-                new ColumnInfo { Size = 0, MaxSize = 1, WriteIndex = 0, Volume = 0 }, new ColumnInfo { Size = 0, MaxSize = 1, WriteIndex = 0, Volume = 0 },
-                new ColumnInfo { Size = 0, MaxSize = 1, WriteIndex = 0, Volume = 0 }, new ColumnInfo { Size = 0, MaxSize = 1, WriteIndex = 0, Volume = 0 },
-                new ColumnInfo { Size = 0, MaxSize = 1, WriteIndex = 0, Volume = 0 }, new ColumnInfo { Size = 1, MaxSize = 1, WriteIndex = 0, Volume = 0.6f }
+                new ColumnInfo { Size = 0, WriteIndex = 0, Volume = 0 }, new ColumnInfo { Size = 0, WriteIndex = 0, Volume = 0 },
+                new ColumnInfo { Size = 0, WriteIndex = 0, Volume = 0 }, new ColumnInfo { Size = 0, WriteIndex = 0, Volume = 0 },
+                new ColumnInfo { Size = 0, WriteIndex = 0, Volume = 0 }, new ColumnInfo { Size = 1, WriteIndex = 0, Volume = 0.6f }
             },
             TargetPaintGridInfoData);
 
@@ -194,17 +194,17 @@ public class TestPaintGrid_reverse_transfer
         // Arrange
         SourcePaintGridInfoData = new ColumnInfo[]
         {
-            new ColumnInfo { Size = 1, MaxSize = 1, WriteIndex = 1, Volume = 0.8f }
+            new ColumnInfo { Size = 1, WriteIndex = 1, Volume = 0.8f }
         };
         SourcePaintGridContentData = new Paint[]
         {
             P(0, 0.6f),
         };
-        SourcePaintGridSize = new Vector2Int(1, 1);
+        SourcePaintGridSize = new Vector3Int(1, 1, 1);
 
         TargetPaintGridInfoData = new ColumnInfo[]
         {
-            new ColumnInfo { Size = 2, MaxSize = 2, WriteIndex = 1, Volume = 1.2f }
+            new ColumnInfo { Size = 2, WriteIndex = 1, Volume = 1.2f }
         };
         TargetPaintGridContentData = new Paint[]
         {
@@ -212,7 +212,7 @@ public class TestPaintGrid_reverse_transfer
 
             P(1, 0.2f),
         };
-        TargetPaintGridSize = new Vector2Int(1, 1);
+        TargetPaintGridSize = new Vector3Int(1, 1, 2);
         TargetPaintGridPosition = Vector2Int.zero;
 
 
@@ -224,7 +224,7 @@ public class TestPaintGrid_reverse_transfer
         Assert.AreEqual(
             new ColumnInfo[]
             {
-                new ColumnInfo { Size = 2, MaxSize = 2, WriteIndex = 1, Volume = 1.8f }
+                new ColumnInfo { Size = 2, WriteIndex = 1, Volume = 1.8f }
             },
             TargetPaintGridInfoData);
 
@@ -244,7 +244,7 @@ public class TestPaintGrid_reverse_transfer
         // Arrange
         SourcePaintGridInfoData = new ColumnInfo[]
         {
-            new ColumnInfo { Size = 2, MaxSize = 2, WriteIndex = 2, Volume = 1.6f }
+            new ColumnInfo { Size = 2, WriteIndex = 2, Volume = 1.6f }
         };
         SourcePaintGridContentData = new Paint[]
         {
@@ -252,11 +252,11 @@ public class TestPaintGrid_reverse_transfer
 
             P(0, 1),
         };
-        SourcePaintGridSize = new Vector2Int(1, 1);
+        SourcePaintGridSize = new Vector3Int(1, 1, 2);
 
         TargetPaintGridInfoData = new ColumnInfo[]
         {
-            new ColumnInfo { Size = 0, MaxSize = 2, WriteIndex = 0, Volume = 0 }
+            new ColumnInfo { Size = 0, WriteIndex = 0, Volume = 0 }
         };
         TargetPaintGridContentData = new Paint[]
         {
@@ -264,7 +264,7 @@ public class TestPaintGrid_reverse_transfer
 
             P(-1),
         };
-        TargetPaintGridSize = new Vector2Int(1, 1);
+        TargetPaintGridSize = new Vector3Int(1, 1, 2);
         TargetPaintGridPosition = Vector2Int.zero;
 
 
@@ -276,7 +276,7 @@ public class TestPaintGrid_reverse_transfer
         Assert.AreEqual(
             new ColumnInfo[]
             {
-                new ColumnInfo { Size = 2, MaxSize = 2, WriteIndex = 1, Volume = 1.6f }
+                new ColumnInfo { Size = 2, WriteIndex = 1, Volume = 1.6f }
             },
             TargetPaintGridInfoData);
 
