@@ -5,9 +5,9 @@ public class PerlinVolumeFiller : VolumeFiller
 {
     public PerlinVolumeFiller(float baseVolume) : base(baseVolume) { }
 
-    public override void Fill(Paint[] target, Vector2Int targetSize)
+    public override void Fill(ColumnInfo[] targetInfo, Paint[] target, Vector3Int targetSize)
     {
-        PerlinNoise perlinNoise = new PerlinNoise(targetSize, new Vector2(5, 5));
+        PerlinNoise perlinNoise = new PerlinNoise(new Vector2Int(targetSize.x, targetSize.y), new Vector2(5, 5));
 
         // determine added volume
         float max_added_volume = BaseVolume;
@@ -34,7 +34,8 @@ public class PerlinVolumeFiller : VolumeFiller
         {
             for (int j = 0; j < targetSize.x; j++)
             {
-                target[IndexUtil.XY(j, i, targetSize.x)].Volume = BaseVolume + (added_volumes[i, j] - added_volumes_min);
+                float v = BaseVolume + (added_volumes[i, j] - added_volumes_min);
+                SetVolume(targetInfo, target, targetSize, j, i, v);
             }
         }
     }

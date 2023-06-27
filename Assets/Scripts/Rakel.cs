@@ -57,14 +57,15 @@ public class Rakel
 
     private Vector2Int ReservoirPixelEmitRadius;
 
-    public Rakel(float length, float width, int resolution, float anchorRatioLength = 0.5f, float anchorRatioWidth = 1)
+    public Rakel(float length, float width, int resolution, int layers_MAX, float anchorRatioLength = 0.5f, float anchorRatioWidth = 1)
     {
-        Vector2Int reservoirSize = new Vector2Int((int)(width * resolution), (int)(length * resolution));
+        Vector3Int reservoirSize = new Vector3Int((int)(width * resolution), (int)(length * resolution), layers_MAX);
 
         Reservoir = new Reservoir(
             resolution,
             reservoirSize.x,
-            reservoirSize.y);
+            reservoirSize.y,
+            reservoirSize.z);
 
         DistortionMapSize = new Vector2Int(MAX_STROKE_LENGTH, reservoirSize.y);
         DistortionMap = new ComputeBuffer(DistortionMapSize.x * DistortionMapSize.y , sizeof(float));
@@ -206,7 +207,7 @@ public class Rakel
             new List<CSAttribute>()
             {
                 new CSComputeBuffer("RakelInfo", InfoBuffer),
-                new CSInt2("RakelReservoirSize", Reservoir.Size),
+                new CSInt3("RakelReservoirSize", Reservoir.Size),
 
                 new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
             },
@@ -242,7 +243,7 @@ public class Rakel
         {
             canvas.Reservoir.DuplicateActive(
                 rakelMappedInfo,
-                Reservoir.Size,
+                new Vector2Int(Reservoir.Size.x, Reservoir.Size.y),
                 emitSR,
                 debugEnabled);
 
@@ -256,8 +257,8 @@ public class Rakel
                 new ShaderRegion(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
                 new List<CSAttribute>()
                 {
-                    new CSComputeBuffer("MaxVolumeSource", canvas.Reservoir.BufferDuplicate),
-                    new CSInt2("MaxVolumeSourceSize", canvas.Reservoir.Size),
+                    new CSComputeBuffer("MaxVolumeSource", canvas.Reservoir.PaintGridDuplicate.Info),
+                    new CSInt2("MaxVolumeSourceSize", new Vector2Int(canvas.Reservoir.Size.x, canvas.Reservoir.Size.y)),
                     new CSInt2("MaxVolumeSourceIndex", emitSR.Position),
 
                     new CSFloat("LayerThickness_MAX", layerThickness_MAX),
@@ -299,12 +300,12 @@ public class Rakel
             new List<CSAttribute>()
             {
                 new CSComputeBuffer("RakelInfo", InfoBuffer),
-                new CSComputeBuffer("RakelReservoirDuplicate", Reservoir.BufferDuplicate),
-                new CSInt2("RakelReservoirSize", Reservoir.Size),
+                new CSComputeBuffer("RakelReservoirInfoDuplicate", Reservoir.PaintGridDuplicate.Info),
+                new CSInt3("RakelReservoirSize", Reservoir.Size),
 
                 new CSFloat("CanvasPositionZ", canvas.Position.z),
-                new CSComputeBuffer("CanvasReservoirDuplicate", canvas.Reservoir.BufferDuplicate),
-                new CSInt2("CanvasReservoirSize", canvas.Reservoir.Size),
+                new CSComputeBuffer("CanvasReservoirInfoDuplicate", canvas.Reservoir.PaintGridDuplicate.Info),
+                new CSInt3("CanvasReservoirSize", canvas.Reservoir.Size),
                 new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
 
                 new CSInt2("ReservoirPixelEmitRadius", ReservoirPixelEmitRadius),
@@ -333,15 +334,13 @@ public class Rakel
         //PickupReservoir.Fill(Color_.CadmiumRed, volume / 2, filler);
     }
 
-    public ComputeBuffer EmitPaint(
+    public PaintGrid EmitPaint(
         ShaderRegion shaderRegion,
         Canvas_ canvas,
         ComputeBuffer rakelMappedInfo,
         bool debugEnabled = false)
     {
-        ComputeBuffer rakelEmittedPaint = new ComputeBuffer(shaderRegion.PixelCount, Paint.SizeInBytes);
-        Paint[] initPaint = new Paint[shaderRegion.PixelCount];
-        rakelEmittedPaint.SetData(initPaint);
+        PaintGrid rakelEmittedPaint = new PaintGrid(new Vector3Int(shaderRegion.Size.x, shaderRegion.Size.y, Reservoir.Size.z));
 
         Vector2Int reservoirPixelEmitArea = new Vector2Int(ReservoirPixelEmitRadius.x * 2 + 1, ReservoirPixelEmitRadius.y * 2 + 1);
 
@@ -351,15 +350,19 @@ public class Rakel
             reservoirPixelEmitArea,
             new List<CSAttribute>()
             {
-                new CSComputeBuffer("RakelReservoir", Reservoir.Buffer),
-                new CSComputeBuffer("RakelReservoirDuplicate", Reservoir.BufferDuplicate),
-                new CSInt2("RakelReservoirSize", Reservoir.Size),
+                new CSComputeBuffer("RakelReservoirInfo", Reservoir.PaintGrid.Info),
+                new CSComputeBuffer("RakelReservoirContent", Reservoir.PaintGrid.Content),
+                new CSComputeBuffer("RakelReservoirInfoDuplicate", Reservoir.PaintGridDuplicate.Info),
+                new CSComputeBuffer("RakelReservoirContentDuplicate", Reservoir.PaintGridDuplicate.Content),
+                new CSInt3("RakelReservoirSize", Reservoir.Size),
 
                 new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
 
                 new CSInt2("ReservoirPixelEmitRadius", ReservoirPixelEmitRadius),
 
-                new CSComputeBuffer("RakelEmittedPaint", rakelEmittedPaint),
+                new CSComputeBuffer("RakelEmittedPaintInfo", rakelEmittedPaint.Info),
+                new CSComputeBuffer("RakelEmittedPaintContent", rakelEmittedPaint.Content),
+                new CSInt3("RakelEmittedPaintSize", rakelEmittedPaint.Size),
             },
             debugEnabled
         ).Run();
@@ -371,7 +374,7 @@ public class Rakel
 
     public void ApplyPaint(
         ShaderRegion shaderRegion,
-        ComputeBuffer canvasEmittedPaint,
+        PaintGrid canvasEmittedPaint,
         bool debugEnabled = false)
     {
         new ComputeShaderTask(
@@ -379,10 +382,13 @@ public class Rakel
             shaderRegion,
             new List<CSAttribute>
             {
-                new CSComputeBuffer("CanvasEmittedPaint", canvasEmittedPaint),
+                new CSComputeBuffer("CanvasEmittedPaintInfo", canvasEmittedPaint.Info),
+                new CSComputeBuffer("CanvasEmittedPaintContent", canvasEmittedPaint.Content),
+                new CSInt3("CanvasEmittedPaintSize", canvasEmittedPaint.Size),
 
-                new CSComputeBuffer("RakelReservoir", Reservoir.Buffer),
-                new CSInt("RakelReservoirWidth", Reservoir.Size.x)
+                new CSComputeBuffer("RakelReservoirInfo", Reservoir.PaintGrid.Info),
+                new CSComputeBuffer("RakelReservoirContent", Reservoir.PaintGrid.Content),
+                new CSInt3("RakelReservoirSize", Reservoir.Size)
             },
             debugEnabled
         ).Run();

@@ -1,11 +1,16 @@
 #include "../ShaderBase/shader_base.hlsl"
 
 #include "../Paint/paint.hlsl"
+#include "../math.hlsl"
+#include "../paint_grid.hlsl"
 
-RWStructuredBuffer<Paint> RakelEmittedPaint;
+RWStructuredBuffer<ColumnInfo> RakelEmittedPaintInfo;
+RWStructuredBuffer<Paint> RakelEmittedPaintContent;
+uint3 RakelEmittedPaintSize;
 
-RWStructuredBuffer<Paint> CanvasReservoir;
-uint TextureWidth;
+RWStructuredBuffer<ColumnInfo> CanvasReservoirInfo;
+RWStructuredBuffer<Paint> CanvasReservoirContent;
+uint3 CanvasReservoirSize;
 
 
 #pragma kernel main
@@ -19,10 +24,8 @@ void main (uint3 id_ : SV_DispatchThreadID)
         // calculate pixel position on canvas
         int2 canvas_pixel = id() + CalculationPosition;
 
-        Paint emitted = RakelEmittedPaint[XY(id().x, id().y, CalculationSize.x)];
-        Paint on_canvas = CanvasReservoir[XY(canvas_pixel.x, canvas_pixel.y, TextureWidth)];
-        Paint mixed = mix(emitted, on_canvas);
-
-        CanvasReservoir[XY(canvas_pixel.x, canvas_pixel.y, TextureWidth)] = mixed;
+        paint_grid_reverse_transfer(
+            RakelEmittedPaintInfo, RakelEmittedPaintContent, RakelEmittedPaintSize, id().xy,
+            CanvasReservoirInfo, CanvasReservoirContent, CanvasReservoirSize, canvas_pixel);
     }
 }

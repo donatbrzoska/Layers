@@ -7,7 +7,7 @@ RWStructuredBuffer<Rakel> RakelInfo;
 
 float3 CanvasPosition;
 float2 CanvasSize;
-uint2 CanvasReservoirSize;
+uint3 CanvasReservoirSize;
 
 RWStructuredBuffer<MappedInfo> CanvasMappedInfo;
 

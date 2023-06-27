@@ -5,14 +5,14 @@ class IndexVolumeFiller : VolumeFiller
 {
     public IndexVolumeFiller(float baseVolume) : base(baseVolume) { }
 
-    public override void Fill(Paint[] target, Vector2Int targetSize)
+    public override void Fill(ColumnInfo[] targetInfo, Paint[] target, Vector3Int targetSize)
     {
         for (int y = 0; y < targetSize.y; y++)
         {
             string res = "";
             for (int x = 0; x < targetSize.x; x++)
             {
-                target[IndexUtil.XY(x, y, targetSize.x)].Volume = y * targetSize.x + x;
+                SetVolume(targetInfo, target, targetSize, x, y, y * targetSize.x + x);
                 res += string.Format("{0,3:0.}, ", y * targetSize.x + x);
             }
             //Debug.Log(res + "\n");
@@ -24,14 +24,14 @@ class OnesVolumeFiller : VolumeFiller
 {
     public OnesVolumeFiller(float baseVolume) : base(baseVolume) { }
 
-    public override void Fill(Paint[] target, Vector2Int targetSize)
+    public override void Fill(ColumnInfo[] targetInfo, Paint[] target, Vector3Int targetSize)
     {
         for (int y = 0; y < targetSize.y; y++)
         {
             string res = "";
             for (int x = 0; x < targetSize.x; x++)
             {
-                target[IndexUtil.XY(x, y, targetSize.x)].Volume = 1;
+                SetVolume(targetInfo, target, targetSize, x, y, 1);
                 res += string.Format("{0,3:0.}, ", y * targetSize.x + x);
             }
             //Debug.Log(res + "\n");
@@ -65,7 +65,7 @@ public class TestReservoirReduceVolume
         Vector2Int TEXTURE_SIZE = new Vector2Int(24, 16);
 
         // Arrange
-        Reservoir = new Reservoir(1, TEXTURE_SIZE.x, TEXTURE_SIZE.y);
+        Reservoir = new Reservoir(1, TEXTURE_SIZE.x, TEXTURE_SIZE.y, TEXTURE_SIZE.x * TEXTURE_SIZE.y);
         Reservoir.Fill(new ReservoirFiller(ColorFiller, new IndexVolumeFiller(0)));
 
         Reservoir.Duplicate();
@@ -96,7 +96,7 @@ public class TestReservoirReduceVolume
         Vector2Int TEXTURE_SIZE = new Vector2Int(13, 9);
 
         // Arrange
-        Reservoir = new Reservoir(1, TEXTURE_SIZE.x, TEXTURE_SIZE.y);
+        Reservoir = new Reservoir(1, TEXTURE_SIZE.x, TEXTURE_SIZE.y, TEXTURE_SIZE.x * TEXTURE_SIZE.y);
         Reservoir.Fill(new ReservoirFiller(ColorFiller, new IndexVolumeFiller(0)));
 
         Reservoir.Duplicate();
@@ -128,7 +128,7 @@ public class TestReservoirReduceVolume
         Vector2Int TEXTURE_SIZE = new Vector2Int(13, 9);
 
         // Arrange
-        Reservoir = new Reservoir(1, TEXTURE_SIZE.x, TEXTURE_SIZE.y);
+        Reservoir = new Reservoir(1, TEXTURE_SIZE.x, TEXTURE_SIZE.y, TEXTURE_SIZE.x * TEXTURE_SIZE.y);
         Reservoir.Fill(new ReservoirFiller(ColorFiller, new OnesVolumeFiller(0)));
 
         Reservoir.Duplicate();
@@ -159,7 +159,7 @@ public class TestReservoirReduceVolume
         Vector2Int TEXTURE_SIZE = new Vector2Int(16, 24);
 
         // Arrange
-        Reservoir = new Reservoir(1, TEXTURE_SIZE.x, TEXTURE_SIZE.y);
+        Reservoir = new Reservoir(1, TEXTURE_SIZE.x, TEXTURE_SIZE.y, TEXTURE_SIZE.x * TEXTURE_SIZE.y);
         Reservoir.Fill(new ReservoirFiller(ColorFiller, new OnesVolumeFiller(0)));
 
         Reservoir.Duplicate();

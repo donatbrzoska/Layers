@@ -2,16 +2,22 @@
 
 #include "../Paint/paint.hlsl"
 #include "../mapped_info.hlsl"
+#include "../math.hlsl"
+#include "../paint_grid.hlsl"
 
-RWStructuredBuffer<Paint> RakelReservoir;
-RWStructuredBuffer<Paint> RakelReservoirDuplicate;
-uint2 RakelReservoirSize;
+RWStructuredBuffer<ColumnInfo> RakelReservoirInfo;
+RWStructuredBuffer<Paint> RakelReservoirContent;
+RWStructuredBuffer<ColumnInfo> RakelReservoirInfoDuplicate;
+RWStructuredBuffer<Paint> RakelReservoirContentDuplicate;
+uint3 RakelReservoirSize;
 
 RWStructuredBuffer<MappedInfo> RakelMappedInfo;
 
 int2 ReservoirPixelEmitRadius;
 
-RWStructuredBuffer<Paint> RakelEmittedPaint;
+RWStructuredBuffer<ColumnInfo> RakelEmittedPaintInfo;
+RWStructuredBuffer<Paint> RakelEmittedPaintContent;
+uint3 RakelEmittedPaintSize;
 
 
 // radius of 1 does an emit on a 3x3 area from emit source grid, based on the rounded rakel_reservoir_pixel
@@ -24,83 +30,85 @@ void emit(int2 radius, int2 canvas_pixel)
     {
         int2 rakel_reservoir_pixel_nearest = round(rakel_mapped_info.reservoir_pixel);
         
-        // Array size should really be [1+2*radius.y][1+2*radius.x] but we can't make dynamic arrays
-        // in HLSL. So we do 9x9, which is enough for 79 degree tilt and more is not useful for emitting anyways.
-        // Also, with 11x11 we would get the following warning:
-        // Shader warning in 'EmitFromRakel': Program 'main', warning X4714: sum of temp registers and indexable temp registers times 32 threads exceeds the recommended total 16384.  Performance may be reduced at kernel main (on metal)
-        float4 colors_to_emit[9][9];
-        float volumes_to_emit[9][9];
-        float4 result_color = float4(0,0,0,0);
-        float result_volume = 0;
-        int y, x; // declare loop variables here so the compiler won't complain about double declaration of y
+        int max_z = 0;
+        int y, x;
         for (y=-radius.y; y<=radius.y; y++) {
             for (x=-radius.x; x<=radius.x; x++) {
-                // initialize arrays
                 uint i = y + radius.y;
                 uint j = x + radius.x;
-                volumes_to_emit[i][j] = 0;
-                colors_to_emit[i][j] = float4(0,0,0,0);
 
-                // calculate part
                 int2 coord = rakel_reservoir_pixel_nearest + int2(x, y);
-                if (pixel_in_array_range(coord, RakelReservoirSize)) { // Prevent out of bounds access to reservoir. Also, if it's not in range, this overlap part is not (and must not be!) used anyways.
-                    float overlap = rakel_mapped_info.overlap[i][j];
+                if (pixel_in_array_range(coord, RakelReservoirSize.xy)) { // Prevent out of bounds access to reservoir
+                    uint2 coord_ = uint2(coord.x, coord.y);
+                    int top_index = RakelReservoirInfoDuplicate[XY(coord_.x, coord_.y, RakelReservoirSize.x)].size - 1;
+                    max_z = max(top_index, max_z);
+                }
+            }
+        }
 
-                    if (overlap > 0) {
-                        // get paint
-                        uint2 coord_ = uint2(coord.x, coord.y);
-                        Paint available = RakelReservoirDuplicate[XY(coord_.x, coord_.y, RakelReservoirSize.x)];
+        int z = max_z;
+        float target_volume_to_emit_left = target_volume_to_emit;
+        while (target_volume_to_emit_left > 0 && z >= 0) {
+            float target_volume_to_emit_from_this_layer = min(target_volume_to_emit_left, PAINT_UNIT());
 
-                        // calculate volume
-                        float target_volume = overlap * target_volume_to_emit;
-                        float really_available_volume = overlap * available.volume;
+            // collect emitted paint for layer and delete it from reservoir
+            Paint emitted_from_layer[9][9];
+            float total_emitted_volume_from_layer = 0;
+            for (y=-radius.y; y<=radius.y; y++) {
+                for (x=-radius.x; x<=radius.x; x++) {
+                    // initialize array
+                    uint i = y + radius.y;
+                    uint j = x + radius.x;
+                    Paint p;
+                    p.color = float4(0,0,0,0);
+                    p.volume = 0;
+                    emitted_from_layer[i][j] = p;
 
-                        volumes_to_emit[i][j] = min(target_volume, really_available_volume);
-                        result_volume += volumes_to_emit[i][j];
+                    int2 coord = rakel_reservoir_pixel_nearest + int2(x, y);
+                    if (pixel_in_array_range(coord, RakelReservoirSize.xy)) { // Prevent out of bounds access to reservoir. Also, if it's not in range, this overlap part is not (and must not be!) used anyways.
+                        float overlap = rakel_mapped_info.overlap[i][j];
+                        if (overlap > 0) {
+                            float target_volume_to_emit_from_this_voxel = overlap * target_volume_to_emit_from_this_layer;
+                            // calculate volume to emit
+                            uint3 coord_ = uint3(coord.x, coord.y, z);
+                            // read from duplicate
+                            Paint available = paint_grid_get(RakelReservoirInfoDuplicate, RakelReservoirContentDuplicate, RakelReservoirSize, coord_);
+                            float available_volume_to_emit_from_this_voxel = overlap * available.volume;
+                            float volume_to_emit_from_this_voxel = min(target_volume_to_emit_from_this_voxel, available_volume_to_emit_from_this_voxel);
+                            Paint emitted_from_voxel;
+                            emitted_from_voxel.color = available.color;
+                            emitted_from_voxel.volume = volume_to_emit_from_this_voxel;
 
-                        colors_to_emit[i][j] = available.color;
+                            // keep track of emitted paint
+                            emitted_from_layer[i][j] = emitted_from_voxel;
+                            total_emitted_volume_from_layer += emitted_from_voxel.volume;
+
+                            // delete from original
+                            paint_grid_delete(RakelReservoirInfo, RakelReservoirContent, RakelReservoirSize, coord_, emitted_from_voxel.volume);
+                        }
                     }
                 }
             }
-        }
+            target_volume_to_emit_left -= total_emitted_volume_from_layer;
 
-        // determine color based on emitted volumes
-        // TODO use mix function
-        for (y=-radius.y; y<=radius.y; y++) {
-            for (x=-radius.x; x<=radius.x; x++) {
-                int2 coord = rakel_reservoir_pixel_nearest + int2(x, y);
-                if (pixel_in_array_range(coord, RakelReservoirSize)) {
+            Paint emitted_from_layer_mixed;
+            emitted_from_layer_mixed.color = float4(0,0,0,0);
+            emitted_from_layer_mixed.volume = total_emitted_volume_from_layer;
+            for (y=-radius.y; y<=radius.y; y++) {
+                for (x=-radius.x; x<=radius.x; x++) {
                     uint i = y + radius.y;
                     uint j = x + radius.x;
-                    float volume_part = volumes_to_emit[i][j] / unzero(result_volume);
-                    result_color += volume_part * colors_to_emit[i][j];
+
+                    float volume_part = emitted_from_layer[i][j].volume / unzero(total_emitted_volume_from_layer);
+                    emitted_from_layer_mixed.color += volume_part * emitted_from_layer[i][j].color;
                 }
             }
+
+            // raw push
+            paint_grid_push(RakelEmittedPaintInfo, RakelEmittedPaintContent, RakelEmittedPaintSize, id().xy, emitted_from_layer_mixed);
+
+            z--;
         }
-
-        Paint result_paint;
-        result_paint.color = result_color;
-        result_paint.volume = result_volume;
-
-        // delete amount of taken volume from reservoir (z=0)
-        float deleted = 0;
-        for (y=-radius.y; y<=radius.y; y++) {
-            for (x=-radius.x; x<=radius.x; x++) {
-                int2 coord = rakel_reservoir_pixel_nearest + int2(x, y);
-                if (pixel_in_array_range(coord, RakelReservoirSize)) {
-                    uint i = y + radius.y;
-                    uint j = x + radius.x;
-                    float to_be_deleted = volumes_to_emit[i][j];
-
-                    uint2 coord_ = uint2(coord.x, coord.y);
-                    RakelReservoir[XY(coord_.x, coord_.y, RakelReservoirSize.x)].volume -= to_be_deleted;
-                    deleted += to_be_deleted;
-                }
-            }
-        }
-
-        RakelEmittedPaint[XY(id().x, id().y, CalculationSize.x)] = result_paint;
-        // log_float(deleted);
     }
 }
 

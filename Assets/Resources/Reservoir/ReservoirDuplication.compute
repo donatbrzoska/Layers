@@ -1,9 +1,13 @@
-#include "../ShaderBase/shader_base.hlsl"
+﻿#include "../ShaderBase/shader_base.hlsl"
 
 #include "../Paint/paint.hlsl"
+#include "../paint_grid.hlsl"
 
-RWStructuredBuffer<Paint> Reservoir;
-RWStructuredBuffer<Paint> ReservoirDuplicate;
+RWStructuredBuffer<ColumnInfo> ReservoirInfo;
+RWStructuredBuffer<Paint> ReservoirContent;
+RWStructuredBuffer<ColumnInfo> ReservoirInfoDuplicate;
+RWStructuredBuffer<Paint> ReservoirContentDuplicate;
+uint3 ReservoirSize;
 
 
 #pragma kernel main
@@ -14,7 +18,8 @@ void main (uint3 id_ : SV_DispatchThreadID)
     id__ = id_;
     if (is_relevant_thread(id(), CalculationSize))
     {
-        ReservoirDuplicate[XY(id().x, id().y, CalculationSize.x)] = Reservoir[XY(id().x, id().y, CalculationSize.x)];
-        // Reservoir[XYZ(id().x, id().y, 0, CalculationSize)] = available; // also update source for corrections // TODO find out why this is not necessary
+        paint_grid_copy(
+            ReservoirInfo, ReservoirContent, ReservoirSize, id().xy,
+            ReservoirInfoDuplicate, ReservoirContentDuplicate, ReservoirSize, id().xy);
     }
 }

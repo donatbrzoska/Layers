@@ -4,11 +4,14 @@ public class FlatVolumeFiller : VolumeFiller
 {
     public FlatVolumeFiller(float baseVolume) : base(baseVolume) { }
 
-    public override void Fill(Paint[] target, Vector2Int targetSize)
+    public override void Fill(ColumnInfo[] targetInfo, Paint[] target, Vector3Int targetSize)
     {
-        for (int i=0; i<target.Length; i++)
+        for (int i = 0; i < targetSize.y; i++)
         {
-            target[i].Volume = BaseVolume;
+            for (int j = 0; j < targetSize.x; j++)
+            {
+                SetVolume(targetInfo, target, targetSize, j, i, BaseVolume);
+            }
         }
     }
 }

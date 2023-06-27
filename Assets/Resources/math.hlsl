@@ -5,9 +5,14 @@ bool f2_eq(float2 a, float2 b)
         && abs(a.y - b.y) < err;
 }
 
+float FLOAT_PRECISION()
+{
+    return 0.0001;
+}
+
 bool floats_equal(float a, float b)
 {
-    return abs(a - b) < 0.0001;
+    return abs(a - b) < FLOAT_PRECISION();
 }
 
 // rotates clockwise

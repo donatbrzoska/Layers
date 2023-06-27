@@ -7,73 +7,28 @@ public enum ReduceFunction
     Add,
 }
 
-public struct ColumnInfo
-{
-    public static int SizeInBytes = 2 * sizeof(int) + sizeof(float);
-
-    public int Size;
-    public int WriteIndex;
-    public float Volume;
-
-    public ColumnInfo(int size, int writeIndex, float volume)
-    {
-        Size = size;
-        WriteIndex = writeIndex;
-        Volume = volume;
-    }
-
-    public override bool Equals(object other_)
-    {
-        ColumnInfo other = (ColumnInfo)other_;
-        return Size == other.Size && WriteIndex == other.WriteIndex && Mathf.Abs(other.Volume - Volume) < 0.0001f;
-    }
-
-    public override int GetHashCode()
-    {
-        return base.GetHashCode();
-    }
-
-    public override string ToString()
-    {
-        return base.ToString() + string.Format("(Size={0}, WriteIndex={1}, Volume={2})", Size, WriteIndex, Volume);
-    }
-
-    public static bool operator ==(ColumnInfo a, ColumnInfo b)
-    {
-        return a.Equals(b);
-    }
-
-    public static bool operator !=(ColumnInfo a, ColumnInfo b)
-    {
-        return !a.Equals(b);
-    }
-}
-
 public class Reservoir
 {
     public int Resolution;
-    public Vector2Int Size;
-    public ComputeBuffer Buffer;
-    public ComputeBuffer BufferDuplicate;
-    private Paint[] BufferData;
+    public Vector3Int Size;
+
+    public PaintGrid PaintGrid;
+    public PaintGrid PaintGridDuplicate;
 
     public float PixelSize { get { return 1 / (float) Resolution; } }
 
-    public Reservoir(int resolution, int width, int height)
+    public Reservoir(int resolution, int width, int height, int layers)
     {
         Resolution = resolution;
-        Size = new Vector2Int(width, height);
+        Size = new Vector3Int(width, height, layers);
 
-        Buffer = new ComputeBuffer(width * height, Paint.SizeInBytes);
-        BufferDuplicate = new ComputeBuffer(width * height, Paint.SizeInBytes);
-        BufferData = new Paint[width * height];
-        Buffer.SetData(BufferData);
+        PaintGrid = new PaintGrid(Size);
+        PaintGridDuplicate = new PaintGrid(Size);
     }
 
     public void Fill(ReservoirFiller filler)
     {
-        filler.Fill(BufferData, Size);
-        Buffer.SetData(BufferData);
+        PaintGrid.Fill(filler);
     }
 
     public ShaderRegion GetFullShaderRegion()
@@ -93,8 +48,11 @@ public class Reservoir
             GetFullShaderRegion(),
             new List<CSAttribute>()
             {
-                new CSComputeBuffer("Reservoir", Buffer),
-                new CSComputeBuffer("ReservoirDuplicate", BufferDuplicate)
+                new CSComputeBuffer("ReservoirInfo", PaintGrid.Info),
+                new CSComputeBuffer("ReservoirContent", PaintGrid.Content),
+                new CSComputeBuffer("ReservoirInfoDuplicate", PaintGridDuplicate.Info),
+                new CSComputeBuffer("ReservoirContentDuplicate", PaintGridDuplicate.Content),
+                new CSInt3("ReservoirSize", Size),
             },
             debugEnabled
         ).Run();
@@ -114,8 +72,8 @@ public class Reservoir
                 new CSComputeBuffer("PaintSourceMappedInfo", paintSourceMappedInfo),
                 new CSInt2("PaintSourceReservoirSize", paintSourceReservoirSize),
 
-                new CSComputeBuffer("Reservoir", Buffer),
-                new CSComputeBuffer("ReservoirDuplicate", BufferDuplicate)
+                new CSComputeBuffer("ReservoirInfo", PaintGrid.Info),
+                new CSComputeBuffer("ReservoirInfoDuplicate", PaintGridDuplicate.Info)
             },
             debugEnabled
         ).Run();
@@ -123,8 +81,8 @@ public class Reservoir
 
     public void PrintVolumes(int z)
     {
-        Buffer.GetData(BufferData);
-        LogUtil.LogVolumes(BufferData, GetFullShaderRegion().Size.y, GetFullShaderRegion().Size.x, z, "z=" + z);
+        PaintGrid.Content.GetData(PaintGrid.ContentData);
+        LogUtil.LogVolumes(PaintGrid.ContentData, GetFullShaderRegion().Size.y, GetFullShaderRegion().Size.x, z, "z=" + z);
 
         //int sum = 0;
         //for (int i = 0; i < BufferData.GetLength(0) / 2; i++)
@@ -152,8 +110,8 @@ public class Reservoir
                 reduceShaderRegion,
                 new List<CSAttribute>()
                 {
-                    new CSComputeBuffer("ReservoirDuplicate", BufferDuplicate),
-                    new CSInt2("ReservoirSize", Size),
+                    new CSComputeBuffer("ReservoirInfoDuplicate", PaintGridDuplicate.Info),
+                    new CSInt3("ReservoirSize", Size),
                     new CSInt2("ReduceRegionSize", reduceRegion.Size),
                     new CSInt("ReduceFunction", (int) reduceFunction)
                 },
@@ -168,18 +126,18 @@ public class Reservoir
     // Only used for testing purposes
     public void Readback()
     {
-        BufferDuplicate.GetData(BufferData);
+        PaintGridDuplicate.Info.GetData(PaintGridDuplicate.InfoData);
     }
 
     // Only used for testing purposes
-    public Paint GetFromDuplicate(int x, int y)
+    public ColumnInfo GetFromDuplicate(int x, int y)
     {
-        return BufferData[IndexUtil.XY(x, y, Size.x)];
+        return PaintGridDuplicate.InfoData[IndexUtil.XY(x, y, Size.x)];
     }
 
     public void Dispose()
     {
-        Buffer.Dispose();
-        BufferDuplicate.Dispose();
+        PaintGrid.Dispose();
+        PaintGridDuplicate.Dispose();
     }
 }

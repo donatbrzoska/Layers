@@ -11,9 +11,9 @@ public class ReservoirFiller
         VolumeFiller = volumeFiller;
     }
 
-    public void Fill(Paint[] target, Vector2Int targetSize)
+    public void Fill(ColumnInfo[] targetInfo, Paint[] target, Vector3Int targetSize)
     {
-        ColorFiller.Fill(target, targetSize);
-        VolumeFiller.Fill(target, targetSize);
+        VolumeFiller.Fill(targetInfo, target, targetSize);
+        ColorFiller.Fill(targetInfo, target, targetSize);
     }
 }

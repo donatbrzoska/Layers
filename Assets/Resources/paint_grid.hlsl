@@ -1,4 +1,5 @@
 float PAINT_UNIT();
+float FLOAT_PRECISION();
 bool floats_equal(float a, float b);
 
 struct ColumnInfo
@@ -99,14 +100,18 @@ void paint_grid_delete(
 {
     Paint available = pg_content[XYZ(delete_pos.x, delete_pos.y, delete_pos.z, pg_size.xy)];
     float to_be_deleted = min(delete_volume, available.volume);
-    pg_info[XY(delete_pos.x, delete_pos.y, pg_size.x)].volume -= to_be_deleted;
-    pg_content[XYZ(delete_pos.x, delete_pos.y, delete_pos.z, pg_size.xy)].volume -= to_be_deleted;
-
-    bool cell_emptied = floats_equal(available.volume, to_be_deleted);
-    if (to_be_deleted > 0 && cell_emptied)
+    bool delete_to_be_done = to_be_deleted > FLOAT_PRECISION();
+    if (delete_to_be_done)
     {
-        pg_info[XY(delete_pos.x, delete_pos.y, pg_size.x)].size--;
-        pg_info[XY(delete_pos.x, delete_pos.y, pg_size.x)].write_index = delete_pos.z;
+        pg_info[XY(delete_pos.x, delete_pos.y, pg_size.x)].volume -= to_be_deleted;
+        pg_content[XYZ(delete_pos.x, delete_pos.y, delete_pos.z, pg_size.xy)].volume -= to_be_deleted;
+
+        bool cell_emptied = floats_equal(available.volume, to_be_deleted);
+        if (cell_emptied)
+        {
+            pg_info[XY(delete_pos.x, delete_pos.y, pg_size.x)].size--;
+            pg_info[XY(delete_pos.x, delete_pos.y, pg_size.x)].write_index = delete_pos.z;
+        }
     }
 }
 

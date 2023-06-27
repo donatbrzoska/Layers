@@ -240,6 +240,43 @@ public class TestPaintGrid_delete
     }
 
     [Test]
+    public void delete_from_basically_empty_column()
+    {
+        // Arrange
+        PaintGridInfoData = new ColumnInfo[]
+        {
+            new ColumnInfo { Size = 0, WriteIndex = 0, Volume = 0.00001f }
+        };
+        PaintGridContentData = new Paint[]
+        {
+            P(0.3f, 0.00001f),
+        };
+        PaintGridSize = new Vector3Int(1, 1, 1);
+        DeletePosition = Vector3Int.zero;
+        DeleteVolume = 0.1f;
+
+
+        // Act
+        Execute(KERNEL_ID_delete);
+
+
+        // Assert
+        Assert.AreEqual(
+            new ColumnInfo[]
+            {
+                new ColumnInfo { Size = 0, WriteIndex = 0, Volume = 0.00001f }
+            },
+            PaintGridInfoData);
+
+        Assert.AreEqual(
+            new Paint[]
+            {
+                P(0.3f, 0), // Notice that the color stays - doesn't matter though, because there is zero volume
+            },
+            PaintGridContentData);
+    }
+
+    [Test]
     public void auto_update_write_index()
     {
         // Arrange

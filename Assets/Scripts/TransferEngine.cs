@@ -72,7 +72,7 @@ public class TransferEngine
 
 
         // 2. Do paint transfer and rendering
-        ComputeBuffer canvasEmittedPaint = canvas.EmitPaint(
+        PaintGrid canvasEmittedPaint = canvas.EmitPaint(
             rakel,
             canvasEmitSR,
             //transferConfiguration.PickupDistance_MAX,
@@ -80,7 +80,7 @@ public class TransferEngine
             //transferConfiguration.PickupVolume_MAX,
             DebugShader);
 
-        ComputeBuffer rakelEmittedPaint = rakel.EmitPaint(
+        PaintGrid rakelEmittedPaint = rakel.EmitPaint(
             rakelEmitSR,
             canvas,
             rakelMappedInfo,

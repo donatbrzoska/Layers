@@ -2,121 +2,130 @@
 
 #include "../Paint/paint.hlsl"
 #include "../mapped_info.hlsl"
+#include "../math.hlsl"
+#include "../paint_grid.hlsl"
 
-int2 ReservoirPixelPickupRadius;
+RWStructuredBuffer<ColumnInfo> CanvasReservoirInfo;
+RWStructuredBuffer<Paint> CanvasReservoirContent;
+RWStructuredBuffer<ColumnInfo> CanvasReservoirInfoDuplicate;
+RWStructuredBuffer<Paint> CanvasReservoirContentDuplicate;
+uint3 CanvasReservoirSize;
+
 RWStructuredBuffer<MappedInfo> CanvasMappedInfo;
 
-RWStructuredBuffer<Paint> CanvasReservoir;
-RWStructuredBuffer<Paint> CanvasReservoirDuplicate;
-uint2 CanvasReservoirSize;
+int2 ReservoirPixelEmitRadius;
 
-RWStructuredBuffer<Paint> CanvasEmittedPaint;
+RWStructuredBuffer<ColumnInfo> CanvasEmittedPaintInfo;
+RWStructuredBuffer<Paint> CanvasEmittedPaintContent;
+uint3 CanvasEmittedPaintSize;
 
 
 // radius of 1 does an emit on a 3x3 area from emit source grid, based on the rounded canvas_reservoir_pixel
 void emit(int2 radius, int2 rakel_pixel)
 {
-    MappedInfo canvasMappedInfo = CanvasMappedInfo[XY(id().x, id().y, CalculationSize.x)];
+    MappedInfo canvas_mapped_info = CanvasMappedInfo[XY(id().x, id().y, CalculationSize.x)];
 
-    float target_volume_to_pickup = canvasMappedInfo.target_volume_to_transfer;
+    float target_volume_to_pickup = canvas_mapped_info.target_volume_to_transfer;
     if (target_volume_to_pickup > 0)
     {
-        int2 canvas_reservoir_pixel_nearest = round(canvasMappedInfo.reservoir_pixel);
-
-        // array size should really be [1+2*radius.y][1+2*radius.x] but we can't make dynamic arrays
-        // in HLSL. 9x9 should be enough though, since with 45° tilt we will probably use 6x6 and
-        // more tilt probably won't emit anyways
-        float4 color_to_emit[9][9];
-        float volume_to_emit[9][9];
-        float4 result_color = float4(0,0,0,0);
-        float result_volume = 0;
-        int x, y;
+        int2 canvas_reservoir_pixel_nearest = round(canvas_mapped_info.reservoir_pixel);
+        
+        int max_z = 0;
+        int y, x;
         for (y=-radius.y; y<=radius.y; y++) {
             for (x=-radius.x; x<=radius.x; x++) {
-                // initialize arrays
                 uint i = y + radius.y;
                 uint j = x + radius.x;
-                volume_to_emit[i][j] = 0;
-                color_to_emit[i][j] = float4(0,0,0,0);
 
-                // calculate part
                 int2 coord = canvas_reservoir_pixel_nearest + int2(x, y);
-                if (pixel_in_array_range(coord, CanvasReservoirSize)) { // Prevent out of bounds access to reservoir. Also, if it's not in range, this overlap part is not (and must not be!) used anyways.
-                    float overlap = canvasMappedInfo.overlap[i][j];
+                if (pixel_in_array_range(coord, CanvasReservoirSize.xy)) { // Prevent out of bounds access to reservoir
+                    uint2 coord_ = uint2(coord.x, coord.y);
+                    int top_index = CanvasReservoirInfoDuplicate[XY(coord_.x, coord_.y, CanvasReservoirSize.x)].size - 1;
+                    max_z = max(top_index, max_z);
+                }
+            }
+        }
 
-                    if (overlap > 0) {
-                        // get paint
-                        uint2 coord_ = uint2(coord.x, coord.y);
-                        Paint available = CanvasReservoirDuplicate[XY(coord_.x, coord_.y, CanvasReservoirSize.x)];
-                        // prevent complete pickup
-                        float MIN_VOLUME_TO_STAY = 0.1;
-                        // do max, in case there has never been any volume
-                        available.volume = max(available.volume - MIN_VOLUME_TO_STAY, 0);
+        int z = max_z;
+        float target_volume_to_pickup_left = target_volume_to_pickup;
+        while (target_volume_to_pickup_left > 0 && z >= 0) {
+            float target_volume_to_pickup_from_this_layer = min(target_volume_to_pickup_left, PAINT_UNIT());
 
-                        // calculate volume
-                        float target_volume = overlap * target_volume_to_pickup;
-                        float really_available_volume = overlap * available.volume;
-                        volume_to_emit[i][j] = min(target_volume, really_available_volume);
-                        result_volume += volume_to_emit[i][j];
+            // collect emitted paint for layer and delete it from reservoir
+            Paint emitted_from_layer[9][9];
+            float total_emitted_volume_from_layer = 0;
+            for (y=-radius.y; y<=radius.y; y++) {
+                for (x=-radius.x; x<=radius.x; x++) {
+                    // initialize array
+                    uint i = y + radius.y;
+                    uint j = x + radius.x;
+                    Paint p;
+                    p.color = float4(0,0,0,0);
+                    p.volume = 0;
+                    emitted_from_layer[i][j] = p;
 
-                        color_to_emit[i][j] = available.color;
+                    int2 coord = canvas_reservoir_pixel_nearest + int2(x, y);
+                    if (pixel_in_array_range(coord, CanvasReservoirSize.xy)) { // Prevent out of bounds access to reservoir. Also, if it's not in range, this overlap part is not (and must not be!) used anyways.
+                        float overlap = canvas_mapped_info.overlap[i][j];
+                        if (overlap > 0) {
+                            float target_volume_to_pickup_from_this_voxel = overlap * target_volume_to_pickup_from_this_layer;
+                            // calculate volume to emit
+                            uint3 coord_ = uint3(coord.x, coord.y, z);
+                            // read from duplicate
+                            Paint available = paint_grid_get(CanvasReservoirInfoDuplicate, CanvasReservoirContentDuplicate, CanvasReservoirSize, coord_);
+                            float MIN_VOLUME_TO_STAY = 0.1;
+                            available.volume = max(available.volume - MIN_VOLUME_TO_STAY, 0);
+                            float available_volume_to_pickup_from_this_voxel = overlap * available.volume;
+                            float volume_to_pickup_from_this_voxel = min(target_volume_to_pickup_from_this_voxel, available_volume_to_pickup_from_this_voxel);
+                            Paint emitted_from_voxel;
+                            emitted_from_voxel.color = available.color;
+                            emitted_from_voxel.volume = volume_to_pickup_from_this_voxel;
+
+                            // keep track of emitted paint
+                            emitted_from_layer[i][j] = emitted_from_voxel;
+                            total_emitted_volume_from_layer += emitted_from_voxel.volume;
+
+                            // delete from original
+                            paint_grid_delete(CanvasReservoirInfo, CanvasReservoirContent, CanvasReservoirSize, coord_, emitted_from_voxel.volume);
+                        }
                     }
                 }
             }
-        }
+            target_volume_to_pickup_left -= total_emitted_volume_from_layer;
 
-        // determine color based on emitted volumes
-        // TODO use mix function
-        for (y=-radius.y; y<=radius.y; y++) {
-            for (x=-radius.x; x<=radius.x; x++) {
-                int2 coord = canvas_reservoir_pixel_nearest + int2(x, y);
-                if (pixel_in_array_range(coord, CanvasReservoirSize)) {
+            Paint emitted_from_layer_mixed;
+            emitted_from_layer_mixed.color = float4(0,0,0,0);
+            emitted_from_layer_mixed.volume = total_emitted_volume_from_layer;
+            for (y=-radius.y; y<=radius.y; y++) {
+                for (x=-radius.x; x<=radius.x; x++) {
                     uint i = y + radius.y;
                     uint j = x + radius.x;
-                    float volume_part = volume_to_emit[i][j] / unzero(result_volume);
-                    result_color += volume_part * color_to_emit[i][j];
+
+                    float volume_part = emitted_from_layer[i][j].volume / unzero(total_emitted_volume_from_layer);
+                    emitted_from_layer_mixed.color += volume_part * emitted_from_layer[i][j].color;
                 }
             }
+
+            // raw push
+            paint_grid_push(CanvasEmittedPaintInfo, CanvasEmittedPaintContent, CanvasEmittedPaintSize, id().xy, emitted_from_layer_mixed);
+
+            z--;
         }
-
-        Paint result_paint;
-        result_paint.color = result_color;
-        result_paint.volume = result_volume;
-
-        float deleted = 0;
-        // delete amount of taken volume from reservoir (z=0)
-        for (y=-radius.y; y<=radius.y; y++) {
-            for (x=-radius.x; x<=radius.x; x++) {
-                int2 coord = canvas_reservoir_pixel_nearest + int2(x, y);
-                if (pixel_in_array_range(coord, CanvasReservoirSize)) {
-                    uint i = y + radius.y;
-                    uint j = x + radius.x;
-                    float to_be_deleted = volume_to_emit[i][j];
-
-                    uint2 coord_ = uint2(coord.x, coord.y);
-                    CanvasReservoir[XY(coord_.x, coord_.y, CanvasReservoirSize.x)].volume -= to_be_deleted;
-                    deleted += to_be_deleted;
-                }
-            }
-        }
-
-        CanvasEmittedPaint[XY(id().x, id().y, CalculationSize.x)] = result_paint;
-        // log_float(deleted);
     }
 }
 
 #pragma kernel main
 
 [numthreads(32,1,1)]
-void main(uint3 id_ : SV_DispatchThreadID)
+void main (uint3 id_ : SV_DispatchThreadID)
 {
     id__ = id_;
     if (is_relevant_thread(id(), CalculationSize))
     {
-        // calculate pixel position in reservoir
+        // calculate pixel position on rakel
         // was uint2 before, but negative values are possible due to padding and no prevention of that because it should not cause any more problems
         int2 rakel_pixel = id() + CalculationPosition;
 
-        emit(ReservoirPixelPickupRadius, rakel_pixel);
+        emit(ReservoirPixelEmitRadius, rakel_pixel);
     }
 }

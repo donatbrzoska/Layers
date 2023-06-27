@@ -4,7 +4,7 @@
 #include "../mapped_info.hlsl"
 
 RWStructuredBuffer<Rakel> RakelInfo;
-uint2 RakelReservoirSize;
+uint3 RakelReservoirSize;
 
 RWStructuredBuffer<MappedInfo> RakelMappedInfo;
 

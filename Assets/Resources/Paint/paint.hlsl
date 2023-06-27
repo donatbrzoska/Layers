@@ -2,6 +2,7 @@
 #include "rgb_ryb_leonard.hlsl"
 
 float unzero(float f);
+float FLOAT_PRECISION();
 
 int PAINT_UNIT()
 {
@@ -66,7 +67,7 @@ Paint mix(Paint a, Paint b)
 
 bool is_empty(Paint p)
 {
-    return p.volume < 0.0001;
+    return p.volume < FLOAT_PRECISION();
 }
 
 // p.volume is assumed to be 0..1

@@ -1,14 +1,16 @@
 #include "ShaderBase/shader_base.hlsl"
 
 #include "Paint/paint.hlsl"
+#include "paint_grid.hlsl"
 
-RWStructuredBuffer<Paint> CanvasReservoir;
+RWStructuredBuffer<ColumnInfo> CanvasReservoirInfo;
+RWStructuredBuffer<Paint> CanvasReservoirContent;
+uint3 CanvasReservoirSize;
 uint ColorSpace;
 
 RWTexture2D<float4> NormalMap;
 float NormalScale;
 RWTexture2D<float4> Texture;
-uint2 TextureSize;
 
 
 float4 CANVAS_COLOR(uint color_space)
@@ -21,21 +23,21 @@ void update_normal(int2 canvas_pixel)
 {
     // calculate normal
     // ... ... deal with oob access
-    uint left = clamp(canvas_pixel.x-1, 0, TextureSize.x-1);
-    uint right = clamp(canvas_pixel.x+1, 0, TextureSize.x-1);
-    uint up = clamp(canvas_pixel.y+1, 0, TextureSize.y-1);
-    uint bot = clamp(canvas_pixel.y-1, 0, TextureSize.y-1);
+    uint left = clamp(canvas_pixel.x-1, 0, CanvasReservoirSize.x-1);
+    uint right = clamp(canvas_pixel.x+1, 0, CanvasReservoirSize.x-1);
+    uint up = clamp(canvas_pixel.y+1, 0, CanvasReservoirSize.y-1);
+    uint bot = clamp(canvas_pixel.y-1, 0, CanvasReservoirSize.y-1);
     
     // ... ... get volumes
-    float vol_ul = CanvasReservoir[XY(left,           up,             TextureSize.x)].volume;
-    float vol_u =  CanvasReservoir[XY(canvas_pixel.x, up,             TextureSize.x)].volume;
-    float vol_ur = CanvasReservoir[XY(right,          up,             TextureSize.x)].volume;
-    float vol_l =  CanvasReservoir[XY(left,           canvas_pixel.y, TextureSize.x)].volume;
-    float vol_m =  CanvasReservoir[XY(canvas_pixel.x, canvas_pixel.y, TextureSize.x)].volume;
-    float vol_r =  CanvasReservoir[XY(right,          canvas_pixel.y, TextureSize.x)].volume;
-    float vol_ll = CanvasReservoir[XY(left,           bot,            TextureSize.x)].volume;
-    float vol_b =  CanvasReservoir[XY(canvas_pixel.x, bot,            TextureSize.x)].volume;
-    float vol_lr = CanvasReservoir[XY(right,          bot,            TextureSize.x)].volume;
+    float vol_ul = CanvasReservoirInfo[XY(left,           up,             CanvasReservoirSize.x)].volume;
+    float vol_u =  CanvasReservoirInfo[XY(canvas_pixel.x, up,             CanvasReservoirSize.x)].volume;
+    float vol_ur = CanvasReservoirInfo[XY(right,          up,             CanvasReservoirSize.x)].volume;
+    float vol_l =  CanvasReservoirInfo[XY(left,           canvas_pixel.y, CanvasReservoirSize.x)].volume;
+    float vol_m =  CanvasReservoirInfo[XY(canvas_pixel.x, canvas_pixel.y, CanvasReservoirSize.x)].volume;
+    float vol_r =  CanvasReservoirInfo[XY(right,          canvas_pixel.y, CanvasReservoirSize.x)].volume;
+    float vol_ll = CanvasReservoirInfo[XY(left,           bot,            CanvasReservoirSize.x)].volume;
+    float vol_b =  CanvasReservoirInfo[XY(canvas_pixel.x, bot,            CanvasReservoirSize.x)].volume;
+    float vol_lr = CanvasReservoirInfo[XY(right,          bot,            CanvasReservoirSize.x)].volume;
 
     // ... ... sobel calculation
     float normal_x = -1 * vol_ul            + 1 * vol_ur
@@ -61,21 +63,32 @@ void update_normal(int2 canvas_pixel)
 
 void update_color(int2 canvas_pixel)
 {
-    // get paint from canvas
-    Paint p = CanvasReservoir[XY(canvas_pixel.x, canvas_pixel.y, TextureSize.x)];
+    // default
+    float4 background_color = CANVAS_COLOR(ColorSpace);
+    Paint top;
+    top.color = float4(0,0,0,0);
+    top.volume = 0;
+    
+    // paint from canvas
+    int top_z = CanvasReservoirInfo[XY(canvas_pixel.x, canvas_pixel.y, CanvasReservoirSize.x)].size - 1;
+    if (top_z > -1) { // there is at least one layer of paint
+        top = paint_grid_get(CanvasReservoirInfo, CanvasReservoirContent, CanvasReservoirSize, uint3(canvas_pixel.x, canvas_pixel.y, top_z));
+    }
+    if (top_z > 0) { // there is at least two layers of paint
+        background_color = paint_grid_get(CanvasReservoirInfo, CanvasReservoirContent, CanvasReservoirSize, uint3(canvas_pixel.x, canvas_pixel.y, top_z - 1)).color;
+    }
 
-    // blend little paint with canvas color
+    // blend little paint with background color
     // we can't use alpha values, because there is nothing behind the paint - the paint is the texture
-    if (p.volume < PAINT_UNIT()) {
-        float4 canvas_color = CANVAS_COLOR(ColorSpace);
-        p = alpha_blend(p, canvas_color);
+    if (top.volume < PAINT_UNIT()) {
+        top = alpha_blend(top, background_color);
     }
 
     // float3 result = ryb_to_rgb(float3(1, 1, 0));
     // p.color = float4(result.x, result.y, result.z, 1);
 
     // set color
-    Texture[canvas_pixel] = (ColorSpace == 1) ? ryb_to_rgb(p.color) : p.color;
+    Texture[canvas_pixel] = (ColorSpace == 1) ? ryb_to_rgb(top.color) : top.color;
 }
 
 #pragma kernel main
@@ -88,7 +101,7 @@ void main (uint3 id_ : SV_DispatchThreadID)
     {
         // calculate pixel position on canvas
         int2 canvas_pixel = id() + CalculationPosition;
-        if (pixel_in_array_range(canvas_pixel, TextureSize))
+        if (pixel_in_array_range(canvas_pixel, CanvasReservoirSize.xy))
         {
             update_normal(canvas_pixel);
             update_color(canvas_pixel);

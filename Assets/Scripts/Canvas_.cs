@@ -25,7 +25,7 @@ public class Canvas_
 
     // It is assumed that the canvas is perpendicular to the z axis
     // Position is the center of the canvas
-    public Canvas_(float width, float height, Vector3 position, int textureResolution, float normalScale, ColorSpace colorSpace)
+    public Canvas_(float width, float height, int layers, Vector3 position, int textureResolution, float normalScale, ColorSpace colorSpace)
     {
         Size = new Vector2(width, height);
         Position = position;
@@ -43,7 +43,7 @@ public class Canvas_
         NormalScale = normalScale;
         ColorSpace = colorSpace;
 
-        Reservoir = new Reservoir(textureResolution, TextureSize.x, TextureSize.y);
+        Reservoir = new Reservoir(textureResolution, TextureSize.x, TextureSize.y, layers);
 
         Texture = new RenderTexture(TextureSize.x, TextureSize.y, 1);
         Texture.filterMode = FilterMode.Point;
@@ -80,7 +80,7 @@ public class Canvas_
         ).Run();
     }
 
-    public ComputeBuffer EmitPaint(
+    public PaintGrid EmitPaint(
         Rakel rakel,
         ShaderRegion shaderRegion,
         //float pickupDistance_MAX,
@@ -115,7 +115,7 @@ public class Canvas_
 
                 new CSFloat3("CanvasPosition", Position),
                 new CSFloat2("CanvasSize", Size),
-                new CSInt2("CanvasReservoirSize", TextureSize),
+                new CSInt3("CanvasReservoirSize", Reservoir.Size),
 
                 new CSComputeBuffer("CanvasMappedInfo", canvasMappedInfo),
             },
@@ -154,14 +154,14 @@ public class Canvas_
             new List<CSAttribute>()
             {
                 new CSComputeBuffer("RakelInfo", rakel.InfoBuffer),
-                new CSComputeBuffer("RakelReservoirDuplicate", rakel.Reservoir.BufferDuplicate),
-                new CSInt2("RakelReservoirSize", rakel.Reservoir.Size),
+                new CSComputeBuffer("RakelReservoirInfoDuplicate", rakel.Reservoir.PaintGridDuplicate.Info),
+                new CSInt3("RakelReservoirSize", rakel.Reservoir.Size),
                 new CSInt2("ReservoirPixelPickupRadius", RESERVOIR_PIXEL_PICKUP_RADIUS),
                 new CSComputeBuffer("CanvasMappedInfo", canvasMappedInfo),
 
                 new CSFloat3("CanvasPosition", Position),
-                new CSComputeBuffer("CanvasReservoirDuplicate", Reservoir.BufferDuplicate),
-                new CSInt2("CanvasReservoirSize", TextureSize),
+                new CSComputeBuffer("CanvasReservoirInfoDuplicate", Reservoir.PaintGridDuplicate.Info),
+                new CSInt3("CanvasReservoirSize", Reservoir.Size),
 
                 //new CSFloat("RakelTilt_MAX", Rakel.MAX_SUPPORTED_TILT),
                 //new CSFloat("PickupDistance_MAX", pickupDistance_MAX),
@@ -171,9 +171,7 @@ public class Canvas_
             debugEnabled
         ).Run();
 
-        ComputeBuffer canvasEmittedPaint = new ComputeBuffer(shaderRegion.PixelCount, Paint.SizeInBytes);
-        Paint[] initPaint = new Paint[shaderRegion.PixelCount];
-        canvasEmittedPaint.SetData(initPaint);
+        PaintGrid canvasEmittedPaint = new PaintGrid(new Vector3Int(shaderRegion.Size.x, shaderRegion.Size.y, Reservoir.Size.z));
 
         Vector2Int reservoirPixelPickupArea = new Vector2Int(RESERVOIR_PIXEL_PICKUP_RADIUS.x * 2 + 1, RESERVOIR_PIXEL_PICKUP_RADIUS.y * 2 + 1);
 
@@ -186,11 +184,15 @@ public class Canvas_
                 new CSInt2("ReservoirPixelPickupRadius", RESERVOIR_PIXEL_PICKUP_RADIUS),
                 new CSComputeBuffer("CanvasMappedInfo", canvasMappedInfo),
 
-                new CSComputeBuffer("CanvasReservoir", Reservoir.Buffer),
-                new CSComputeBuffer("CanvasReservoirDuplicate", Reservoir.BufferDuplicate),
-                new CSInt2("CanvasReservoirSize", TextureSize),
+                new CSComputeBuffer("CanvasReservoirInfo", Reservoir.PaintGrid.Info),
+                new CSComputeBuffer("CanvasReservoirContent", Reservoir.PaintGrid.Content),
+                new CSComputeBuffer("CanvasReservoirInfoDuplicate", Reservoir.PaintGridDuplicate.Info),
+                new CSComputeBuffer("CanvasReservoirContentDuplicate", Reservoir.PaintGridDuplicate.Content),
+                new CSInt3("CanvasReservoirSize", Reservoir.Size),
 
-                new CSComputeBuffer("CanvasEmittedPaint", canvasEmittedPaint),
+                new CSComputeBuffer("CanvasEmittedPaintInfo", canvasEmittedPaint.Info),
+                new CSComputeBuffer("CanvasEmittedPaintContent", canvasEmittedPaint.Content),
+                new CSInt3("CanvasEmittedPaintSize", canvasEmittedPaint.Size)
             },
             debugEnabled
         ).Run();
@@ -202,7 +204,7 @@ public class Canvas_
 
     public void ApplyPaint(
         ShaderRegion shaderRegion,
-        ComputeBuffer rakelEmittedPaint,
+        PaintGrid rakelEmittedPaint,
         bool debugEnabled = false)
     {
         new ComputeShaderTask(
@@ -210,10 +212,13 @@ public class Canvas_
             shaderRegion,
             new List<CSAttribute>()
             {
-                new CSComputeBuffer("RakelEmittedPaint", rakelEmittedPaint),
+                new CSComputeBuffer("RakelEmittedPaintInfo", rakelEmittedPaint.Info),
+                new CSComputeBuffer("RakelEmittedPaintContent", rakelEmittedPaint.Content),
+                new CSInt3("RakelEmittedPaintSize", rakelEmittedPaint.Size),
 
-                new CSComputeBuffer("CanvasReservoir", Reservoir.Buffer),
-                new CSInt("TextureWidth", Texture.width)
+                new CSComputeBuffer("CanvasReservoirInfo", Reservoir.PaintGrid.Info),
+                new CSComputeBuffer("CanvasReservoirContent", Reservoir.PaintGrid.Content),
+                new CSInt3("CanvasReservoirSize", Reservoir.Size)
             },
             debugEnabled
         ).Run();
@@ -239,10 +244,11 @@ public class Canvas_
             shaderRegion,
             new List<CSAttribute>()
             {
-                new CSComputeBuffer("CanvasReservoir", Reservoir.Buffer),
+                new CSComputeBuffer("CanvasReservoirInfo", Reservoir.PaintGrid.Info),
+                new CSComputeBuffer("CanvasReservoirContent", Reservoir.PaintGrid.Content),
+                new CSInt3("CanvasReservoirSize", Reservoir.Size),
                 new CSInt("ColorSpace", (int) ColorSpace),
 
-                new CSInt2("TextureSize", TextureSize),
                 new CSTexture("Texture", Texture),
                 new CSTexture("NormalMap", NormalMap),
                 new CSFloat("NormalScale", NormalScale),

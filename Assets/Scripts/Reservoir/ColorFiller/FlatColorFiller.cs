@@ -9,11 +9,14 @@ public class FlatColorFiller : ColorFiller
         Color_ = color_;
     }
 
-    public override void Fill(Paint[] target, Vector2Int targetSize)
+    public override void Fill(ColumnInfo[] targetInfo, Paint[] target, Vector3Int targetSize)
     {
-        for (int i = 0; i < target.Length; i++)
+        for (int y = 0; y < targetSize.y; y++)
         {
-            SetColor(target, i, Colors.GetColor(Color_));
+            for (int x = 0; x < targetSize.x; x++)
+            {
+                SetColor(targetInfo, target, targetSize, x, y, Colors.GetColor(Color_));
+            }
         }
     }
 }

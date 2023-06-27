@@ -13,6 +13,8 @@ public class OilPaintEngine : MonoBehaviour
 
     public bool USE_PEN;
 
+    private int LAYERS_MAX = 20;
+
     public Configuration Configuration { get; private set; }
     public InputManager InputManager { get; private set; }
 
@@ -24,6 +26,7 @@ public class OilPaintEngine : MonoBehaviour
     void Awake()
     {
         Configuration = new Configuration();
+
         //Configuration.LoadDebug();
         //Configuration.RakelRotation = 22;
         //Configuration.RakelTilt = 20;
@@ -65,7 +68,7 @@ public class OilPaintEngine : MonoBehaviour
         float width = GameObject.Find("Canvas").GetComponent<Transform>().localScale.x * 10; // convert scale attribute to world space
         float height = GameObject.Find("Canvas").GetComponent<Transform>().localScale.y * 10; // convert scale attribute to world space
         Vector3 position = GameObject.Find("Canvas").GetComponent<Transform>().position;
-        Canvas = new Canvas_(width, height, position, Configuration.TextureResolution, Configuration.NormalScale, Configuration.ColorSpace);
+        Canvas = new Canvas_(width, height, LAYERS_MAX, position, Configuration.TextureResolution, Configuration.NormalScale, Configuration.ColorSpace);
 
         Renderer renderer = GameObject.Find("Canvas").GetComponent<Renderer>();
         renderer.material.SetTexture("_MainTex", Canvas.Texture);
@@ -88,6 +91,7 @@ public class OilPaintEngine : MonoBehaviour
             Configuration.RakelConfiguration.Length,
             Configuration.RakelConfiguration.Width,
             Configuration.TextureResolution,
+            LAYERS_MAX,
             ANCHOR_RATIO_Y,
             ANCHOR_RATIO_X);
 

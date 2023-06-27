@@ -9,7 +9,7 @@ public class GradientColorFiller : ColorFiller
         ColorMode = colorMode;
     }
 
-    public override void Fill(Paint[] target, Vector2Int targetSize)
+    public override void Fill(ColumnInfo[] targetInfo, Paint[] target, Vector3Int targetSize)
     {
         for (int i = 0; i < targetSize.y; i++)
         {
@@ -50,7 +50,7 @@ public class GradientColorFiller : ColorFiller
                         break;
                 }
 
-                SetColor(target, IndexUtil.XY(j, i, targetSize.x), new Color(r, g, b, 1));
+                SetColor(targetInfo, target, targetSize, j, i, new Color(r, g, b, 1));
             }
         }
     }
