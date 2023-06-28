@@ -118,7 +118,7 @@ public class Rakel
         return oldValue;
     }
 
-    public void UpdateState(Vector3 position, float pressure, float rotation, float tilt, bool debugEnabled = false)
+    public void UpdateState(Vector3 position, float pressure, float rotation, float tilt)
     {
         // Update info on CPU for rakel rendering
         Info.Position = position;
@@ -171,14 +171,13 @@ public class Rakel
 
                 new CSComputeBuffer("RakelInfo", InfoBuffer),
             },
-            debugEnabled
+            false
         ).Run();
     }
 
     public ComputeBuffer CalculateRakelMappedInfo(
         ShaderRegion shaderRegion,
-        Canvas_ canvas,
-        bool debugEnabled = false)
+        Canvas_ canvas)
     {
         ComputeBuffer rakelMappedInfo = new ComputeBuffer(shaderRegion.PixelCount, MappedInfo.SizeInBytes);
         MappedInfo[] rakelMappedInfoData = new MappedInfo[shaderRegion.PixelCount];
@@ -198,7 +197,7 @@ public class Rakel
 
                 new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
             },
-            debugEnabled
+            false
         ).Run();
 
         new ComputeShaderTask(
@@ -211,7 +210,7 @@ public class Rakel
 
                 new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
             },
-            debugEnabled
+            false
         ).Run();
 
         new ComputeShaderTask(
@@ -226,7 +225,7 @@ public class Rakel
                 new CSInt2("ReservoirPixelEmitRadius", ReservoirPixelEmitRadius),
                 new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
             },
-            debugEnabled
+            false
         ).Run();
 
         return rakelMappedInfo;
@@ -236,8 +235,7 @@ public class Rakel
         Canvas_ canvas,
         ComputeBuffer rakelMappedInfo,
         ShaderRegion emitSR,
-        float layerThickness_MAX,
-        bool debugEnabled = false)
+        float layerThickness_MAX)
     {
         if (StrokeBegin)
         {
@@ -245,12 +243,12 @@ public class Rakel
                 rakelMappedInfo,
                 new Vector2Int(Reservoir.Size.x, Reservoir.Size.y),
                 emitSR,
-                debugEnabled);
+                false);
 
             canvas.Reservoir.ReduceVolume(
                 emitSR,
                 ReduceFunction.Max,
-                debugEnabled);
+                false);
 
             new ComputeShaderTask(
                 "RakelState/UpdateRakelPositionBaseZ",
@@ -265,11 +263,11 @@ public class Rakel
 
                     new CSComputeBuffer("RakelInfo", InfoBuffer),
                 },
-                debugEnabled
+                false
             ).Run();
 
             // position was updated, so we need to recalculate
-            UpdateState(Info.Position, Info.Pressure, Info.Rotation, Info.Tilt, debugEnabled);
+            UpdateState(Info.Position, Info.Pressure, Info.Rotation, Info.Tilt);
 
             StrokeBegin = false;
         }
@@ -279,8 +277,7 @@ public class Rakel
         Canvas_ canvas,
         ComputeBuffer rakelMappedInfo,
         ShaderRegion shaderRegion,
-        float emitVolume_MIN,
-        bool debugEnabled = false)
+        float emitVolume_MIN)
     {
         new ComputeShaderTask(
             "Emit/DistanceFromRakel",
@@ -291,7 +288,7 @@ public class Rakel
 
                 new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
             },
-            debugEnabled
+            false
         ).Run();
 
         new ComputeShaderTask(
@@ -318,7 +315,7 @@ public class Rakel
                 //new CSInt2("DistortionMapSize", DistortionMapSize),
                 //new CSInt("DistortionMapIndex", IncrementDistortionMapIndex()),
             },
-            debugEnabled
+            false
         ).Run();
     }
 
@@ -337,8 +334,7 @@ public class Rakel
     public PaintGrid EmitPaint(
         ShaderRegion shaderRegion,
         Canvas_ canvas,
-        ComputeBuffer rakelMappedInfo,
-        bool debugEnabled = false)
+        ComputeBuffer rakelMappedInfo)
     {
         PaintGrid rakelEmittedPaint = new PaintGrid(new Vector3Int(shaderRegion.Size.x, shaderRegion.Size.y, Reservoir.Size.z));
 
@@ -364,7 +360,7 @@ public class Rakel
                 new CSComputeBuffer("RakelEmittedPaintContent", rakelEmittedPaint.Content),
                 new CSInt3("RakelEmittedPaintSize", rakelEmittedPaint.Size),
             },
-            debugEnabled
+            false
         ).Run();
 
         rakelMappedInfo.Dispose();
@@ -374,8 +370,7 @@ public class Rakel
 
     public void ApplyPaint(
         ShaderRegion shaderRegion,
-        PaintGrid canvasEmittedPaint,
-        bool debugEnabled = false)
+        PaintGrid canvasEmittedPaint)
     {
         new ComputeShaderTask(
             "Pickup/ApplyBufferToRakel",
@@ -390,7 +385,7 @@ public class Rakel
                 new CSComputeBuffer("RakelReservoirContent", Reservoir.PaintGrid.Content),
                 new CSInt3("RakelReservoirSize", Reservoir.Size)
             },
-            debugEnabled
+            false
         ).Run();
 
         canvasEmittedPaint.Dispose();

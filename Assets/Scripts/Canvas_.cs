@@ -84,9 +84,9 @@ public class Canvas_
         Rakel rakel,
         ShaderRegion shaderRegion,
         //float pickupDistance_MAX,
-        float pickupVolume_MIN,
+        float pickupVolume_MIN
         //float pickupVolume_MAX,
-        bool debugEnabled = false)
+        )
     {
         ComputeBuffer canvasMappedInfo = new ComputeBuffer(shaderRegion.PixelCount, MappedInfo.SizeInBytes);
         MappedInfo[] canvasMappedInfoData = new MappedInfo[shaderRegion.PixelCount];
@@ -103,7 +103,7 @@ public class Canvas_
 
                 new CSComputeBuffer("CanvasMappedInfo", canvasMappedInfo),
             },
-            debugEnabled
+            false
         ).Run();
 
         new ComputeShaderTask(
@@ -119,7 +119,7 @@ public class Canvas_
 
                 new CSComputeBuffer("CanvasMappedInfo", canvasMappedInfo),
             },
-            debugEnabled
+            false
         ).Run();
 
         new ComputeShaderTask(
@@ -133,7 +133,7 @@ public class Canvas_
 
                 new CSComputeBuffer("CanvasMappedInfo", canvasMappedInfo),
             },
-            debugEnabled
+            false
         ).Run();
 
         new ComputeShaderTask(
@@ -145,7 +145,7 @@ public class Canvas_
                 new CSInt2("ReservoirPixelPickupRadius", RESERVOIR_PIXEL_PICKUP_RADIUS),
                 new CSComputeBuffer("CanvasMappedInfo", canvasMappedInfo),
             },
-            debugEnabled
+            false
         ).Run();
 
         new ComputeShaderTask(
@@ -168,7 +168,7 @@ public class Canvas_
                 new CSFloat("PickupVolume_MIN", pickupVolume_MIN),
                 //new CSFloat("PickupVolume_MAX", pickupVolume_MAX),
             },
-            debugEnabled
+            false
         ).Run();
 
         PaintGrid canvasEmittedPaint = new PaintGrid(new Vector3Int(shaderRegion.Size.x, shaderRegion.Size.y, Reservoir.Size.z));
@@ -194,7 +194,7 @@ public class Canvas_
                 new CSComputeBuffer("CanvasEmittedPaintContent", canvasEmittedPaint.Content),
                 new CSInt3("CanvasEmittedPaintSize", canvasEmittedPaint.Size)
             },
-            debugEnabled
+            false
         ).Run();
 
         canvasMappedInfo.Dispose();
@@ -204,8 +204,7 @@ public class Canvas_
 
     public void ApplyPaint(
         ShaderRegion shaderRegion,
-        PaintGrid rakelEmittedPaint,
-        bool debugEnabled = false)
+        PaintGrid rakelEmittedPaint)
     {
         new ComputeShaderTask(
             "Emit/ApplyBufferToCanvas",
@@ -220,7 +219,7 @@ public class Canvas_
                 new CSComputeBuffer("CanvasReservoirContent", Reservoir.PaintGrid.Content),
                 new CSInt3("CanvasReservoirSize", Reservoir.Size)
             },
-            debugEnabled
+            false
         ).Run();
 
         rakelEmittedPaint.Dispose();
@@ -236,8 +235,7 @@ public class Canvas_
     }
 
     public void Render(
-        ShaderRegion shaderRegion,
-        bool debugEnabled = false)
+        ShaderRegion shaderRegion)
     {
         new ComputeShaderTask(
             "Render",
@@ -253,7 +251,7 @@ public class Canvas_
                 new CSTexture("NormalMap", NormalMap),
                 new CSFloat("NormalScale", NormalScale),
             },
-            debugEnabled
+            false
         ).Run();
     }
 

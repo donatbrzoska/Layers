@@ -3,7 +3,6 @@ using UnityEngine;
 public class OilPaintEngine : MonoBehaviour
 {
     // These attributes are set through inspector
-    public bool DEBUG_SHADER;
     public int BENCHMARK_STEPS;
     public int TH_GROUP_SIZE_X;
     public int TH_GROUP_SIZE_Y;
@@ -102,7 +101,7 @@ public class OilPaintEngine : MonoBehaviour
 
     void CreateOilPaintTransferEngine()
     {
-        TransferEngine = new TransferEngine(DEBUG_SHADER);
+        TransferEngine = new TransferEngine();
     }
 
     void CreateInputInterpolator()
