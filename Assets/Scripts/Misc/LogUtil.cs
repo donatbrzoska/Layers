@@ -169,19 +169,20 @@ public class LogUtil
         string result = "(";
         for (int i=0; i<(int)debugType; i++)
         {
+            string format = "F2";
             switch(i)
             {
                 case 0:
-                    result += value.x.ToString("F2");
+                    result += value.x.ToString(format);
                     break;
                 case 1:
-                    result += value.y.ToString("F2");
+                    result += value.y.ToString(format);
                     break;
                 case 2:
-                    result += value.z.ToString("F2");
+                    result += value.z.ToString(format);
                     break;
                 case 3:
-                    result += value.w.ToString("F2");
+                    result += value.w.ToString(format);
                     break;
                 default:
                     break;
