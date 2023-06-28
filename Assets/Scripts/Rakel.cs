@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 public struct RakelInfo
 {
-    public const int SizeInBytes = 7 * sizeof(float) + 10 * 3 * sizeof(float);
+    public const int SizeInBytes = 8 * sizeof(float) + 10 * 3 * sizeof(float);
 
     public float Length;
     public float Width;
@@ -11,6 +11,7 @@ public struct RakelInfo
     public Vector3 Anchor;
 
     public Vector3 Position;
+    public int AutoZEnabled;
     public float PositionBaseZ;
     public float Pressure;
     public float Rotation;
@@ -118,10 +119,11 @@ public class Rakel
         return oldValue;
     }
 
-    public void UpdateState(Vector3 position, float pressure, float rotation, float tilt)
+    public void UpdateState(Vector3 position, int autoZEnabled, float pressure, float rotation, float tilt)
     {
         // Update info on CPU for rakel rendering
         Info.Position = position;
+        Info.AutoZEnabled = autoZEnabled;
         Info.Pressure = pressure;
         Info.Rotation = rotation;
         Info.Tilt = ClampTilt(Mathf.Max(Mathf.Min(tilt, MAX_SUPPORTED_TILT), MIN_SUPPORTED_TILT));
@@ -162,6 +164,7 @@ public class Rakel
             new List<CSAttribute>()
             {
                 new CSFloat3("Position", Info.Position),
+                new CSInt("AutoZEnabled", Info.AutoZEnabled),
                 new CSFloat("Pressure", Info.Pressure),
                 new CSFloat("Rotation", Info.Rotation),
                 new CSFloat("Tilt", Info.Tilt),
@@ -267,7 +270,7 @@ public class Rakel
             ).Run();
 
             // position was updated, so we need to recalculate
-            UpdateState(Info.Position, Info.Pressure, Info.Rotation, Info.Tilt);
+            UpdateState(Info.Position, Info.AutoZEnabled, Info.Pressure, Info.Rotation, Info.Tilt);
 
             StrokeBegin = false;
         }

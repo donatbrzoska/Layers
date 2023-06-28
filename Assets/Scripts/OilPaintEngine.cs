@@ -120,6 +120,7 @@ public class OilPaintEngine : MonoBehaviour
                     0,
                     0,
                     0,
+                    0,
                     Configuration.TransferConfiguration,
                     Rakel,
                     Canvas);
@@ -139,12 +140,14 @@ public class OilPaintEngine : MonoBehaviour
                 if (InputManager.InStroke)
                 {
                     Vector3 position = new Vector3(InputManager.RakelPositionX, InputManager.RakelPositionY, InputManager.RakelPositionZ);
+                    int autoZEnabled = Configuration.InputConfiguration.RakelPositionZ.Source != InputSourceType.Text ? 1 : 0;
                     float pressure = InputManager.RakelPressure;
                     float rotation = InputManager.RakelRotation;
                     float tilt = InputManager.RakelTilt;
 
                     InputInterpolator.AddNode(
                         position,
+                        autoZEnabled,
                         pressure,
                         rotation,
                         tilt,
@@ -219,8 +222,7 @@ public class OilPaintEngine : MonoBehaviour
 
     public void UpdateRakelPositionZLocked(bool locked)
     {
-        InputSourceType penOrKeyboard = USE_PEN ? InputSourceType.Pen : InputSourceType.Keyboard;
-        Configuration.InputConfiguration.RakelPositionZ.Source = locked ? InputSourceType.Text : penOrKeyboard;
+        Configuration.InputConfiguration.RakelPositionZ.Source = locked ? InputSourceType.Text : InputSourceType.Auto;
         CreateInputManager();
     }
 
@@ -387,7 +389,7 @@ public class OilPaintEngine : MonoBehaviour
 
         InputInterpolator.NewStroke();
         InputInterpolator.AddNode(
-            new Vector3(-3, 0, -0.10f), 0,
+            new Vector3(-3, 0, -0.10f), 0, 0,
             0,
             0,
             Configuration.TransferConfiguration,

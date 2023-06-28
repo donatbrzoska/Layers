@@ -4,6 +4,7 @@
 #include "../math.hlsl"
 
 float3 Position;
+int AutoZEnabled;
 float Pressure;
 float Rotation;
 float Tilt;
@@ -23,6 +24,11 @@ void main (uint3 id_ : SV_DispatchThreadID)
     if (is_relevant_thread(id(), CalculationSize))
     {
         Rakel rakel = RakelInfo[0];
+
+        if (AutoZEnabled == 0)
+        {
+            rakel.position_base_z = Position.z;
+        }
 
         float sink = SINK_BASE_MAX + rakel.tilt / MAX_SUPPORTED_TILT * SINK_TILT_MAX;
         rakel.position.z = rakel.position_base_z + rakel.pressure * sink;

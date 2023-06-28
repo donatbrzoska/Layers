@@ -22,6 +22,7 @@ public enum InputSourceType
     Mouse,
     Keyboard,
     Pen,
+    Auto
 }
 
 public struct InputValue
@@ -76,6 +77,9 @@ public class InputManager
         {
             case InputSourceType.Text:
                 RakelPositionZSource = new TextRakelPositionZ();
+                break;
+            case InputSourceType.Auto:
+                RakelPositionZSource = new AutoRakelPositionZ();
                 break;
             default:
                 Debug.LogError(string.Format("Unsupported InputSourceType '{0}' for RakelPositionZSource", inputConfiguration.RakelPositionZ.Source.ToString()));

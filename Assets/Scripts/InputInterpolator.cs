@@ -31,7 +31,7 @@ public class InputInterpolator
         Rakel.NewStroke();
     }
 
-    public void AddNode(Vector3 rakelPosition, float rakelPressure, float rakelRotation, float rakelTilt, TransferConfiguration transferConfiguration, int interpolationResolution)
+    public void AddNode(Vector3 rakelPosition, int autoZEnabled, float rakelPressure, float rakelRotation, float rakelTilt, TransferConfiguration transferConfiguration, int interpolationResolution)
     {
         // only reapply if there are changes
         if (!rakelPosition.Equals(PreviousRakelPosition)
@@ -49,6 +49,7 @@ public class InputInterpolator
             {
                 TransferEngine.SimulateStep(
                     rakelPosition,
+                    autoZEnabled,
                     rakelPressure,
                     rakelRotation,
                     rakelTilt,
@@ -119,6 +120,7 @@ public class InputInterpolator
 
                     TransferEngine.SimulateStep(
                         currentPosition,
+                        autoZEnabled,
                         currentPressure,
                         currentRotation,
                         currentTilt,
