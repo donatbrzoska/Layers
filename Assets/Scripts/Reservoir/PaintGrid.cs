@@ -70,6 +70,18 @@ public class PaintGrid
         Content.SetData(ContentData);
     }
 
+    // Only used for testing purposes
+    public void Readback()
+    {
+        Info.GetData(InfoData);
+    }
+
+    // Only used for testing purposes
+    public ColumnInfo Get(int x, int y)
+    {
+        return InfoData[IndexUtil.XY(x, y, Size.x)];
+    }
+
     public void Dispose()
     {
         Info.Dispose();

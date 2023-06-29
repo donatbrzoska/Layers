@@ -123,18 +123,6 @@ public class Reservoir
         }
     }
 
-    // Only used for testing purposes
-    public void Readback()
-    {
-        PaintGridDuplicate.Info.GetData(PaintGridDuplicate.InfoData);
-    }
-
-    // Only used for testing purposes
-    public ColumnInfo GetFromDuplicate(int x, int y)
-    {
-        return PaintGridDuplicate.InfoData[IndexUtil.XY(x, y, Size.x)];
-    }
-
     public void Dispose()
     {
         PaintGrid.Dispose();
