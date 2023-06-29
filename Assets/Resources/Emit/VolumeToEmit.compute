@@ -34,6 +34,7 @@ float volume_to_emit_(int2 radius, int2 canvas_pixel)
     int2 rakel_reservoir_pixel_nearest = round(rakel_mapped_info.reservoir_pixel);
 
     float volume_rakel = 0;
+    float total_overlap = 0;
     for (int y=-radius.y; y<=radius.y; y++) {
         for (int x=-radius.x; x<=radius.x; x++) {
             uint i = y + radius.y;
@@ -43,6 +44,7 @@ float volume_to_emit_(int2 radius, int2 canvas_pixel)
             if (pixel_in_array_range(coord, RakelReservoirSize.xy)) { // Prevent out of bounds access to reservoir. Also, if it's not in range, this overlap part is not (and must not be!) used anyways.
                 uint2 coord_ = uint2(coord.x, coord.y);
                 volume_rakel += rakel_mapped_info.overlap[i][j] * RakelReservoirInfoDuplicate[XY(coord_.x, coord_.y, RakelReservoirSize.x)].volume;
+                total_overlap += rakel_mapped_info.overlap[i][j];
             }
         }
     }
@@ -68,7 +70,7 @@ float volume_to_emit_(int2 radius, int2 canvas_pixel)
         float rakel_edge_distance_from_canvas = abs(rakel.edge_z - CanvasPositionZ);
         float rakel_edge_distance_from_canvas_paint_surface = rakel_edge_distance_from_canvas - paint_thickness_canvas;
         float volume_fitting_between = max(rakel_edge_distance_from_canvas_paint_surface, 0) / VOLUME_THICKNESS();
-        volume_to_emit = volume_fitting_between + EmitVolume_MIN;
+        volume_to_emit = (volume_fitting_between + EmitVolume_MIN) * total_overlap;
         
         //TODO there might be problems with rounding to negative indizes
         // VOLUME_TO_EMIT_TARGET_PU *= DistortionMap[XY(rakel_reservoir_pixel_nearest.x + DistortionMapIndex, rakel_reservoir_pixel_nearest.y, DistortionMapSize.x)];
