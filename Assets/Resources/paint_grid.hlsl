@@ -93,26 +93,26 @@ void paint_grid_reverse_transfer(
     }
 }
 
-// it is also assumed, that cells are only emptied from top to bottom (write_index update)
+// it is assumed, that cells are only emptied from top to bottom (write_index update)
 void paint_grid_delete(
     RWStructuredBuffer<ColumnInfo> pg_info, RWStructuredBuffer<Paint> pg_content, uint3 pg_size,
     uint3 delete_pos, float delete_volume)
 {
     Paint available = pg_content[XYZ(delete_pos.x, delete_pos.y, delete_pos.z, pg_size.xy)];
-    float to_be_deleted = min(delete_volume, available.volume);
-    bool delete_to_be_done = to_be_deleted > FLOAT_PRECISION();
-    if (delete_to_be_done)
-    {
-        pg_info[XY(delete_pos.x, delete_pos.y, pg_size.x)].volume -= to_be_deleted;
-        pg_content[XYZ(delete_pos.x, delete_pos.y, delete_pos.z, pg_size.xy)].volume -= to_be_deleted;
+    // we include the volume from content as well as from info to prevent negative values due to float precision errors (scenario is hard to test and therefore not tested)
+    // Q: is it possible for total info volume to be empty, preventing the deletion from content?
+    // A: probably not, because total info volume can't get fully emptied once filled (MIN_VOLUME_TO_STAY)
+    float to_be_deleted = min(min(delete_volume, available.volume), pg_info[XY(delete_pos.x, delete_pos.y, pg_size.x)].volume);
+    pg_info[XY(delete_pos.x, delete_pos.y, pg_size.x)].volume -= to_be_deleted;
+    pg_content[XYZ(delete_pos.x, delete_pos.y, delete_pos.z, pg_size.xy)].volume -= to_be_deleted;
 
-        bool cell_emptied = floats_equal(available.volume, to_be_deleted);
-        if (cell_emptied)
-        {
-            pg_info[XY(delete_pos.x, delete_pos.y, pg_size.x)].size--;
-            pg_info[XY(delete_pos.x, delete_pos.y, pg_size.x)].write_index = delete_pos.z;
-        }
+    Paint updated = pg_content[XYZ(delete_pos.x, delete_pos.y, delete_pos.z, pg_size.xy)];
+    bool cell_emptied = !is_empty(available) && is_empty(updated);
+    if (cell_emptied)
+    {
+        pg_info[XY(delete_pos.x, delete_pos.y, pg_size.x)].size--;
     }
+    pg_info[XY(delete_pos.x, delete_pos.y, pg_size.x)].write_index = delete_pos.z;
 }
 
 Paint paint_grid_get(RWStructuredBuffer<ColumnInfo> pg_info, RWStructuredBuffer<Paint> pg_content, uint3 pg_size, uint3 get_pos)
