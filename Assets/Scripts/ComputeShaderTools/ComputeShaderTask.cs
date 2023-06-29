@@ -176,7 +176,7 @@ public class ComputeShaderTask
 {
     public static Vector2Int ThreadGroupSize = new Vector2Int(32, 1);
 
-    private const int DEBUG_LIST_SIZE_PER_THREAD_MAX = 8;
+    private const int DEBUG_LIST_SIZE_PER_THREAD_MAX = 16;
 
     public string Name;
     private ShaderRegion ShaderRegion;
