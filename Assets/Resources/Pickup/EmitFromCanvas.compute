@@ -30,7 +30,7 @@ void emit(int2 radius, int2 rakel_pixel)
     {
         int2 canvas_reservoir_pixel_nearest = round(canvas_mapped_info.reservoir_pixel);
         
-        int max_z = 0;
+        int max_z = -1;
         int y, x;
         for (y=-radius.y; y<=radius.y; y++) {
             for (x=-radius.x; x<=radius.x; x++) {
