@@ -3,13 +3,15 @@ using UnityEngine;
 
 public class TestEmitFromCanvas
 {
+    int Resolution;
+
     Rakel Rakel;
-    float RakelLength = 4;
-    float RakelWidth = 2;
+    float RakelLength;
+    float RakelWidth;
 
     Canvas_ Canvas;
-    float CanvasWidth = 15;
-    float CanvasHeight = 10;
+    float CanvasWidth;
+    float CanvasHeight;
 
     PaintGrid CanvasEmittedPaint;
 
@@ -28,11 +30,33 @@ public class TestEmitFromCanvas
     [SetUp]
     public void Setup()
     {
-        Rakel = new Rakel(RakelLength, RakelWidth, 1, MAX_LAYERS, 0.5f, 0);
+        Resolution = 1;
+        RakelLength = 4;
+        RakelWidth = 2;
+        CanvasWidth = 15;
+        CanvasHeight = 10;
 
-        Canvas = new Canvas_(CanvasWidth, CanvasHeight, MAX_LAYERS, new Vector3(0, 0, 0), 1, 0.015f, 0);
+        CreateRakel();
+        CreateCanvas();
 
         new FileLogger_().OnEnable();
+    }
+
+    private void CreateRakel()
+    {
+        Rakel?.Dispose();
+        Rakel = new Rakel(RakelLength, RakelWidth, Resolution, MAX_LAYERS, 0.5f, 0);
+    }
+
+    private void CreateCanvas()
+    {
+        Canvas?.Dispose();
+        Canvas = new Canvas_(CanvasWidth, CanvasHeight, MAX_LAYERS, new Vector3(0, 0, 0), Resolution, 0.015f, 0);
+    }
+
+    private int Pixels(float length, float width)
+    {
+        return (int)length * Resolution * (int)width * Resolution;
     }
 
     [TearDown]
@@ -85,7 +109,7 @@ public class TestEmitFromCanvas
             canvasEmittedVolumes);
 
         AssertUtil.AssertFloatsEqual(
-            0.9f * RakelLength * RakelWidth * Paint.UNIT,
+            0.9f * Pixels(RakelLength, RakelWidth) * Paint.UNIT,
             Sum(canvasEmittedVolumes));
     }
 
@@ -131,7 +155,7 @@ public class TestEmitFromCanvas
             canvasEmittedVolumes);
 
         AssertUtil.AssertFloatsEqual(
-            RakelLength * RakelWidth * Paint.UNIT,
+            Pixels(RakelLength, RakelWidth) * Paint.UNIT,
             Sum(canvasEmittedVolumes));
 
         // 2. Check paint on canvas
@@ -142,8 +166,208 @@ public class TestEmitFromCanvas
             canvasVolumes[i] = Canvas.Reservoir.PaintGrid.InfoData[i].Volume;
         }
         AssertUtil.AssertFloatsEqual(
-            2 * CanvasWidth * CanvasHeight * Paint.UNIT - Sum(canvasEmittedVolumes),
+            2 * Pixels(CanvasWidth, CanvasHeight) * Paint.UNIT - Sum(canvasEmittedVolumes),
             Sum(canvasVolumes));
+    }
+
+    [Test] //?
+    public void EmitFourOfEightLayers_Unrotated_Untilted()
+    {
+        RakelWidth = 6;
+        CreateRakel();
+        int INIT_LAYERS = 8;
+        int PICKED_UP_LAYERS = 4;
+
+        // Arrange
+        ShaderRegion canvasEmitSR = Rakel.Reservoir.GetFullShaderRegion();
+        Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen, ColorSpace.RGB), new FlatVolumeFiller(INIT_LAYERS)));
+        Canvas.Reservoir.Duplicate(false);
+
+        Rakel.UpdateState(
+            new Vector3(-5, 0.5f, PICKED_UP_LAYERS * -Paint.VOLUME_THICKNESS), 0, 0,
+            0, 0);
+
+        // Act
+        CanvasEmittedPaint = Canvas.EmitPaint(
+            Rakel,
+            canvasEmitSR,
+            0);
+
+
+        // Assert
+
+        // 1. Check emitted paint
+        CanvasEmittedPaint.Readback();
+        float[] canvasEmittedVolumes = new float[CanvasEmittedPaint.InfoData.Length];
+        for (int i = 0; i < canvasEmittedVolumes.Length; i++)
+        {
+            canvasEmittedVolumes[i] = CanvasEmittedPaint.InfoData[i].Volume;
+        }
+
+        //LogUtil.Log(canvasEmittedVolumes, canvasEmitSR.Size.y, false);
+
+        float F = PICKED_UP_LAYERS * Paint.UNIT;
+        AssertUtil.AssertFloatsAreEqual(
+            new float[] { // remember: these arrays are upside down compared to the actual pixels
+                F,  F,  F,  F,  F,  F,
+                F,  F,  F,  F,  F,  F,
+                F,  F,  F,  F,  F,  F,
+                F,  F,  F,  F,  F,  F,
+            },
+            canvasEmittedVolumes);
+
+        AssertUtil.AssertFloatsEqual(
+            PICKED_UP_LAYERS * Pixels(RakelLength, RakelWidth) * Paint.UNIT,
+            Sum(canvasEmittedVolumes));
+
+        // 2. Check paint on canvas
+        Canvas.Reservoir.PaintGrid.Readback();
+        float[] canvasVolumes = new float[Canvas.Reservoir.PaintGrid.InfoData.Length];
+        for (int i = 0; i < Canvas.Reservoir.PaintGrid.InfoData.Length; i++)
+        {
+            canvasVolumes[i] = Canvas.Reservoir.PaintGrid.InfoData[i].Volume;
+        }
+
+        //LogUtil.Log(canvasVolumes, Canvas.TextureSize.y, false);
+
+        float sumCanvasVolumesBefore = INIT_LAYERS * Pixels(CanvasWidth, CanvasHeight) * Paint.UNIT;
+        AssertUtil.AssertFloatsEqual(
+            sumCanvasVolumesBefore - Sum(canvasEmittedVolumes),
+            Sum(canvasVolumes));
+
+        // 3. Check paint grid state
+        int[] pgSizes = new int[Canvas.Reservoir.PaintGrid.InfoData.Length];
+        for (int i = 0; i < Canvas.Reservoir.PaintGrid.InfoData.Length; i++)
+        {
+            pgSizes[i] = Canvas.Reservoir.PaintGrid.InfoData[i].Size;
+        }
+
+        //LogUtil.Log(pgSizes, Canvas.TextureSize.y, false);
+
+        Assert.AreEqual(
+            new int[]
+            {
+                8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,
+                8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,
+                8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,
+                8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,
+                8,      8,      8,      4,      4,      4,      4,      4,      8,      8,      8,      8,      8,      8,      8,
+                8,      8,      8,      4,      4,      4,      4,      4,      8,      8,      8,      8,      8,      8,      8,
+                8,      8,      8,      4,      4,      4,      4,      4,      8,      8,      8,      8,      8,      8,      8,
+                8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,
+                8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,
+                8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,
+            },
+            pgSizes);
+    }
+
+    [Test] //?
+    public void EmitFourOfEightLayers_HigherResolution_Unrotated_Untilted()
+    {
+        Resolution = 2;
+        RakelWidth = 6;
+        CreateRakel();
+        CreateCanvas();
+        int INIT_LAYERS = 8;
+        int PICKED_UP_LAYERS = 4;
+
+        // Arrange
+        ShaderRegion canvasEmitSR = Rakel.Reservoir.GetFullShaderRegion();
+        Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen, ColorSpace.RGB), new FlatVolumeFiller(INIT_LAYERS)));
+        Canvas.Reservoir.Duplicate(false);
+
+        Rakel.UpdateState(
+            new Vector3(-5, 0.5f, PICKED_UP_LAYERS * -Paint.VOLUME_THICKNESS), 0, 0,
+            0, 0);
+
+        // Act
+        CanvasEmittedPaint = Canvas.EmitPaint(
+            Rakel,
+            canvasEmitSR,
+            0);
+
+
+        // Assert
+
+        // 1. Check emitted paint
+        CanvasEmittedPaint.Readback();
+        float[] canvasEmittedVolumes = new float[CanvasEmittedPaint.InfoData.Length];
+        for (int i = 0; i < canvasEmittedVolumes.Length; i++)
+        {
+            canvasEmittedVolumes[i] = CanvasEmittedPaint.InfoData[i].Volume;
+        }
+
+        //LogUtil.Log(canvasEmittedVolumes, canvasEmitSR.Size.y, false);
+
+        float F = PICKED_UP_LAYERS * Paint.UNIT;
+        AssertUtil.AssertFloatsAreEqual(
+            new float[] { // remember: these arrays are upside down compared to the actual pixels
+                F,  F,  F,  F,  F,  F,  F,  F,  F,  F,  F,  F,
+                F,  F,  F,  F,  F,  F,  F,  F,  F,  F,  F,  F,
+                F,  F,  F,  F,  F,  F,  F,  F,  F,  F,  F,  F,
+                F,  F,  F,  F,  F,  F,  F,  F,  F,  F,  F,  F,
+                F,  F,  F,  F,  F,  F,  F,  F,  F,  F,  F,  F,
+                F,  F,  F,  F,  F,  F,  F,  F,  F,  F,  F,  F,
+                F,  F,  F,  F,  F,  F,  F,  F,  F,  F,  F,  F,
+                F,  F,  F,  F,  F,  F,  F,  F,  F,  F,  F,  F,
+            },
+            canvasEmittedVolumes);
+
+        AssertUtil.AssertFloatsEqual(
+            PICKED_UP_LAYERS * Pixels(RakelLength, RakelWidth) * Paint.UNIT,
+            Sum(canvasEmittedVolumes),
+            0.01f);
+
+        // 2. Check paint on canvas
+        Canvas.Reservoir.PaintGrid.Readback();
+        float[] canvasVolumes = new float[Canvas.Reservoir.PaintGrid.InfoData.Length];
+        for (int i = 0; i < Canvas.Reservoir.PaintGrid.InfoData.Length; i++)
+        {
+            canvasVolumes[i] = Canvas.Reservoir.PaintGrid.InfoData[i].Volume;
+        }
+
+        //LogUtil.Log(canvasVolumes, Canvas.TextureSize.y, false);
+
+        float sumCanvasVolumesBefore = INIT_LAYERS * Pixels(CanvasWidth, CanvasHeight) * Paint.UNIT;
+        AssertUtil.AssertFloatsEqual(
+            sumCanvasVolumesBefore - Sum(canvasEmittedVolumes),
+            Sum(canvasVolumes),
+            0.01f);
+
+        // 3. Check paint grid state
+        int[] pgSizes = new int[Canvas.Reservoir.PaintGrid.InfoData.Length];
+        for (int i = 0; i < Canvas.Reservoir.PaintGrid.InfoData.Length; i++)
+        {
+            pgSizes[i] = Canvas.Reservoir.PaintGrid.InfoData[i].Size;
+        }
+
+        LogUtil.Log(pgSizes, Canvas.TextureSize.y, false);
+
+        Assert.AreEqual(
+            new int[]
+            {
+                8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,
+                8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,
+                8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,
+                8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,
+                8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,
+                8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,
+                8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,
+                8,      8,      8,      8,      8,      4,      4,      4,      4,      4,      4,      4,      4,      4,      4,      4,      4,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,
+                8,      8,      8,      8,      8,      4,      4,      4,      4,      4,      4,      4,      4,      4,      4,      4,      4,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,
+                8,      8,      8,      8,      8,      4,      4,      4,      4,      4,      4,      4,      4,      4,      4,      4,      4,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,
+                8,      8,      8,      8,      8,      4,      4,      4,      4,      4,      4,      4,      4,      4,      4,      4,      4,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,
+                8,      8,      8,      8,      8,      4,      4,      4,      4,      4,      4,      4,      4,      4,      4,      4,      4,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,
+                8,      8,      8,      8,      8,      4,      4,      4,      4,      4,      4,      4,      4,      4,      4,      4,      4,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,
+                8,      8,      8,      8,      8,      4,      4,      4,      4,      4,      4,      4,      4,      4,      4,      4,      4,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,
+                8,      8,      8,      8,      8,      4,      4,      4,      4,      4,      4,      4,      4,      4,      4,      4,      4,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,
+                8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,
+                8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,
+                8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,
+                8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,
+                8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,      8,
+            },
+            pgSizes);
     }
 
     [Test]
@@ -186,7 +410,7 @@ public class TestEmitFromCanvas
             canvasEmittedVolumes);
 
         AssertUtil.AssertFloatsEqual(
-            RakelLength * RakelWidth * Paint.UNIT,
+            Pixels(RakelLength, RakelWidth) * Paint.UNIT,
             Sum(canvasEmittedVolumes));
     }
 }
