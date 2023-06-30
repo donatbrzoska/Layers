@@ -6,7 +6,10 @@ public class TestEmitFromCanvas
     Rakel Rakel;
     float RakelLength = 4;
     float RakelWidth = 2;
+
     Canvas_ Canvas;
+    float CanvasWidth = 15;
+    float CanvasHeight = 10;
 
     PaintGrid CanvasEmittedPaint;
 
@@ -27,7 +30,7 @@ public class TestEmitFromCanvas
     {
         Rakel = new Rakel(RakelLength, RakelWidth, 1, MAX_LAYERS, 0.5f, 0);
 
-        Canvas = new Canvas_(15, 10, MAX_LAYERS, new Vector3(0, 0, 0), 1, 0.015f, 0);
+        Canvas = new Canvas_(CanvasWidth, CanvasHeight, MAX_LAYERS, new Vector3(0, 0, 0), 1, 0.015f, 0);
 
         new FileLogger_().OnEnable();
     }
@@ -106,6 +109,8 @@ public class TestEmitFromCanvas
 
 
         // Assert
+
+        // 1. Check emitted paint
         CanvasEmittedPaint.Readback();
         float[] canvasEmittedVolumes = new float[CanvasEmittedPaint.InfoData.Length];
         for (int i = 0; i < canvasEmittedVolumes.Length; i++)
@@ -128,6 +133,17 @@ public class TestEmitFromCanvas
         AssertUtil.AssertFloatsEqual(
             RakelLength * RakelWidth * Paint.UNIT,
             Sum(canvasEmittedVolumes));
+
+        // 2. Check paint on canvas
+        Canvas.Reservoir.PaintGrid.Readback();
+        float[] canvasVolumes = new float[Canvas.Reservoir.PaintGrid.InfoData.Length];
+        for (int i = 0; i < Canvas.Reservoir.PaintGrid.InfoData.Length; i++)
+        {
+            canvasVolumes[i] = Canvas.Reservoir.PaintGrid.InfoData[i].Volume;
+        }
+        AssertUtil.AssertFloatsEqual(
+            2 * CanvasWidth * CanvasHeight * Paint.UNIT - Sum(canvasEmittedVolumes),
+            Sum(canvasVolumes));
     }
 
     [Test]
