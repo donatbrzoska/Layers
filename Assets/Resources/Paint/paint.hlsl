@@ -19,6 +19,22 @@ struct Paint {
     float volume;
 };
 
+Paint paint_create_empty()
+{
+    Paint p;
+    p.color = float4(0,0,0,0);
+    p.volume = 0;
+    return p;
+}
+
+Paint paint_create(float4 color, float volume)
+{
+    Paint p;
+    p.color = color;
+    p.volume = volume;
+    return p;
+}
+
 float4 rgb_to_ryb(float4 rgba)
 {
     float3 rgb = float3(rgba.x, rgba.y, rgba.z);
