@@ -18,7 +18,7 @@ public struct ColumnInfo
     public override bool Equals(object other_)
     {
         ColumnInfo other = (ColumnInfo)other_;
-        return Size == other.Size && WriteIndex == other.WriteIndex && Mathf.Abs(other.Volume - Volume) < 0.0001f;
+        return Size == other.Size && WriteIndex == other.WriteIndex && Mathf.Abs(other.Volume - Volume) < 0.01f;
     }
 
     public override int GetHashCode()

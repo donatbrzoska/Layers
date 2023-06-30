@@ -104,9 +104,16 @@ void paint_grid_delete(
     // A: probably not, because total info volume can't get fully emptied once filled (MIN_VOLUME_TO_STAY)
     float to_be_deleted = min(min(delete_volume, available.volume), pg_info[XY(delete_pos.x, delete_pos.y, pg_size.x)].volume);
     pg_info[XY(delete_pos.x, delete_pos.y, pg_size.x)].volume -= to_be_deleted;
-    pg_content[XYZ(delete_pos.x, delete_pos.y, delete_pos.z, pg_size.xy)].volume -= to_be_deleted;
+    Paint updated;
+    updated.color = available.color;
+    updated.volume = available.volume - to_be_deleted;
+    if (is_empty(updated))
+    {
+        updated.color = float4(0,0,0,0);
+        updated.volume = 0;
+    }
+    pg_content[XYZ(delete_pos.x, delete_pos.y, delete_pos.z, pg_size.xy)] = updated;
 
-    Paint updated = pg_content[XYZ(delete_pos.x, delete_pos.y, delete_pos.z, pg_size.xy)];
     bool cell_emptied = !is_empty(available) && is_empty(updated);
     if (cell_emptied)
     {

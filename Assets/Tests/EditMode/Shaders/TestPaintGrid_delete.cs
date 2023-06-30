@@ -71,6 +71,8 @@ public class TestPaintGrid_delete
         return new Paint(new Color(color, color, color, 1), volume);
     }
 
+    Paint P0 = new Paint(new Color(0, 0, 0, 0), 0);
+
     [Test]
     public void empty_column_does_nothing()
     {
@@ -81,7 +83,7 @@ public class TestPaintGrid_delete
         };
         PaintGridContentData = new Paint[]
         {
-            P(0),
+            P0
         };
         PaintGridSize = new Vector3Int(1, 1, 1);
         DeletePosition = Vector3Int.zero;
@@ -103,7 +105,7 @@ public class TestPaintGrid_delete
         Assert.AreEqual(
             new Paint[]
             {
-                P(0)
+                P0
             },
             PaintGridContentData);
     }
@@ -197,7 +199,7 @@ public class TestPaintGrid_delete
             {
                 P(1),
 
-                P(0.3f, 0), // Notice that the color stays, doesn't matter because there is zero volume
+                P0
             },
             PaintGridContentData);
     }
@@ -234,7 +236,7 @@ public class TestPaintGrid_delete
         Assert.AreEqual(
             new Paint[]
             {
-                P(0.3f, 0) // Notice that the color stays, doesn't matter because there is zero volume
+                P0
             },
             PaintGridContentData);
     }
@@ -271,12 +273,12 @@ public class TestPaintGrid_delete
         Assert.AreEqual(
             new Paint[]
             {
-                P(0.3f, 0), // Notice that the color stays - doesn't matter though, because there is zero volume
+                P0
             },
             PaintGridContentData);
     }
 
-    float FLOAT_PRECISION = 0.0001f;
+    float FLOAT_PRECISION = 0.01f;
 
     [Test]
     public void delete_from_almost_empty_column_drop_below_precision()
@@ -310,7 +312,7 @@ public class TestPaintGrid_delete
         Assert.AreEqual(
             new Paint[]
             {
-                P(0.3f, 0), // Notice that the color stays - doesn't matter though, because there is zero volume
+                P0
             },
             PaintGridContentData);
     }
@@ -347,7 +349,7 @@ public class TestPaintGrid_delete
         Assert.AreEqual(
             new Paint[]
             {
-                P(0.3f, 0), // Notice that the color stays - doesn't matter though, because there is zero volume
+                P0
             },
             PaintGridContentData);
     }
@@ -390,9 +392,9 @@ public class TestPaintGrid_delete
         Assert.AreEqual(
             new Paint[]
             {
-                P(0.2f, 0), // Notice that the color stays, doesn't matter because there is zero volume
+                P0,
 
-                P(0.2f, 0), // Notice that the color stays, doesn't matter because there is zero volume
+                P0,
             },
             PaintGridContentData);
     }

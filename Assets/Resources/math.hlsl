@@ -7,7 +7,7 @@ bool f2_eq(float2 a, float2 b)
 
 float FLOAT_PRECISION()
 {
-    return 0.0001;
+    return 0.01;
 }
 
 bool floats_equal(float a, float b)
