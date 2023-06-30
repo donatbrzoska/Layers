@@ -235,7 +235,8 @@ public class Canvas_
     }
 
     public void Render(
-        ShaderRegion shaderRegion)
+        ShaderRegion shaderRegion,
+        bool debugEnabled = false)
     {
         new ComputeShaderTask(
             "Render",
@@ -251,7 +252,7 @@ public class Canvas_
                 new CSTexture("NormalMap", NormalMap),
                 new CSFloat("NormalScale", NormalScale),
             },
-            false
+            debugEnabled
         ).Run();
     }
 

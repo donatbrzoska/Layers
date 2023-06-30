@@ -93,6 +93,7 @@ public class TransferEngine
                 canvas.MapToPixelInRange(rakel.Info.LowerLeft),
                 canvas.MapToPixelInRange(rakel.Info.LowerRight),
                 1 // Padding because normal calculation is also based on pixels around
-            ));
+            ),
+            false);
     }
 }
