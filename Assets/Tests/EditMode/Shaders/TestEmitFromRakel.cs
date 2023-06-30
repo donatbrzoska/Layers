@@ -80,11 +80,7 @@ public class TestEmitFromRakel
 
         // Assert
         RakelEmittedPaint.Readback();
-        float[] rakelEmittedVolumes = new float[RakelEmittedPaint.InfoData.Length];
-        for (int i = 0; i < rakelEmittedVolumes.Length; i++)
-        {
-            rakelEmittedVolumes[i] = RakelEmittedPaint.InfoData[i].Volume;
-        }
+        float[] rakelEmittedVolumes = RakelEmittedPaint.GetVolumes();
 
         //LogUtil.Log(rakelEmittedVolumes, rakelEmitSR.Size.y, false);
 
@@ -139,11 +135,7 @@ public class TestEmitFromRakel
 
         // Assert
         RakelEmittedPaint.Readback();
-        float[] rakelEmittedVolumes = new float[RakelEmittedPaint.InfoData.Length];
-        for (int i = 0; i < rakelEmittedVolumes.Length; i++)
-        {
-            rakelEmittedVolumes[i] = RakelEmittedPaint.InfoData[i].Volume;
-        }
+        float[] rakelEmittedVolumes = RakelEmittedPaint.GetVolumes();
 
         //LogUtil.Log(rakelEmittedVolumes, rakelEmitSR.Size.y, false);
 
@@ -198,11 +190,7 @@ public class TestEmitFromRakel
 
         // Assert
         RakelEmittedPaint.Readback();
-        float[] rakelEmittedVolumes = new float[RakelEmittedPaint.InfoData.Length];
-        for (int i = 0; i < rakelEmittedVolumes.Length; i++)
-        {
-            rakelEmittedVolumes[i] = RakelEmittedPaint.InfoData[i].Volume;
-        }
+        float[] rakelEmittedVolumes = RakelEmittedPaint.GetVolumes();
 
         LogUtil.Log(rakelEmittedVolumes, rakelEmitSR.Size.y, false);
 
@@ -256,11 +244,7 @@ public class TestEmitFromRakel
 
         // Assert
         RakelEmittedPaint.Readback();
-        float[] rakelEmittedVolumes = new float[RakelEmittedPaint.InfoData.Length];
-        for (int i = 0; i < rakelEmittedVolumes.Length; i++)
-        {
-            rakelEmittedVolumes[i] = RakelEmittedPaint.InfoData[i].Volume;
-        }
+        float[] rakelEmittedVolumes = RakelEmittedPaint.GetVolumes();
 
         //LogUtil.Log(rakelEmittedVolumes, rakelEmitSR.Size.y, false);
 

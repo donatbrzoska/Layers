@@ -82,6 +82,39 @@ public class PaintGrid
         return InfoData[IndexUtil.XY(x, y, Size.x)];
     }
 
+    // Only used for testing purposes
+    public int[] GetSizes()
+    {
+        int[] sizes = new int[InfoData.Length];
+        for (int i = 0; i < sizes.Length; i++)
+        {
+            sizes[i] = InfoData[i].Size;
+        }
+        return sizes;
+    }
+
+    // Only used for testing purposes
+    public int[] GetWriteIndexes()
+    {
+        int[] indexes = new int[InfoData.Length];
+        for (int i = 0; i < indexes.Length; i++)
+        {
+            indexes[i] = InfoData[i].WriteIndex;
+        }
+        return indexes;
+    }
+
+    // Only used for testing purposes
+    public float[] GetVolumes()
+    {
+        float[] volumes = new float[InfoData.Length];
+        for (int i = 0; i < volumes.Length; i++)
+        {
+            volumes[i] = InfoData[i].Volume;
+        }
+        return volumes;
+    }
+
     public void Dispose()
     {
         Info.Dispose();
