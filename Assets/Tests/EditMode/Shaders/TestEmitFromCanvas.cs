@@ -172,7 +172,7 @@ public class TestEmitFromCanvas
         Canvas.Reservoir.Duplicate(false);
 
         Rakel.UpdateState(
-            new Vector3(-5, 0.5f, PICKED_UP_LAYERS * -Paint.VOLUME_THICKNESS), 0, 0,
+            new Vector3(-5, 0.5f, (INIT_LAYERS - PICKED_UP_LAYERS) * -Paint.VOLUME_THICKNESS), 0, 0,
             0, 0);
 
         // Act
@@ -253,7 +253,7 @@ public class TestEmitFromCanvas
         Canvas.Reservoir.Duplicate(false);
 
         Rakel.UpdateState(
-            new Vector3(-5, 0.5f, PICKED_UP_LAYERS * -Paint.VOLUME_THICKNESS), 0, 0,
+            new Vector3(-5, 0.5f, (INIT_LAYERS - PICKED_UP_LAYERS) * -Paint.VOLUME_THICKNESS), 0, 0,
             0, 0);
 
         // Act
