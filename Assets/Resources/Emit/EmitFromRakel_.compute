@@ -78,9 +78,7 @@ void emit(int2 radius, int2 canvas_pixel)
             }
         }
 
-        Paint result_paint;
-        result_paint.color = result_color;
-        result_paint.volume = result_volume;
+        Paint result_paint = paint_create(result_color, result_volume);
 
         // delete amount of taken volume from reservoir (z=0)
         float deleted = 0;

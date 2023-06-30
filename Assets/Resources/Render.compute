@@ -65,9 +65,7 @@ void update_color(int2 canvas_pixel)
 {
     // default
     float4 background_color = CANVAS_COLOR(ColorSpace);
-    Paint top;
-    top.color = float4(0,0,0,0);
-    top.volume = 0;
+    Paint top = paint_create_empty();
     
     // paint from canvas
     int top_z = CanvasReservoirInfo[XY(canvas_pixel.x, canvas_pixel.y, CanvasReservoirSize.x)].size - 1;

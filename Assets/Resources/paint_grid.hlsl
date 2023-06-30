@@ -43,9 +43,7 @@ void paint_grid_fill(
 
         // try fill up top
         float fits_into_top = PAINT_UNIT() - top.volume;
-        Paint element_part;
-        element_part.color = left.color;
-        element_part.volume = min(fits_into_top, left.volume);
+        Paint element_part = paint_create(left.color, min(fits_into_top, left.volume));
 
         Paint updated_top = mix(top, element_part);
 
@@ -104,13 +102,10 @@ void paint_grid_delete(
     // A: probably not, because total info volume can't get fully emptied once filled (MIN_VOLUME_TO_STAY)
     float to_be_deleted = min(min(delete_volume, available.volume), pg_info[XY(delete_pos.x, delete_pos.y, pg_size.x)].volume);
     pg_info[XY(delete_pos.x, delete_pos.y, pg_size.x)].volume -= to_be_deleted;
-    Paint updated;
-    updated.color = available.color;
-    updated.volume = available.volume - to_be_deleted;
+    Paint updated = paint_create(available.color, available.volume - to_be_deleted);
     if (is_empty(updated))
     {
-        updated.color = float4(0,0,0,0);
-        updated.volume = 0;
+        updated = paint_create_empty();
     }
     pg_content[XYZ(delete_pos.x, delete_pos.y, delete_pos.z, pg_size.xy)] = updated;
 

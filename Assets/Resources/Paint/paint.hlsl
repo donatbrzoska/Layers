@@ -67,8 +67,7 @@ Paint mix(Paint a, Paint b)
     a.volume = max(a.volume, 0);
     b.volume = max(b.volume, 0);
 
-    Paint result;
-    result.color = float4(0,0,0,0);
+    Paint result = paint_create_empty();
     result.volume = a.volume + b.volume;
 
     if (result.volume > 0)
