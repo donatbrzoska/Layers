@@ -1,234 +1,176 @@
-﻿//using NUnit.Framework;
-//using UnityEngine;
+﻿using NUnit.Framework;
+using UnityEngine;
 
-//public class TestEmitFromCanvas
-//{
-//    private const float PICKUP_DISTANCE_MAX = 0.1f;
+public class TestEmitFromCanvas
+{
+    Rakel Rakel;
+    float RakelLength = 4;
+    float RakelWidth = 2;
+    Canvas_ Canvas;
 
-//    Rakel Rakel;
-//    float RakelLength = 4;
-//    float RakelWidth = 2;
-//    Canvas_ Canvas;
+    PaintGrid CanvasEmittedPaint;
 
-//    ComputeBuffer CanvasEmittedPaint;
+    int MAX_LAYERS = 20;
 
-//    public float Sum(float[] values)
-//    {
-//        float res = 0;
-//        foreach (float e in values)
-//        {
-//            res += e;
-//        }
-//        return res;
-//    }
+    public float Sum(float[] values)
+    {
+        float res = 0;
+        foreach (float e in values)
+        {
+            res += e;
+        }
+        return res;
+    }
 
-//    [SetUp]
-//    public void Setup()
-//    {
-//        Rakel = new Rakel(RakelLength, RakelWidth, 1, 0.5f, 0);
+    [SetUp]
+    public void Setup()
+    {
+        Rakel = new Rakel(RakelLength, RakelWidth, 1, MAX_LAYERS, 0.5f, 0);
 
-//        Canvas = new Canvas_(15, 10, new Vector3(0,0,0), 1, 0.015f, 0);
+        Canvas = new Canvas_(15, 10, MAX_LAYERS, new Vector3(0, 0, 0), 1, 0.015f, 0);
 
-//        new FileLogger_().OnEnable();
-//    }
+        new FileLogger_().OnEnable();
+    }
 
-//    [TearDown]
-//    public void Teardown()
-//    {
-//        CanvasEmittedPaint.Dispose();
-//        Canvas.Dispose();
-//        Rakel.Dispose();
+    [TearDown]
+    public void Teardown()
+    {
+        CanvasEmittedPaint.Dispose();
+        Canvas.Dispose();
+        Rakel.Dispose();
 
-//        new FileLogger_().OnDisable();
-//    }
+        new FileLogger_().OnDisable();
+    }
 
-//    [Test]
-//    public void Volume_Unrotated_Untilted()
-//    {
-//        // Arrange
-//        ShaderRegion canvasEmitSR = Rakel.Reservoir.GetFullShaderRegion();
-//        Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen, ColorSpace.RGB), new FlatVolumeFiller(1)));
-//        Canvas.Reservoir.Duplicate(false);
+    // TODO Parametrize and include MIN_VOLUME_TO_STAY
+    [Test]
+    public void EmitOneLayer_Unrotated_Untilted()
+    {
+        // Arrange
+        ShaderRegion canvasEmitSR = Rakel.Reservoir.GetFullShaderRegion();
+        Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen, ColorSpace.RGB), new FlatVolumeFiller(1)));
+        Canvas.Reservoir.Duplicate(false);
 
-//        Rakel.UpdateState(
-//            new Vector3(-8, 0.5f, 0), 1, // choose z for max paint pickup
-//            0, 0);
+        Rakel.UpdateState(
+            new Vector3(-5, 0.5f, 0), 0, 0,
+            0, 0);
 
-//        // Act
-//        CanvasEmittedPaint = Canvas.EmitPaint(
-//            Rakel,
-//            canvasEmitSR,
-//            //PICKUP_DISTANCE_MAX,
-//            0,
-//            //1,
-//            false);
+        // Act
+        CanvasEmittedPaint = Canvas.EmitPaint(
+            Rakel,
+            canvasEmitSR,
+            0);
 
 
-//        // Assert
-//        Paint[] canvasEmittedPaintData = new Paint[canvasEmitSR.PixelCount];
-//        CanvasEmittedPaint.GetData(canvasEmittedPaintData);
-//        float[] canvasEmittedVolumes = new float[canvasEmitSR.PixelCount];
-//        for (int i = 0; i < canvasEmittedVolumes.Length; i++)
-//        {
-//            canvasEmittedVolumes[i] = canvasEmittedPaintData[i].Volume;
-//        }
+        // Assert
+        CanvasEmittedPaint.Readback();
+        float[] canvasEmittedVolumes = new float[CanvasEmittedPaint.InfoData.Length];
+        for (int i = 0; i < canvasEmittedVolumes.Length; i++)
+        {
+            canvasEmittedVolumes[i] = CanvasEmittedPaint.InfoData[i].Volume;
+        }
 
-//        //LogUtil.Log(canvasEmittedVolumes, canvasEmitSC.Size.y, false);
+        //LogUtil.Log(canvasEmittedVolumes, canvasEmitSR.Size.y, false);
 
-//        AssertUtil.AssertFloatsAreEqual(
-//            new float[] { // remember: these arrays are upside down compared to the actual pixels
-//                0.025f,  0.050f,
-//                0.025f,  0.050f,
-//                0.025f,  0.050f,
-//                0.025f,  0.050f,
-//            },
-//            canvasEmittedVolumes);
+        AssertUtil.AssertFloatsAreEqual(
+            new float[] { // remember: these arrays are upside down compared to the actual pixels
+                0.900f,  0.900f,
+                0.900f,  0.900f,
+                0.900f,  0.900f,
+                0.900f,  0.900f,
+            },
+            canvasEmittedVolumes);
 
-//        AssertUtil.AssertFloatsEqual(
-//            0.298722476f,
-//            Sum(canvasEmittedVolumes));
-//    }
+        AssertUtil.AssertFloatsEqual(
+            0.9f * RakelLength * RakelWidth * Paint.UNIT,
+            Sum(canvasEmittedVolumes));
+    }
 
-//    [Test]
-//    public void Volume_Rotated30_Untilted()
-//    {
-//        // Arrange
-//        ShaderRegion canvasEmitSR = Rakel.Reservoir.GetFullShaderRegion();
-//        Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen, ColorSpace.RGB), new FlatVolumeFiller(1)));
-//        Canvas.Reservoir.Duplicate(false);
+    [Test]
+    public void EmitOneOfTwoLayers_Unrotated_Untilted()
+    {
+        // Arrange
+        ShaderRegion canvasEmitSR = Rakel.Reservoir.GetFullShaderRegion();
+        Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen, ColorSpace.RGB), new FlatVolumeFiller(2)));
+        Canvas.Reservoir.Duplicate(false);
 
-//        Rakel.UpdateState(
-//            new Vector3(-8, 0.5f, 0), 1, // choose z for max paint pickup
-//            30, 0);
+        Rakel.UpdateState(
+            new Vector3(-5, 0.5f, -Paint.VOLUME_THICKNESS), 0, 0,
+            0, 0);
 
-
-//        // Act
-//        CanvasEmittedPaint = Canvas.EmitPaint(
-//            Rakel,
-//            canvasEmitSR,
-//            //PICKUP_DISTANCE_MAX,
-//            0,
-//            //1,
-//            false);
+        // Act
+        CanvasEmittedPaint = Canvas.EmitPaint(
+            Rakel,
+            canvasEmitSR,
+            0);
 
 
-//        // Assert
-//        Paint[] canvasEmittedPaintData = new Paint[canvasEmitSR.PixelCount];
-//        CanvasEmittedPaint.GetData(canvasEmittedPaintData);
-//        float[] canvasEmittedVolumes = new float[canvasEmitSR.PixelCount];
-//        for (int i = 0; i < canvasEmittedVolumes.Length; i++)
-//        {
-//            canvasEmittedVolumes[i] = canvasEmittedPaintData[i].Volume;
-//        }
+        // Assert
+        CanvasEmittedPaint.Readback();
+        float[] canvasEmittedVolumes = new float[CanvasEmittedPaint.InfoData.Length];
+        for (int i = 0; i < canvasEmittedVolumes.Length; i++)
+        {
+            canvasEmittedVolumes[i] = CanvasEmittedPaint.InfoData[i].Volume;
+        }
 
-//        //LogUtil.Log(canvasEmittedVolumes, canvasEmitSC.Size.y, false);
+        //LogUtil.Log(canvasEmittedVolumes, canvasEmitSR.Size.y, false);
 
-//        AssertUtil.AssertFloatsAreEqual(
-//            new float[] { // remember: these arrays are upside down compared to the actual pixels
-//                0.000f,  0.028f,
-//                0.008f,  0.049f,
-//                0.035f,  0.050f,
-//                0.050f,  0.050f,
-//            },
-//            canvasEmittedVolumes);
+        float F = Paint.UNIT;
+        AssertUtil.AssertFloatsAreEqual(
+            new float[] { // remember: these arrays are upside down compared to the actual pixels
+                F,  F,
+                F,  F,
+                F,  F,
+                F,  F,
+            },
+            canvasEmittedVolumes);
 
-//        AssertUtil.AssertFloatsEqual(
-//            0.268947482f,
-//            Sum(canvasEmittedVolumes));
-//    }
+        AssertUtil.AssertFloatsEqual(
+            RakelLength * RakelWidth * Paint.UNIT,
+            Sum(canvasEmittedVolumes));
+    }
 
-//    [Test]
-//    public void Volume_Unrotated_Tilted5()
-//    {
-//        // Arrange
-//        ShaderRegion canvasEmitSR = Rakel.Reservoir.GetFullShaderRegion();
-//        Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen, ColorSpace.RGB), new FlatVolumeFiller(1)));
-//        Canvas.Reservoir.Duplicate(false);
+    [Test]
+    public void EmitOneOfTwoLayers_Rotated30_Untilted()
+    {
+        // Arrange
+        ShaderRegion canvasEmitSR = Rakel.Reservoir.GetFullShaderRegion();
+        Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen, ColorSpace.RGB), new FlatVolumeFiller(2)));
+        Canvas.Reservoir.Duplicate(false);
 
-//        Rakel.UpdateState(
-//            new Vector3(-4, -0.5f, 0), 1, // choose z for max paint pickup
-//            0, 5);
+        Rakel.UpdateState(
+            new Vector3(-5, 0.5f, -Paint.VOLUME_THICKNESS), 0, 0,
+            30, 0);
 
-
-//        // Act
-//        CanvasEmittedPaint = Canvas.EmitPaint(
-//            Rakel,
-//            canvasEmitSR,
-//            //PICKUP_DISTANCE_MAX,
-//            0,
-//            //1,
-//            false);
+        // Act
+        CanvasEmittedPaint = Canvas.EmitPaint(
+            Rakel,
+            canvasEmitSR,
+            0);
 
 
-//        // Assert
-//        Paint[] canvasEmittedPaintData = new Paint[canvasEmitSR.PixelCount];
-//        CanvasEmittedPaint.GetData(canvasEmittedPaintData);
-//        float[] canvasEmittedVolumes = new float[canvasEmitSR.PixelCount];
-//        for (int i = 0; i < canvasEmittedVolumes.Length; i++)
-//        {
-//            canvasEmittedVolumes[i] = canvasEmittedPaintData[i].Volume;
-//        }
+        // Assert
+        CanvasEmittedPaint.Readback();
+        float[] canvasEmittedVolumes = new float[CanvasEmittedPaint.InfoData.Length];
+        for (int i = 0; i < canvasEmittedVolumes.Length; i++)
+        {
+            canvasEmittedVolumes[i] = CanvasEmittedPaint.InfoData[i].Volume;
+        }
 
-//        //LogUtil.Log(canvasEmittedVolumes, canvasEmitSC.Size.y, false);
+        //LogUtil.Log(canvasEmittedVolumes, canvasEmitSR.Size.y, false);
 
-//        AssertUtil.AssertFloatsAreEqual(
-//            new float[] { // remember: these arrays are upside down compared to the actual pixels
-//                0.034f,  0.000f,
-//                0.034f,  0.000f,
-//                0.034f,  0.000f,
-//                0.034f,  0.000f,
-//            },
-//            canvasEmittedVolumes);
+        float F = Paint.UNIT;
+        AssertUtil.AssertFloatsAreEqual(
+            new float[] { // remember: these arrays are upside down compared to the actual pixels
+                F,  F,
+                F,  F,
+                F,  F,
+                F,  F,
+            },
+            canvasEmittedVolumes);
 
-//        AssertUtil.AssertFloatsEqual(
-//            0.135346979f,
-//            Sum(canvasEmittedVolumes));
-//    }
-
-//    [Test]
-//    public void Volume_Rotated30_Tilted5()
-//    {
-//        // Arrange
-//        ShaderRegion canvasEmitSR = Rakel.Reservoir.GetFullShaderRegion();
-//        Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen, ColorSpace.RGB), new FlatVolumeFiller(1)));
-//        Canvas.Reservoir.Duplicate(false);
-
-//        Rakel.UpdateState(new Vector3(-4, 0.5f, 0), 1, 30, 5);
-
-
-//        // Act
-//        CanvasEmittedPaint = Canvas.EmitPaint(
-//            Rakel,
-//            canvasEmitSR,
-//            //PICKUP_DISTANCE_MAX,
-//            0,
-//            //1,
-//            false);
-
-
-//        // Assert
-//        Paint[] canvasEmittedPaintData = new Paint[canvasEmitSR.PixelCount];
-//        CanvasEmittedPaint.GetData(canvasEmittedPaintData);
-//        float[] canvasEmittedVolumes = new float[canvasEmitSR.PixelCount];
-//        for (int i = 0; i < canvasEmittedVolumes.Length; i++)
-//        {
-//            canvasEmittedVolumes[i] = canvasEmittedPaintData[i].Volume;
-//        }
-
-//        //LogUtil.Log(canvasEmittedVolumes, canvasEmitSC.Size.y, false);
-
-//        // when this is equal to the values in the non-rotated case, thats already helpful
-//        AssertUtil.AssertFloatsAreEqual(
-//            new float[] { // remember: these arrays are upside down compared to the actual pixels
-//                0.034f,  0.000f,
-//                0.034f,  0.000f,
-//                0.034f,  0.000f,
-//                0.034f,  0.000f,
-//            },
-//            canvasEmittedVolumes);
-
-//        AssertUtil.AssertFloatsEqual(
-//            0.135347947f,
-//            Sum(canvasEmittedVolumes));
-//    }
-//}
+        AssertUtil.AssertFloatsEqual(
+            RakelLength * RakelWidth * Paint.UNIT,
+            Sum(canvasEmittedVolumes));
+    }
+}
