@@ -73,7 +73,8 @@ public class Reservoir
                 new CSInt2("PaintSourceReservoirSize", paintSourceReservoirSize),
 
                 new CSComputeBuffer("ReservoirInfo", PaintGrid.Info),
-                new CSComputeBuffer("ReservoirInfoDuplicate", PaintGridDuplicate.Info)
+                new CSComputeBuffer("ReservoirInfoDuplicate", PaintGridDuplicate.Info),
+                new CSInt3("ReservoirSize", Size)
             },
             debugEnabled
         ).Run();

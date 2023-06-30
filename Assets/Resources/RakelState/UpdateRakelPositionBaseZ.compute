@@ -2,8 +2,9 @@
 
 #include "../Paint/paint.hlsl"
 #include "../rakel.hlsl"
+#include "../paint_grid.hlsl"
 
-RWStructuredBuffer<Paint> MaxVolumeSource;
+RWStructuredBuffer<ColumnInfo> MaxVolumeSource;
 uint2 MaxVolumeSourceSize;
 uint2 MaxVolumeSourceIndex;
 
@@ -24,7 +25,7 @@ void main (uint3 id_ : SV_DispatchThreadID)
 
         float current_max_volume_on_canvas = MaxVolumeSource[XY(MaxVolumeSourceIndex.x, MaxVolumeSourceIndex.y, MaxVolumeSourceSize.x)].volume;
         rakel.position_base_z = - (current_max_volume_on_canvas * VOLUME_THICKNESS() + LayerThickness_MAX);
-
+        
         RakelInfo[0] = rakel;
     }
 }

@@ -9,6 +9,7 @@ uint2 PaintSourceReservoirSize;
 
 RWStructuredBuffer<ColumnInfo> ReservoirInfo;
 RWStructuredBuffer<ColumnInfo> ReservoirInfoDuplicate;
+uint3 ReservoirSize;
 
 
 #pragma kernel main
@@ -22,14 +23,16 @@ void main (uint3 id_ : SV_DispatchThreadID)
         MappedInfo paint_source_mapped = PaintSourceMappedInfo[XY(id().x, id().y, CalculationSize.x)];
         int2 reservoir_pixel_nearest = round(paint_source_mapped.reservoir_pixel);
 
+        int2 pixel = id() + CalculationPosition;
+
         ColumnInfo c;
         c.size = 0;
         c.write_index = 0;
         c.volume = 0;
         if (pixel_in_array_range(reservoir_pixel_nearest, PaintSourceReservoirSize)) {
-            c = ReservoirInfo[XY(id().x, id().y, CalculationSize.x)];
+            c = ReservoirInfo[XY(pixel.x, pixel.y, ReservoirSize.x)];
         }
 
-        ReservoirInfoDuplicate[XY(id().x, id().y, CalculationSize.x)] = c;
+        ReservoirInfoDuplicate[XY(pixel.x, pixel.y, ReservoirSize.x)] = c;
     }
 }
