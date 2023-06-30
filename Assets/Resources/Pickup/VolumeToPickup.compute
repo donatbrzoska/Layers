@@ -45,6 +45,7 @@ float volume_to_pickup_(int2 radius, int2 rakel_pixel)
             }
         }
     }
+    CanvasMappedInfo[XY(id().x, id().y, CalculationSize.x)].total_overlap = total_overlap;
     float paint_thickness_rakel = volume_rakel * VOLUME_THICKNESS();
     float paint_thickness_canvas = volume_canvas * VOLUME_THICKNESS();
     float surface_distance = canvasMappedInfo.distance - paint_thickness_rakel - paint_thickness_canvas;

@@ -48,6 +48,7 @@ float volume_to_emit_(int2 radius, int2 canvas_pixel)
             }
         }
     }
+    RakelMappedInfo[XY(id().x, id().y, CalculationSize.x)].total_overlap = total_overlap;
     float volume_canvas = CanvasReservoirInfoDuplicate[XY(canvas_pixel.x, canvas_pixel.y, CanvasReservoirSize.x)].volume;
     float paint_thickness_rakel = volume_rakel * VOLUME_THICKNESS();
     float paint_thickness_canvas = volume_canvas * VOLUME_THICKNESS();
