@@ -100,6 +100,7 @@ void paint_grid_delete(
     // we include the volume from content as well as from info to prevent negative values due to float precision errors (scenario is hard to test and therefore not tested)
     // Q: is it possible for total info volume to be empty, preventing the deletion from content?
     // A: probably not, because total info volume can't get fully emptied once filled (MIN_VOLUME_TO_STAY)
+    // A2: maybe yes, because there is MIN_VOLUME_TO_STAY for rakel reservoir
     float to_be_deleted = min(min(delete_volume, available.volume), pg_info[XY(delete_pos.x, delete_pos.y, pg_size.x)].volume);
     pg_info[XY(delete_pos.x, delete_pos.y, pg_size.x)].volume -= to_be_deleted;
     Paint updated = paint_create(available.color, available.volume - to_be_deleted);
