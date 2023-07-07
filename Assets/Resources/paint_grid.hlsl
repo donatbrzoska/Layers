@@ -32,13 +32,9 @@ void paint_grid_copy(
 }
 
 void paint_grid_fill(
-    RWStructuredBuffer<ColumnInfo> pg_info, RWStructuredBuffer<Paint> pg_content, uint3 pg_size,
-    float pg_cell_volume, uint pg_diffuse_depth, float pg_diffuse_ratio,
+    RWStructuredBuffer<ColumnInfo> pg_info, RWStructuredBuffer<Paint> pg_content, uint3 pg_size, float pg_cell_volume,
     uint2 pos, Paint p)
 {
-    uint initial_write_index = pg_info[XY(pos.x, pos.y, pg_size.x)].write_index;
-
-    // fill paint into column
     Paint left = p;
     while (!is_empty(left) && !column_is_full(pg_info[XY(pos.x, pos.y, pg_size.x)], pg_size))
     {
@@ -67,33 +63,6 @@ void paint_grid_fill(
             pg_info[XY(pos.x, pos.y, pg_size.x)].write_index++;
         }
     }
-
-    // diffuse at border (only to bottom though)
-    int diffuse_steps_left = pg_diffuse_depth;
-    int diffuse_index = initial_write_index;
-    while (diffuse_steps_left > 0 && diffuse_index > 0)
-    {
-        Paint cell = pg_content[XYZ(pos.x, pos.y, diffuse_index, pg_size)];
-        Paint below = pg_content[XYZ(pos.x, pos.y, diffuse_index-1, pg_size)];
-
-        Paint cell_diffuse_part = paint_create(cell.color, cell.volume * pg_diffuse_ratio);
-        Paint cell_staying_part = paint_create(cell.color, cell.volume - cell_diffuse_part.volume);
-
-        Paint below_diffuse_part = paint_create(below.color, cell_diffuse_part.volume);
-        // TODO
-        // What if below - below_diffuse is < 0? -> currently handled by mix function
-        // Should never happen though, because below would have been filled before anyways
-        Paint below_staying_part = paint_create(below.color, below.volume - below_diffuse_part.volume);
-
-        Paint new_cell = mix(cell_staying_part, below_diffuse_part);
-        Paint new_below = mix(below_staying_part, cell_diffuse_part);
-
-        pg_content[XYZ(pos.x, pos.y, diffuse_index, pg_size)] = new_cell;
-        pg_content[XYZ(pos.x, pos.y, diffuse_index-1, pg_size)] = new_below;
-
-        diffuse_steps_left--;
-        diffuse_index--;
-    }
 }
 
 void paint_grid_push(
@@ -114,12 +83,12 @@ void paint_grid_push(
 void paint_grid_reverse_transfer(
     RWStructuredBuffer<ColumnInfo> src_pg_info, RWStructuredBuffer<Paint> src_pg_content, uint3 src_pg_size, uint2 src_pos,
     RWStructuredBuffer<ColumnInfo> dst_pg_info, RWStructuredBuffer<Paint> dst_pg_content, uint3 dst_pg_size, uint2 dst_pos,
-    float dst_pg_cell_volume, uint dst_pg_diffuse_depth, float dst_pg_diffuse_ratio)
+    float dst_pg_cell_volume)
 {
     for (uint z = 0; z < src_pg_info[XY(src_pos.x, src_pos.y, src_pg_size.x)].size; z++)
     {
         Paint p = src_pg_content[XYZ(src_pos.x, src_pos.y, z, src_pg_size)];
-        paint_grid_fill(dst_pg_info, dst_pg_content, dst_pg_size, dst_pg_cell_volume, dst_pg_diffuse_depth, dst_pg_diffuse_ratio, dst_pos, p);
+        paint_grid_fill(dst_pg_info, dst_pg_content, dst_pg_size, dst_pg_cell_volume, dst_pos, p);
     }
 }
 

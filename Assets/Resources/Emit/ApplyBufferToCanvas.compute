@@ -12,8 +12,6 @@ RWStructuredBuffer<ColumnInfo> CanvasReservoirInfo;
 RWStructuredBuffer<Paint> CanvasReservoirContent;
 uint3 CanvasReservoirSize;
 float CanvasReservoirCellVolume;
-int CanvasReservoirDiffuseDepth;
-float CanvasReservoirDiffuseRatio;
 
 
 #pragma kernel main
@@ -30,6 +28,6 @@ void main (uint3 id_ : SV_DispatchThreadID)
         paint_grid_reverse_transfer(
             RakelEmittedPaintInfo, RakelEmittedPaintContent, RakelEmittedPaintSize, id().xy,
             CanvasReservoirInfo, CanvasReservoirContent, CanvasReservoirSize, canvas_pixel,
-            CanvasReservoirCellVolume, CanvasReservoirDiffuseDepth, CanvasReservoirDiffuseRatio);
+            CanvasReservoirCellVolume);
     }
 }

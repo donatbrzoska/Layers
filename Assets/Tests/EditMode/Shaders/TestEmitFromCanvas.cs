@@ -3,10 +3,6 @@ using UnityEngine;
 
 public class TestEmitFromCanvas
 {
-    private const float CELL_VOLUME = 1;
-    private const int DIFFUSE_DEPTH = 0;
-    private const float DIFFUSE_RATIO = 0;
-
     int Resolution;
 
     Rakel Rakel;
@@ -49,13 +45,13 @@ public class TestEmitFromCanvas
     private void CreateRakel()
     {
         Rakel?.Dispose();
-        Rakel = new Rakel(RakelLength, RakelWidth, Resolution, MAX_LAYERS, CELL_VOLUME, DIFFUSE_DEPTH, DIFFUSE_RATIO, 0.5f, 0);
+        Rakel = new Rakel(RakelLength, RakelWidth, Resolution, MAX_LAYERS, 1, 0.5f, 0);
     }
 
     private void CreateCanvas()
     {
         Canvas?.Dispose();
-        Canvas = new Canvas_(CanvasWidth, CanvasHeight, MAX_LAYERS, CELL_VOLUME, DIFFUSE_DEPTH, DIFFUSE_RATIO, new Vector3(0, 0, 0), Resolution, 0.015f, 0);
+        Canvas = new Canvas_(CanvasWidth, CanvasHeight, MAX_LAYERS, 1, new Vector3(0, 0, 0), Resolution, 0.015f, 0);
     }
 
     private int Pixels(float length, float width)
