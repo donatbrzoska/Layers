@@ -17,7 +17,7 @@ public abstract class VolumeFiller
         while (left > 0 && z < targetSize.z)
         {
             float cellVolume = Mathf.Min(Paint.UNIT, left);
-            target[IndexUtil.XYZ(x, y, z, targetSize.x, targetSize.y)].Volume = cellVolume;
+            target[IndexUtil.XYZ(x, y, z, targetSize)].Volume = cellVolume;
 
             left -= cellVolume;
             z++;

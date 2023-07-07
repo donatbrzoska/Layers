@@ -1,4 +1,4 @@
-uint XYZ(uint x, uint y, uint z, uint2 dimensions)
+uint XYZ(uint x, uint y, uint z, uint3 dimensions)
 {
     return z * dimensions.y * dimensions.x + y * dimensions.x + x;
 }

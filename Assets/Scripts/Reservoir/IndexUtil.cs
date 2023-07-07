@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 public class IndexUtil
 {
     public static int XY(int x, int y, int width)
@@ -6,8 +7,8 @@ public class IndexUtil
         return y * width + x;
     }
 
-    public static int XYZ(int x, int y, int z, int width, int height)
+    public static int XYZ(int x, int y, int z, Vector3Int dim)
     {
-        return z * width * height + y * width + x;
+        return z * dim.x * dim.y + y * dim.x + x;
     }
 }

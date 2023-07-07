@@ -20,7 +20,7 @@ public abstract class ColorFiller
         ColumnInfo ci = targetInfo[IndexUtil.XY(x, y, targetSize.x)];
         for (int z = 0; z < ci.Size; z++)
         {
-            target[IndexUtil.XYZ(x, y, z, targetSize.x, targetSize.y)].Color = actualColor;
+            target[IndexUtil.XYZ(x, y, z, targetSize)].Color = actualColor;
         }
     }
 

@@ -18,6 +18,11 @@ uint2 CalculationSize;
 RWStructuredBuffer<float4> Debug;
 RWStructuredBuffer<DebugListInfo> DebugInfo;
 
+uint DEBUG_LIST_SIZE()
+{
+    return 16;
+}
+
 void set_debug_list_info(uint size, uint t)
 {
     DebugListInfo dli;
@@ -28,5 +33,5 @@ void set_debug_list_info(uint size, uint t)
 
 void log_(uint index, float4 f)
 {
-    Debug[XYZ(id().x, id().y, index, CalculationSize)] = f;
+    Debug[XYZ(id().x, id().y, index, uint3(CalculationSize.x, CalculationSize.y, DEBUG_LIST_SIZE()))] = f;
 }

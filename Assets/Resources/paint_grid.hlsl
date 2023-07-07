@@ -27,7 +27,7 @@ void paint_grid_copy(
 
     for (uint z = 0; z < src_pg_info[XY(src_pos.x, src_pos.y, src_pg_size.x)].size; z++)
     {
-        dst_pg_content[XYZ(dst_pos.x, dst_pos.y, z, dst_pg_size.xy)] = src_pg_content[XYZ(src_pos.x, src_pos.y, z, src_pg_size.xy)];
+        dst_pg_content[XYZ(dst_pos.x, dst_pos.y, z, dst_pg_size)] = src_pg_content[XYZ(src_pos.x, src_pos.y, z, src_pg_size)];
     }
 }
 
@@ -39,7 +39,7 @@ void paint_grid_fill(
     while (!is_empty(left) && !column_is_full(pg_info[XY(pos.x, pos.y, pg_size.x)], pg_size))
     {
         uint z = pg_info[XY(pos.x, pos.y, pg_size.x)].write_index;
-        Paint top = pg_content[XYZ(pos.x, pos.y, z, pg_size.xy)];
+        Paint top = pg_content[XYZ(pos.x, pos.y, z, pg_size)];
 
         // try fill up top
         float fits_into_top = PAINT_UNIT() - top.volume;
@@ -47,7 +47,7 @@ void paint_grid_fill(
 
         Paint updated_top = mix(top, element_part);
 
-        pg_content[XYZ(pos.x, pos.y, z, pg_size.xy)] = updated_top;
+        pg_content[XYZ(pos.x, pos.y, z, pg_size)] = updated_top;
         pg_info[XY(pos.x, pos.y, pg_size.x)].volume += element_part.volume;
         left.volume -= element_part.volume;
 
@@ -72,7 +72,7 @@ void paint_grid_push(
     if (!column_is_full(pg_info[XY(pos.x, pos.y, pg_size.x)], pg_size) && !is_empty(element))
     {
         uint z = pg_info[XY(pos.x, pos.y, pg_size.x)].size;
-        pg_content[XYZ(pos.x, pos.y, z, pg_size.xy)] = element;
+        pg_content[XYZ(pos.x, pos.y, z, pg_size)] = element;
 
         pg_info[XY(pos.x, pos.y, pg_size.x)].size++;
         pg_info[XY(pos.x, pos.y, pg_size.x)].write_index = pg_info[XY(pos.x, pos.y, pg_size.x)].size;
@@ -86,7 +86,7 @@ void paint_grid_reverse_transfer(
 {
     for (uint z = 0; z < src_pg_info[XY(src_pos.x, src_pos.y, src_pg_size.x)].size; z++)
     {
-        Paint p = src_pg_content[XYZ(src_pos.x, src_pos.y, z, src_pg_size.xy)];
+        Paint p = src_pg_content[XYZ(src_pos.x, src_pos.y, z, src_pg_size)];
         paint_grid_fill(dst_pg_info, dst_pg_content, dst_pg_size, dst_pos, p);
     }
 }
@@ -96,7 +96,7 @@ void paint_grid_delete(
     RWStructuredBuffer<ColumnInfo> pg_info, RWStructuredBuffer<Paint> pg_content, uint3 pg_size,
     uint3 delete_pos, float delete_volume)
 {
-    Paint available = pg_content[XYZ(delete_pos.x, delete_pos.y, delete_pos.z, pg_size.xy)];
+    Paint available = pg_content[XYZ(delete_pos.x, delete_pos.y, delete_pos.z, pg_size)];
     // we include the volume from content as well as from info to prevent negative values due to float precision errors (scenario is hard to test and therefore not tested)
     // Q: is it possible for total info volume to be empty, preventing the deletion from content?
     // A: probably not, because total info volume can't get fully emptied once filled (MIN_VOLUME_TO_STAY)
@@ -108,7 +108,7 @@ void paint_grid_delete(
     {
         updated = paint_create_empty();
     }
-    pg_content[XYZ(delete_pos.x, delete_pos.y, delete_pos.z, pg_size.xy)] = updated;
+    pg_content[XYZ(delete_pos.x, delete_pos.y, delete_pos.z, pg_size)] = updated;
 
     bool cell_emptied = !is_empty(available) && is_empty(updated);
     if (cell_emptied)
@@ -120,5 +120,5 @@ void paint_grid_delete(
 
 Paint paint_grid_get(RWStructuredBuffer<ColumnInfo> pg_info, RWStructuredBuffer<Paint> pg_content, uint3 pg_size, uint3 get_pos)
 {
-    return pg_content[XYZ(get_pos.x, get_pos.y, get_pos.z, pg_size.xy)];
+    return pg_content[XYZ(get_pos.x, get_pos.y, get_pos.z, pg_size)];
 }
