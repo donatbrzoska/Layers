@@ -11,6 +11,7 @@ uint3 CanvasEmittedPaintSize;
 RWStructuredBuffer<ColumnInfo> RakelReservoirInfo;
 RWStructuredBuffer<Paint> RakelReservoirContent;
 uint3 RakelReservoirSize;
+float RakelReservoirCellVolume;
 
 
 #pragma kernel main
@@ -26,6 +27,7 @@ void main (uint3 id_ : SV_DispatchThreadID)
 
         paint_grid_reverse_transfer(
             CanvasEmittedPaintInfo, CanvasEmittedPaintContent, CanvasEmittedPaintSize, id().xy,
-            RakelReservoirInfo, RakelReservoirContent, RakelReservoirSize, rakel_pixel);
+            RakelReservoirInfo, RakelReservoirContent, RakelReservoirSize, rakel_pixel,
+            RakelReservoirCellVolume);
     }
 }

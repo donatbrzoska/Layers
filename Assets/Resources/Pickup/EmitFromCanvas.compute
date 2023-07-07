@@ -10,6 +10,7 @@ RWStructuredBuffer<Paint> CanvasReservoirContent;
 RWStructuredBuffer<ColumnInfo> CanvasReservoirInfoDuplicate;
 RWStructuredBuffer<Paint> CanvasReservoirContentDuplicate;
 uint3 CanvasReservoirSize;
+float CanvasReservoirCellVolume;
 
 RWStructuredBuffer<MappedInfo> CanvasMappedInfo;
 
@@ -49,7 +50,7 @@ void emit(int2 radius, int2 rakel_pixel)
         int z = max_z;
         float target_volume_to_pickup_left = target_volume_to_pickup;
         while (target_volume_to_pickup_left > 0 && z >= 0) {
-            float max_volume_to_pickup_from_this_layer = min(target_volume_to_pickup_left, PAINT_UNIT() * canvas_mapped_info.total_overlap);
+            float max_volume_to_pickup_from_this_layer = min(target_volume_to_pickup_left, CanvasReservoirCellVolume * canvas_mapped_info.total_overlap);
 
             // collect emitted paint for layer and delete it from reservoir
             Paint emitted_from_layer[9][9];

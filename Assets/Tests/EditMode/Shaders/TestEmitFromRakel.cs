@@ -28,9 +28,9 @@ public class TestEmitFromRakel
     [SetUp]
     public void Setup()
     {
-        Canvas = new Canvas_(15, 10, MAX_LAYERS, new Vector3(0, 0, 0), 1, 0, 0);
+        Canvas = new Canvas_(15, 10, MAX_LAYERS, 1, new Vector3(0, 0, 0), 1, 0, 0);
 
-        Rakel = new Rakel(RakelLength, RakelWidth, 1, MAX_LAYERS, 0.5f, 0);
+        Rakel = new Rakel(RakelLength, RakelWidth, 1, MAX_LAYERS, 1, 0.5f, 0);
 
         ColorFiller = new FlatColorFiller(Color_.CadmiumGreen, ColorSpace.RGB);
 

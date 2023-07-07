@@ -49,10 +49,12 @@ public class PaintGrid
     public ComputeBuffer Content;
     public Paint[] ContentData;
     public Vector3Int Size;
+    public float CellVolume;
 
-    public PaintGrid(Vector3Int size)
+    public PaintGrid(Vector3Int size, float cellVolume)
     {
         Size = size;
+        CellVolume = cellVolume;
 
         Info = new ComputeBuffer(size.x * size.y, ColumnInfo.SizeInBytes);
         InfoData = new ColumnInfo[size.x * size.y];
@@ -65,7 +67,7 @@ public class PaintGrid
 
     public void Fill(ReservoirFiller filler)
     {
-        filler.Fill(InfoData, ContentData, Size);
+        filler.Fill(InfoData, ContentData, Size, CellVolume);
         Info.SetData(InfoData);
         Content.SetData(ContentData);
     }

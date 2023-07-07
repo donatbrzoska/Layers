@@ -25,7 +25,7 @@ public class Canvas_
 
     // It is assumed that the canvas is perpendicular to the z axis
     // Position is the center of the canvas
-    public Canvas_(float width, float height, int layers, Vector3 position, int textureResolution, float normalScale, ColorSpace colorSpace)
+    public Canvas_(float width, float height, int layers, float cellVolume, Vector3 position, int textureResolution, float normalScale, ColorSpace colorSpace)
     {
         Size = new Vector2(width, height);
         Position = position;
@@ -43,7 +43,7 @@ public class Canvas_
         NormalScale = normalScale;
         ColorSpace = colorSpace;
 
-        Reservoir = new Reservoir(textureResolution, TextureSize.x, TextureSize.y, layers);
+        Reservoir = new Reservoir(textureResolution, TextureSize.x, TextureSize.y, layers, cellVolume);
 
         Texture = new RenderTexture(TextureSize.x, TextureSize.y, 1);
         Texture.filterMode = FilterMode.Point;
@@ -171,7 +171,9 @@ public class Canvas_
             false
         ).Run();
 
-        PaintGrid canvasEmittedPaint = new PaintGrid(new Vector3Int(shaderRegion.Size.x, shaderRegion.Size.y, Reservoir.Size.z));
+        // HACK canvasEmittedPaint is actually treated as a raw stack with no specified cell volume
+        float cellVolume_UNUSED = 0;
+        PaintGrid canvasEmittedPaint = new PaintGrid(new Vector3Int(shaderRegion.Size.x, shaderRegion.Size.y, Reservoir.Size.z), cellVolume_UNUSED);
 
         Vector2Int reservoirPixelPickupArea = new Vector2Int(RESERVOIR_PIXEL_PICKUP_RADIUS.x * 2 + 1, RESERVOIR_PIXEL_PICKUP_RADIUS.y * 2 + 1);
 
@@ -189,6 +191,7 @@ public class Canvas_
                 new CSComputeBuffer("CanvasReservoirInfoDuplicate", Reservoir.PaintGridDuplicate.Info),
                 new CSComputeBuffer("CanvasReservoirContentDuplicate", Reservoir.PaintGridDuplicate.Content),
                 new CSInt3("CanvasReservoirSize", Reservoir.Size),
+                new CSFloat("CanvasReservoirCellVolume", Reservoir.PaintGrid.CellVolume),
 
                 new CSComputeBuffer("CanvasEmittedPaintInfo", canvasEmittedPaint.Info),
                 new CSComputeBuffer("CanvasEmittedPaintContent", canvasEmittedPaint.Content),
@@ -217,7 +220,8 @@ public class Canvas_
 
                 new CSComputeBuffer("CanvasReservoirInfo", Reservoir.PaintGrid.Info),
                 new CSComputeBuffer("CanvasReservoirContent", Reservoir.PaintGrid.Content),
-                new CSInt3("CanvasReservoirSize", Reservoir.Size)
+                new CSInt3("CanvasReservoirSize", Reservoir.Size),
+                new CSFloat("CanvasReservoirCellVolume", Reservoir.PaintGrid.CellVolume),
             },
             false
         ).Run();

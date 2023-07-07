@@ -9,14 +9,14 @@ public abstract class VolumeFiller
         BaseVolume = baseVolume * Paint.UNIT;
     }
 
-    protected void SetVolume(ColumnInfo[] targetInfo, Paint[] target, Vector3Int targetSize, int x, int y, float volume)
+    protected void SetVolume(ColumnInfo[] targetInfo, Paint[] target, Vector3Int targetSize, float targetCellVolume, int x, int y, float volume)
     {
         float left = volume;
         int z = 0;
 
         while (left > 0 && z < targetSize.z)
         {
-            float cellVolume = Mathf.Min(Paint.UNIT, left);
+            float cellVolume = Mathf.Min(targetCellVolume, left);
             target[IndexUtil.XYZ(x, y, z, targetSize)].Volume = cellVolume;
 
             left -= cellVolume;
@@ -27,5 +27,5 @@ public abstract class VolumeFiller
         targetInfo[IndexUtil.XY(x, y, targetSize.x)].Volume = volume - left;
     }
 
-    public abstract void Fill(ColumnInfo[] targetInfo, Paint[] target, Vector3Int targetSize);
+    public abstract void Fill(ColumnInfo[] targetInfo, Paint[] target, Vector3Int targetSize, float targetCellVolume);
 }

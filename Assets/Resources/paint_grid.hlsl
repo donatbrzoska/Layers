@@ -32,7 +32,7 @@ void paint_grid_copy(
 }
 
 void paint_grid_fill(
-    RWStructuredBuffer<ColumnInfo> pg_info, RWStructuredBuffer<Paint> pg_content, uint3 pg_size,
+    RWStructuredBuffer<ColumnInfo> pg_info, RWStructuredBuffer<Paint> pg_content, uint3 pg_size, float pg_cell_volume,
     uint2 pos, Paint p)
 {
     Paint left = p;
@@ -42,7 +42,7 @@ void paint_grid_fill(
         Paint top = pg_content[XYZ(pos.x, pos.y, z, pg_size)];
 
         // try fill up top
-        float fits_into_top = PAINT_UNIT() - top.volume;
+        float fits_into_top = pg_cell_volume - top.volume;
         Paint element_part = paint_create(left.color, min(fits_into_top, left.volume));
 
         Paint updated_top = mix(top, element_part);
@@ -57,7 +57,7 @@ void paint_grid_fill(
         {
             pg_info[XY(pos.x, pos.y, pg_size.x)].size++;
         }
-        bool top_was_filled = floats_equal(updated_top.volume, PAINT_UNIT());
+        bool top_was_filled = floats_equal(updated_top.volume, pg_cell_volume);
         if (top_was_filled)
         {
             pg_info[XY(pos.x, pos.y, pg_size.x)].write_index++;
@@ -82,12 +82,13 @@ void paint_grid_push(
 
 void paint_grid_reverse_transfer(
     RWStructuredBuffer<ColumnInfo> src_pg_info, RWStructuredBuffer<Paint> src_pg_content, uint3 src_pg_size, uint2 src_pos,
-    RWStructuredBuffer<ColumnInfo> dst_pg_info, RWStructuredBuffer<Paint> dst_pg_content, uint3 dst_pg_size, uint2 dst_pos)
+    RWStructuredBuffer<ColumnInfo> dst_pg_info, RWStructuredBuffer<Paint> dst_pg_content, uint3 dst_pg_size, uint2 dst_pos,
+    float dst_pg_cell_volume)
 {
     for (uint z = 0; z < src_pg_info[XY(src_pos.x, src_pos.y, src_pg_size.x)].size; z++)
     {
         Paint p = src_pg_content[XYZ(src_pos.x, src_pos.y, z, src_pg_size)];
-        paint_grid_fill(dst_pg_info, dst_pg_content, dst_pg_size, dst_pos, p);
+        paint_grid_fill(dst_pg_info, dst_pg_content, dst_pg_size, dst_pg_cell_volume, dst_pos, p);
     }
 }
 

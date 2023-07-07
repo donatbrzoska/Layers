@@ -13,6 +13,7 @@ public class TestPaintGrid_fill
     ComputeBuffer PaintGridContent;
     Paint[] PaintGridContentData;
     Vector3Int PaintGridSize;
+    float PaintGridCellVolume;
     Vector2Int NewElementPosition;
     ComputeBuffer NewElement;
     Paint[] NewElementData;
@@ -22,6 +23,7 @@ public class TestPaintGrid_fill
     {
         Attributes = new List<CSAttribute>();
 
+        PaintGridCellVolume = 1;
         NewElementPosition = Vector2Int.zero;
 
         new FileLogger_().OnEnable();
@@ -51,6 +53,7 @@ public class TestPaintGrid_fill
         Attributes.Add(new CSComputeBuffer("PaintGridInfo", PaintGridInfo));
         Attributes.Add(new CSComputeBuffer("PaintGridContent", PaintGridContent));
         Attributes.Add(new CSInt3("PaintGridSize", PaintGridSize));
+        Attributes.Add(new CSFloat("PaintGridCellVolume", PaintGridCellVolume));
         Attributes.Add(new CSInt2("NewElementPosition", NewElementPosition));
         Attributes.Add(new CSComputeBuffer("NewElement", NewElement));
 
@@ -367,6 +370,50 @@ public class TestPaintGrid_fill
             new Paint[]
             {
                 P(0.5f, 1),
+
+                P(1, 0.5f),
+            },
+            PaintGridContentData);
+    }
+
+    [Test]
+    public void voxel_half_filled_spanning_fill_enough_space_more_cell_volume()
+    {
+        // Arrange
+        PaintGridInfoData = new ColumnInfo[]
+        {
+            new ColumnInfo { Size = 1, WriteIndex = 0, Volume = 0.5f }
+        };
+        PaintGridContentData = new Paint[]
+        {
+            P(0, 0.5f),
+
+            P(-1),
+        };
+        PaintGridSize = new Vector3Int(1, 1, 2);
+        PaintGridCellVolume = 2;
+        NewElementData = new Paint[]
+        {
+            P(1, 2)
+        };
+
+
+        // Act
+        Execute(KERNEL_ID_fill);
+
+
+        // Assert
+        Assert.AreEqual(
+            new ColumnInfo[]
+            {
+                new ColumnInfo { Size = 2, WriteIndex = 1, Volume = 2.5f }
+            },
+            PaintGridInfoData);
+
+        Assert.AreEqual(
+            new Paint[]
+            {
+                P(0.75f, 2),
 
                 P(1, 0.5f),
             },

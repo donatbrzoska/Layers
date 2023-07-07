@@ -60,6 +60,7 @@ public class TestPaintGrid_reverse_transfer
         Attributes.Add(new CSComputeBuffer("TargetPGInfo", TargetPaintGridInfo));
         Attributes.Add(new CSComputeBuffer("TargetPGContent", TargetPaintGridContent));
         Attributes.Add(new CSInt3("TargetPGSize", TargetPaintGridSize));
+        Attributes.Add(new CSFloat("TargetPGCellVolume", 1));
         Attributes.Add(new CSInt2("TargetPGPosition", TargetPaintGridPosition));
 
         ComputeShaderTask cst = new ComputeShaderTask(

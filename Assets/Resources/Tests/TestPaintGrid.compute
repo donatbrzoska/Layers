@@ -29,6 +29,7 @@ void test_paint_grid_copy(uint3 id_ : SV_DispatchThreadID)
 RWStructuredBuffer<ColumnInfo> PaintGridInfo;
 RWStructuredBuffer<Paint> PaintGridContent;
 uint3 PaintGridSize;
+float PaintGridCellVolume;
 
 uint2 NewElementPosition;
 RWStructuredBuffer<Paint> NewElement;
@@ -41,7 +42,7 @@ void test_paint_grid_fill(uint3 id_ : SV_DispatchThreadID)
     id__ = id_;
     if (is_relevant_thread(id(), CalculationSize))
     {
-        paint_grid_fill(PaintGridInfo, PaintGridContent, PaintGridSize, NewElementPosition, NewElement[0]);
+        paint_grid_fill(PaintGridInfo, PaintGridContent, PaintGridSize, PaintGridCellVolume, NewElementPosition, NewElement[0]);
     }
 }
 
@@ -72,6 +73,7 @@ uint3 SourcePGSize;
 // RWStructuredBuffer<ColumnInfo> TargetPGInfo;
 // RWStructuredBuffer<Paint> TargetPGContent;
 uint3 TargetPGSize;
+float TargetPGCellVolume;
 uint2 TargetPGPosition;
 
 #pragma kernel test_stack_2D_reverse_transfer
@@ -86,7 +88,8 @@ void test_stack_2D_reverse_transfer(uint3 id_ : SV_DispatchThreadID)
         uint2 dst_pg_position = id().xy + TargetPGPosition;
         paint_grid_reverse_transfer(
             SourcePGInfo, SourcePGContent, SourcePGSize, src_pg_position,
-            TargetPGInfo, TargetPGContent, TargetPGSize, dst_pg_position);
+            TargetPGInfo, TargetPGContent, TargetPGSize, dst_pg_position,
+            TargetPGCellVolume);
     }
 }
 

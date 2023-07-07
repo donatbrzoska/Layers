@@ -5,6 +5,7 @@ public class Configuration
     public int TextureResolution;
     public ColorSpace ColorSpace;
     public float NormalScale;
+    public float CanvasCellVolume;
 
     public InputConfiguration InputConfiguration;
     public RakelConfiguration RakelConfiguration;
@@ -16,6 +17,7 @@ public class Configuration
         TextureResolution = 40;
         ColorSpace = ColorSpace.RGB;
         NormalScale = 0.015f;
+        CanvasCellVolume = 1;
 
         InputConfiguration = new InputConfiguration();
         RakelConfiguration = new RakelConfiguration();
@@ -122,11 +124,13 @@ public class RakelConfiguration
 {
     public float Length;
     public float Width;
+    public float CellVolume;
 
     public RakelConfiguration()
     {
         Length = 2.5f;
         Width = 0.5f;
+        CellVolume = 1;
     }
 }
 
