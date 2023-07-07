@@ -35,6 +35,10 @@ public class OilPaintEngine : MonoBehaviour
         if (USE_PEN)
         {
             Configuration.InputConfiguration.RakelPressure.Source = InputSourceType.Pen;
+            Configuration.InputConfiguration.RakelPositionX.Source = InputSourceType.Pen;
+            Configuration.InputConfiguration.RakelPositionY.Source = InputSourceType.Pen;
+            //Configuration.InputConfiguration.RakelRotation.Source = InputSourceType.Pen;
+            Configuration.InputConfiguration.StrokeStateSource = InputSourceType.Pen;
         }
 
         CreateInputManager();
@@ -199,7 +203,8 @@ public class OilPaintEngine : MonoBehaviour
 
     public void UpdateRakelPositionXLocked(bool locked)
     {
-        Configuration.InputConfiguration.RakelPositionX.Source = locked ? InputSourceType.Text : InputSourceType.Mouse;
+        InputSourceType penOrMouse = USE_PEN ? InputSourceType.Pen : InputSourceType.Mouse;
+        Configuration.InputConfiguration.RakelPositionX.Source = locked ? InputSourceType.Text : penOrMouse;
         CreateInputManager();
     }
 
@@ -211,7 +216,8 @@ public class OilPaintEngine : MonoBehaviour
 
     public void UpdateRakelPositionYLocked(bool locked)
     {
-        Configuration.InputConfiguration.RakelPositionY.Source = locked ? InputSourceType.Text : InputSourceType.Mouse;
+        InputSourceType penOrMouse = USE_PEN ? InputSourceType.Pen : InputSourceType.Mouse;
+        Configuration.InputConfiguration.RakelPositionY.Source = locked ? InputSourceType.Text : penOrMouse;
         CreateInputManager();
     }
 
@@ -248,7 +254,8 @@ public class OilPaintEngine : MonoBehaviour
 
     public void UpdateRakelRotationLocked(bool locked)
     {
-        Configuration.InputConfiguration.RakelRotation.Source = locked ? InputSourceType.Text : InputSourceType.Mouse;
+        InputSourceType penOrMouse = USE_PEN ? InputSourceType.Pen : InputSourceType.Mouse;
+        Configuration.InputConfiguration.RakelRotation.Source = locked ? InputSourceType.Text : penOrMouse;
         CreateInputManager();
     }
 

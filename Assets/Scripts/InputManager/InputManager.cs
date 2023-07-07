@@ -57,6 +57,9 @@ public class InputManager
             case InputSourceType.Mouse:
                 RakelPositionXSource = new MouseRakelPositionX();
                 break;
+            case InputSourceType.Pen:
+                RakelPositionXSource = new PenRakelPositionX();
+                break;
             default:
                 Debug.LogError(string.Format("Unsupported InputSourceType '{0}' for RakelPositionXSource", inputConfiguration.RakelPositionX.Source.ToString())); 
                 break;
@@ -68,6 +71,9 @@ public class InputManager
                 break;
             case InputSourceType.Mouse:
                 RakelPositionYSource = new MouseRakelPositionY();
+                break;
+            case InputSourceType.Pen:
+                RakelPositionYSource = new PenRakelPositionY();
                 break;
             default:
                 Debug.LogError(string.Format("Unsupported InputSourceType '{0}' for RakelPositionYSource", inputConfiguration.RakelPositionY.Source.ToString()));
@@ -108,6 +114,9 @@ public class InputManager
             case InputSourceType.Mouse:
                 RakelRotationSource = new MouseRakelRotation();
                 break;
+            case InputSourceType.Pen:
+                RakelRotationSource = new PenRakelRotation();
+                break;
             default:
                 Debug.LogError(string.Format("Unsupported InputSourceType '{0}' for RakelRotationSource", inputConfiguration.RakelRotation.Source.ToString()));
                 break;
@@ -139,6 +148,9 @@ public class InputManager
         {
             case InputSourceType.Mouse:
                 StrokeStateSource = new MouseStrokeState();
+                break;
+            case InputSourceType.Pen:
+                StrokeStateSource = new PenStrokeState();
                 break;
             default:
                 Debug.LogError(string.Format("Unsupported InputSourceType '{0}' for StrokeStateSource", inputConfiguration.StrokeStateSource.ToString()));
