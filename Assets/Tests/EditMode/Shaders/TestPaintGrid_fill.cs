@@ -212,6 +212,53 @@ public class TestPaintGrid_fill
             PaintGridContentData);
     }
 
+    [Test] //?
+    public void voxel_filled_enough_space_add_more_than_cell_volume()
+    {
+        // Arrange
+        PaintGridInfoData = new ColumnInfo[]
+        {
+            new ColumnInfo { Size = 1, WriteIndex = 1, Volume = 1 }
+        };
+        PaintGridContentData = new Paint[]
+        {
+            P( 1),
+
+            P(0),
+
+            P(0),
+        };
+        PaintGridSize = new Vector3Int(1, 1, 3);
+        NewElementData = new Paint[]
+        {
+            P(0.6f, 2)
+        };
+
+
+        // Act
+        Execute(KERNEL_ID_fill);
+
+
+        // Assert
+        Assert.AreEqual(
+            new ColumnInfo[]
+            {
+                new ColumnInfo { Size = 3, WriteIndex = 3, Volume = 3 }
+            },
+            PaintGridInfoData);
+
+        Assert.AreEqual(
+            new Paint[]
+            {
+                P( 1),
+
+                P(0.6f, 1),
+
+                P(0.6f, 1),
+            },
+            PaintGridContentData);
+    }
+
 
     [Test]
     public void voxel_filled_not_enough_space_does_nothing()
@@ -370,6 +417,53 @@ public class TestPaintGrid_fill
             new Paint[]
             {
                 P(0.5f, 1),
+
+                P(1, 0.5f),
+            },
+            PaintGridContentData);
+    }
+
+    [Test] //?
+    public void voxel_half_filled_spanning_fill_enough_space_add_more_than_cell_volume()
+    {
+        // Arrange
+        PaintGridInfoData = new ColumnInfo[]
+        {
+            new ColumnInfo { Size = 1, WriteIndex = 0, Volume = 0.5f }
+        };
+        PaintGridContentData = new Paint[]
+        {
+            P(0, 0.5f),
+
+            P(0),
+
+            P(0),
+        };
+        PaintGridSize = new Vector3Int(1, 1, 3);
+        NewElementData = new Paint[]
+        {
+            P(1, 2)
+        };
+
+
+        // Act
+        Execute(KERNEL_ID_fill);
+
+
+        // Assert
+        Assert.AreEqual(
+            new ColumnInfo[]
+            {
+                new ColumnInfo { Size = 3, WriteIndex = 2, Volume = 2.5f }
+            },
+            PaintGridInfoData);
+
+        Assert.AreEqual(
+            new Paint[]
+            {
+                P(0.5f, 1),
+
+                P(1, 1),
 
                 P(1, 0.5f),
             },
