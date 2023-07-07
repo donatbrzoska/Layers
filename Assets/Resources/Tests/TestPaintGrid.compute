@@ -9,12 +9,12 @@ RWStructuredBuffer<ColumnInfo> SourcePGInfo;
 RWStructuredBuffer<Paint> SourcePGContent;
 RWStructuredBuffer<ColumnInfo> TargetPGInfo;
 RWStructuredBuffer<Paint> TargetPGContent;
-uint3 PGSize;
+int3 PGSize;
 
 #pragma kernel test_paint_grid_copy
 
 [numthreads(32,1,1)]
-void test_paint_grid_copy(uint3 id_ : SV_DispatchThreadID)
+void test_paint_grid_copy(int3 id_ : SV_DispatchThreadID)
 {
     id__ = id_;
     if (is_relevant_thread(id(), CalculationSize))
@@ -28,18 +28,18 @@ void test_paint_grid_copy(uint3 id_ : SV_DispatchThreadID)
 
 RWStructuredBuffer<ColumnInfo> PaintGridInfo;
 RWStructuredBuffer<Paint> PaintGridContent;
-uint3 PaintGridSize;
+int3 PaintGridSize;
 float PaintGridCellVolume;
-uint PaintGridDiffuseDepth;
+int PaintGridDiffuseDepth;
 float PaintGridDiffuseRatio;
 
-uint2 NewElementPosition;
+int2 NewElementPosition;
 RWStructuredBuffer<Paint> NewElement;
 
 #pragma kernel test_paint_grid_fill
 
 [numthreads(32,1,1)]
-void test_paint_grid_fill(uint3 id_ : SV_DispatchThreadID)
+void test_paint_grid_fill(int3 id_ : SV_DispatchThreadID)
 {
     id__ = id_;
     if (is_relevant_thread(id(), CalculationSize))
@@ -51,15 +51,15 @@ void test_paint_grid_fill(uint3 id_ : SV_DispatchThreadID)
 
 // RWStructuredBuffer<ColumnInfo> PaintGridInfo;
 // RWStructuredBuffer<Paint> PaintGridContent;
-// uint3 PaintGridSize;
+// int3 PaintGridSize;
 
-// uint2 NewElementPosition;
+// int2 NewElementPosition;
 // RWStructuredBuffer<Paint> NewElement;
 
 #pragma kernel test_paint_grid_push
 
 [numthreads(32,1,1)]
-void test_paint_grid_push(uint3 id_ : SV_DispatchThreadID)
+void test_paint_grid_push(int3 id_ : SV_DispatchThreadID)
 {
     id__ = id_;
     if (is_relevant_thread(id(), CalculationSize))
@@ -71,25 +71,25 @@ void test_paint_grid_push(uint3 id_ : SV_DispatchThreadID)
 
 // RWStructuredBuffer<ColumnInfo> SourcePGInfo;
 // RWStructuredBuffer<Paint> SourcePGContent;
-uint3 SourcePGSize;
+int3 SourcePGSize;
 // RWStructuredBuffer<ColumnInfo> TargetPGInfo;
 // RWStructuredBuffer<Paint> TargetPGContent;
-uint3 TargetPGSize;
+int3 TargetPGSize;
 float TargetPGCellVolume;
-uint TargetPGDiffuseDepth;
+int TargetPGDiffuseDepth;
 float TargetPGDiffuseRatio;
-uint2 TargetPGPosition;
+int2 TargetPGPosition;
 
 #pragma kernel test_stack_2D_reverse_transfer
 
 [numthreads(32,1,1)]
-void test_stack_2D_reverse_transfer(uint3 id_ : SV_DispatchThreadID)
+void test_stack_2D_reverse_transfer(int3 id_ : SV_DispatchThreadID)
 {
     id__ = id_;
     if (is_relevant_thread(id(), CalculationSize))
     {
-        uint2 src_pg_position = id().xy;
-        uint2 dst_pg_position = id().xy + TargetPGPosition;
+        int2 src_pg_position = id().xy;
+        int2 dst_pg_position = id().xy + TargetPGPosition;
         paint_grid_reverse_transfer(
             SourcePGInfo, SourcePGContent, SourcePGSize, src_pg_position,
             TargetPGInfo, TargetPGContent, TargetPGSize, dst_pg_position,
@@ -100,15 +100,15 @@ void test_stack_2D_reverse_transfer(uint3 id_ : SV_DispatchThreadID)
 
 // RWStructuredBuffer<ColumnInfo> PaintGridInfo;
 // RWStructuredBuffer<Paint> PaintGridContent;
-// uint3 PaintGridSize;
+// int3 PaintGridSize;
 
-uint3 DeletePosition;
+int3 DeletePosition;
 float DeleteVolume;
 
 #pragma kernel test_paint_grid_delete
 
 [numthreads(32,1,1)]
-void test_paint_grid_delete(uint3 id_ : SV_DispatchThreadID)
+void test_paint_grid_delete(int3 id_ : SV_DispatchThreadID)
 {
     id__ = id_;
     if (is_relevant_thread(id(), CalculationSize))
@@ -120,15 +120,15 @@ void test_paint_grid_delete(uint3 id_ : SV_DispatchThreadID)
 
 // RWStructuredBuffer<ColumnInfo> PaintGridInfo;
 // RWStructuredBuffer<Paint> PaintGridContent;
-// uint3 PaintGridSize;
+// int3 PaintGridSize;
 
-uint3 GetPosition;
+int3 GetPosition;
 RWStructuredBuffer<Paint> GetResult;
 
 #pragma kernel test_paint_grid_get
 
 [numthreads(32,1,1)]
-void test_paint_grid_get(uint3 id_ : SV_DispatchThreadID)
+void test_paint_grid_get(int3 id_ : SV_DispatchThreadID)
 {
     id__ = id_;
     if (is_relevant_thread(id(), CalculationSize))

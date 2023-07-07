@@ -7,13 +7,13 @@ RWStructuredBuffer<ColumnInfo> ReservoirInfo;
 RWStructuredBuffer<Paint> ReservoirContent;
 RWStructuredBuffer<ColumnInfo> ReservoirInfoDuplicate;
 RWStructuredBuffer<Paint> ReservoirContentDuplicate;
-uint3 ReservoirSize;
+int3 ReservoirSize;
 
 
 #pragma kernel main
 
 [numthreads(32,1,1)]
-void main (uint3 id_ : SV_DispatchThreadID)
+void main (int3 id_ : SV_DispatchThreadID)
 {
     id__ = id_;
     if (is_relevant_thread(id(), CalculationSize))

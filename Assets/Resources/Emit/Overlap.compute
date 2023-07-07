@@ -6,7 +6,7 @@
 #include "../rakel.hlsl"
 #include "../mapped_info.hlsl"
 
-uint TextureResolution;
+int TextureResolution;
 
 RWStructuredBuffer<Rakel> RakelInfo;
 
@@ -17,7 +17,7 @@ RWStructuredBuffer<MappedInfo> RakelMappedInfo;
 #pragma kernel main
 
 [numthreads(32,1,1)]
-void main (uint3 id_ : SV_DispatchThreadID)
+void main (int3 id_ : SV_DispatchThreadID)
 {
     id__ = id_;
     if (is_relevant_thread(id(), CalculationSize))
@@ -34,8 +34,8 @@ void main (uint3 id_ : SV_DispatchThreadID)
         for (y=-radius.y; y<=radius.y; y++) {
             for (x=-radius.x; x<=radius.x; x++) {
                 // initialize arrays
-                uint i = y + radius.y;
-                uint j = x + radius.x;
+                int i = y + radius.y;
+                int j = x + radius.x;
 
                 // calculate part
                 int2 coord = rakel_reservoir_pixel_nearest + int2(x, y);

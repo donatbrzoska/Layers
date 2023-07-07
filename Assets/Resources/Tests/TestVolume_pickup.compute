@@ -11,7 +11,7 @@ float PickupVolume_MAX;
 #pragma kernel test_pickup_volume_distance
 
 [numthreads(32,1,1)]
-void test_pickup_volume_distance(uint3 id_ : SV_DispatchThreadID)
+void test_pickup_volume_distance(int3 id_ : SV_DispatchThreadID)
 {
     id__ = id_;
     if (is_relevant_thread(id(), CalculationSize))
@@ -30,7 +30,7 @@ float Tilt_MAX;
 #pragma kernel test_pickup_volume_tilt
 
 [numthreads(32,1,1)]
-void test_pickup_volume_tilt(uint3 id_ : SV_DispatchThreadID)
+void test_pickup_volume_tilt(int3 id_ : SV_DispatchThreadID)
 {
     id__ = id_;
     if (is_relevant_thread(id(), CalculationSize))
@@ -51,7 +51,7 @@ void test_pickup_volume_tilt(uint3 id_ : SV_DispatchThreadID)
 #pragma kernel test_pickup_volume
 
 [numthreads(32,1,1)]
-void test_pickup_volume(uint3 id_ : SV_DispatchThreadID)
+void test_pickup_volume(int3 id_ : SV_DispatchThreadID)
 {
     id__ = id_;
     if (is_relevant_thread(id(), CalculationSize))

@@ -1,9 +1,9 @@
-uint XYZ(uint x, uint y, uint z, uint3 dimensions)
+int XYZ(int x, int y, int z, int3 dimensions)
 {
     return z * dimensions.y * dimensions.x + y * dimensions.x + x;
 }
 
-uint XY(uint x, uint y, uint width)
+int XY(int x, int y, int width)
 {
     return y * width + x;
 }

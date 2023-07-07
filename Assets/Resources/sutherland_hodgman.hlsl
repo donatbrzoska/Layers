@@ -84,7 +84,7 @@ float calculate_exact_overlap(Rectangle subject_p, Rectangle clip_p)
     clip_poly[1] = clip_p.b;
     clip_poly[2] = clip_p.c;
     clip_poly[3] = clip_p.d;
-    uint clip_len = 4;
+    int clip_len = 4;
 
     float2 subj_poly[8];
     subj_poly[0] = subject_p.a;
@@ -95,14 +95,14 @@ float calculate_exact_overlap(Rectangle subject_p, Rectangle clip_p)
     subj_poly[5] = float2(0,0);
     subj_poly[6] = float2(0,0);
     subj_poly[7] = float2(0,0);
-    uint subj_len = 4;
+    int subj_len = 4;
 
     // 2. calculate intersection polygon
     float2 input_list[8];
-    uint input_len;
+    int input_len;
     float2 output_list[] = subj_poly; // put subject polygon to output_list as this should be the input of the next (first) iteration
-    uint output_len = subj_len;
-    for (uint i=0; i<clip_len; i++) {
+    int output_len = subj_len;
+    for (int i=0; i<clip_len; i++) {
         input_list = output_list; // input is always output of last iteration = current state of clipped subject
         input_len = output_len;
 
@@ -110,7 +110,7 @@ float calculate_exact_overlap(Rectangle subject_p, Rectangle clip_p)
 
         float2 clip_a = clip_poly[i];
         float2 clip_b = clip_poly[(i == clip_len-1) ? 0 : (i+1)]; // wrap array around in last iteration
-        for (uint j=0; j<input_len; j++) {
+        for (int j=0; j<input_len; j++) {
             float2 subj_a = input_list[j];
             float2 subj_b = input_list[(j == input_len-1) ? 0 : (j+1)]; // wrap array around in last iteration
 
@@ -132,7 +132,7 @@ float calculate_exact_overlap(Rectangle subject_p, Rectangle clip_p)
 
     // 3. calculate area of intersection polygon == overlap 0..1
     float area = 0;
-    for (uint k=0; k<output_len; k++) {
+    for (int k=0; k<output_len; k++) {
         float2 v_i = output_list[k];
         float2 v_i_1 = output_list[(k == output_len-1) ? 0 : (k+1)]; // wrap array around in last iteration
 

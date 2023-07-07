@@ -6,11 +6,11 @@
 
 RWStructuredBuffer<ColumnInfo> RakelEmittedPaintInfo;
 RWStructuredBuffer<Paint> RakelEmittedPaintContent;
-uint3 RakelEmittedPaintSize;
+int3 RakelEmittedPaintSize;
 
 RWStructuredBuffer<ColumnInfo> CanvasReservoirInfo;
 RWStructuredBuffer<Paint> CanvasReservoirContent;
-uint3 CanvasReservoirSize;
+int3 CanvasReservoirSize;
 float CanvasReservoirCellVolume;
 int CanvasReservoirDiffuseDepth;
 float CanvasReservoirDiffuseRatio;
@@ -19,7 +19,7 @@ float CanvasReservoirDiffuseRatio;
 #pragma kernel main
 
 [numthreads(32,1,1)]
-void main (uint3 id_ : SV_DispatchThreadID)
+void main (int3 id_ : SV_DispatchThreadID)
 {
     id__ = id_;
     if (is_relevant_thread(id(), CalculationSize))

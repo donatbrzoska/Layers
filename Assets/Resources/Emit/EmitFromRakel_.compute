@@ -5,7 +5,7 @@
 
 RWStructuredBuffer<Paint> RakelReservoir;
 RWStructuredBuffer<Paint> RakelReservoirDuplicate;
-uint2 RakelReservoirSize;
+int2 RakelReservoirSize;
 
 RWStructuredBuffer<MappedInfo> RakelMappedInfo;
 
@@ -36,8 +36,8 @@ void emit(int2 radius, int2 canvas_pixel)
         for (y=-radius.y; y<=radius.y; y++) {
             for (x=-radius.x; x<=radius.x; x++) {
                 // initialize arrays
-                uint i = y + radius.y;
-                uint j = x + radius.x;
+                int i = y + radius.y;
+                int j = x + radius.x;
                 volumes_to_emit[i][j] = 0;
                 colors_to_emit[i][j] = float4(0,0,0,0);
 
@@ -48,7 +48,7 @@ void emit(int2 radius, int2 canvas_pixel)
 
                     if (overlap > 0) {
                         // get paint
-                        uint2 coord_ = uint2(coord.x, coord.y);
+                        int2 coord_ = int2(coord.x, coord.y);
                         Paint available = RakelReservoirDuplicate[XY(coord_.x, coord_.y, RakelReservoirSize.x)];
 
                         // calculate volume
@@ -70,8 +70,8 @@ void emit(int2 radius, int2 canvas_pixel)
             for (x=-radius.x; x<=radius.x; x++) {
                 int2 coord = rakel_reservoir_pixel_nearest + int2(x, y);
                 if (pixel_in_array_range(coord, RakelReservoirSize)) {
-                    uint i = y + radius.y;
-                    uint j = x + radius.x;
+                    int i = y + radius.y;
+                    int j = x + radius.x;
                     float volume_part = volumes_to_emit[i][j] / unzero(result_volume);
                     result_color += volume_part * colors_to_emit[i][j];
                 }
@@ -86,11 +86,11 @@ void emit(int2 radius, int2 canvas_pixel)
             for (x=-radius.x; x<=radius.x; x++) {
                 int2 coord = rakel_reservoir_pixel_nearest + int2(x, y);
                 if (pixel_in_array_range(coord, RakelReservoirSize)) {
-                    uint i = y + radius.y;
-                    uint j = x + radius.x;
+                    int i = y + radius.y;
+                    int j = x + radius.x;
                     float to_be_deleted = volumes_to_emit[i][j];
 
-                    uint2 coord_ = uint2(coord.x, coord.y);
+                    int2 coord_ = int2(coord.x, coord.y);
                     RakelReservoir[XY(coord_.x, coord_.y, RakelReservoirSize.x)].volume -= to_be_deleted;
                     deleted += to_be_deleted;
                 }
@@ -105,7 +105,7 @@ void emit(int2 radius, int2 canvas_pixel)
 #pragma kernel main
 
 [numthreads(32,1,1)]
-void main (uint3 id_ : SV_DispatchThreadID)
+void main (int3 id_ : SV_DispatchThreadID)
 {
     id__ = id_;
     if (is_relevant_thread(id(), CalculationSize))

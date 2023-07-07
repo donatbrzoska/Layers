@@ -2,28 +2,28 @@
 #include "indexing.hlsl"
 #include "logging.hlsl"
 
-uint3 id__;
-uint2 SubgridGroupSize;
-uint2 SubgridCurrentThreadID;
+int3 id__;
+int2 SubgridGroupSize;
+int2 SubgridCurrentThreadID;
 
-uint2 id()
+int2 id()
 {
-    uint2 subgrid_id = uint2(id__.x, id__.y);
+    int2 subgrid_id = int2(id__.x, id__.y);
     return subgrid_id * SubgridGroupSize + SubgridCurrentThreadID;
 }
 
 int2 CalculationPosition;
-uint2 CalculationSize;
+int2 CalculationSize;
 
 RWStructuredBuffer<float4> Debug;
 RWStructuredBuffer<DebugListInfo> DebugInfo;
 
-uint DEBUG_LIST_SIZE()
+int DEBUG_LIST_SIZE()
 {
     return 16;
 }
 
-void set_debug_list_info(uint size, uint t)
+void set_debug_list_info(int size, int t)
 {
     DebugListInfo dli;
     dli.Size = size;
@@ -31,7 +31,7 @@ void set_debug_list_info(uint size, uint t)
     DebugInfo[0] = dli;
 }
 
-void log_(uint index, float4 f)
+void log_(int index, float4 f)
 {
-    Debug[XYZ(id().x, id().y, index, uint3(CalculationSize.x, CalculationSize.y, DEBUG_LIST_SIZE()))] = f;
+    Debug[XYZ(id().x, id().y, index, int3(CalculationSize.x, CalculationSize.y, DEBUG_LIST_SIZE()))] = f;
 }
