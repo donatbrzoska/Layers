@@ -11,7 +11,7 @@ float3 RakelPosition;
 #pragma kernel test_distance_from_rakel
 
 [numthreads(32,1,1)]
-void test_distance_from_rakel(int3 id_ : SV_DispatchThreadID)
+void test_distance_from_rakel(uint3 id_ : SV_DispatchThreadID)
 {
     id__ = id_;
     if (is_relevant_thread(id(), CalculationSize))
@@ -29,7 +29,7 @@ float3 CanvasPosition;
 #pragma kernel test_distance_from_canvas
 
 [numthreads(32,1,1)]
-void test_distance_from_canvas(int3 id_ : SV_DispatchThreadID)
+void test_distance_from_canvas(uint3 id_ : SV_DispatchThreadID)
 {
     id__ = id_;
     if (is_relevant_thread(id(), CalculationSize))

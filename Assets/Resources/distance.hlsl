@@ -1,4 +1,4 @@
-// void log_float_at(int index, float f);
+// void log_float_at(uint index, float f);
 
 float distance_from_rakel(float3 point_pos, float3 rakel_LL_tilted, float3 rakel_LR_tilted, float3 rakel_position_tilted)
 {

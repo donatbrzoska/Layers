@@ -9,7 +9,7 @@ RWStructuredBuffer<ColumnInfo> CanvasReservoirInfo;
 RWStructuredBuffer<Paint> CanvasReservoirContent;
 RWStructuredBuffer<ColumnInfo> CanvasReservoirInfoDuplicate;
 RWStructuredBuffer<Paint> CanvasReservoirContentDuplicate;
-int3 CanvasReservoirSize;
+uint3 CanvasReservoirSize;
 float CanvasReservoirCellVolume;
 
 RWStructuredBuffer<MappedInfo> CanvasMappedInfo;
@@ -18,7 +18,7 @@ int2 ReservoirPixelPickupRadius;
 
 RWStructuredBuffer<ColumnInfo> CanvasEmittedPaintInfo;
 RWStructuredBuffer<Paint> CanvasEmittedPaintContent;
-int3 CanvasEmittedPaintSize;
+uint3 CanvasEmittedPaintSize;
 
 
 // radius of 1 does an emit on a 3x3 area from emit source grid, based on the rounded canvas_reservoir_pixel
@@ -35,12 +35,12 @@ void emit(int2 radius, int2 rakel_pixel)
         int y, x;
         for (y=-radius.y; y<=radius.y; y++) {
             for (x=-radius.x; x<=radius.x; x++) {
-                int i = y + radius.y;
-                int j = x + radius.x;
+                uint i = y + radius.y;
+                uint j = x + radius.x;
 
                 int2 coord = canvas_reservoir_pixel_nearest + int2(x, y);
                 if (pixel_in_array_range(coord, CanvasReservoirSize.xy)) { // Prevent out of bounds access to reservoir
-                    int2 coord_ = int2(coord.x, coord.y);
+                    uint2 coord_ = uint2(coord.x, coord.y);
                     int top_index = CanvasReservoirInfoDuplicate[XY(coord_.x, coord_.y, CanvasReservoirSize.x)].size - 1;
                     max_z = max(top_index, max_z);
                 }
@@ -58,8 +58,8 @@ void emit(int2 radius, int2 rakel_pixel)
             for (y=-radius.y; y<=radius.y; y++) {
                 for (x=-radius.x; x<=radius.x; x++) {
                     // initialize array
-                    int i = y + radius.y;
-                    int j = x + radius.x;
+                    uint i = y + radius.y;
+                    uint j = x + radius.x;
                     Paint p = paint_create_empty();
                     emitted_from_layer[i][j] = p;
 
@@ -69,7 +69,7 @@ void emit(int2 radius, int2 rakel_pixel)
                         if (overlap > 0) {
                             float max_volume_to_pickup_from_this_voxel = overlap / canvas_mapped_info.total_overlap * max_volume_to_pickup_from_this_layer;
                             // calculate volume to emit
-                            int3 coord_ = int3(coord.x, coord.y, z);
+                            uint3 coord_ = uint3(coord.x, coord.y, z);
                             // read from duplicate
                             Paint available = paint_grid_get(CanvasReservoirInfoDuplicate, CanvasReservoirContentDuplicate, CanvasReservoirSize, coord_);
                             if (z==0) {
@@ -96,8 +96,8 @@ void emit(int2 radius, int2 rakel_pixel)
             emitted_from_layer_mixed.volume = total_emitted_volume_from_layer;
             for (y=-radius.y; y<=radius.y; y++) {
                 for (x=-radius.x; x<=radius.x; x++) {
-                    int i = y + radius.y;
-                    int j = x + radius.x;
+                    uint i = y + radius.y;
+                    uint j = x + radius.x;
 
                     float volume_part = emitted_from_layer[i][j].volume / unzero(total_emitted_volume_from_layer);
                     emitted_from_layer_mixed.color += volume_part * emitted_from_layer[i][j].color;
@@ -115,7 +115,7 @@ void emit(int2 radius, int2 rakel_pixel)
 #pragma kernel main
 
 [numthreads(32,1,1)]
-void main (int3 id_ : SV_DispatchThreadID)
+void main (uint3 id_ : SV_DispatchThreadID)
 {
     id__ = id_;
     if (is_relevant_thread(id(), CalculationSize))

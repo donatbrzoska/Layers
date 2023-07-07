@@ -1,36 +1,36 @@
 struct DebugListInfo
 {
-    int Size;
-    int Type;
+    uint Size;
+    uint Type;
 };
 
-void set_debug_list_info(int size, int t);
+void set_debug_list_info(uint size, uint t);
 
-void log_(int index, float4 f);
+void log_(uint index, float4 f);
 
 
 // LOG LISTS
 // It is assumed that every logging thread is logging the same amount of elements!
 
-void log_float_at(int index, float f)
+void log_float_at(uint index, float f)
 {
     log_(index, float4(f,0,0,0));
     set_debug_list_info(index+1, 1);
 }
 
-void log_float2_at(int index, float2 f)
+void log_float2_at(uint index, float2 f)
 {
     log_(index, float4(f.x,f.y,0,0));
     set_debug_list_info(index+1, 2);
 }
 
-void log_float3_at(int index, float3 f)
+void log_float3_at(uint index, float3 f)
 {
     log_(index, float4(f.x,f.y,f.z,0));
     set_debug_list_info(index+1, 3);
 }
 
-void log_float4_at(int index, float4 f)
+void log_float4_at(uint index, float4 f)
 {
     log_(index, float4(f.x,f.y,f.z,f.w));
     set_debug_list_info(index+1, 4);

@@ -19,7 +19,7 @@ float distance_from_rakel_(float3 back_tranformed_canvas_pixel)
 #pragma kernel main
 
 [numthreads(32,1,1)]
-void main (int3 id_ : SV_DispatchThreadID)
+void main (uint3 id_ : SV_DispatchThreadID)
 {
     id__ = id_;
     if (is_relevant_thread(id(), CalculationSize))

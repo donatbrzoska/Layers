@@ -5,7 +5,7 @@
 #include "../rakel.hlsl"
 #include "../mapped_info.hlsl"
 
-int TextureResolution;
+uint TextureResolution;
 
 float3 CanvasPosition;
 float2 CanvasSize;
@@ -35,7 +35,7 @@ float3 transform_to_rakel_origin(int2 pos_pixel)
 #pragma kernel main
 
 [numthreads(32,1,1)]
-void main (int3 id_ : SV_DispatchThreadID)
+void main (uint3 id_ : SV_DispatchThreadID)
 {
     id__ = id_;
     if (is_relevant_thread(id(), CalculationSize))

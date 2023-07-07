@@ -5,15 +5,15 @@
 
 RWStructuredBuffer<ColumnInfo> CanvasReservoirInfo;
 RWStructuredBuffer<Paint> CanvasReservoirContent;
-int3 CanvasReservoirSize;
-int ColorSpace;
+uint3 CanvasReservoirSize;
+uint ColorSpace;
 
 RWTexture2D<float4> NormalMap;
 float NormalScale;
 RWTexture2D<float4> Texture;
 
 
-float4 CANVAS_COLOR(int color_space)
+float4 CANVAS_COLOR(uint color_space)
 {
     float4 rgb_color = float4(1,1,1,1);
     return (color_space == 0) ? rgb_color : rgb_to_ryb(rgb_color);
@@ -23,10 +23,10 @@ void update_normal(int2 canvas_pixel)
 {
     // calculate normal
     // ... ... deal with oob access
-    int left = clamp(canvas_pixel.x-1, 0, CanvasReservoirSize.x-1);
-    int right = clamp(canvas_pixel.x+1, 0, CanvasReservoirSize.x-1);
-    int up = clamp(canvas_pixel.y+1, 0, CanvasReservoirSize.y-1);
-    int bot = clamp(canvas_pixel.y-1, 0, CanvasReservoirSize.y-1);
+    uint left = clamp(canvas_pixel.x-1, 0, CanvasReservoirSize.x-1);
+    uint right = clamp(canvas_pixel.x+1, 0, CanvasReservoirSize.x-1);
+    uint up = clamp(canvas_pixel.y+1, 0, CanvasReservoirSize.y-1);
+    uint bot = clamp(canvas_pixel.y-1, 0, CanvasReservoirSize.y-1);
     
     // ... ... get volumes
     float vol_ul = CanvasReservoirInfo[XY(left,           up,             CanvasReservoirSize.x)].volume;
@@ -70,10 +70,10 @@ void update_color(int2 canvas_pixel)
     // paint from canvas
     int top_z = CanvasReservoirInfo[XY(canvas_pixel.x, canvas_pixel.y, CanvasReservoirSize.x)].size - 1;
     if (top_z > -1) { // there is at least one layer of paint
-        top = paint_grid_get(CanvasReservoirInfo, CanvasReservoirContent, CanvasReservoirSize, int3(canvas_pixel.x, canvas_pixel.y, top_z));
+        top = paint_grid_get(CanvasReservoirInfo, CanvasReservoirContent, CanvasReservoirSize, uint3(canvas_pixel.x, canvas_pixel.y, top_z));
     }
     if (top_z > 0) { // there is at least two layers of paint
-        background_color = paint_grid_get(CanvasReservoirInfo, CanvasReservoirContent, CanvasReservoirSize, int3(canvas_pixel.x, canvas_pixel.y, top_z - 1)).color;
+        background_color = paint_grid_get(CanvasReservoirInfo, CanvasReservoirContent, CanvasReservoirSize, uint3(canvas_pixel.x, canvas_pixel.y, top_z - 1)).color;
     }
 
     // blend little paint with background color
@@ -92,7 +92,7 @@ void update_color(int2 canvas_pixel)
 #pragma kernel main
 
 [numthreads(32,1,1)]
-void main (int3 id_ : SV_DispatchThreadID)
+void main (uint3 id_ : SV_DispatchThreadID)
 {
     id__ = id_;
     if (is_relevant_thread(id(), CalculationSize))

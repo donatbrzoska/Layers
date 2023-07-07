@@ -8,7 +8,7 @@ RWStructuredBuffer<Paint> Paint_A_B_Result;
 #pragma kernel test_mix
 
 [numthreads(32,1,1)]
-void test_mix(int3 id_ : SV_DispatchThreadID)
+void test_mix(uint3 id_ : SV_DispatchThreadID)
 {
     id__ = id_;
     if (is_relevant_thread(id(), CalculationSize))
@@ -25,7 +25,7 @@ float4 BackgroundColor;
 #pragma kernel test_alpha_blend
 
 [numthreads(32,1,1)]
-void test_alpha_blend(int3 id_ : SV_DispatchThreadID)
+void test_alpha_blend(uint3 id_ : SV_DispatchThreadID)
 {
     id__ = id_;
     if (is_relevant_thread(id(), CalculationSize))
@@ -41,7 +41,7 @@ float4 RGBColor;
 #pragma kernel test_rgb_to_ryb
 
 [numthreads(32,1,1)]
-void test_rgb_to_ryb(int3 id_ : SV_DispatchThreadID)
+void test_rgb_to_ryb(uint3 id_ : SV_DispatchThreadID)
 {
     id__ = id_;
     if (is_relevant_thread(id(), CalculationSize))
@@ -57,7 +57,7 @@ float4 RYBColor;
 #pragma kernel test_ryb_to_rgb
 
 [numthreads(32,1,1)]
-void test_ryb_to_rgb(int3 id_ : SV_DispatchThreadID)
+void test_ryb_to_rgb(uint3 id_ : SV_DispatchThreadID)
 {
     id__ = id_;
     if (is_relevant_thread(id(), CalculationSize))

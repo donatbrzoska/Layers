@@ -4,14 +4,14 @@
 
 
 int2 Pixel;
-int TextureResolution;
+uint TextureResolution;
 float3 SurfacePosition;
 float2 SurfaceSize;
 
 #pragma kernel test_pixel_to_world_space
 
 [numthreads(32,1,1)]
-void test_pixel_to_world_space(int3 id_ : SV_DispatchThreadID)
+void test_pixel_to_world_space(uint3 id_ : SV_DispatchThreadID)
 {
     id__ = id_;
     if (is_relevant_thread(id(), CalculationSize))
@@ -23,12 +23,12 @@ void test_pixel_to_world_space(int3 id_ : SV_DispatchThreadID)
 
 
 float3 WorldSpacePosition;
-// int TextureResolution;
+// uint TextureResolution;
 
 #pragma kernel test_rakel_anchor_to_index_space
 
 [numthreads(32,1,1)]
-void test_rakel_anchor_to_index_space(int3 id_ : SV_DispatchThreadID)
+void test_rakel_anchor_to_index_space(uint3 id_ : SV_DispatchThreadID)
 {
     id__ = id_;
     if (is_relevant_thread(id(), CalculationSize))

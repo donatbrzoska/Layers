@@ -4,35 +4,35 @@
 #include "../paint_grid.hlsl"
 
 RWStructuredBuffer<ColumnInfo> ReservoirInfoDuplicate;
-int3 ReservoirSize;
+uint3 ReservoirSize;
 
-int2 ReduceRegionSize;
-int ReduceFunction;
+uint2 ReduceRegionSize;
+uint ReduceFunction;
 
 
 #pragma kernel reduce_volume
 
 // assumes that index_base always has always smaller values than index
-int in_reduce_bounds(int2 index, int2 index_base)
+uint in_reduce_bounds(uint2 index, uint2 index_base)
 {
     // casting to int2 and do abs(), because CalculationPosition may be negative
-    return int(all(abs(int2(index) - CalculationPosition) < int2(ReduceRegionSize)));
+    return uint(all(abs(int2(index) - CalculationPosition) < int2(ReduceRegionSize)));
 }
 
 [numthreads(32,1,1)]
-void reduce_volume(int3 id_ : SV_DispatchThreadID)
+void reduce_volume(uint3 id_ : SV_DispatchThreadID)
 {
     id__ = id_;
     if (is_relevant_thread(id(), CalculationSize))
     {
-        int2 upper = int2(0, CalculationSize.y);
-        int2 right = int2(CalculationSize.x, 0);
+        uint2 upper = uint2(0, CalculationSize.y);
+        uint2 right = uint2(CalculationSize.x, 0);
 
-        int2 i_base = CalculationPosition + id();
-        int2 i_ll = i_base;
-        int2 i_lr = i_base + right;
-        int2 i_ul = i_base + upper;
-        int2 i_ur = i_base + right + upper;
+        uint2 i_base = CalculationPosition + id();
+        uint2 i_ll = i_base;
+        uint2 i_lr = i_base + right;
+        uint2 i_ul = i_base + upper;
+        uint2 i_ur = i_base + right + upper;
 
         float value_ll = ReservoirInfoDuplicate[XY(i_ll.x, i_ll.y, ReservoirSize.x)].volume * in_reduce_bounds(i_ll, i_base);
         float value_lr = ReservoirInfoDuplicate[XY(i_lr.x, i_lr.y, ReservoirSize.x)].volume * in_reduce_bounds(i_lr, i_base);

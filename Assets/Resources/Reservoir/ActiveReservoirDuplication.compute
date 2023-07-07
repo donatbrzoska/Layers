@@ -5,17 +5,17 @@
 #include "../paint_grid.hlsl"
 
 RWStructuredBuffer<MappedInfo> PaintSourceMappedInfo;
-int2 PaintSourceReservoirSize;
+uint2 PaintSourceReservoirSize;
 
 RWStructuredBuffer<ColumnInfo> ReservoirInfo;
 RWStructuredBuffer<ColumnInfo> ReservoirInfoDuplicate;
-int3 ReservoirSize;
+uint3 ReservoirSize;
 
 
 #pragma kernel main
 
 [numthreads(32,1,1)]
-void main (int3 id_ : SV_DispatchThreadID)
+void main (uint3 id_ : SV_DispatchThreadID)
 {
     id__ = id_;
     if (is_relevant_thread(id(), CalculationSize))
