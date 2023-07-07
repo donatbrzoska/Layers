@@ -164,12 +164,12 @@ public class TransferConfiguration
         EmitDistance_MAX = 0.1f;
         PickupDistance_MAX = EmitDistance_MAX;
 
-        EmitVolume_MIN = 0;// 0.1f;
+        EmitVolume_MIN = 0.1f;
         EmitVolume_MAX = 1;
 
         EmitVolumeApplicationReservoirRate = 1;
         EmitVolumePickupReservoirRate = 1.2f;
-        PickupVolume_MIN = 0;// 0.3f;
+        PickupVolume_MIN = 0.1f;// 0.3f;
         PickupVolume_MAX = 0.65f;
 
         LayerThickness_MAX = 4 * Paint.VOLUME_THICKNESS;
