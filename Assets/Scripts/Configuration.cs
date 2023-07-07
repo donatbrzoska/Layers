@@ -6,6 +6,8 @@ public class Configuration
     public ColorSpace ColorSpace;
     public float NormalScale;
     public float CanvasCellVolume;
+    public int CanvasDiffuseDepth;
+    public float CanvasDiffuseRatio;
 
     public InputConfiguration InputConfiguration;
     public RakelConfiguration RakelConfiguration;
@@ -18,6 +20,8 @@ public class Configuration
         ColorSpace = ColorSpace.RGB;
         NormalScale = 0.015f;
         CanvasCellVolume = 1;
+        CanvasDiffuseDepth = 1;
+        CanvasDiffuseRatio = 0.3f;
 
         InputConfiguration = new InputConfiguration();
         RakelConfiguration = new RakelConfiguration();
@@ -125,12 +129,16 @@ public class RakelConfiguration
     public float Length;
     public float Width;
     public float CellVolume;
+    public int DiffuseDepth;
+    public float DiffuseRatio;
 
     public RakelConfiguration()
     {
         Length = 2.5f;
         Width = 0.5f;
         CellVolume = 1;
+        DiffuseDepth = 1;
+        DiffuseRatio = 0.3f;
     }
 }
 

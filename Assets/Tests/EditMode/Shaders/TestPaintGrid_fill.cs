@@ -14,6 +14,8 @@ public class TestPaintGrid_fill
     Paint[] PaintGridContentData;
     Vector3Int PaintGridSize;
     float PaintGridCellVolume;
+    int PaintGridDiffuseDepth;
+    float PaintGridDiffuseRatio;
     Vector2Int NewElementPosition;
     ComputeBuffer NewElement;
     Paint[] NewElementData;
@@ -24,6 +26,8 @@ public class TestPaintGrid_fill
         Attributes = new List<CSAttribute>();
 
         PaintGridCellVolume = 1;
+        PaintGridDiffuseDepth = 0;
+        PaintGridDiffuseRatio = 0;
         NewElementPosition = Vector2Int.zero;
 
         new FileLogger_().OnEnable();
@@ -54,6 +58,8 @@ public class TestPaintGrid_fill
         Attributes.Add(new CSComputeBuffer("PaintGridContent", PaintGridContent));
         Attributes.Add(new CSInt3("PaintGridSize", PaintGridSize));
         Attributes.Add(new CSFloat("PaintGridCellVolume", PaintGridCellVolume));
+        Attributes.Add(new CSInt("PaintGridDiffuseDepth", PaintGridDiffuseDepth));
+        Attributes.Add(new CSFloat("PaintGridDiffuseRatio", PaintGridDiffuseRatio));
         Attributes.Add(new CSInt2("NewElementPosition", NewElementPosition));
         Attributes.Add(new CSComputeBuffer("NewElement", NewElement));
 
@@ -600,6 +606,202 @@ public class TestPaintGrid_fill
                 P(0.2f, 1),
 
                 P(1,    0.4f),
+            },
+            PaintGridContentData);
+    }
+
+    [Test]
+    public void column_filled_diffuse_depth_one()
+    {
+        // Arrange
+        PaintGridInfoData = new ColumnInfo[]
+        {
+            new ColumnInfo { Size = 2, WriteIndex = 2, Volume = 2 }
+        };
+        PaintGridContentData = new Paint[]
+        {
+            P(0, 1),
+
+            P(0, 1),
+
+            P(-1),
+        };
+        PaintGridSize = new Vector3Int(1, 1, 3);
+        PaintGridDiffuseDepth = 1;
+        PaintGridDiffuseRatio = 0.3f;
+        NewElementData = new Paint[]
+        {
+            P(1, 1)
+        };
+
+
+        // Act
+        Execute(KERNEL_ID_fill);
+
+
+        // Assert
+        Assert.AreEqual(
+            new ColumnInfo[]
+            {
+                new ColumnInfo { Size = 3, WriteIndex = 3, Volume = 3 }
+            },
+            PaintGridInfoData);
+
+        Assert.AreEqual(
+            new Paint[]
+            {
+                P(0, 1),
+
+                P(0.3f, 1),
+
+                P(0.7f, 1)
+            },
+            PaintGridContentData);
+    }
+
+    [Test]
+    public void column_filled_diffuse_depth_two()
+    {
+        // Arrange
+        PaintGridInfoData = new ColumnInfo[]
+        {
+            new ColumnInfo { Size = 2, WriteIndex = 2, Volume = 2 }
+        };
+        PaintGridContentData = new Paint[]
+        {
+            P(0, 1),
+
+            P(0, 1),
+
+            P(-1),
+        };
+        PaintGridSize = new Vector3Int(1, 1, 3);
+        PaintGridDiffuseDepth = 2;
+        PaintGridDiffuseRatio = 0.3f;
+        NewElementData = new Paint[]
+        {
+            P(1, 1)
+        };
+
+
+        // Act
+        Execute(KERNEL_ID_fill);
+
+
+        // Assert
+        Assert.AreEqual(
+            new ColumnInfo[]
+            {
+                new ColumnInfo { Size = 3, WriteIndex = 3, Volume = 3 }
+            },
+            PaintGridInfoData);
+
+        Assert.AreEqual(
+            new Paint[]
+            {
+                P(0.09f, 1),
+
+                P(0.21f, 1),
+
+                P(0.7f, 1)
+            },
+            PaintGridContentData);
+    }
+
+    [Test]
+    public void column_filled_diffuse_depth_one_more_on_top()
+    {
+        // Arrange
+        PaintGridInfoData = new ColumnInfo[]
+        {
+            new ColumnInfo { Size = 2, WriteIndex = 2, Volume = 2 }
+        };
+        PaintGridContentData = new Paint[]
+        {
+            P(0, 1),
+
+            P(0, 1),
+
+            P(0),
+
+            P(0),
+        };
+        PaintGridSize = new Vector3Int(1, 1, 4);
+        PaintGridDiffuseDepth = 1;
+        PaintGridDiffuseRatio = 0.3f;
+        NewElementData = new Paint[]
+        {
+            P(1, 2)
+        };
+
+
+        // Act
+        Execute(KERNEL_ID_fill);
+
+
+        // Assert
+        Assert.AreEqual(
+            new ColumnInfo[]
+            {
+                new ColumnInfo { Size = 4, WriteIndex = 4, Volume = 4 }
+            },
+            PaintGridInfoData);
+
+        Assert.AreEqual(
+            new Paint[]
+            {
+                P(0, 1),
+
+                P(0.3f, 1),
+
+                P(0.7f, 1),
+
+                P(1, 1),
+            },
+            PaintGridContentData);
+    }
+
+    [Test]
+    public void column_filled_diffuse_deeper_than_column_does_nothing()
+    {
+        // Arrange
+        PaintGridInfoData = new ColumnInfo[]
+        {
+            new ColumnInfo { Size = 1, WriteIndex = 1, Volume = 1 }
+        };
+        PaintGridContentData = new Paint[]
+        {
+            P(0, 1),
+
+            P(-1),
+        };
+        PaintGridSize = new Vector3Int(1, 1, 2);
+        PaintGridDiffuseDepth = 2;
+        PaintGridDiffuseRatio = 0.3f;
+        NewElementData = new Paint[]
+        {
+            P(1, 1)
+        };
+
+
+        // Act
+        Execute(KERNEL_ID_fill);
+
+
+        // Assert
+        Assert.AreEqual(
+            new ColumnInfo[]
+            {
+                new ColumnInfo { Size = 2, WriteIndex = 2, Volume = 2 }
+            },
+            PaintGridInfoData);
+
+        Assert.AreEqual(
+            new Paint[]
+            {
+                P(0.3f, 1),
+
+                P(0.7f, 1),
             },
             PaintGridContentData);
     }
