@@ -250,7 +250,6 @@ public class Canvas_
                 new CSComputeBuffer("CanvasReservoirInfo", Reservoir.PaintGrid.Info),
                 new CSComputeBuffer("CanvasReservoirContent", Reservoir.PaintGrid.Content),
                 new CSInt3("CanvasReservoirSize", Reservoir.Size),
-                new CSFloat("CanvasReservoirCellVolume", Reservoir.PaintGrid.CellVolume),
                 new CSInt("ColorSpace", (int) ColorSpace),
 
                 new CSTexture("Texture", Texture),
