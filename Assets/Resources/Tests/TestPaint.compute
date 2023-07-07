@@ -21,6 +21,7 @@ void test_mix(uint3 id_ : SV_DispatchThreadID)
 
 RWStructuredBuffer<Paint> Paint_A_Result;
 float4 BackgroundColor;
+float PaintUnit;
 
 #pragma kernel test_alpha_blend
 
@@ -30,7 +31,7 @@ void test_alpha_blend(uint3 id_ : SV_DispatchThreadID)
     id__ = id_;
     if (is_relevant_thread(id(), CalculationSize))
     {
-        Paint test_alpha_blend_result = alpha_blend(Paint_A_Result[0], BackgroundColor);
+        Paint test_alpha_blend_result = alpha_blend(Paint_A_Result[0], BackgroundColor, PaintUnit);
         Paint_A_Result[1] = test_alpha_blend_result;
     }
 }

@@ -6,6 +6,7 @@
 RWStructuredBuffer<ColumnInfo> CanvasReservoirInfo;
 RWStructuredBuffer<Paint> CanvasReservoirContent;
 uint3 CanvasReservoirSize;
+float CanvasReservoirCellVolume;
 uint ColorSpace;
 
 RWTexture2D<float4> NormalMap;
@@ -78,8 +79,8 @@ void update_color(int2 canvas_pixel)
 
     // blend little paint with background color
     // we can't use alpha values, because there is nothing behind the paint - the paint is the texture
-    if (top.volume < PAINT_UNIT()) {
-        top = alpha_blend(top, background_color);
+    if (top.volume < CanvasReservoirCellVolume) {
+        top = alpha_blend(top, background_color, CanvasReservoirCellVolume);
     }
 
     // float3 result = ryb_to_rgb(float3(1, 1, 0));

@@ -86,7 +86,7 @@ bool is_empty(Paint p)
 }
 
 // p.volume is assumed to be 0..1
-Paint alpha_blend(Paint p, float4 background_color)
+Paint alpha_blend(Paint p, float4 background_color, float paint_unit)
 {
     float real_volume = p.volume;
 
@@ -95,7 +95,7 @@ Paint alpha_blend(Paint p, float4 background_color)
 
     Paint canvas_paint;
     canvas_paint.color = background_color;
-    canvas_paint.volume = max(PAINT_UNIT() - p.volume, 0);
+    canvas_paint.volume = max(paint_unit - p.volume, 0);
 
     Paint mixed = mix(canvas_paint, p);
     mixed.volume = real_volume;

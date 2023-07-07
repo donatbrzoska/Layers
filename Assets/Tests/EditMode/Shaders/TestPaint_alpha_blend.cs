@@ -12,6 +12,7 @@ public class TestPaint_alpha_blend
     public void Setup()
     {
         Attributes = new List<CSAttribute>();
+        Attributes.Add(new CSFloat("PaintUnit", 1));
     }
 
     private ComputeShaderTask Execute(int kernelID)
