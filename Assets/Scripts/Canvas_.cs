@@ -175,12 +175,16 @@ public class Canvas_
         float cellVolume_UNUSED = 0;
         PaintGrid canvasEmittedPaint = new PaintGrid(new Vector3Int(shaderRegion.Size.x, shaderRegion.Size.y, Reservoir.Size.z), cellVolume_UNUSED);
 
-        Vector2Int reservoirPixelPickupArea = new Vector2Int(RESERVOIR_PIXEL_PICKUP_RADIUS.x * 2 + 1, RESERVOIR_PIXEL_PICKUP_RADIUS.y * 2 + 1);
+        float pixelSize = 1 / (float)Reservoir.Resolution;
+        float pixelDiag = pixelSize * Mathf.Sqrt(2);
+        float tiltedPixelShortSide = Mathf.Cos(rakel.Info.Tilt * Mathf.Deg2Rad) * pixelSize;
+        Vector2Int deleteConflictRadius = new Vector2Int((int)Mathf.Ceil((pixelDiag / 2) / tiltedPixelShortSide), 1);
+        Vector2Int deleteConflictArea = new Vector2Int(deleteConflictRadius.x * 2 + 1, deleteConflictRadius.y * 2 + 1);
 
         new ComputeShaderTask(
             "Pickup/EmitFromCanvas",
             shaderRegion,
-            reservoirPixelPickupArea,
+            deleteConflictArea,
             new List<CSAttribute>()
             {
                 new CSInt2("ReservoirPixelPickupRadius", RESERVOIR_PIXEL_PICKUP_RADIUS),

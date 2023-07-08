@@ -57,6 +57,7 @@ public class Rakel
     private Vector2Int DistortionMapSize;
 
     private Vector2Int ReservoirPixelEmitRadius;
+    private Vector2Int DELETE_CONFLICT_AREA = new Vector2Int(3,3);
 
     public Rakel(float length, float width, int resolution, int layers_MAX, float cellVolume, float anchorRatioLength = 0.5f, float anchorRatioWidth = 1)
     {
@@ -344,12 +345,10 @@ public class Rakel
         float cellVolume_UNUSED = 0;
         PaintGrid rakelEmittedPaint = new PaintGrid(new Vector3Int(shaderRegion.Size.x, shaderRegion.Size.y, Reservoir.Size.z), cellVolume_UNUSED);
 
-        Vector2Int reservoirPixelEmitArea = new Vector2Int(ReservoirPixelEmitRadius.x * 2 + 1, ReservoirPixelEmitRadius.y * 2 + 1);
-
         new ComputeShaderTask(
             "Emit/EmitFromRakel",
             shaderRegion,
-            reservoirPixelEmitArea,
+            DELETE_CONFLICT_AREA,
             new List<CSAttribute>()
             {
                 new CSComputeBuffer("RakelReservoirInfo", Reservoir.PaintGrid.Info),
