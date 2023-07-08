@@ -393,19 +393,24 @@ public class OilPaintEngine : MonoBehaviour
 
     public void DoMacroAction()
     {
-        Rakel.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen, Configuration.ColorSpace), new FlatVolumeFiller(1)));
+        //Rakel.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen, Configuration.ColorSpace), new FlatVolumeFiller(1)));
 
-        InputInterpolator.NewStroke();
-        InputInterpolator.AddNode(
-            new Vector3(-3, 0, -0.10f), 0, 0,
-            0,
-            0,
-            Configuration.TransferConfiguration,
-            Configuration.TextureResolution);
+        //InputInterpolator.NewStroke();
+        //InputInterpolator.AddNode(
+        //    new Vector3(-3, 0, -0.10f), 0, 0,
+        //    0,
+        //    0,
+        //    Configuration.TransferConfiguration,
+        //    Configuration.TextureResolution);
+
+        int PRINTED_DEPTH = 1;
+        Canvas.Reservoir.PaintGrid.ReadbackContent();
+        LogUtil.Log(Canvas.Reservoir.PaintGrid.GetColors(), Canvas.Reservoir.Size, PRINTED_DEPTH, DebugListType.Float4, "Colors");
     }
 
     public void DoMacro2Action()
     {
-
+        Canvas.Reservoir.PaintGrid.ReadbackInfo();
+        LogUtil.Log(Canvas.Reservoir.PaintGrid.GetVolumes(), Canvas.Reservoir.Size.y);
     }
 }
