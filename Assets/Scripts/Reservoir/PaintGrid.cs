@@ -73,15 +73,32 @@ public class PaintGrid
     }
 
     // Only used for testing purposes
-    public void Readback()
+    public void ReadbackInfo()
     {
         Info.GetData(InfoData);
+    }
+
+    // Only used for testing purposes
+    public void ReadbackContent()
+    {
+        Content.GetData(ContentData);
     }
 
     // Only used for testing purposes
     public ColumnInfo Get(int x, int y)
     {
         return InfoData[IndexUtil.XY(x, y, Size.x)];
+    }
+
+    // Only used for testing purposes
+    public Vector4[] GetColors()
+    {
+        Vector4[] colors = new Vector4[ContentData.Length];
+        for (int i = 0; i < colors.Length; i++)
+        {
+            colors[i] = ContentData[i].Color;
+        }
+        return colors;
     }
 
     // Only used for testing purposes

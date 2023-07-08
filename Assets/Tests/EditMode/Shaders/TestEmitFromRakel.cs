@@ -79,7 +79,7 @@ public class TestEmitFromRakel
 
 
         // Assert
-        RakelEmittedPaint.Readback();
+        RakelEmittedPaint.ReadbackInfo();
         float[] rakelEmittedVolumes = RakelEmittedPaint.GetVolumes();
 
         //LogUtil.Log(rakelEmittedVolumes, rakelEmitSR.Size.y, false);
@@ -134,7 +134,7 @@ public class TestEmitFromRakel
 
 
         // Assert
-        RakelEmittedPaint.Readback();
+        RakelEmittedPaint.ReadbackInfo();
         float[] rakelEmittedVolumes = RakelEmittedPaint.GetVolumes();
 
         //LogUtil.Log(rakelEmittedVolumes, rakelEmitSR.Size.y, false);
@@ -189,7 +189,7 @@ public class TestEmitFromRakel
 
 
         // Assert
-        RakelEmittedPaint.Readback();
+        RakelEmittedPaint.ReadbackInfo();
         float[] rakelEmittedVolumes = RakelEmittedPaint.GetVolumes();
 
         LogUtil.Log(rakelEmittedVolumes, rakelEmitSR.Size.y, false);
@@ -243,7 +243,7 @@ public class TestEmitFromRakel
 
 
         // Assert
-        RakelEmittedPaint.Readback();
+        RakelEmittedPaint.ReadbackInfo();
         float[] rakelEmittedVolumes = RakelEmittedPaint.GetVolumes();
 
         //LogUtil.Log(rakelEmittedVolumes, rakelEmitSR.Size.y, false);

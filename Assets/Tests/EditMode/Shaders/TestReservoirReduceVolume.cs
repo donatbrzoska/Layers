@@ -86,7 +86,7 @@ public class TestReservoirReduceVolume
 
 
         // Assert
-        Reservoir.PaintGridDuplicate.Readback();
+        Reservoir.PaintGridDuplicate.ReadbackInfo();
         float result = Reservoir.PaintGridDuplicate.Get(reductionPosition.x, reductionPosition.y).Volume;
 
         Assert.AreEqual(383, result);
@@ -117,7 +117,7 @@ public class TestReservoirReduceVolume
 
 
         // Assert
-        Reservoir.PaintGridDuplicate.Readback();
+        Reservoir.PaintGridDuplicate.ReadbackInfo();
         float result = Reservoir.PaintGridDuplicate.Get(reductionPosition.x, reductionPosition.y).Volume;
 
         Assert.AreEqual(100, result);
@@ -149,7 +149,7 @@ public class TestReservoirReduceVolume
 
 
         // Assert
-        Reservoir.PaintGridDuplicate.Readback();
+        Reservoir.PaintGridDuplicate.ReadbackInfo();
         float result = Reservoir.PaintGridDuplicate.Get(reductionPosition.x, reductionPosition.y).Volume;
 
         Assert.AreEqual(reductionSize.x * reductionSize.y, result);
@@ -180,7 +180,7 @@ public class TestReservoirReduceVolume
 
 
         // Assert
-        Reservoir.PaintGridDuplicate.Readback();
+        Reservoir.PaintGridDuplicate.ReadbackInfo();
         float result = Reservoir.PaintGridDuplicate.Get(reductionPosition.x, reductionPosition.y).Volume;
 
         Assert.AreEqual(reductionSize.x * reductionSize.y, result);

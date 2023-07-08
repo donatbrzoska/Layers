@@ -90,7 +90,7 @@ public class TestEmitFromCanvas
 
 
         // Assert
-        CanvasEmittedPaint.Readback();
+        CanvasEmittedPaint.ReadbackInfo();
         float[] canvasEmittedVolumes = CanvasEmittedPaint.GetVolumes();
 
         //LogUtil.Log(canvasEmittedVolumes, canvasEmitSR.Size.y, false);
@@ -131,7 +131,7 @@ public class TestEmitFromCanvas
         // Assert
 
         // 1. Check emitted paint
-        CanvasEmittedPaint.Readback();
+        CanvasEmittedPaint.ReadbackInfo();
         float[] canvasEmittedVolumes = CanvasEmittedPaint.GetVolumes();
 
         //LogUtil.Log(canvasEmittedVolumes, canvasEmitSR.Size.y, false);
@@ -151,7 +151,7 @@ public class TestEmitFromCanvas
             Sum(canvasEmittedVolumes));
 
         // 2. Check paint on canvas
-        Canvas.Reservoir.PaintGrid.Readback();
+        Canvas.Reservoir.PaintGrid.ReadbackInfo();
         float[] canvasVolumes = Canvas.Reservoir.PaintGrid.GetVolumes();
         AssertUtil.AssertFloatsEqual(
             2 * Pixels(CanvasWidth, CanvasHeight) * Paint.UNIT - Sum(canvasEmittedVolumes),
@@ -185,7 +185,7 @@ public class TestEmitFromCanvas
         // Assert
 
         // 1. Check emitted paint
-        CanvasEmittedPaint.Readback();
+        CanvasEmittedPaint.ReadbackInfo();
         float[] canvasEmittedVolumes = CanvasEmittedPaint.GetVolumes();
 
         //LogUtil.Log(canvasEmittedVolumes, canvasEmitSR.Size.y, false);
@@ -205,7 +205,7 @@ public class TestEmitFromCanvas
             Sum(canvasEmittedVolumes));
 
         // 2. Check paint on canvas
-        Canvas.Reservoir.PaintGrid.Readback();
+        Canvas.Reservoir.PaintGrid.ReadbackInfo();
         float[] canvasVolumes = Canvas.Reservoir.PaintGrid.GetVolumes();
 
         //LogUtil.Log(canvasVolumes, Canvas.TextureSize.y, false);
@@ -266,7 +266,7 @@ public class TestEmitFromCanvas
         // Assert
 
         // 1. Check emitted paint
-        CanvasEmittedPaint.Readback();
+        CanvasEmittedPaint.ReadbackInfo();
         float[] canvasEmittedVolumes = CanvasEmittedPaint.GetVolumes();
 
         //LogUtil.Log(canvasEmittedVolumes, canvasEmitSR.Size.y, false);
@@ -291,7 +291,7 @@ public class TestEmitFromCanvas
             0.01f);
 
         // 2. Check paint on canvas
-        Canvas.Reservoir.PaintGrid.Readback();
+        Canvas.Reservoir.PaintGrid.ReadbackInfo();
         float[] canvasVolumes = Canvas.Reservoir.PaintGrid.GetVolumes();
 
         //LogUtil.Log(canvasVolumes, Canvas.TextureSize.y, false);
@@ -354,7 +354,7 @@ public class TestEmitFromCanvas
 
 
         // Assert
-        CanvasEmittedPaint.Readback();
+        CanvasEmittedPaint.ReadbackInfo();
         float[] canvasEmittedVolumes = CanvasEmittedPaint.GetVolumes();
 
         //LogUtil.Log(canvasEmittedVolumes, canvasEmitSR.Size.y, false);
