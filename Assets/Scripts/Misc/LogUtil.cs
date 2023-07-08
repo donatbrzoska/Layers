@@ -91,7 +91,7 @@ public class LogUtil
                 result += "[";
                 for (int k = 0; k < usedDepth; k++)
                 {
-                    int index = k * dimensions.y * dimensions.x + row * dimensions.x + col;
+                    int index = IndexUtil.XYZ(col, row, k, dimensions);
                     string color_str = Float4ToString(values[index], debugElementType);
                     result += color_str;
                     if (k < usedDepth - 1)
@@ -121,7 +121,7 @@ public class LogUtil
                 result += "[";
                 for (int k = 0; k < usedDepth; k++)
                 {
-                    int index = k * dimensions.y * dimensions.x + row * dimensions.x + col;
+                    int index = IndexUtil.XYZ(col, row, k, dimensions);
                     result += values[index].ToString();
                     if (k < usedDepth - 1)
                     {
@@ -150,7 +150,7 @@ public class LogUtil
                 result += "[";
                 for (int k = 0; k < usedDepth; k++)
                 {
-                    int index = k * dimensions.y * dimensions.x + row * dimensions.x + col;
+                    int index = IndexUtil.XYZ(col, row, k, dimensions);
                     result += values[index].ToString();
                     if (k < usedDepth - 1)
                     {
