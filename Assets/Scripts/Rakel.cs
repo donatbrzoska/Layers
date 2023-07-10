@@ -244,25 +244,19 @@ public class Rakel
     {
         if (StrokeBegin)
         {
-            canvas.Reservoir.DuplicateActive(
+            canvas.Reservoir.ReduceVolumeAvg(
                 rakelMappedInfo,
                 new Vector2Int(Reservoir.Size.x, Reservoir.Size.y),
-                emitSR,
-                false);
-
-            canvas.Reservoir.ReduceVolume(
-                emitSR,
-                ReduceFunction.Max,
-                false);
+                emitSR);
 
             new ComputeShaderTask(
                 "RakelState/UpdateRakelPositionBaseZ",
                 new ShaderRegion(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
                 new List<CSAttribute>()
                 {
-                    new CSComputeBuffer("MaxVolumeSource", canvas.Reservoir.PaintGridDuplicate.Info),
-                    new CSInt2("MaxVolumeSourceSize", new Vector2Int(canvas.Reservoir.Size.x, canvas.Reservoir.Size.y)),
-                    new CSInt2("MaxVolumeSourceIndex", emitSR.Position),
+                    new CSComputeBuffer("ReducedVolumeSource", canvas.Reservoir.PaintGridDuplicate.Info),
+                    new CSInt2("ReducedVolumeSourceSize", new Vector2Int(canvas.Reservoir.Size.x, canvas.Reservoir.Size.y)),
+                    new CSInt2("ReducedVolumeSourceIndex", emitSR.Position),
 
                     new CSFloat("LayerThickness_MAX", layerThickness_MAX),
 

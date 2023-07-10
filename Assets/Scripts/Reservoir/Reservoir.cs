@@ -58,7 +58,7 @@ public class Reservoir
         ).Run();
     }
 
-    public void DuplicateActive(
+    private void DuplicateActive(
         ComputeBuffer paintSourceMappedInfo,
         Vector2Int paintSourceReservoirSize,
         ShaderRegion shaderRegion,
@@ -93,6 +93,74 @@ public class Reservoir
         //Debug.Log("Sum is " + sum);
     }
 
+    public void ReduceVolumeAvg(
+        ComputeBuffer paintSourceMappedInfo,
+        Vector2Int paintSourceReservoirSize,
+        ShaderRegion paintTargetSR)
+    {
+        // count pixels under paint source
+        new ComputeShaderTask(
+            "Reservoir/MarkActiveReservoirIntoDuplicate",
+            paintTargetSR,
+            new List<CSAttribute>()
+            {
+                new CSComputeBuffer("PaintSourceMappedInfo", paintSourceMappedInfo),
+                new CSInt2("PaintSourceReservoirSize", paintSourceReservoirSize),
+
+                new CSComputeBuffer("ReservoirInfo", PaintGrid.Info),
+                new CSComputeBuffer("ReservoirInfoDuplicate", PaintGridDuplicate.Info),
+                new CSInt2("ReservoirSize", new Vector2Int(Size.x, Size.y))
+            },
+            false
+        ).Run();
+
+        ReduceVolume(
+            paintTargetSR,
+            ReduceFunction.Add,
+            false);
+
+        ComputeBuffer activeCount = new ComputeBuffer(1, sizeof(float));
+        float[] activeCountData = new float[1];
+        activeCount.SetData(activeCountData);
+        new ComputeShaderTask(
+            "RakelState/WriteValue",
+            new ShaderRegion(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
+            new List<CSAttribute>()
+            {
+                new CSComputeBuffer("ValueSource", PaintGridDuplicate.Info),
+                new CSInt2("ValueSourceSize", new Vector2Int(Size.x, Size.y)),
+                new CSInt2("ValueSourceIndex", paintTargetSR.Position),
+
+                new CSComputeBuffer("ValueTarget", activeCount),
+            },
+            false
+        ).Run();
+
+
+        // divide by count and do add reduce to get average
+        Duplicate();
+
+        new ComputeShaderTask(
+            "RakelState/DivideByValue",
+            paintTargetSR,
+            new List<CSAttribute>()
+            {
+                new CSComputeBuffer("Value", activeCount),
+
+                new CSComputeBuffer("ReservoirInfoDuplicate", PaintGridDuplicate.Info),
+                new CSInt2("ReservoirSize", new Vector2Int(Size.x, Size.y))
+            },
+            false
+        ).Run();
+
+        activeCount.Dispose();
+
+        ReduceVolume(
+            paintTargetSR,
+            ReduceFunction.Add,
+            false);
+    }
+
     public void ReduceVolume(ShaderRegion reduceRegion, ReduceFunction reduceFunction, bool debugEnabled = false)
     {
         // shader is hardcoded to deal with 2x2 blocks (processing 4 values per thread)
@@ -109,12 +177,12 @@ public class Reservoir
             new ComputeShaderTask(
                 "Reservoir/ReduceVolume",
                 reduceShaderRegion,
-                new List<CSAttribute>()
+                new List<CSAttribute>
                 {
                     new CSComputeBuffer("ReservoirInfoDuplicate", PaintGridDuplicate.Info),
                     new CSInt3("ReservoirSize", Size),
                     new CSInt2("ReduceRegionSize", reduceRegion.Size),
-                    new CSInt("ReduceFunction", (int) reduceFunction)
+                    new CSInt("ReduceFunction", (int) reduceFunction),
                 },
                 debugEnabled
             ).Run();
