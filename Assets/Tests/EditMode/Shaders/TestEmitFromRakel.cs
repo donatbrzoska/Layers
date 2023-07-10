@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class TestEmitFromRakel
 {
+    private const int AUTO_Z_ENABLED = 0;
+    private const float PRESSURE = 0;
+
     Canvas_ Canvas;
     float RakelLength = 4;
     float RakelWidth = 2;
@@ -56,7 +59,7 @@ public class TestEmitFromRakel
         // Arrange
         Rakel.Fill(new ReservoirFiller(ColorFiller, new FlatVolumeFiller(INCOMPLETE_SURFACES_TOUCH_VOLUME)));
         Rakel.UpdateState(
-            new Vector3(-5, -0.5f, APPLIED_LAYERS * -Paint.VOLUME_THICKNESS), 0, 0,
+            new Vector3(-5, -0.5f, APPLIED_LAYERS * -Paint.VOLUME_THICKNESS), AUTO_Z_ENABLED, PRESSURE,
             0,
             0);
         ShaderRegion rakelEmitSR = new ShaderRegion(
@@ -111,7 +114,7 @@ public class TestEmitFromRakel
         // Arrange
         Rakel.Fill(new ReservoirFiller(ColorFiller, new FlatVolumeFiller(COMPLETE_SURFACES_TOUCH_VOLUME)));
         Rakel.UpdateState(
-            new Vector3(-5, -0.5f, LAYERS * -Paint.VOLUME_THICKNESS), 0, 0,
+            new Vector3(-5, -0.5f, LAYERS * -Paint.VOLUME_THICKNESS), AUTO_Z_ENABLED, PRESSURE,
             0,
             0);
         ShaderRegion rakelEmitSR = new ShaderRegion(
@@ -166,7 +169,7 @@ public class TestEmitFromRakel
         // Arrange
         Rakel.Fill(new ReservoirFiller(ColorFiller, new FlatVolumeFiller(BASICALLY_COMPLETE_SURFACES_TOUCH_VOLUME)));
         Rakel.UpdateState(
-            new Vector3(-5, -0.5f, LAYERS * -Paint.VOLUME_THICKNESS), 0, 0,
+            new Vector3(-5, -0.5f, LAYERS * -Paint.VOLUME_THICKNESS), AUTO_Z_ENABLED, PRESSURE,
             30,
             0);
         ShaderRegion rakelEmitSR = new ShaderRegion(
@@ -220,7 +223,7 @@ public class TestEmitFromRakel
         // Arrange
         Rakel.Fill(new ReservoirFiller(ColorFiller, new FlatVolumeFiller(COMPLETE_SURFACES_TOUCH_VOLUME)));
         Rakel.UpdateState(
-            new Vector3(-5, -0.5f, LAYERS * -Paint.VOLUME_THICKNESS), 0, 0,
+            new Vector3(-5, -0.5f, LAYERS * -Paint.VOLUME_THICKNESS), AUTO_Z_ENABLED, PRESSURE,
             0,
             0);
         ShaderRegion rakelEmitSR = new ShaderRegion(

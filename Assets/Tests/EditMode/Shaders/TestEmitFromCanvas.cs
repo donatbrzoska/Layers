@@ -3,6 +3,9 @@ using UnityEngine;
 
 public class TestEmitFromCanvas
 {
+    private const int AUTO_Z_ENABLED = 0;
+    private const float PRESSURE = 0;
+
     int Resolution;
 
     Rakel Rakel;
@@ -79,7 +82,7 @@ public class TestEmitFromCanvas
         Canvas.Reservoir.Duplicate(false);
 
         Rakel.UpdateState(
-            new Vector3(-5, 0.5f, 0), 0, 0,
+            new Vector3(-5, 0.5f, 0), AUTO_Z_ENABLED, PRESSURE,
             0, 0);
 
         // Act
@@ -118,7 +121,7 @@ public class TestEmitFromCanvas
         Canvas.Reservoir.Duplicate(false);
 
         Rakel.UpdateState(
-            new Vector3(-5, 0.5f, -Paint.VOLUME_THICKNESS), 0, 0,
+            new Vector3(-5, 0.5f, -Paint.VOLUME_THICKNESS), AUTO_Z_ENABLED, PRESSURE,
             0, 0);
 
         // Act
@@ -172,7 +175,7 @@ public class TestEmitFromCanvas
         Canvas.Reservoir.Duplicate(false);
 
         Rakel.UpdateState(
-            new Vector3(-5, 0.5f, (INIT_LAYERS - PICKED_UP_LAYERS) * -Paint.VOLUME_THICKNESS), 0, 0,
+            new Vector3(-5, 0.5f, (INIT_LAYERS - PICKED_UP_LAYERS) * -Paint.VOLUME_THICKNESS), AUTO_Z_ENABLED, PRESSURE,
             0, 0);
 
         // Act
@@ -253,7 +256,7 @@ public class TestEmitFromCanvas
         Canvas.Reservoir.Duplicate(false);
 
         Rakel.UpdateState(
-            new Vector3(-5, 0.5f, (INIT_LAYERS - PICKED_UP_LAYERS) * -Paint.VOLUME_THICKNESS), 0, 0,
+            new Vector3(-5, 0.5f, (INIT_LAYERS - PICKED_UP_LAYERS) * -Paint.VOLUME_THICKNESS), AUTO_Z_ENABLED, PRESSURE,
             0, 0);
 
         // Act
@@ -343,7 +346,7 @@ public class TestEmitFromCanvas
         Canvas.Reservoir.Duplicate(false);
 
         Rakel.UpdateState(
-            new Vector3(-5, 0.5f, -Paint.VOLUME_THICKNESS), 0, 0,
+            new Vector3(-5, 0.5f, -Paint.VOLUME_THICKNESS), AUTO_Z_ENABLED, PRESSURE,
             30, 0);
 
         // Act
