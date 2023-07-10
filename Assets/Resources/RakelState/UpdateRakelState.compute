@@ -37,7 +37,6 @@ void main (uint3 id_ : SV_DispatchThreadID)
         // TODO include anchor ratio, right now this only works for anchors located on rakel edge
         rakel.position.z = min(rakel.position.z, 0);
 
-        // use z from RakelInfo, since this is where we write it in UpdateRakelPosition
         rakel.position = float3(Position.x, Position.y, rakel.position.z);
         rakel.pressure = Pressure;
         rakel.rotation = Rotation;
