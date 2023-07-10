@@ -244,7 +244,8 @@ public class Rakel
     {
         if (StrokeBegin)
         {
-            canvas.Reservoir.ReduceVolumeAvg(
+            canvas.Reservoir.Duplicate();
+            ComputeBuffer reducedVolumeResult = canvas.Reservoir.ReduceVolumeAvg(
                 rakelMappedInfo,
                 new Vector2Int(Reservoir.Size.x, Reservoir.Size.y),
                 emitSR);
@@ -254,9 +255,7 @@ public class Rakel
                 new ShaderRegion(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
                 new List<CSAttribute>()
                 {
-                    new CSComputeBuffer("ReducedVolumeSource", canvas.Reservoir.PaintGridDuplicate.Info),
-                    new CSInt2("ReducedVolumeSourceSize", new Vector2Int(canvas.Reservoir.Size.x, canvas.Reservoir.Size.y)),
-                    new CSInt2("ReducedVolumeSourceIndex", emitSR.Position),
+                    new CSComputeBuffer("ReducedVolumeSource", reducedVolumeResult),
 
                     new CSFloat("LayerThickness_MAX", layerThickness_MAX),
 
@@ -264,6 +263,7 @@ public class Rakel
                 },
                 false
             ).Run();
+            reducedVolumeResult.Dispose();
 
             // position was updated, so we need to recalculate
             UpdateState(Info.Position, Info.AutoZEnabled, Info.Pressure, Info.Rotation, Info.Tilt);

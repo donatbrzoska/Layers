@@ -93,7 +93,8 @@ public class Reservoir
         //Debug.Log("Sum is " + sum);
     }
 
-    public void ReduceVolumeAvg(
+    // NOTE: make sure to have the reservoir duplicated already
+    public ComputeBuffer ReduceVolumeAvg(
         ComputeBuffer paintSourceMappedInfo,
         Vector2Int paintSourceReservoirSize,
         ShaderRegion paintTargetSR)
@@ -117,8 +118,6 @@ public class Reservoir
         ).Run();
 
         // divide by count and do add reduce to get average
-        Duplicate();
-
         new ComputeShaderTask(
             "RakelState/DivideByValue",
             paintTargetSR,
@@ -138,6 +137,27 @@ public class Reservoir
             paintTargetSR,
             ReduceFunction.Add,
             false);
+
+        // return result
+        ComputeBuffer reducedVolumeResult = new ComputeBuffer(1, sizeof(float));
+        float[] reducedVolumeResultData = new float[1];
+        reducedVolumeResult.SetData(reducedVolumeResultData);
+
+        new ComputeShaderTask(
+            "Reservoir/ExtractReducedVolume",
+            new ShaderRegion(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
+            new List<CSAttribute>()
+            {
+                new CSComputeBuffer("ReducedVolumeSource", PaintGridDuplicate.Info),
+                new CSInt2("ReducedVolumeSourceSize", new Vector2Int(Size.x, Size.y)),
+                new CSInt2("ReducedVolumeSourceIndex", paintTargetSR.Position),
+
+                new CSComputeBuffer("ReducedVolumeTarget", reducedVolumeResult),
+            },
+            false
+        ).Run();
+
+        return reducedVolumeResult;
     }
 
     public void ReduceVolume(ShaderRegion reduceRegion, ReduceFunction reduceFunction, bool debugEnabled = false)
