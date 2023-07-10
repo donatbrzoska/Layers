@@ -169,7 +169,7 @@ public class LogUtil
         string result = "(";
         for (int i=0; i<(int)debugType; i++)
         {
-            string format = "F2";
+            string format = "F6";
             switch(i)
             {
                 case 0:
