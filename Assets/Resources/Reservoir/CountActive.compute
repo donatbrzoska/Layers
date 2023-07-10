@@ -7,9 +7,7 @@
 RWStructuredBuffer<MappedInfo> PaintSourceMappedInfo;
 uint2 PaintSourceReservoirSize;
 
-RWStructuredBuffer<ColumnInfo> ReservoirInfo;
-RWStructuredBuffer<ColumnInfo> ReservoirInfoDuplicate;
-uint2 ReservoirSize;
+RWStructuredBuffer<int> ActiveCount;
 
 
 #pragma kernel main
@@ -25,14 +23,8 @@ void main (uint3 id_ : SV_DispatchThreadID)
 
         int2 pixel = id() + CalculationPosition;
 
-        ColumnInfo c;
-        c.size = 0;
-        c.write_index = 0;
-        c.volume = 0;
         if (pixel_in_array_range(reservoir_pixel_nearest, PaintSourceReservoirSize)) {
-            c.volume = 1; // we could write this anywhere into column, but the reduce shader uses the volume attribute
+            InterlockedAdd(ActiveCount[0], 1);
         }
-
-        ReservoirInfoDuplicate[XY(pixel.x, pixel.y, ReservoirSize.x)] = c;
     }
 }

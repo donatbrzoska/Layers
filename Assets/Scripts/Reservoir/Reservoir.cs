@@ -99,43 +99,22 @@ public class Reservoir
         ShaderRegion paintTargetSR)
     {
         // count pixels under paint source
+        ComputeBuffer activeCount = new ComputeBuffer(1, sizeof(int));
+        int[] activeCountData = new int[1];
+        activeCount.SetData(activeCountData);
+
         new ComputeShaderTask(
-            "Reservoir/MarkActiveReservoirIntoDuplicate",
+            "Reservoir/CountActive",
             paintTargetSR,
             new List<CSAttribute>()
             {
                 new CSComputeBuffer("PaintSourceMappedInfo", paintSourceMappedInfo),
                 new CSInt2("PaintSourceReservoirSize", paintSourceReservoirSize),
 
-                new CSComputeBuffer("ReservoirInfo", PaintGrid.Info),
-                new CSComputeBuffer("ReservoirInfoDuplicate", PaintGridDuplicate.Info),
-                new CSInt2("ReservoirSize", new Vector2Int(Size.x, Size.y))
+                new CSComputeBuffer("ActiveCount", activeCount),
             },
             false
         ).Run();
-
-        ReduceVolume(
-            paintTargetSR,
-            ReduceFunction.Add,
-            false);
-
-        ComputeBuffer activeCount = new ComputeBuffer(1, sizeof(float));
-        float[] activeCountData = new float[1];
-        activeCount.SetData(activeCountData);
-        new ComputeShaderTask(
-            "RakelState/WriteValue",
-            new ShaderRegion(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
-            new List<CSAttribute>()
-            {
-                new CSComputeBuffer("ValueSource", PaintGridDuplicate.Info),
-                new CSInt2("ValueSourceSize", new Vector2Int(Size.x, Size.y)),
-                new CSInt2("ValueSourceIndex", paintTargetSR.Position),
-
-                new CSComputeBuffer("ValueTarget", activeCount),
-            },
-            false
-        ).Run();
-
 
         // divide by count and do add reduce to get average
         Duplicate();
