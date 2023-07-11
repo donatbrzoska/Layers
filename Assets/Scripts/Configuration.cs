@@ -176,6 +176,6 @@ public class TransferConfiguration
         PickupVolume_MIN = 0.1f;// 0.3f;
         PickupVolume_MAX = 0.65f;
 
-        LayerThickness_MAX = 3 * Paint.VOLUME_THICKNESS;
+        LayerThickness_MAX = 4 * Paint.VOLUME_THICKNESS;
     }
 }
