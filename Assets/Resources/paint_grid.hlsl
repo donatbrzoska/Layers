@@ -110,13 +110,38 @@ void paint_grid_delete(
         updated = paint_create_empty();
     }
     pg_content[XYZ(delete_pos.x, delete_pos.y, delete_pos.z, pg_size)] = updated;
+}
 
-    bool cell_emptied = !is_empty(available) && is_empty(updated);
-    if (cell_emptied)
+void paint_grid_update_size(
+    RWStructuredBuffer<ColumnInfo> pg_info, RWStructuredBuffer<Paint> pg_content, uint3 pg_size, float pg_cell_volume,
+    uint2 pos)
+{
+    int z = 0;
+    Paint top = pg_content[XYZ(pos.x, pos.y, (uint)z, pg_size)];
+
+    bool write_index_found = false;
+    uint write_index = 0;
+    if (top.volume < pg_cell_volume)
     {
-        pg_info[XY(delete_pos.x, delete_pos.y, pg_size.x)].size--;
+        write_index_found = true;
     }
-    pg_info[XY(delete_pos.x, delete_pos.y, pg_size.x)].write_index = delete_pos.z;
+
+    while (!is_empty(top) && z < (int)pg_size.z)
+    {
+        z++;
+        top = pg_content[XYZ(pos.x, pos.y, (uint)z, pg_size)];
+
+        if (!write_index_found && top.volume < pg_cell_volume)
+        {
+            write_index = z;
+            write_index_found = true;
+        }
+    }
+
+    pg_info[XY(pos.x, pos.y, pg_size.x)].write_index = write_index;
+
+    // now z is the index at which there is no paint anymore
+    pg_info[XY(pos.x, pos.y, pg_size.x)].size = (uint)z;
 }
 
 Paint paint_grid_get(RWStructuredBuffer<ColumnInfo> pg_info, RWStructuredBuffer<Paint> pg_content, uint3 pg_size, uint3 get_pos)

@@ -43,6 +43,7 @@ public class TestPaintGrid_delete
         Attributes.Add(new CSComputeBuffer("PaintGridInfo", PaintGridInfo));
         Attributes.Add(new CSComputeBuffer("PaintGridContent", PaintGridContent));
         Attributes.Add(new CSInt3("PaintGridSize", PaintGridSize));
+        Attributes.Add(new CSFloat("PaintGridCellVolume", 1));
         Attributes.Add(new CSInt3("DeletePosition", DeletePosition));
         Attributes.Add(new CSFloat("DeleteVolume", DeleteVolume));
 
@@ -118,7 +119,7 @@ public class TestPaintGrid_delete
         {
             new ColumnInfo { Size = 1, WriteIndex = 1, Volume = 1 }, new ColumnInfo { Size = 1, WriteIndex = 1, Volume = 1 },
             new ColumnInfo { Size = 1, WriteIndex = 1, Volume = 1 }, new ColumnInfo { Size = 1, WriteIndex = 1, Volume = 1 },
-            new ColumnInfo { Size = 1, WriteIndex = 1, Volume = 1 }, new ColumnInfo { Size = 1, WriteIndex = 1, Volume = 1.2f },
+            new ColumnInfo { Size = 1, WriteIndex = 1, Volume = 1 }, new ColumnInfo { Size = 2, WriteIndex = 1, Volume = 1.2f },
         };
         PaintGridContentData = new Paint[]
         {
@@ -145,7 +146,7 @@ public class TestPaintGrid_delete
             {
                 new ColumnInfo { Size = 1, WriteIndex = 1, Volume = 1 }, new ColumnInfo { Size = 1, WriteIndex = 1, Volume = 1 },
                 new ColumnInfo { Size = 1, WriteIndex = 1, Volume = 1 }, new ColumnInfo { Size = 1, WriteIndex = 1, Volume = 1 },
-                new ColumnInfo { Size = 1, WriteIndex = 1, Volume = 1 }, new ColumnInfo { Size = 1, WriteIndex = 1, Volume = 1.1f },
+                new ColumnInfo { Size = 1, WriteIndex = 1, Volume = 1 }, new ColumnInfo { Size = 2, WriteIndex = 1, Volume = 1.1f },
             },
             PaintGridInfoData);
 
@@ -440,6 +441,136 @@ public class TestPaintGrid_delete
                 P(0.2f, 0.9f),
 
                 P(0.2f, 0.2f),
+            },
+            PaintGridContentData);
+    }
+
+    [Test]
+    public void auto_update_write_index_not_filled_below_impossible_write_index_its_possible_though_lol()
+    {
+        // Arrange
+        PaintGridInfoData = new ColumnInfo[]
+        {
+            new ColumnInfo { Size = 2, WriteIndex = 1, Volume = 0.2f }
+        };
+        PaintGridContentData = new Paint[]
+        {
+            P(0.2f, 0.1f),
+
+            P(0.2f, 0.1f),
+        };
+        PaintGridSize = new Vector3Int(1, 1, 2);
+
+
+        // Act
+        DeletePosition = new Vector3Int(0, 0, 1);
+        DeleteVolume = 0.1f;
+        Execute(KERNEL_ID_delete);
+
+
+        // Assert
+        Assert.AreEqual(
+            new ColumnInfo[]
+            {
+                new ColumnInfo { Size = 1, WriteIndex = 0, Volume = 0.1f }
+            },
+            PaintGridInfoData);
+
+        Assert.AreEqual(
+            new Paint[]
+            {
+                P(0.2f, 0.1f),
+
+                P0,
+            },
+            PaintGridContentData);
+    }
+
+    [Test]
+    public void update_size_empty()
+    {
+        // Arrange
+        PaintGridInfoData = new ColumnInfo[]
+        {
+            new ColumnInfo { Size = 1, WriteIndex = 0, Volume = 0.1f }
+        };
+        PaintGridContentData = new Paint[]
+        {
+            P(0.2f, 0.1f),
+
+            P0,
+        };
+        PaintGridSize = new Vector3Int(1, 1, 2);
+
+
+        // Act
+        DeletePosition = new Vector3Int(0, 0, 0);
+        DeleteVolume = 0.1f;
+        Execute(KERNEL_ID_delete);
+
+
+        // Assert
+        Assert.AreEqual(
+            new ColumnInfo[]
+            {
+                new ColumnInfo { Size = 0, WriteIndex = 0, Volume = 0 }
+            },
+            PaintGridInfoData);
+
+        Assert.AreEqual(
+            new Paint[]
+            {
+                P0,
+
+                P0,
+            },
+            PaintGridContentData);
+    }
+
+    [Test]
+    public void update_size_one_left()
+    {
+        // Arrange
+        PaintGridInfoData = new ColumnInfo[]
+        {
+            new ColumnInfo { Size = 3, WriteIndex = 0, Volume = 0.3f }
+        };
+        PaintGridContentData = new Paint[]
+        {
+            P(0.2f, 0.1f),
+
+            P(0.2f, 0.1f),
+
+            P(0.2f, 0.1f),
+        };
+        PaintGridSize = new Vector3Int(1, 1, 3);
+
+
+        // Act
+        DeletePosition = new Vector3Int(0, 0, 2);
+        DeleteVolume = 0.1f;
+        Execute(KERNEL_ID_delete);
+        DeletePosition = new Vector3Int(0, 0, 1);
+        DeleteVolume = 0.1f;
+        Execute(KERNEL_ID_delete);
+
+
+        // Assert
+        Assert.AreEqual(
+            new ColumnInfo[]
+            {
+                new ColumnInfo { Size = 1, WriteIndex = 0, Volume = 0.1f }
+            },
+            PaintGridInfoData);
+
+        Assert.AreEqual(
+            new Paint[]
+            {
+                P(0.2f, 0.1f),
+
+                P0,
+
+                P0,
             },
             PaintGridContentData);
     }

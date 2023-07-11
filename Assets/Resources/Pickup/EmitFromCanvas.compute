@@ -109,6 +109,18 @@ void emit(int2 radius, int2 rakel_pixel)
 
             z--;
         }
+
+        // update size, because we deleted some paint
+        // doing it inside paint_grid_delete lead to bugs, so we do it here
+        for (y=-radius.y; y<=radius.y; y++) {
+            for (x=-radius.x; x<=radius.x; x++) {
+                int2 coord = canvas_reservoir_pixel_nearest + int2(x, y);
+                if (pixel_in_array_range(coord, CanvasReservoirSize.xy)) { // Prevent out of bounds access to reservoir
+                    uint2 coord_ = uint2(coord.x, coord.y);
+                    paint_grid_update_size(CanvasReservoirInfo, CanvasReservoirContent, CanvasReservoirSize, CanvasReservoirCellVolume, coord_);
+                }
+            }
+        }
     }
 }
 

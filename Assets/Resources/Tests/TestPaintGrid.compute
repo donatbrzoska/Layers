@@ -97,6 +97,7 @@ void test_stack_2D_reverse_transfer(uint3 id_ : SV_DispatchThreadID)
 // RWStructuredBuffer<ColumnInfo> PaintGridInfo;
 // RWStructuredBuffer<Paint> PaintGridContent;
 // uint3 PaintGridSize;
+// float PaintGridCellVolume;
 
 uint3 DeletePosition;
 float DeleteVolume;
@@ -110,6 +111,7 @@ void test_paint_grid_delete(uint3 id_ : SV_DispatchThreadID)
     if (is_relevant_thread(id(), CalculationSize))
     {
         paint_grid_delete(PaintGridInfo, PaintGridContent, PaintGridSize, DeletePosition, DeleteVolume);
+        paint_grid_update_size(PaintGridInfo, PaintGridContent, PaintGridSize, PaintGridCellVolume, DeletePosition.xy);
     }
 }
 
