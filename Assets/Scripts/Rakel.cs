@@ -36,8 +36,8 @@ public class Rakel
     private const int MIN_SUPPORTED_TILT = 0;
     public const int MAX_SUPPORTED_TILT = 79;
 
-    private float SINK_BASE_MAX = 5 * Paint.VOLUME_THICKNESS;
-    private float SINK_TILT_MAX = 10 * Paint.VOLUME_THICKNESS;
+    private float SINK_BASE_MAX = 2 * Paint.VOLUME_THICKNESS;
+    private float SINK_TILT_MAX = 5 * Paint.VOLUME_THICKNESS;
 
     public static float ClampTilt(float tilt)
     {

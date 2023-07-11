@@ -10,9 +10,9 @@ public class OilPaintEngine : MonoBehaviour
     public float ANCHOR_RATIO_X;
     public float ANCHOR_RATIO_Y;
 
-    public bool USE_PEN;
+    public int LAYERS_MAX;
 
-    private int LAYERS_MAX = 20;
+    public bool USE_PEN;
 
     public Configuration Configuration { get; private set; }
     public InputManager InputManager { get; private set; }

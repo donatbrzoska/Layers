@@ -10845,6 +10845,7 @@ MonoBehaviour:
   TH_GROUP_SIZE_Y: 1
   ANCHOR_RATIO_X: 0
   ANCHOR_RATIO_Y: 0.5
+  LAYERS_MAX: 20
   USE_PEN: 0
 --- !u!114 &1643505815
 MonoBehaviour:
