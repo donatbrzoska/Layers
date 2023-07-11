@@ -1,0 +1,46 @@
+#include "../ShaderBase/shader_base.hlsl"
+
+#include "../Paint/paint.hlsl"
+#include "../rakel.hlsl"
+#include "../mapped_info.hlsl"
+#include "../paint_grid.hlsl"
+
+RWStructuredBuffer<ColumnInfo> RakelReservoirInfo;
+uint3 RakelReservoirSize;
+
+int2 ReservoirPixelEmitRadius;
+RWStructuredBuffer<MappedInfo> RakelMappedInfo;
+RWStructuredBuffer<ColumnInfo> CanvasReservoirInfoDuplicate;
+uint3 CanvasReservoirSize;
+
+
+#pragma kernel main
+
+[numthreads(32,1,1)]
+void main (uint3 id_ : SV_DispatchThreadID)
+{
+    id__ = id_;
+    if (is_relevant_thread(id(), CalculationSize))
+    {
+        MappedInfo rakel_mapped_info = RakelMappedInfo[XY(id().x, id().y, CalculationSize.x)];
+
+        int2 rakel_reservoir_pixel_nearest = round(rakel_mapped_info.reservoir_pixel);
+
+        float volume_rakel = 0;
+        for (int y=-ReservoirPixelEmitRadius.y; y<=ReservoirPixelEmitRadius.y; y++) {
+            for (int x=-ReservoirPixelEmitRadius.x; x<=ReservoirPixelEmitRadius.x; x++) {
+                uint i = y + ReservoirPixelEmitRadius.y;
+                uint j = x + ReservoirPixelEmitRadius.x;
+
+                int2 coord = rakel_reservoir_pixel_nearest + int2(x, y);
+                if (pixel_in_array_range(coord, RakelReservoirSize.xy)) { // Prevent out of bounds access to reservoir. Also, if it's not in range, this overlap part is not (and must not be!) used anyways.
+                    uint2 coord_ = uint2(coord.x, coord.y);
+                    volume_rakel += rakel_mapped_info.overlap[i][j] * RakelReservoirInfo[XY(coord_.x, coord_.y, RakelReservoirSize.x)].volume;
+                }
+            }
+        }
+
+        int2 canvas_pixel = id() + CalculationPosition;
+        CanvasReservoirInfoDuplicate[XY(canvas_pixel.x, canvas_pixel.y, CanvasReservoirSize.x)].volume = volume_rakel;
+    }
+}

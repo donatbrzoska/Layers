@@ -48,6 +48,8 @@ public class Rakel
 
     public ComputeBuffer InfoBuffer;
     public RakelInfo Info;
+    ComputeBuffer ReducedCanvasVolume;
+    ComputeBuffer ReducedRakelVolume;
 
     public Reservoir Reservoir;
 
@@ -82,6 +84,12 @@ public class Rakel
 
         InfoBuffer = new ComputeBuffer(1, RakelInfo.SizeInBytes);
         InfoBuffer.SetData(new RakelInfo[] { Info });
+
+        ReducedCanvasVolume = new ComputeBuffer(1, sizeof(float));
+        ReducedRakelVolume = new ComputeBuffer(1, sizeof(float));
+        float[] reducedVolumeData = new float[1];
+        ReducedCanvasVolume.SetData(reducedVolumeData);
+        ReducedRakelVolume.SetData(reducedVolumeData);
     }
 
     public void NewStroke()
@@ -121,7 +129,7 @@ public class Rakel
         return oldValue;
     }
 
-    public void UpdateState(Vector3 position, int autoZEnabled, float pressure, float rotation, float tilt)
+    public void UpdateState(Vector3 position, int autoZEnabled, int zZero, float pressure, float rotation, float tilt)
     {
         // Update info on CPU for rakel rendering
         Info.Position = position;
@@ -167,6 +175,7 @@ public class Rakel
             {
                 new CSFloat3("Position", Info.Position),
                 new CSInt("AutoZEnabled", Info.AutoZEnabled),
+                new CSInt("ZZero", zZero),
                 new CSFloat("Pressure", Info.Pressure),
                 new CSFloat("Rotation", Info.Rotation),
                 new CSFloat("Tilt", Info.Tilt),
@@ -242,20 +251,77 @@ public class Rakel
         ShaderRegion emitSR,
         float layerThickness_MAX)
     {
-        if (StrokeBegin)
+        // TODO do canvas volume based on last n steps?
+        if (StrokeBegin && Info.AutoZEnabled == 1)
         {
+            // reduce canvas volume
             canvas.Reservoir.Duplicate();
-            ComputeBuffer reducedVolumeResult = canvas.Reservoir.ReduceVolumeAvg(
+            canvas.Reservoir.ReduceVolumeAvg(
                 rakelMappedInfo,
                 new Vector2Int(Reservoir.Size.x, Reservoir.Size.y),
-                emitSR);
+                emitSR,
+                ReducedCanvasVolume);
 
+            StrokeBegin = false;
+        }
+
+        if (Info.AutoZEnabled == 1)
+        {
+            // reduce rakel volume
+            new ComputeShaderTask(
+                "RakelState/WriteSampledRakelVolumesToDuplicate",
+                emitSR,
+                new List<CSAttribute>()
+                {
+                    new CSComputeBuffer("RakelReservoirInfo", Reservoir.PaintGrid.Info),
+                    new CSInt3("RakelReservoirSize", Reservoir.Size),
+
+                    new CSInt2("ReservoirPixelEmitRadius", ReservoirPixelEmitRadius),
+                    new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
+                    new CSComputeBuffer("CanvasReservoirInfoDuplicate", canvas.Reservoir.PaintGridDuplicate.Info),
+                    new CSInt3("CanvasReservoirSize", canvas.Reservoir.Size),
+                },
+                false
+            ).Run();
+            // reset Z so that distance between rakel edge and canvas is 0
+            // (simplifies overshoot calculation)
+            UpdateState(Info.Position, Info.AutoZEnabled, 1, Info.Pressure, Info.Rotation, Info.Tilt);
+            new ComputeShaderTask(
+                "Emit/DistanceFromRakel",
+                emitSR,
+                new List<CSAttribute>()
+                {
+                new CSComputeBuffer("RakelInfo", InfoBuffer),
+
+                new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
+                },
+                false
+            ).Run();
+            new ComputeShaderTask(
+                "RakelState/CalculateRakelVolumeOvershoot",
+                emitSR,
+                new List<CSAttribute>()
+                {
+                    new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
+                    new CSComputeBuffer("CanvasReservoirInfoDuplicate", canvas.Reservoir.PaintGridDuplicate.Info),
+                    new CSInt3("CanvasReservoirSize", canvas.Reservoir.Size),
+                },
+                false
+            ).Run();
+            canvas.Reservoir.ReduceVolumeAvg(
+                rakelMappedInfo,
+                new Vector2Int(Reservoir.Size.x, Reservoir.Size.y),
+                emitSR,
+                ReducedRakelVolume);
+
+            // update rakel position base z
             new ComputeShaderTask(
                 "RakelState/UpdateRakelPositionBaseZ",
                 new ShaderRegion(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
                 new List<CSAttribute>()
                 {
-                    new CSComputeBuffer("ReducedVolumeSource", reducedVolumeResult),
+                    new CSComputeBuffer("ReducedCanvasVolumeSource", ReducedCanvasVolume),
+                    new CSComputeBuffer("ReducedRakelVolumeSource", ReducedRakelVolume),
 
                     new CSFloat("LayerThickness_MAX", layerThickness_MAX),
 
@@ -263,12 +329,9 @@ public class Rakel
                 },
                 false
             ).Run();
-            reducedVolumeResult.Dispose();
 
-            // position was updated, so we need to recalculate
-            UpdateState(Info.Position, Info.AutoZEnabled, Info.Pressure, Info.Rotation, Info.Tilt);
-
-            StrokeBegin = false;
+            // position base z was updated, so we need to recalculate
+            UpdateState(Info.Position, Info.AutoZEnabled, 0, Info.Pressure, Info.Rotation, Info.Tilt);
         }
     }
 
@@ -397,6 +460,9 @@ public class Rakel
         Reservoir.Dispose();
         InfoBuffer.Dispose();
         DistortionMap.Dispose();
+
+        ReducedCanvasVolume.Dispose();
+        ReducedRakelVolume.Dispose();
     }
 }
 

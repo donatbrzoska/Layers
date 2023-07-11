@@ -1,0 +1,28 @@
+#include "../ShaderBase/shader_base.hlsl"
+
+#include "../Paint/paint.hlsl"
+#include "../mapped_info.hlsl"
+#include "../paint_grid.hlsl"
+
+RWStructuredBuffer<MappedInfo> RakelMappedInfo;
+RWStructuredBuffer<ColumnInfo> CanvasReservoirInfoDuplicate;
+uint3 CanvasReservoirSize;
+
+
+#pragma kernel main
+
+[numthreads(32,1,1)]
+void main (uint3 id_ : SV_DispatchThreadID)
+{
+    id__ = id_;
+    if (is_relevant_thread(id(), CalculationSize))
+    {
+        int2 canvas_pixel = id() + CalculationPosition;
+        float rakel_volume = CanvasReservoirInfoDuplicate[XY(canvas_pixel.x, canvas_pixel.y, CanvasReservoirSize.x)].volume;
+
+        MappedInfo rakel_mapped_info = RakelMappedInfo[XY(id().x, id().y, CalculationSize.x)];
+        float rakel_volume_overshoot = rakel_volume - rakel_mapped_info.distance / VOLUME_THICKNESS();
+
+        CanvasReservoirInfoDuplicate[XY(canvas_pixel.x, canvas_pixel.y, CanvasReservoirSize.x)].volume = rakel_volume_overshoot;
+    }
+}

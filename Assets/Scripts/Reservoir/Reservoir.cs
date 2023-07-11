@@ -93,11 +93,12 @@ public class Reservoir
         //Debug.Log("Sum is " + sum);
     }
 
-    // NOTE: make sure to have the reservoir duplicated already
-    public ComputeBuffer ReduceVolumeAvg(
+    // NOTE: It is assumed that the reservoir is duplicated already
+    public void ReduceVolumeAvg(
         ComputeBuffer paintSourceMappedInfo,
         Vector2Int paintSourceReservoirSize,
-        ShaderRegion paintTargetSR)
+        ShaderRegion paintTargetSR,
+        ComputeBuffer resultTarget)
     {
         // count pixels under paint source
         ComputeBuffer activeCount = new ComputeBuffer(1, sizeof(int));
@@ -139,10 +140,6 @@ public class Reservoir
             false);
 
         // return result
-        ComputeBuffer reducedVolumeResult = new ComputeBuffer(1, sizeof(float));
-        float[] reducedVolumeResultData = new float[1];
-        reducedVolumeResult.SetData(reducedVolumeResultData);
-
         new ComputeShaderTask(
             "Reservoir/ExtractReducedVolume",
             new ShaderRegion(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
@@ -152,12 +149,10 @@ public class Reservoir
                 new CSInt2("ReducedVolumeSourceSize", new Vector2Int(Size.x, Size.y)),
                 new CSInt2("ReducedVolumeSourceIndex", paintTargetSR.Position),
 
-                new CSComputeBuffer("ReducedVolumeTarget", reducedVolumeResult),
+                new CSComputeBuffer("ReducedVolumeTarget", resultTarget),
             },
             false
         ).Run();
-
-        return reducedVolumeResult;
     }
 
     public void ReduceVolume(ShaderRegion reduceRegion, ReduceFunction reduceFunction, bool debugEnabled = false)

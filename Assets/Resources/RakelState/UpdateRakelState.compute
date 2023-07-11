@@ -5,6 +5,7 @@
 
 float3 Position;
 int AutoZEnabled;
+int ZZero;
 float Pressure;
 float Rotation;
 float Tilt;
@@ -30,14 +31,22 @@ void main (uint3 id_ : SV_DispatchThreadID)
             rakel.position_base_z = Position.z;
         }
 
-        float sink = SINK_BASE_MAX + rakel.tilt / MAX_SUPPORTED_TILT * SINK_TILT_MAX;
-        rakel.position.z = rakel.position_base_z + rakel.pressure * sink;
-        // prevent sink through canvas
-        // TODO include canvas position -> this would also require info about the direction the canvas is oriented
-        // TODO include anchor ratio, right now this only works for anchors located on rakel edge
-        rakel.position.z = min(rakel.position.z, 0);
+        if (ZZero == 1)
+        {
+            rakel.position.z = 0;
+        }
+        else
+        {
+            float sink = SINK_BASE_MAX + rakel.tilt / MAX_SUPPORTED_TILT * SINK_TILT_MAX;
+            rakel.position.z = rakel.position_base_z + rakel.pressure * sink;
+            // prevent sink through canvas
+            // TODO include canvas position -> this would also require info about the direction the canvas is oriented
+            // TODO include anchor ratio, right now this only works for anchors located on rakel edge
+            rakel.position.z = min(rakel.position.z, 0);
 
-        rakel.position = float3(Position.x, Position.y, rakel.position.z);
+            rakel.position = float3(Position.x, Position.y, rakel.position.z);
+        }
+
         rakel.pressure = Pressure;
         rakel.rotation = Rotation;
         rakel.tilt = Tilt;

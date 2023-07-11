@@ -29,7 +29,7 @@ public class TransferEngine
 
         //Debug.Log("Applying at x=" + wsc.MapToPixel(rakelPosition));
 
-        rakel.UpdateState(rakelPosition, autoZEnabled, rakelPressure, rakelRotation, rakelTilt);
+        rakel.UpdateState(rakelPosition, autoZEnabled, 0, rakelPressure, rakelRotation, rakelTilt);
 
         ShaderRegion canvasEmitSR = rakel.Reservoir.GetFullShaderRegion();
 
