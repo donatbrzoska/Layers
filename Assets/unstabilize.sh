@@ -1,6 +1,15 @@
 #!/bin/bash
 
-git add .
-git stash
+status=`git status`
+clean="nothing to commit, working tree clean"
+
+if [[ "$status" != *"$clean"* ]]; then
+	git add .
+	git stash
+fi
+
 git reset --hard HEAD^
-git stash pop
+
+if [[ "$status" != *"$clean"* ]]; then
+	git stash pop
+fi
