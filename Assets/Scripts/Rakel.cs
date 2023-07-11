@@ -261,11 +261,6 @@ public class Rakel
                 emitSR,
                 ReducedCanvasVolume);
 
-            StrokeBegin = false;
-        }
-
-        if (Info.AutoZEnabled == 1)
-        {
             // reduce rakel volume
             new ComputeShaderTask(
                 "RakelState/WriteSampledRakelVolumesToDuplicate",
@@ -331,6 +326,8 @@ public class Rakel
 
             // position base z was updated, so we need to recalculate
             UpdateState(Info.Position, baseSink_MAX, tiltSink_MAX, Info.AutoZEnabled, 0, Info.Pressure, Info.Rotation, Info.Tilt);
+
+            StrokeBegin = false;
         }
     }
 
