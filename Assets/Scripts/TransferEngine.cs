@@ -29,7 +29,7 @@ public class TransferEngine
 
         //Debug.Log("Applying at x=" + wsc.MapToPixel(rakelPosition));
 
-        rakel.UpdateState(rakelPosition, autoZEnabled, 0, rakelPressure, rakelRotation, rakelTilt);
+        rakel.UpdateState(rakelPosition, transferConfiguration.BaseSink_MAX, transferConfiguration.TiltSink_MAX, autoZEnabled, 0, rakelPressure, rakelRotation, rakelTilt);
 
         ShaderRegion canvasEmitSR = rakel.Reservoir.GetFullShaderRegion();
 
@@ -50,7 +50,9 @@ public class TransferEngine
             canvas,
             rakelMappedInfo,
             rakelEmitSR,
-            transferConfiguration.LayerThickness_MAX);
+            transferConfiguration.LayerThickness_MAX,
+            transferConfiguration.BaseSink_MAX,
+            transferConfiguration.TiltSink_MAX);
 
         // Now that the rakel position is calculated, we can actually
         // determine the distance to the rakel and the volume to emit also
