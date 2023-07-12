@@ -9,6 +9,7 @@
 uint TextureResolution;
 
 RWStructuredBuffer<Rakel> RakelInfo;
+uint3 RakelReservoirSize;
 
 int2 ReservoirPixelEmitRadius;
 RWStructuredBuffer<MappedInfo> RakelMappedInfo;
@@ -30,6 +31,7 @@ void main (uint3 id_ : SV_DispatchThreadID)
 
         int2 rakel_reservoir_pixel_nearest = round(rakel_mapped_info.reservoir_pixel);
 
+        float total_overlap = 0;
         int y, x; // declare loop variables here so the compiler won't complain about double declaration of y
         for (y=-radius.y; y<=radius.y; y++) {
             for (x=-radius.x; x<=radius.x; x++) {
@@ -39,15 +41,19 @@ void main (uint3 id_ : SV_DispatchThreadID)
 
                 // calculate part
                 int2 coord = rakel_reservoir_pixel_nearest + int2(x, y);
-                float2 rakel_anchor_index_space = rakel_anchor_to_index_space(rakel.anchor, TextureResolution);
-                float2 rect_rakel_reservoir_pixel = rotate_by_y_2D(rakel_mapped_info.reservoir_pixel, rakel.tilt, rakel_anchor_index_space);
-                float2 rect_coord = rotate_by_y_2D(coord, rakel.tilt, rakel_anchor_index_space);
-                Rectangle fragment_rectangle = create_rectangle(rect_rakel_reservoir_pixel, -rakel.rotation, 0);
-                Rectangle reservoir_rectangle = create_rectangle(rect_coord, 0, rakel.tilt);
-                float overlap = calculate_exact_overlap(fragment_rectangle, reservoir_rectangle);
+                if (pixel_in_array_range(coord, RakelReservoirSize.xy)) { // Prevent out of bounds access to reservoir. Also, if it's not in range, this overlap part is not (and must not be!) used anyways.
+                    float2 rakel_anchor_index_space = rakel_anchor_to_index_space(rakel.anchor, TextureResolution);
+                    float2 rect_rakel_reservoir_pixel = rotate_by_y_2D(rakel_mapped_info.reservoir_pixel, rakel.tilt, rakel_anchor_index_space);
+                    float2 rect_coord = rotate_by_y_2D(coord, rakel.tilt, rakel_anchor_index_space);
+                    Rectangle fragment_rectangle = create_rectangle(rect_rakel_reservoir_pixel, -rakel.rotation, 0);
+                    Rectangle reservoir_rectangle = create_rectangle(rect_coord, 0, rakel.tilt);
 
-                RakelMappedInfo[XY(id().x, id().y, CalculationSize.x)].overlap[i][j] = overlap;
+                    float overlap = calculate_exact_overlap(fragment_rectangle, reservoir_rectangle);
+                    RakelMappedInfo[XY(id().x, id().y, CalculationSize.x)].overlap[i][j] = overlap;
+                    total_overlap += overlap;
+                }
             }
         }
+        RakelMappedInfo[XY(id().x, id().y, CalculationSize.x)].total_overlap = total_overlap;
     }
 }

@@ -153,6 +153,8 @@ public class Canvas_
                 new CSComputeBuffer("RakelInfo", rakel.InfoBuffer),
                 new CSInt2("ReservoirPixelPickupRadius", RESERVOIR_PIXEL_PICKUP_RADIUS),
                 new CSComputeBuffer("CanvasMappedInfo", canvasMappedInfo),
+
+                new CSInt3("CanvasReservoirSize", Reservoir.Size),
             },
             null,
             false

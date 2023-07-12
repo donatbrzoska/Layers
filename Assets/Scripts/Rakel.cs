@@ -243,6 +243,7 @@ public class Rakel
                 new CSInt("TextureResolution", canvas.Resolution),
 
                 new CSComputeBuffer("RakelInfo", InfoBuffer),
+                new CSInt3("RakelReservoirSize", Reservoir.Size),
 
                 new CSInt2("ReservoirPixelEmitRadius", ReservoirPixelEmitRadius),
                 new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),

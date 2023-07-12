@@ -60,13 +60,13 @@ public class TestEmitFromRakel
     }
 
     [Test]
-    public void EmitOneLayer_IncompleteSurfacesTouch_Unrotated_Untilted()
+    public void EmitOneLayer_BarelySurfacesTouch_Unrotated_Untilted()
     {
-        int INCOMPLETE_SURFACES_TOUCH_VOLUME = 1;
+        float BARELY_SURFACES_TOUCH_VOLUME = 1.1f;
         int APPLIED_LAYERS = 1;
 
         // Arrange
-        Rakel.Fill(new ReservoirFiller(ColorFiller, new FlatVolumeFiller(INCOMPLETE_SURFACES_TOUCH_VOLUME)));
+        Rakel.Fill(new ReservoirFiller(ColorFiller, new FlatVolumeFiller(BARELY_SURFACES_TOUCH_VOLUME)));
         Rakel.UpdateState(
             new Vector3(-5, -0.5f, APPLIED_LAYERS * -Paint.VOLUME_THICKNESS), BASE_SINK_MAX, TILT_SINK_MAX, AUTO_Z_ENABLED, ZZERO, PRESSURE,
             0,
@@ -101,16 +101,16 @@ public class TestEmitFromRakel
         float F = Paint.UNIT;
         AssertUtil.AssertFloatsAreEqual(
             new float[] { // remember: these arrays are upside down compared to the actual pixels
-                0, 0, 0,
-                0, F, 0,
-                0, F, 0,
-                0, F, 0,
-                0, 0, 0,
+                Q, H, Q,
+                H, F, H,
+                H, F, H,
+                H, F, H,
+                Q, H, Q,
             },
             rakelEmittedVolumes);
 
         Assert.AreEqual(
-            3 * Paint.UNIT,
+            RakelLength * RakelWidth * Paint.UNIT,
             Sum(rakelEmittedVolumes));
     }
 
@@ -212,7 +212,7 @@ public class TestEmitFromRakel
                 0.173f,  0.801f,  0.655f,  0.000f,  0.000f,
                 0.116f,  0.961f,  0.997f,  0.235f,  0.000f,
                 0.000f,  0.500f,  1.000f,  0.801f,  0.000f,
-                0.000f,  0.000f,  0.881f,  0.655f,  0.054f,
+                0.000f,  0.039f,  0.881f,  0.655f,  0.054f,
                 0.000f,  0.000f,  0.062f,  0.000f,  0.000f,
             },
             rakelEmittedVolumes);

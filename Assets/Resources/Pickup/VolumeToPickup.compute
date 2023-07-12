@@ -30,8 +30,7 @@ float volume_to_pickup_(int2 radius, int2 rakel_pixel)
     int2 canvas_reservoir_pixel_nearest = round(canvasMappedInfo.reservoir_pixel);
 
     float volume_rakel = RakelReservoirInfoDuplicate[XY(rakel_pixel.x, rakel_pixel.y, RakelReservoirSize.x)].volume;
-    float volume_canvas = 0;
-    float total_overlap = 0;
+    float volume_canvas = 0; // how much volume (meaning height) is there under this reservoir pixel
     for (int y=-radius.y; y<=radius.y; y++) {
         for (int x=-radius.x; x<=radius.x; x++) {
             uint i = y + radius.y;
@@ -40,12 +39,13 @@ float volume_to_pickup_(int2 radius, int2 rakel_pixel)
             int2 coord = canvas_reservoir_pixel_nearest + int2(x, y);
             if (pixel_in_array_range(coord, CanvasReservoirSize.xy)) { // Prevent out of bounds access to reservoir. Also, if it's not in range, this overlap part is not (and must not be!) used anyways.
                 uint2 coord_ = uint2(coord.x, coord.y);
-                volume_canvas += canvasMappedInfo.overlap[i][j] * CanvasReservoirInfoDuplicate[XY(coord_.x, coord_.y, CanvasReservoirSize.x)].volume;
-                total_overlap += canvasMappedInfo.overlap[i][j];
+                // calculate overlap part, because summed overlap might be < 1
+                // possible reasons would be: tilted rakel reservoir pixels, picking up at canvas edge
+                float overlap_part = canvasMappedInfo.overlap[i][j] / unzero(canvasMappedInfo.total_overlap);
+                volume_canvas += overlap_part * CanvasReservoirInfoDuplicate[XY(coord_.x, coord_.y, CanvasReservoirSize.x)].volume;
             }
         }
     }
-    CanvasMappedInfo[XY(id().x, id().y, CalculationSize.x)].total_overlap = total_overlap;
     float paint_thickness_rakel = volume_rakel * VOLUME_THICKNESS();
     float paint_thickness_canvas = volume_canvas * VOLUME_THICKNESS();
     float surface_distance = canvasMappedInfo.distance - paint_thickness_rakel - paint_thickness_canvas;
@@ -80,7 +80,8 @@ float volume_to_pickup_(int2 radius, int2 rakel_pixel)
         {
             volume_to_pickup += PickupVolume_MIN;
         }
-        volume_to_pickup *= total_overlap;
+        // multiply by total overlap, because we only want as much paint as there is for this reservoir pixel
+        volume_to_pickup *= canvasMappedInfo.total_overlap;
     }
     return volume_to_pickup;
 }

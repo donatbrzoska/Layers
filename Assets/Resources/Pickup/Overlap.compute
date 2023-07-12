@@ -9,6 +9,7 @@ RWStructuredBuffer<Rakel> RakelInfo;
 int2 ReservoirPixelPickupRadius;
 RWStructuredBuffer<MappedInfo> CanvasMappedInfo;
 
+uint3 CanvasReservoirSize;
 
 #pragma kernel main
 
@@ -26,6 +27,7 @@ void main(uint3 id_ : SV_DispatchThreadID)
 
         int2 canvas_reservoir_pixel_nearest = round(canvasMappedInfo.reservoir_pixel);
 
+        float total_overlap = 0;
         int x, y;
         for (y=-radius.y; y<=radius.y; y++) {
             for (x=-radius.x; x<=radius.x; x++) {
@@ -35,10 +37,16 @@ void main(uint3 id_ : SV_DispatchThreadID)
 
                 // calculate part
                 int2 coord = canvas_reservoir_pixel_nearest + int2(x, y);
-                Rectangle fragment_rectangle = create_rectangle(canvasMappedInfo.reservoir_pixel, rakel.rotation, rakel.tilt);
-                Rectangle reservoir_rectangle = create_rectangle(coord, 0, 0);
-                CanvasMappedInfo[XY(id().x, id().y, CalculationSize.x)].overlap[i][j] = calculate_exact_overlap(fragment_rectangle, reservoir_rectangle);
+                if (pixel_in_array_range(coord, CanvasReservoirSize.xy)) { // Prevent out of bounds access to reservoir. Also, if it's not in range, this overlap part is not (and must not be!) used anyways.
+                    Rectangle fragment_rectangle = create_rectangle(canvasMappedInfo.reservoir_pixel, rakel.rotation, rakel.tilt);
+                    Rectangle reservoir_rectangle = create_rectangle(coord, 0, 0);
+
+                    float overlap = calculate_exact_overlap(fragment_rectangle, reservoir_rectangle);
+                    CanvasMappedInfo[XY(id().x, id().y, CalculationSize.x)].overlap[i][j] = overlap;
+                    total_overlap += overlap;
+                }
             }
         }
+        CanvasMappedInfo[XY(id().x, id().y, CalculationSize.x)].total_overlap = total_overlap;
     }
 }
