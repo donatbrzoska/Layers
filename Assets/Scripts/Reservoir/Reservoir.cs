@@ -69,7 +69,7 @@ public class Reservoir
         ));
     }
 
-    private void DuplicateActive(
+    public void DuplicateActive(
         ComputeBuffer paintSourceMappedInfo,
         Vector2Int paintSourceReservoirSize,
         ShaderRegion shaderRegion,
@@ -149,6 +149,33 @@ public class Reservoir
         ReduceVolume(
             paintTargetSR,
             ReduceFunction.Add,
+            false);
+
+        // return result
+        ComputeShaderEngine.EnqueueOrRun(new ComputeShaderTask(
+            "Reservoir/ExtractReducedVolume",
+            new ShaderRegion(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
+            new List<CSAttribute>()
+            {
+                new CSComputeBuffer("ReducedVolumeSource", PaintGridDuplicate.Info),
+                new CSInt2("ReducedVolumeSourceSize", new Vector2Int(Size.x, Size.y)),
+                new CSInt2("ReducedVolumeSourceIndex", paintTargetSR.Position),
+
+                new CSComputeBuffer("ReducedVolumeTarget", resultTarget),
+            },
+            null,
+            false
+        ));
+    }
+
+    // NOTE: It is assumed that the reservoir is duplicated already
+    public void ReduceVolumeMax(
+        ShaderRegion paintTargetSR,
+        ComputeBuffer resultTarget)
+    {
+        ReduceVolume(
+            paintTargetSR,
+            ReduceFunction.Max,
             false);
 
         // return result

@@ -42,8 +42,6 @@ public class Rakel
         return Mathf.Clamp(tilt, MIN_SUPPORTED_TILT, MAX_SUPPORTED_TILT);
     }
 
-    private bool StrokeBegin;
-
     public ComputeBuffer InfoBuffer;
     public RakelInfo Info;
     ComputeBuffer ReducedCanvasVolume;
@@ -99,8 +97,6 @@ public class Rakel
 
     public void NewStroke()
     {
-        StrokeBegin = true;
-
         //float[] distortionMapData = new float[DistortionMapSize.x * DistortionMapSize.y];
 
         ////float noiseCapRatio = 0.6f;
@@ -263,16 +259,26 @@ public class Rakel
         float baseSink_MAX,
         float tiltSink_MAX)
     {
-        // TODO do canvas volume based on last n steps?
-        if (StrokeBegin && Info.AutoZEnabled == 1)
+        // TODO do volume based on last n steps?
+        if (Info.AutoZEnabled == 1)
         {
             // reduce canvas volume
-            canvas.Reservoir.Duplicate();
+            canvas.Reservoir.DuplicateActive(
+                rakelMappedInfo,
+                new Vector2Int(Reservoir.Size.x, Reservoir.Size.y),
+                emitSR);
             canvas.Reservoir.ReduceVolumeAvg(
                 rakelMappedInfo,
                 new Vector2Int(Reservoir.Size.x, Reservoir.Size.y),
                 emitSR,
                 ReducedCanvasVolume);
+            //canvas.Reservoir.DuplicateActive(
+            //    rakelMappedInfo,
+            //    new Vector2Int(Reservoir.Size.x, Reservoir.Size.y),
+            //    emitSR);
+            //canvas.Reservoir.ReduceVolumeMax(
+            //    emitSR,
+            //    ReducedCanvasVolume);
 
             // reduce rakel volume
             ComputeShaderEngine.EnqueueOrRun(new ComputeShaderTask(
@@ -323,6 +329,9 @@ public class Rakel
                 new Vector2Int(Reservoir.Size.x, Reservoir.Size.y),
                 emitSR,
                 ReducedRakelVolume);
+            //canvas.Reservoir.ReduceVolumeMax(
+            //    emitSR,
+            //    ReducedRakelVolume);
 
             // update rakel position base z
             ComputeShaderEngine.EnqueueOrRun(new ComputeShaderTask(
@@ -343,8 +352,6 @@ public class Rakel
 
             // position base z was updated, so we need to recalculate
             UpdateState(Info.Position, baseSink_MAX, tiltSink_MAX, Info.AutoZEnabled, 0, Info.Pressure, Info.Rotation, Info.Tilt);
-
-            StrokeBegin = false;
         }
     }
 
