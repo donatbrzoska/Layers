@@ -1,11 +1,88 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using UnityEngine;
+
+public struct SimulationStep
+{
+    public Vector3 RakelPosition;
+    public int AutoZEnabled;
+    public float RakelPressure;
+    public float RakelRotation;
+    public float RakelTilt;
+    public TransferConfiguration TransferConfiguration;
+    public Rakel Rakel;
+    public Canvas_ Canvas;
+
+    public SimulationStep(Vector3 rakelPosition, int autoZEnabled, float rakelPressure, float rakelRotation, float rakelTilt,
+        TransferConfiguration transferConfiguration, Rakel rakel, Canvas_ canvas)
+    {
+        RakelPosition = rakelPosition;
+        AutoZEnabled = autoZEnabled;
+        RakelPressure = rakelPressure;
+        RakelRotation = rakelRotation;
+        RakelTilt = rakelTilt;
+        TransferConfiguration = transferConfiguration;
+        Rakel = rakel;
+        Canvas = canvas;
+    }
+}
 
 public class TransferEngine
 {
     private Vector2Int PreviousApplyPosition = new Vector2Int(int.MinValue, int.MinValue);
 
-    public TransferEngine() { }
+    private bool DelayedExection;
+    private Queue<SimulationStep> SimulationSteps;
+
+    public TransferEngine(bool delayedExecution)
+    {
+        DelayedExection = delayedExecution;
+        if (delayedExecution)
+        {
+            SimulationSteps = new Queue<SimulationStep>();
+        }
+    }
+
+    public void EnqueueOrRun(
+        Vector3 rakelPosition, int autoZEnabled, float rakelPressure, float rakelRotation, float rakelTilt,
+        TransferConfiguration transferConfiguration,
+        Rakel rakel,
+        Canvas_ canvas)
+    {
+        SimulationStep s = new SimulationStep(rakelPosition, autoZEnabled, rakelPressure, rakelRotation, rakelTilt, transferConfiguration, rakel, canvas);
+
+        if (DelayedExection)
+        {
+            SimulationSteps.Enqueue(s);
+        }
+        else
+        {
+            SimulateStep(s.RakelPosition, s.AutoZEnabled, s.RakelPressure, s.RakelRotation, s.RakelTilt, s.TransferConfiguration, s.Rakel, s.Canvas);
+        }
+    }
+
+    public void ProcessSteps(int n)
+    {
+        if (DelayedExection)
+        {
+            while (n-- >= 0 && SimulationSteps.Count > 0)
+            {
+                SimulationStep s = SimulationSteps.Dequeue();
+                SimulateStep(s.RakelPosition, s.AutoZEnabled, s.RakelPressure, s.RakelRotation, s.RakelTilt, s.TransferConfiguration, s.Rakel, s.Canvas);
+            }
+        }
+    }
+
+    public bool Done()
+    {
+        if (DelayedExection && SimulationSteps.Count > 0)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
 
     // Position is located at Rakel Anchor
     // Rotation 0 means Rakel is directed to the right

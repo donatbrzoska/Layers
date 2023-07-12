@@ -47,7 +47,7 @@ public class InputInterpolator
                 && PreviousRakelTilt.Equals(NO_VALUE);
             if (isFirstNodeOfStroke)
             {
-                TransferEngine.SimulateStep(
+                TransferEngine.EnqueueOrRun(
                     rakelPosition,
                     autoZEnabled,
                     rakelPressure,
@@ -118,7 +118,7 @@ public class InputInterpolator
 
                     float currentTilt = previousTilt + dt / steps;
 
-                    TransferEngine.SimulateStep(
+                    TransferEngine.EnqueueOrRun(
                         currentPosition,
                         autoZEnabled,
                         currentPressure,

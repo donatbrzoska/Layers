@@ -18,9 +18,10 @@ public class RenderedRakel : MonoBehaviour
         Vector3 scale = new Vector3(OilPaintEngine.Rakel.Info.Width, transform.localScale.y, OilPaintEngine.Rakel.Info.Length);
         transform.localScale = scale;
 
+        bool inStroke = !OilPaintEngine.TransferEngine.Done();
         Vector3 position = new Vector3(
-            OilPaintEngine.InputManager.RakelPositionX,
-            OilPaintEngine.InputManager.RakelPositionY,
+            inStroke ? OilPaintEngine.Rakel.Info.Position.x : OilPaintEngine.InputManager.RakelPositionX,
+            inStroke ? OilPaintEngine.Rakel.Info.Position.y : OilPaintEngine.InputManager.RakelPositionY,
             OilPaintEngine.InputManager.RakelPositionZ);
         transform.position = position - Quaternion.AngleAxis(
             OilPaintEngine.InputManager.RakelRotation,

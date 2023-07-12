@@ -12,13 +12,14 @@ public class OilPaintEngine : MonoBehaviour
 
     public int LAYERS_MAX;
     public int TASKS_PER_FRAME;
+    public int STEPS_PER_FRAME;
 
     public bool USE_PEN;
 
     public Configuration Configuration { get; private set; }
     public InputManager InputManager { get; private set; }
 
-    private TransferEngine TransferEngine;
+    public TransferEngine TransferEngine;
     private Canvas_ Canvas;
     public Rakel Rakel;
     private InputInterpolator InputInterpolator;
@@ -113,7 +114,7 @@ public class OilPaintEngine : MonoBehaviour
 
     void CreateOilPaintTransferEngine()
     {
-        TransferEngine = new TransferEngine();
+        TransferEngine = new TransferEngine(STEPS_PER_FRAME > 0 && BENCHMARK_STEPS == 0);
     }
 
     void CreateInputInterpolator()
@@ -170,6 +171,7 @@ public class OilPaintEngine : MonoBehaviour
         }
 
         ComputeShaderEngine.ProcessTasks(TASKS_PER_FRAME);
+        TransferEngine.ProcessSteps(STEPS_PER_FRAME);
     }
     
     private void OnDestroy()
