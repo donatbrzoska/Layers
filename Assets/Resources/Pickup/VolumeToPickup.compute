@@ -49,12 +49,24 @@ float volume_to_pickup_(int2 radius, int2 rakel_pixel)
     float paint_thickness_rakel = volume_rakel * VOLUME_THICKNESS();
     float paint_thickness_canvas = volume_canvas * VOLUME_THICKNESS();
     float surface_distance = canvasMappedInfo.distance - paint_thickness_rakel - paint_thickness_canvas;
-    bool surfaces_touch = surface_distance <= 0;
+
+    Rakel rakel = RakelInfo[0];
+
+    // gravity_distance is zero when there is no tilt.
+    // With more tilt, we need some distance at which paint is transferred, even though
+    // the surfaces don't really touch. This is because when the rakel is tilted,
+    // the center of even the first pixel at the edge is not inside the paint anymore,
+    // even though the edge is. This is because pixel size is pretty large compared
+    // to paint size. Alternatively you would have to use very high resolutions (~1000 Pixels / Unity World Space)
+    // TODO
+    // Parametrize the 0.1, this is basically 1:1 the max distance at which the paint "gravity" acts.
+    // Right now this is chosen so that there is pickup, even with resolution 10 and 79° tilt
+    float gravity_distance = sin(radians(rakel.tilt)) * 0.1;
+    bool surfaces_touch = surface_distance <= gravity_distance;
 
     float volume_to_pickup = 0;
     if (surfaces_touch)
     {
-        Rakel rakel = RakelInfo[0];
         // float VOLUME_TO_EMIT_TARGET = pickup_volume(
         //     distance,
         //     PickupDistance_MAX,
