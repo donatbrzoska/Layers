@@ -20,6 +20,7 @@ public class TestPaint_ryb_to_rgb
             "Tests/TestPaint",
             new ShaderRegion(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
             Attributes,
+            null,
             true,
             kernelID);
 

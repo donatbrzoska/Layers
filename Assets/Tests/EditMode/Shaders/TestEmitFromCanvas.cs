@@ -13,6 +13,8 @@ public class TestEmitFromCanvas
     private const int DIFFUSE_DEPTH = 0;
     private const float DIFFUSE_RATIO = 0;
 
+    private ComputeShaderEngine CSE = new ComputeShaderEngine(false);
+
     int Resolution;
 
     Rakel Rakel;
@@ -55,13 +57,13 @@ public class TestEmitFromCanvas
     private void CreateRakel()
     {
         Rakel?.Dispose();
-        Rakel = new Rakel(RakelLength, RakelWidth, Resolution, MAX_LAYERS, CELL_VOLUME, DIFFUSE_DEPTH, DIFFUSE_RATIO, 0.5f, 0);
+        Rakel = new Rakel(RakelLength, RakelWidth, Resolution, MAX_LAYERS, CELL_VOLUME, DIFFUSE_DEPTH, DIFFUSE_RATIO, CSE, 0.5f, 0);
     }
 
     private void CreateCanvas()
     {
         Canvas?.Dispose();
-        Canvas = new Canvas_(CanvasWidth, CanvasHeight, MAX_LAYERS, CELL_VOLUME, DIFFUSE_DEPTH, DIFFUSE_RATIO, new Vector3(0, 0, 0), Resolution, 0.015f, 0);
+        Canvas = new Canvas_(CanvasWidth, CanvasHeight, MAX_LAYERS, CELL_VOLUME, DIFFUSE_DEPTH, DIFFUSE_RATIO, new Vector3(0, 0, 0), Resolution, 0.015f, 0, CSE);
     }
 
     private int Pixels(float length, float width)

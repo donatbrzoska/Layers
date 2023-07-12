@@ -20,6 +20,7 @@ public class TestPaint_alpha_blend
             "Tests/TestPaint",
             new ShaderRegion(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
             Attributes,
+            null,
             true,
             kernelID);
 

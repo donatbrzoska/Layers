@@ -67,6 +67,7 @@ public class TestPaintGrid_fill
             "Tests/TestPaintGrid",
             new ShaderRegion(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
             Attributes,
+            null,
             true,
             kernelID);
 

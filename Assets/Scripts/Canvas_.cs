@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Canvas_
@@ -23,9 +24,11 @@ public class Canvas_
 
     private Vector2Int RESERVOIR_PIXEL_PICKUP_RADIUS = new Vector2Int(1, 1);
 
+    private ComputeShaderEngine ComputeShaderEngine;
+
     // It is assumed that the canvas is perpendicular to the z axis
     // Position is the center of the canvas
-    public Canvas_(float width, float height, int layers, float cellVolume, int diffuseDepth, float diffuseRatio, Vector3 position, int textureResolution, float normalScale, ColorSpace colorSpace)
+    public Canvas_(float width, float height, int layers, float cellVolume, int diffuseDepth, float diffuseRatio, Vector3 position, int textureResolution, float normalScale, ColorSpace colorSpace, ComputeShaderEngine computeShaderEngine)
     {
         Size = new Vector2(width, height);
         Position = position;
@@ -43,7 +46,7 @@ public class Canvas_
         NormalScale = normalScale;
         ColorSpace = colorSpace;
 
-        Reservoir = new Reservoir(textureResolution, TextureSize.x, TextureSize.y, layers, cellVolume, diffuseDepth, diffuseRatio);
+        Reservoir = new Reservoir(textureResolution, TextureSize.x, TextureSize.y, layers, cellVolume, diffuseDepth, diffuseRatio, computeShaderEngine);
 
         Texture = new RenderTexture(TextureSize.x, TextureSize.y, 1);
         Texture.filterMode = FilterMode.Point;
@@ -54,6 +57,8 @@ public class Canvas_
         NormalMap.filterMode = FilterMode.Point;
         NormalMap.enableRandomWrite = true;
         NormalMap.Create();
+
+        ComputeShaderEngine = computeShaderEngine;
 
         InitializeTexture(Texture, Vector4.one);
         InitializeTexture(NormalMap, (new Vector4(0, 0, 1, 0) + Vector4.one) / 2);
@@ -68,7 +73,7 @@ public class Canvas_
             new Vector2Int(texture.width-1, 0)
         );
 
-        new ComputeShaderTask(
+        ComputeShaderEngine.EnqueueOrRun(new ComputeShaderTask(
             "SetTexture",
             sr,
             new List<CSAttribute>()
@@ -76,8 +81,9 @@ public class Canvas_
                 new CSFloat4("Value", value),
                 new CSTexture("Target", texture)
             },
+            null,
             false
-        ).Run();
+        ));
     }
 
     public PaintGrid EmitPaint(
@@ -92,7 +98,7 @@ public class Canvas_
         MappedInfo[] canvasMappedInfoData = new MappedInfo[shaderRegion.PixelCount];
         canvasMappedInfo.SetData(canvasMappedInfoData);
 
-        new ComputeShaderTask(
+        ComputeShaderEngine.EnqueueOrRun(new ComputeShaderTask(
             "Pickup/TransformToRakelPosition",
             shaderRegion,
             new List<CSAttribute>()
@@ -103,10 +109,11 @@ public class Canvas_
 
                 new CSComputeBuffer("CanvasMappedInfo", canvasMappedInfo),
             },
+            null,
             false
-        ).Run();
+        ));
 
-        new ComputeShaderTask(
+        ComputeShaderEngine.EnqueueOrRun(new ComputeShaderTask(
             "Pickup/CanvasReservoirPixel",
             shaderRegion,
             new List<CSAttribute>()
@@ -119,10 +126,11 @@ public class Canvas_
 
                 new CSComputeBuffer("CanvasMappedInfo", canvasMappedInfo),
             },
+            null,
             false
-        ).Run();
+        ));
 
-        new ComputeShaderTask(
+        ComputeShaderEngine.EnqueueOrRun(new ComputeShaderTask(
             "Pickup/DistanceFromCanvas",
             shaderRegion,
             new List<CSAttribute>()
@@ -133,10 +141,11 @@ public class Canvas_
 
                 new CSComputeBuffer("CanvasMappedInfo", canvasMappedInfo),
             },
+            null,
             false
-        ).Run();
+        ));
 
-        new ComputeShaderTask(
+        ComputeShaderEngine.EnqueueOrRun(new ComputeShaderTask(
             "Pickup/Overlap",
             shaderRegion,
             new List<CSAttribute>()
@@ -145,10 +154,11 @@ public class Canvas_
                 new CSInt2("ReservoirPixelPickupRadius", RESERVOIR_PIXEL_PICKUP_RADIUS),
                 new CSComputeBuffer("CanvasMappedInfo", canvasMappedInfo),
             },
+            null,
             false
-        ).Run();
+        ));
 
-        new ComputeShaderTask(
+        ComputeShaderEngine.EnqueueOrRun(new ComputeShaderTask(
             "Pickup/VolumeToPickup",
             shaderRegion,
             new List<CSAttribute>()
@@ -168,8 +178,9 @@ public class Canvas_
                 new CSFloat("PickupVolume_MIN", pickupVolume_MIN),
                 //new CSFloat("PickupVolume_MAX", pickupVolume_MAX),
             },
+            null,
             false
-        ).Run();
+        ));
 
         // HACK canvasEmittedPaint is actually treated as a raw stack with no specified mixing parameters
         float UNUSED = 0;
@@ -181,7 +192,7 @@ public class Canvas_
         Vector2Int deleteConflictRadius = new Vector2Int((int)Mathf.Ceil((pixelDiag / 2) / tiltedPixelShortSide), 1);
         Vector2Int deleteConflictArea = new Vector2Int(deleteConflictRadius.x * 2 + 1, deleteConflictRadius.y * 2 + 1);
 
-        new ComputeShaderTask(
+        ComputeShaderEngine.EnqueueOrRun(new ComputeShaderTask(
             "Pickup/EmitFromCanvas",
             shaderRegion,
             deleteConflictArea,
@@ -201,10 +212,9 @@ public class Canvas_
                 new CSComputeBuffer("CanvasEmittedPaintContent", canvasEmittedPaint.Content),
                 new CSInt3("CanvasEmittedPaintSize", canvasEmittedPaint.Size)
             },
+            new List<IDisposable> { canvasMappedInfo },
             false
-        ).Run();
-
-        canvasMappedInfo.Dispose();
+        ));
 
         return canvasEmittedPaint;
     }
@@ -213,7 +223,7 @@ public class Canvas_
         ShaderRegion shaderRegion,
         PaintGrid rakelEmittedPaint)
     {
-        new ComputeShaderTask(
+        ComputeShaderEngine.EnqueueOrRun(new ComputeShaderTask(
             "Emit/ApplyBufferToCanvas",
             shaderRegion,
             new List<CSAttribute>()
@@ -229,10 +239,9 @@ public class Canvas_
                 new CSInt("CanvasReservoirDiffuseDepth", Reservoir.PaintGrid.DiffuseDepth),
                 new CSFloat("CanvasReservoirDiffuseRatio", Reservoir.PaintGrid.DiffuseRatio),
             },
+            new List<IDisposable>() { rakelEmittedPaint },
             false
-        ).Run();
-
-        rakelEmittedPaint.Dispose();
+        ));
     }
 
     public ShaderRegion GetFullShaderRegion()
@@ -248,7 +257,7 @@ public class Canvas_
         ShaderRegion shaderRegion,
         bool debugEnabled = false)
     {
-        new ComputeShaderTask(
+        ComputeShaderEngine.EnqueueOrRun(new ComputeShaderTask(
             "Render",
             shaderRegion,
             new List<CSAttribute>()
@@ -262,8 +271,9 @@ public class Canvas_
                 new CSTexture("NormalMap", NormalMap),
                 new CSFloat("NormalScale", NormalScale),
             },
+            null,
             debugEnabled
-        ).Run();
+        ));
     }
 
     public void Dispose()

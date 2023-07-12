@@ -28,6 +28,7 @@ public class TestPaint_mix
             "Tests/TestPaint",
             new ShaderRegion(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
             Attributes,
+            null,
             true,
             kernelID);
 

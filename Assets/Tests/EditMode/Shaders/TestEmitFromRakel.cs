@@ -14,6 +14,8 @@ public class TestEmitFromRakel
     private const int DIFFUSE_DEPTH = 0;
     private const float DIFFUSE_RATIO = 0;
 
+    ComputeShaderEngine CSE = new ComputeShaderEngine(false);
+
     Canvas_ Canvas;
     float RakelLength = 4;
     float RakelWidth = 2;
@@ -38,9 +40,9 @@ public class TestEmitFromRakel
     [SetUp]
     public void Setup()
     {
-        Canvas = new Canvas_(15, 10, MAX_LAYERS, CELL_VOLUME, DIFFUSE_DEPTH, DIFFUSE_RATIO, new Vector3(0, 0, 0), 1, 0, 0);
+        Canvas = new Canvas_(15, 10, MAX_LAYERS, CELL_VOLUME, DIFFUSE_DEPTH, DIFFUSE_RATIO, new Vector3(0, 0, 0), 1, 0, 0, CSE);
 
-        Rakel = new Rakel(RakelLength, RakelWidth, 1, MAX_LAYERS, CELL_VOLUME, DIFFUSE_DEPTH, DIFFUSE_RATIO, 0.5f, 0);
+        Rakel = new Rakel(RakelLength, RakelWidth, 1, MAX_LAYERS, CELL_VOLUME, DIFFUSE_DEPTH, DIFFUSE_RATIO, CSE, 0.5f, 0);
 
         ColorFiller = new FlatColorFiller(Color_.CadmiumGreen, ColorSpace.RGB);
 

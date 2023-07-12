@@ -67,6 +67,7 @@ public class TestPaintGrid_reverse_transfer
             "Tests/TestPaintGrid",
             new ShaderRegion(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
             Attributes,
+            null,
             true,
             kernelID);
 

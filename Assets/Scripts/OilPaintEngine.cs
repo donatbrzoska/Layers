@@ -11,6 +11,7 @@ public class OilPaintEngine : MonoBehaviour
     public float ANCHOR_RATIO_Y;
 
     public int LAYERS_MAX;
+    public int TASKS_PER_FRAME;
 
     public bool USE_PEN;
 
@@ -21,6 +22,8 @@ public class OilPaintEngine : MonoBehaviour
     private Canvas_ Canvas;
     public Rakel Rakel;
     private InputInterpolator InputInterpolator;
+
+    private ComputeShaderEngine ComputeShaderEngine;
 
     void Awake()
     {
@@ -57,6 +60,7 @@ public class OilPaintEngine : MonoBehaviour
     void Start()
     {
         ComputeShaderTask.ThreadGroupSize = new Vector2Int(TH_GROUP_SIZE_X, TH_GROUP_SIZE_Y);
+        ComputeShaderEngine = new ComputeShaderEngine(TASKS_PER_FRAME > 0 && BENCHMARK_STEPS == 0);
 
         CreateCanvas();
         CreateRakel();
@@ -71,7 +75,7 @@ public class OilPaintEngine : MonoBehaviour
         float width = GameObject.Find("Canvas").GetComponent<Transform>().localScale.x * 10; // convert scale attribute to world space
         float height = GameObject.Find("Canvas").GetComponent<Transform>().localScale.y * 10; // convert scale attribute to world space
         Vector3 position = GameObject.Find("Canvas").GetComponent<Transform>().position;
-        Canvas = new Canvas_(width, height, LAYERS_MAX, Configuration.CanvasCellVolume, Configuration.CanvasDiffuseDepth, Configuration.CanvasDiffuseRatio, position, Configuration.TextureResolution, Configuration.NormalScale, Configuration.ColorSpace);
+        Canvas = new Canvas_(width, height, LAYERS_MAX, Configuration.CanvasCellVolume, Configuration.CanvasDiffuseDepth, Configuration.CanvasDiffuseRatio, position, Configuration.TextureResolution, Configuration.NormalScale, Configuration.ColorSpace, ComputeShaderEngine);
 
         Renderer renderer = GameObject.Find("Canvas").GetComponent<Renderer>();
         renderer.material.SetTexture("_MainTex", Canvas.Texture);
@@ -98,6 +102,7 @@ public class OilPaintEngine : MonoBehaviour
             Configuration.RakelConfiguration.CellVolume,
             Configuration.RakelConfiguration.DiffuseDepth,
             Configuration.RakelConfiguration.DiffuseRatio,
+            ComputeShaderEngine,
             ANCHOR_RATIO_Y,
             ANCHOR_RATIO_X);
 
@@ -163,6 +168,8 @@ public class OilPaintEngine : MonoBehaviour
                 }
             }
         }
+
+        ComputeShaderEngine.ProcessTasks(TASKS_PER_FRAME);
     }
     
     private void OnDestroy()
