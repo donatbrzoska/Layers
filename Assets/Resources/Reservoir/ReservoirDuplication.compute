@@ -18,8 +18,10 @@ void main (uint3 id_ : SV_DispatchThreadID)
     id__ = id_;
     if (is_relevant_thread(id(), CalculationSize))
     {
+        int2 pixel = id() + CalculationPosition;
+
         paint_grid_copy(
-            ReservoirInfo, ReservoirContent, ReservoirSize, id().xy,
-            ReservoirInfoDuplicate, ReservoirContentDuplicate, ReservoirSize, id().xy);
+            ReservoirInfo, ReservoirContent, ReservoirSize, pixel,
+            ReservoirInfoDuplicate, ReservoirContentDuplicate, ReservoirSize, pixel);
     }
 }

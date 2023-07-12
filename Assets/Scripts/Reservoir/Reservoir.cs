@@ -43,9 +43,14 @@ public class Reservoir
 
     public void Duplicate(bool debugEnabled = false)
     {
+        Duplicate(GetFullShaderRegion(), debugEnabled);
+    }
+
+    public void Duplicate(ShaderRegion sr, bool debugEnabled = false)
+    {
         new ComputeShaderTask(
             "Reservoir/ReservoirDuplication",
-            GetFullShaderRegion(),
+            sr,
             new List<CSAttribute>()
             {
                 new CSComputeBuffer("ReservoirInfo", PaintGrid.Info),

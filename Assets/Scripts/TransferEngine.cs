@@ -56,8 +56,8 @@ public class TransferEngine
 
         // Now that the rakel position is calculated, we can actually
         // determine the distance to the rakel and the volume to emit also
-        rakel.Reservoir.Duplicate(false);
-        canvas.Reservoir.Duplicate(false);
+        rakel.Reservoir.Duplicate(canvasEmitSR, false);
+        canvas.Reservoir.Duplicate(rakelEmitSR, false);
 
         rakel.CalculateRakelMappedInfo_Part2(
             canvas,
