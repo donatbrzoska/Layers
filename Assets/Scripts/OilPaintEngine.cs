@@ -71,7 +71,7 @@ public class OilPaintEngine : MonoBehaviour
         float width = GameObject.Find("Canvas").GetComponent<Transform>().localScale.x * 10; // convert scale attribute to world space
         float height = GameObject.Find("Canvas").GetComponent<Transform>().localScale.y * 10; // convert scale attribute to world space
         Vector3 position = GameObject.Find("Canvas").GetComponent<Transform>().position;
-        Canvas = new Canvas_(width, height, LAYERS_MAX, Configuration.CanvasCellVolume, position, Configuration.TextureResolution, Configuration.NormalScale, Configuration.ColorSpace);
+        Canvas = new Canvas_(width, height, LAYERS_MAX, Configuration.CanvasCellVolume, Configuration.CanvasDiffuseDepth, Configuration.CanvasDiffuseRatio, position, Configuration.TextureResolution, Configuration.NormalScale, Configuration.ColorSpace);
 
         Renderer renderer = GameObject.Find("Canvas").GetComponent<Renderer>();
         renderer.material.SetTexture("_MainTex", Canvas.Texture);
@@ -96,6 +96,8 @@ public class OilPaintEngine : MonoBehaviour
             Configuration.TextureResolution,
             LAYERS_MAX,
             Configuration.RakelConfiguration.CellVolume,
+            Configuration.RakelConfiguration.DiffuseDepth,
+            Configuration.RakelConfiguration.DiffuseRatio,
             ANCHOR_RATIO_Y,
             ANCHOR_RATIO_X);
 

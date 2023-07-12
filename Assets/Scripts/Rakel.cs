@@ -58,7 +58,7 @@ public class Rakel
     private Vector2Int ReservoirPixelEmitRadius;
     private Vector2Int DELETE_CONFLICT_AREA = new Vector2Int(3,3);
 
-    public Rakel(float length, float width, int resolution, int layers_MAX, float cellVolume, float anchorRatioLength = 0.5f, float anchorRatioWidth = 1)
+    public Rakel(float length, float width, int resolution, int layers_MAX, float cellVolume, int diffuseDepth, float diffuseRatio, float anchorRatioLength = 0.5f, float anchorRatioWidth = 1)
     {
         Vector3Int reservoirSize = new Vector3Int((int)(width * resolution), (int)(length * resolution), layers_MAX);
 
@@ -67,7 +67,9 @@ public class Rakel
             reservoirSize.x,
             reservoirSize.y,
             reservoirSize.z,
-            cellVolume);
+            cellVolume,
+            diffuseDepth,
+            diffuseRatio);
 
         DistortionMapSize = new Vector2Int(MAX_STROKE_LENGTH, reservoirSize.y);
         DistortionMap = new ComputeBuffer(DistortionMapSize.x * DistortionMapSize.y , sizeof(float));
@@ -394,9 +396,10 @@ public class Rakel
         Canvas_ canvas,
         ComputeBuffer rakelMappedInfo)
     {
-        // HACK rakelEmittedPaint is actually treated as a raw stack with no specified cell volume
-        float cellVolume_UNUSED = 0;
-        PaintGrid rakelEmittedPaint = new PaintGrid(new Vector3Int(shaderRegion.Size.x, shaderRegion.Size.y, Reservoir.Size.z), cellVolume_UNUSED);
+
+        // HACK rakelEmittedPaint is actually treated as a raw stack with no specified mixing parameters
+        float UNUSED = 0;
+        PaintGrid rakelEmittedPaint = new PaintGrid(new Vector3Int(shaderRegion.Size.x, shaderRegion.Size.y, Reservoir.Size.z), UNUSED, (int)UNUSED, UNUSED);
 
         new ComputeShaderTask(
             "Emit/EmitFromRakel",
@@ -444,6 +447,8 @@ public class Rakel
                 new CSComputeBuffer("RakelReservoirContent", Reservoir.PaintGrid.Content),
                 new CSInt3("RakelReservoirSize", Reservoir.Size),
                 new CSFloat("RakelReservoirCellVolume", Reservoir.PaintGrid.CellVolume),
+                new CSInt("RakelReservoirDiffuseDepth", Reservoir.PaintGrid.DiffuseDepth),
+                new CSFloat("RakelReservoirDiffuseRatio", Reservoir.PaintGrid.DiffuseRatio),
             },
             false
         ).Run();

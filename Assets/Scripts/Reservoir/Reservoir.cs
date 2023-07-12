@@ -17,13 +17,13 @@ public class Reservoir
 
     public float PixelSize { get { return 1 / (float) Resolution; } }
 
-    public Reservoir(int resolution, int width, int height, int layers, float cellVolume)
+    public Reservoir(int resolution, int width, int height, int layers, float cellVolume, int diffuseDepth, float diffuseRatio)
     {
         Resolution = resolution;
         Size = new Vector3Int(width, height, layers);
 
-        PaintGrid = new PaintGrid(Size, cellVolume);
-        PaintGridDuplicate = new PaintGrid(Size, cellVolume);
+        PaintGrid = new PaintGrid(Size, cellVolume, diffuseDepth, diffuseRatio);
+        PaintGridDuplicate = new PaintGrid(Size, cellVolume, diffuseDepth, diffuseRatio);
     }
 
     public void Fill(ReservoirFiller filler)
