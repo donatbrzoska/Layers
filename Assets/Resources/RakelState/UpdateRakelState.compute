@@ -25,6 +25,9 @@ void main (uint3 id_ : SV_DispatchThreadID)
     if (is_relevant_thread(id(), CalculationSize))
     {
         Rakel rakel = RakelInfo[0];
+        rakel.pressure = Pressure;
+        rakel.rotation = Rotation;
+        rakel.tilt = Tilt;
 
         if (AutoZEnabled == 0)
         {
@@ -46,10 +49,6 @@ void main (uint3 id_ : SV_DispatchThreadID)
 
             rakel.position = float3(Position.x, Position.y, rakel.position.z);
         }
-
-        rakel.pressure = Pressure;
-        rakel.rotation = Rotation;
-        rakel.tilt = Tilt;
 
         float3 ul_origin = float3(0, rakel.length, 0);
         float3 ur_origin = float3(rakel.width, rakel.length, 0);
