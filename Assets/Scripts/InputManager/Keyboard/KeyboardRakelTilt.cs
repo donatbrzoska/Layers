@@ -2,7 +2,7 @@
 
 public class KeyboardRakelTilt : FloatValueSource
 {
-    private float TILT_STEP = 0.5f;
+    private float TILT_STEP = 0.1f;
 
     public override void Update()
     {
