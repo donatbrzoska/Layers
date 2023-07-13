@@ -3,11 +3,11 @@
 #include "../Paint/paint.hlsl"
 #include "../paint_grid.hlsl"
 
-RWStructuredBuffer<int> Value;
-
 RWStructuredBuffer<ColumnInfo> ReservoirInfoDuplicate;
 uint2 ReservoirSize;
+uint2 DividendPosition;
 
+RWStructuredBuffer<int> Divisor;
 
 #pragma kernel main
 
@@ -17,7 +17,6 @@ void main (uint3 id_ : SV_DispatchThreadID)
     id__ = id_;
     if (is_relevant_thread(id(), CalculationSize))
     {
-        int2 pixel = id() + CalculationPosition;
-        ReservoirInfoDuplicate[XY(pixel.x, pixel.y, ReservoirSize.x)].volume /= (float)Value[0];
+        ReservoirInfoDuplicate[XY(DividendPosition.x, DividendPosition.y, ReservoirSize.x)].volume /= (float)Divisor[0];
     }
 }

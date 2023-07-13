@@ -131,25 +131,26 @@ public class Reservoir
             false
         ));
 
-        // divide by count and do add reduce to get average
-        ComputeShaderEngine.EnqueueOrRun(new ComputeShaderTask(
-            "RakelState/DivideByValue",
-            paintTargetSR,
-            new List<CSAttribute>()
-            {
-                new CSComputeBuffer("Value", activeCount),
-
-                new CSComputeBuffer("ReservoirInfoDuplicate", PaintGridDuplicate.Info),
-                new CSInt2("ReservoirSize", new Vector2Int(Size.x, Size.y))
-            },
-            new List<IDisposable> { activeCount },
-            false
-        ));
-
+        // do add reduce and divide by value to get average
         ReduceVolume(
             paintTargetSR,
             ReduceFunction.Add,
             false);
+
+        ComputeShaderEngine.EnqueueOrRun(new ComputeShaderTask(
+            "RakelState/DivideByValue",
+            new ShaderRegion(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
+            new List<CSAttribute>()
+            {
+                new CSComputeBuffer("ReservoirInfoDuplicate", PaintGridDuplicate.Info),
+                new CSInt2("ReservoirSize", new Vector2Int(Size.x, Size.y)),
+                new CSInt2("DividendPosition", paintTargetSR.Position),
+
+                new CSComputeBuffer("Divisor", activeCount),
+            },
+            new List<IDisposable> { activeCount },
+            false
+        ));
 
         // return result
         ComputeShaderEngine.EnqueueOrRun(new ComputeShaderTask(
