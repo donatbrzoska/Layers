@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using System;
 
 public enum ReduceFunction
 {
@@ -18,17 +17,13 @@ public class Reservoir
 
     public float PixelSize { get { return 1 / (float) Resolution; } }
 
-    private ComputeShaderEngine ComputeShaderEngine;
-
-    public Reservoir(int resolution, int width, int height, int layers, float cellVolume, int diffuseDepth, float diffuseRatio, ComputeShaderEngine computeShaderEngine)
+    public Reservoir(int resolution, int width, int height, int layers, float cellVolume, int diffuseDepth, float diffuseRatio)
     {
         Resolution = resolution;
         Size = new Vector3Int(width, height, layers);
 
         PaintGrid = new PaintGrid(Size, cellVolume, diffuseDepth, diffuseRatio);
         PaintGridDuplicate = new PaintGrid(Size, cellVolume, diffuseDepth, diffuseRatio);
-
-        ComputeShaderEngine = computeShaderEngine;
     }
 
     public void Fill(ReservoirFiller filler)
@@ -53,7 +48,7 @@ public class Reservoir
 
     public void Duplicate(ShaderRegion sr, bool debugEnabled = false)
     {
-        ComputeShaderEngine.EnqueueOrRun(new ComputeShaderTask(
+        new ComputeShaderTask(
             "Reservoir/ReservoirDuplication",
             sr,
             new List<CSAttribute>()
@@ -64,9 +59,8 @@ public class Reservoir
                 new CSComputeBuffer("ReservoirContentDuplicate", PaintGridDuplicate.Content),
                 new CSInt3("ReservoirSize", Size),
             },
-            null,
             debugEnabled
-        ));
+        ).Run();
     }
 
     public void DuplicateActive(
@@ -75,7 +69,7 @@ public class Reservoir
         ShaderRegion shaderRegion,
         bool debugEnabled = false)
     {
-        ComputeShaderEngine.EnqueueOrRun(new ComputeShaderTask(
+        new ComputeShaderTask(
             "Reservoir/ActiveReservoirDuplication",
             shaderRegion,
             new List<CSAttribute>()
@@ -87,9 +81,8 @@ public class Reservoir
                 new CSComputeBuffer("ReservoirInfoDuplicate", PaintGridDuplicate.Info),
                 new CSInt3("ReservoirSize", Size)
             },
-            null,
             debugEnabled
-        ));
+        ).Run();
     }
 
     public void PrintVolumes(int z)
@@ -117,7 +110,7 @@ public class Reservoir
         int[] activeCountData = new int[1];
         activeCount.SetData(activeCountData);
 
-        ComputeShaderEngine.EnqueueOrRun(new ComputeShaderTask(
+        new ComputeShaderTask(
             "Reservoir/CountActive",
             paintTargetSR,
             new List<CSAttribute>()
@@ -127,9 +120,8 @@ public class Reservoir
 
                 new CSComputeBuffer("ActiveCount", activeCount),
             },
-            null,
             false
-        ));
+        ).Run();
 
         // do add reduce and divide by value to get average
         ReduceVolume(
@@ -137,7 +129,9 @@ public class Reservoir
             ReduceFunction.Add,
             false);
 
-        ComputeShaderEngine.EnqueueOrRun(new ComputeShaderTask(
+        // divide by count and do add reduce to get average
+        new ComputeShaderTask(
+
             "RakelState/DivideByValue",
             new ShaderRegion(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
             new List<CSAttribute>()
@@ -148,12 +142,13 @@ public class Reservoir
 
                 new CSComputeBuffer("Divisor", activeCount),
             },
-            new List<IDisposable> { activeCount },
             false
-        ));
+        ).Run();
+
+        activeCount.Dispose();
 
         // return result
-        ComputeShaderEngine.EnqueueOrRun(new ComputeShaderTask(
+        new ComputeShaderTask(
             "Reservoir/ExtractReducedVolume",
             new ShaderRegion(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
             new List<CSAttribute>()
@@ -164,9 +159,8 @@ public class Reservoir
 
                 new CSComputeBuffer("ReducedVolumeTarget", resultTarget),
             },
-            null,
             false
-        ));
+        ).Run();
     }
 
     // NOTE: It is assumed that the reservoir is duplicated already
@@ -180,7 +174,7 @@ public class Reservoir
             false);
 
         // return result
-        ComputeShaderEngine.EnqueueOrRun(new ComputeShaderTask(
+        new ComputeShaderTask(
             "Reservoir/ExtractReducedVolume",
             new ShaderRegion(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
             new List<CSAttribute>()
@@ -191,9 +185,8 @@ public class Reservoir
 
                 new CSComputeBuffer("ReducedVolumeTarget", resultTarget),
             },
-            null,
             false
-        ));
+        ).Run();
     }
 
     public void ReduceVolume(ShaderRegion reduceRegion, ReduceFunction reduceFunction, bool debugEnabled = false)
@@ -209,7 +202,7 @@ public class Reservoir
                 reduceRegion.Size,
                 REDUCE_BLOCK_SIZE);
 
-            ComputeShaderEngine.EnqueueOrRun(new ComputeShaderTask(
+            new ComputeShaderTask(
                 "Reservoir/ReduceVolume",
                 reduceShaderRegion,
                 new List<CSAttribute>
@@ -219,9 +212,8 @@ public class Reservoir
                     new CSInt2("ReduceRegionSize", reduceRegion.Size),
                     new CSInt("ReduceFunction", (int) reduceFunction),
                 },
-                null,
                 debugEnabled
-            ));
+            ).Run();
 
             // current reduceShaderRegion is new reduceRegion
             reduceRegion = reduceShaderRegion;

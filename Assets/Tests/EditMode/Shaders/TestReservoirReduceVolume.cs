@@ -45,8 +45,6 @@ public class TestReservoirReduceVolume
     private const int DIFFUSE_DEPTH = 0;
     private const float DIFFUSE_RATIO = 0;
 
-    ComputeShaderEngine CSE = new ComputeShaderEngine(false);
-
     Reservoir Reservoir;
     ColorFiller ColorFiller;
 
@@ -71,7 +69,7 @@ public class TestReservoirReduceVolume
         Vector2Int TEXTURE_SIZE = new Vector2Int(24, 16);
 
         // Arrange
-        Reservoir = new Reservoir(1, TEXTURE_SIZE.x, TEXTURE_SIZE.y, TEXTURE_SIZE.x * TEXTURE_SIZE.y, CELL_VOLUME, DIFFUSE_DEPTH, DIFFUSE_RATIO, CSE);
+        Reservoir = new Reservoir(1, TEXTURE_SIZE.x, TEXTURE_SIZE.y, TEXTURE_SIZE.x * TEXTURE_SIZE.y, CELL_VOLUME, DIFFUSE_DEPTH, DIFFUSE_RATIO);
         Reservoir.Fill(new ReservoirFiller(ColorFiller, new IndexVolumeFiller(0)));
 
         Reservoir.Duplicate();
@@ -102,7 +100,7 @@ public class TestReservoirReduceVolume
         Vector2Int TEXTURE_SIZE = new Vector2Int(13, 9);
 
         // Arrange
-        Reservoir = new Reservoir(1, TEXTURE_SIZE.x, TEXTURE_SIZE.y, TEXTURE_SIZE.x * TEXTURE_SIZE.y, CELL_VOLUME, DIFFUSE_DEPTH, DIFFUSE_RATIO, CSE);
+        Reservoir = new Reservoir(1, TEXTURE_SIZE.x, TEXTURE_SIZE.y, TEXTURE_SIZE.x * TEXTURE_SIZE.y, CELL_VOLUME, DIFFUSE_DEPTH, DIFFUSE_RATIO);
         Reservoir.Fill(new ReservoirFiller(ColorFiller, new IndexVolumeFiller(0)));
 
         Reservoir.Duplicate();
@@ -134,7 +132,7 @@ public class TestReservoirReduceVolume
         Vector2Int TEXTURE_SIZE = new Vector2Int(13, 9);
 
         // Arrange
-        Reservoir = new Reservoir(1, TEXTURE_SIZE.x, TEXTURE_SIZE.y, TEXTURE_SIZE.x * TEXTURE_SIZE.y, CELL_VOLUME, DIFFUSE_DEPTH, DIFFUSE_RATIO, CSE);
+        Reservoir = new Reservoir(1, TEXTURE_SIZE.x, TEXTURE_SIZE.y, TEXTURE_SIZE.x * TEXTURE_SIZE.y, CELL_VOLUME, DIFFUSE_DEPTH, DIFFUSE_RATIO);
         Reservoir.Fill(new ReservoirFiller(ColorFiller, new OnesVolumeFiller(0)));
 
         Reservoir.Duplicate();
@@ -165,7 +163,7 @@ public class TestReservoirReduceVolume
         Vector2Int TEXTURE_SIZE = new Vector2Int(16, 24);
 
         // Arrange
-        Reservoir = new Reservoir(1, TEXTURE_SIZE.x, TEXTURE_SIZE.y, TEXTURE_SIZE.x * TEXTURE_SIZE.y, CELL_VOLUME, DIFFUSE_DEPTH, DIFFUSE_RATIO, CSE);
+        Reservoir = new Reservoir(1, TEXTURE_SIZE.x, TEXTURE_SIZE.y, TEXTURE_SIZE.x * TEXTURE_SIZE.y, CELL_VOLUME, DIFFUSE_DEPTH, DIFFUSE_RATIO);
         Reservoir.Fill(new ReservoirFiller(ColorFiller, new OnesVolumeFiller(0)));
 
         Reservoir.Duplicate();

@@ -28,7 +28,6 @@ public class TestPaintGrid_copy
             "Tests/TestPaintGrid",
             new ShaderRegion(Vector2Int.zero, new Vector2Int(0, 1), new Vector2Int(1, 0), new Vector2Int(1, 1)),
             Attributes,
-            null,
             true,
             kernelID);
 

@@ -25,7 +25,6 @@ public class TestConvert
             "Tests/TestConvert",
             new ShaderRegion(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
             Attributes,
-            null,
             true,
             kernelID);
 

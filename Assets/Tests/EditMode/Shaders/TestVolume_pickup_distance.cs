@@ -25,7 +25,6 @@ public class TestVolume_pickup_distance
             "Tests/TestVolume_pickup",
             new ShaderRegion(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
             Attributes,
-            null,
             true,
             kernelID);
 

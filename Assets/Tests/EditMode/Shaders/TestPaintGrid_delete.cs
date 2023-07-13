@@ -51,7 +51,6 @@ public class TestPaintGrid_delete
             "Tests/TestPaintGrid",
             new ShaderRegion(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
             Attributes,
-            null,
             true,
             kernelID);
 

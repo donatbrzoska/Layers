@@ -21,7 +21,6 @@ public class TestDistance
             "Tests/TestDistance",
             new ShaderRegion(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
             Attributes,
-            null,
             true,
             kernelID);
 

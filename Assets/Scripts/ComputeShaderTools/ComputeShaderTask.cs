@@ -1,7 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Threading;
-using System;
 
 public abstract class CSAttribute
 {
@@ -183,7 +182,6 @@ public class ComputeShaderTask
     private ShaderRegion ShaderRegion;
     Vector2Int SubgridGroupSize;
     public List<CSAttribute> Attributes;
-    public List<IDisposable> Disposables;
     public bool DebugEnabled;
     public int KernelID;
 
@@ -194,7 +192,6 @@ public class ComputeShaderTask
         ShaderRegion shaderRegion,
         Vector2Int subgridGroupSize,
         List<CSAttribute> attributes,
-        List<IDisposable> disposables,
         bool debugEnabled,
         int kernelID = 0)
     {
@@ -203,13 +200,12 @@ public class ComputeShaderTask
         SubgridGroupSize = subgridGroupSize;
 
         Attributes = attributes;
-        Disposables = disposables;
         DebugEnabled = debugEnabled;
         KernelID = kernelID;
     }
 
     // disable subgrid logic constructor
-    public ComputeShaderTask(string name, ShaderRegion shaderRegion, List<CSAttribute> attributes, List<IDisposable> disposables, bool debugEnabled, int kernelID = 0) : this(name, shaderRegion, new Vector2Int(1, 1), attributes, disposables, debugEnabled, kernelID) { }
+    public ComputeShaderTask(string name, ShaderRegion shaderRegion, List<CSAttribute> attributes, bool debugEnabled, int kernelID = 0) : this(name, shaderRegion, new Vector2Int(1, 1), attributes, debugEnabled, kernelID) { }
 
     public void Run()
     {
@@ -251,14 +247,6 @@ public class ComputeShaderTask
                 computeShader.SetInts("SubgridGroupSize", SubgridGroupSize.x, SubgridGroupSize.y);
 
                 computeShader.Dispatch(KernelID, threadGroups.x, threadGroups.y, 1);
-            }
-        }
-
-        if (Disposables != null)
-        {
-            foreach (IDisposable c in Disposables)
-            {
-                c.Dispose();
             }
         }
 

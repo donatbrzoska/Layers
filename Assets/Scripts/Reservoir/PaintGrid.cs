@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 public struct ColumnInfo
 {
@@ -43,7 +42,7 @@ public struct ColumnInfo
     }
 }
 
-public class PaintGrid : IDisposable
+public class PaintGrid
 {
     public ComputeBuffer Info;
     public ColumnInfo[] InfoData;
