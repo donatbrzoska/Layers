@@ -19,18 +19,16 @@ public class RenderedRakel : MonoBehaviour
         transform.localScale = scale;
 
         bool inStroke = !OilPaintEngine.TransferEngine.Done();
-        Vector3 position = new Vector3(
-            inStroke ? OilPaintEngine.Rakel.Info.Position.x : OilPaintEngine.InputManager.RakelPositionX,
-            inStroke ? OilPaintEngine.Rakel.Info.Position.y : OilPaintEngine.InputManager.RakelPositionY,
-            OilPaintEngine.InputManager.RakelPositionZ);
-        transform.position = position - Quaternion.AngleAxis(
-            inStroke ? OilPaintEngine.Rakel.Info.Rotation : OilPaintEngine.InputManager.RakelRotation,
-            Vector3.back) * OilPaintEngine.Rakel.Info.Anchor;
+        float positionX = inStroke ? OilPaintEngine.Rakel.Info.Position.x : OilPaintEngine.InputManager.RakelPositionX;
+        float positionY = inStroke ? OilPaintEngine.Rakel.Info.Position.y : OilPaintEngine.InputManager.RakelPositionY;
+        float positionZ = OilPaintEngine.InputManager.RakelPositionZ;
+        float rotation = inStroke ? OilPaintEngine.Rakel.Info.Rotation : OilPaintEngine.InputManager.RakelRotation;
+        float tilt = inStroke ? OilPaintEngine.Rakel.Info.Tilt : OilPaintEngine.InputManager.RakelTilt;
+
+        Vector3 position = new Vector3(positionX, positionY, positionZ);
+        transform.position = position - Quaternion.AngleAxis(rotation, Vector3.back) * OilPaintEngine.Rakel.Info.Anchor;
 
         // Rotations have to be transformed, because the rendered rakel model has a different base orientation (flat in xz-plane)
-        transform.rotation = BaseRotation * Quaternion.Euler(new Vector3(
-            0,
-            inStroke ? OilPaintEngine.Rakel.Info.Rotation : OilPaintEngine.InputManager.RakelRotation,
-            inStroke ? -OilPaintEngine.Rakel.Info.Tilt : -OilPaintEngine.InputManager.RakelTilt));
+        transform.rotation = BaseRotation * Quaternion.Euler(new Vector3(0, rotation, -tilt));
     }
 }
