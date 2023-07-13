@@ -24,13 +24,13 @@ public class RenderedRakel : MonoBehaviour
             inStroke ? OilPaintEngine.Rakel.Info.Position.y : OilPaintEngine.InputManager.RakelPositionY,
             OilPaintEngine.InputManager.RakelPositionZ);
         transform.position = position - Quaternion.AngleAxis(
-            OilPaintEngine.InputManager.RakelRotation,
+            inStroke ? OilPaintEngine.Rakel.Info.Rotation : OilPaintEngine.InputManager.RakelRotation,
             Vector3.back) * OilPaintEngine.Rakel.Info.Anchor;
 
         // Rotations have to be transformed, because the rendered rakel model has a different base orientation (flat in xz-plane)
         transform.rotation = BaseRotation * Quaternion.Euler(new Vector3(
             0,
-            OilPaintEngine.InputManager.RakelRotation,
-            -OilPaintEngine.InputManager.RakelTilt));
+            inStroke ? OilPaintEngine.Rakel.Info.Rotation : OilPaintEngine.InputManager.RakelRotation,
+            inStroke ? -OilPaintEngine.Rakel.Info.Tilt : -OilPaintEngine.InputManager.RakelTilt));
     }
 }
