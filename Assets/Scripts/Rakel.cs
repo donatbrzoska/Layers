@@ -56,6 +56,8 @@ public class Rakel
     private Vector2Int ReservoirPixelEmitRadius;
     private Vector2Int DELETE_CONFLICT_AREA = new Vector2Int(3,3);
 
+    private bool StrokeBegin;
+
     public Rakel(float length, float width, int resolution, int layers_MAX, float cellVolume, int diffuseDepth, float diffuseRatio, float anchorRatioLength = 0.5f, float anchorRatioWidth = 1)
     {
         Vector3Int reservoirSize = new Vector3Int((int)(width * resolution), (int)(length * resolution), layers_MAX);
@@ -91,6 +93,8 @@ public class Rakel
 
     public void NewStroke()
     {
+        StrokeBegin = true;
+
         //float[] distortionMapData = new float[DistortionMapSize.x * DistortionMapSize.y];
 
         ////float noiseCapRatio = 0.6f;
@@ -249,15 +253,22 @@ public class Rakel
         float baseSink_MAX,
         float tiltSink_MAX)
     {
-        // TODO do volume based on last n steps?
+        if (StrokeBegin)
+        {
+            // only snapshot will be used for paint height calculation
+            // -> newly applied paint does not have an impact
+            canvas.Reservoir.SnapshotInfo();
+            StrokeBegin = false;
+        }
+
         if (Info.AutoZEnabled == 1)
         {
             // reduce canvas volume
-            canvas.Reservoir.DuplicateActiveInfo(
+            canvas.Reservoir.DuplicateActiveInfoSnapshot(
                 rakelMappedInfo,
                 new Vector2Int(Reservoir.Size.x, Reservoir.Size.y),
                 emitSR);
-            canvas.Reservoir.ReduceInfoVolumeAvg(
+            canvas.Reservoir.ReduceInfoSnapshotVolumeAvg(
                 rakelMappedInfo,
                 new Vector2Int(Reservoir.Size.x, Reservoir.Size.y),
                 emitSR,

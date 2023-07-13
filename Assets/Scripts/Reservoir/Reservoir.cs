@@ -15,6 +15,9 @@ public class Reservoir
     public PaintGrid PaintGrid;
     public PaintGrid PaintGridDuplicate;
 
+    public ComputeBuffer PaintGridInfoSnapshot;
+    public ComputeBuffer PaintGridInfoSnapshotDuplicate;
+
     public float PixelSize { get { return 1 / (float) Resolution; } }
 
     public Reservoir(int resolution, int width, int height, int layers, float cellVolume, int diffuseDepth, float diffuseRatio)
@@ -24,6 +27,11 @@ public class Reservoir
 
         PaintGrid = new PaintGrid(Size, cellVolume, diffuseDepth, diffuseRatio);
         PaintGridDuplicate = new PaintGrid(Size, cellVolume, diffuseDepth, diffuseRatio);
+
+        // only used by canvas
+        // TODO provide possibility to deactivate this
+        PaintGridInfoSnapshot = new ComputeBuffer(Size.x * Size.y, ColumnInfo.SizeInBytes);
+        PaintGridInfoSnapshotDuplicate = new ComputeBuffer(Size.x * Size.y, ColumnInfo.SizeInBytes);
     }
 
     public void Fill(ReservoirFiller filler)
@@ -63,10 +71,57 @@ public class Reservoir
         ).Run();
     }
 
+    public void SnapshotInfo(bool debugEnabled = false)
+    {
+        new ComputeShaderTask(
+            "Reservoir/SnapshotInfo",
+            GetFullShaderRegion(),
+            new List<CSAttribute>()
+            {
+                new CSComputeBuffer("ReservoirInfo", PaintGrid.Info),
+                new CSComputeBuffer("ReservoirInfoSnapshot", PaintGridInfoSnapshot),
+                new CSInt3("ReservoirSize", Size),
+            },
+            debugEnabled
+        ).Run();
+    }
+
+    public void DuplicateActiveInfoSnapshot(
+        ComputeBuffer paintSourceMappedInfo,
+        Vector2Int paintSourceReservoirSize,
+        ShaderRegion shaderRegion,
+        bool debugEnabled = false)
+    {
+        DuplicateActiveInfo_(
+            paintSourceMappedInfo,
+            paintSourceReservoirSize,
+            shaderRegion,
+            PaintGridInfoSnapshot,
+            PaintGridInfoSnapshotDuplicate,
+            debugEnabled);
+    }
+    
     public void DuplicateActiveInfo(
         ComputeBuffer paintSourceMappedInfo,
         Vector2Int paintSourceReservoirSize,
         ShaderRegion shaderRegion,
+        bool debugEnabled = false)
+    {
+        DuplicateActiveInfo_(
+            paintSourceMappedInfo,
+            paintSourceReservoirSize,
+            shaderRegion,
+            PaintGrid.Info,
+            PaintGridDuplicate.Info,
+            debugEnabled);
+    }
+
+    private void DuplicateActiveInfo_(
+        ComputeBuffer paintSourceMappedInfo,
+        Vector2Int paintSourceReservoirSize,
+        ShaderRegion shaderRegion,
+        ComputeBuffer source,
+        ComputeBuffer target,
         bool debugEnabled = false)
     {
         new ComputeShaderTask(
@@ -77,8 +132,8 @@ public class Reservoir
                 new CSComputeBuffer("PaintSourceMappedInfo", paintSourceMappedInfo),
                 new CSInt2("PaintSourceReservoirSize", paintSourceReservoirSize),
 
-                new CSComputeBuffer("ReservoirInfo", PaintGrid.Info),
-                new CSComputeBuffer("ReservoirInfoDuplicate", PaintGridDuplicate.Info),
+                new CSComputeBuffer("ReservoirInfo", source),
+                new CSComputeBuffer("ReservoirInfoDuplicate", target),
                 new CSInt3("ReservoirSize", Size)
             },
             debugEnabled
@@ -98,11 +153,41 @@ public class Reservoir
         //Debug.Log("Sum is " + sum);
     }
 
-    // NOTE: It is assumed that the reservoir is duplicated already
+    // NOTE: It is assumed that the info is duplicated already
+    public void ReduceInfoSnapshotVolumeAvg(
+        ComputeBuffer paintSourceMappedInfo,
+        Vector2Int paintSourceReservoirSize,
+        ShaderRegion paintTargetSR,
+        ComputeBuffer resultTarget)
+    {
+        ReduceInfoVolumeAvg_(
+            paintSourceMappedInfo,
+            paintSourceReservoirSize,
+            paintTargetSR,
+            PaintGridInfoSnapshotDuplicate,
+            resultTarget);
+    }
+    
+    // NOTE: It is assumed that the info is duplicated already
     public void ReduceInfoVolumeAvg(
         ComputeBuffer paintSourceMappedInfo,
         Vector2Int paintSourceReservoirSize,
         ShaderRegion paintTargetSR,
+        ComputeBuffer resultTarget)
+    {
+        ReduceInfoVolumeAvg_(
+            paintSourceMappedInfo,
+            paintSourceReservoirSize,
+            paintTargetSR,
+            PaintGridDuplicate.Info,
+            resultTarget);
+    }
+
+    private void ReduceInfoVolumeAvg_(
+        ComputeBuffer paintSourceMappedInfo,
+        Vector2Int paintSourceReservoirSize,
+        ShaderRegion paintTargetSR,
+        ComputeBuffer info,
         ComputeBuffer resultTarget)
     {
         // count pixels under paint source
@@ -127,7 +212,7 @@ public class Reservoir
         ReduceInfoVolume(
             paintTargetSR,
             ReduceFunction.Add,
-            PaintGridDuplicate.Info,
+            info,
             false);
 
         // divide by count and do add reduce to get average
@@ -137,7 +222,7 @@ public class Reservoir
             new ShaderRegion(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
             new List<CSAttribute>()
             {
-                new CSComputeBuffer("ReservoirInfo", PaintGridDuplicate.Info),
+                new CSComputeBuffer("ReservoirInfo", info),
                 new CSInt2("ReservoirSize", new Vector2Int(Size.x, Size.y)),
                 new CSInt2("DividendPosition", paintTargetSR.Position),
 
@@ -154,7 +239,7 @@ public class Reservoir
             new ShaderRegion(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
             new List<CSAttribute>()
             {
-                new CSComputeBuffer("ReducedVolumeSource", PaintGridDuplicate.Info),
+                new CSComputeBuffer("ReducedVolumeSource", info),
                 new CSInt2("ReducedVolumeSourceSize", new Vector2Int(Size.x, Size.y)),
                 new CSInt2("ReducedVolumeSourceIndex", paintTargetSR.Position),
 
@@ -232,5 +317,8 @@ public class Reservoir
     {
         PaintGrid.Dispose();
         PaintGridDuplicate.Dispose();
+
+        PaintGridInfoSnapshot.Dispose();
+        PaintGridInfoSnapshotDuplicate.Dispose();
     }
 }
