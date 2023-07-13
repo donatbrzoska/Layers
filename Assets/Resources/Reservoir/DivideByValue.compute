@@ -3,7 +3,7 @@
 #include "../Paint/paint.hlsl"
 #include "../paint_grid.hlsl"
 
-RWStructuredBuffer<ColumnInfo> ReservoirInfoDuplicate;
+RWStructuredBuffer<ColumnInfo> ReservoirInfo;
 uint2 ReservoirSize;
 uint2 DividendPosition;
 
@@ -17,6 +17,6 @@ void main (uint3 id_ : SV_DispatchThreadID)
     id__ = id_;
     if (is_relevant_thread(id(), CalculationSize))
     {
-        ReservoirInfoDuplicate[XY(DividendPosition.x, DividendPosition.y, ReservoirSize.x)].volume /= (float)Divisor[0];
+        ReservoirInfo[XY(DividendPosition.x, DividendPosition.y, ReservoirSize.x)].volume /= (float)Divisor[0];
     }
 }

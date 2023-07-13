@@ -63,14 +63,14 @@ public class Reservoir
         ).Run();
     }
 
-    public void DuplicateActive(
+    public void DuplicateActiveInfo(
         ComputeBuffer paintSourceMappedInfo,
         Vector2Int paintSourceReservoirSize,
         ShaderRegion shaderRegion,
         bool debugEnabled = false)
     {
         new ComputeShaderTask(
-            "Reservoir/ActiveReservoirDuplication",
+            "Reservoir/DuplicateActiveInfo",
             shaderRegion,
             new List<CSAttribute>()
             {
@@ -99,7 +99,7 @@ public class Reservoir
     }
 
     // NOTE: It is assumed that the reservoir is duplicated already
-    public void ReduceVolumeAvg(
+    public void ReduceInfoVolumeAvg(
         ComputeBuffer paintSourceMappedInfo,
         Vector2Int paintSourceReservoirSize,
         ShaderRegion paintTargetSR,
@@ -124,19 +124,20 @@ public class Reservoir
         ).Run();
 
         // do add reduce and divide by value to get average
-        ReduceVolume(
+        ReduceInfoVolume(
             paintTargetSR,
             ReduceFunction.Add,
+            PaintGridDuplicate.Info,
             false);
 
         // divide by count and do add reduce to get average
         new ComputeShaderTask(
 
-            "RakelState/DivideByValue",
+            "Reservoir/DivideByValue",
             new ShaderRegion(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
             new List<CSAttribute>()
             {
-                new CSComputeBuffer("ReservoirInfoDuplicate", PaintGridDuplicate.Info),
+                new CSComputeBuffer("ReservoirInfo", PaintGridDuplicate.Info),
                 new CSInt2("ReservoirSize", new Vector2Int(Size.x, Size.y)),
                 new CSInt2("DividendPosition", paintTargetSR.Position),
 
@@ -164,13 +165,14 @@ public class Reservoir
     }
 
     // NOTE: It is assumed that the reservoir is duplicated already
-    public void ReduceVolumeMax(
+    public void ReduceInfoDuplicateVolumeMax(
         ShaderRegion paintTargetSR,
         ComputeBuffer resultTarget)
     {
-        ReduceVolume(
+        ReduceInfoVolume(
             paintTargetSR,
             ReduceFunction.Max,
+            PaintGridDuplicate.Info,
             false);
 
         // return result
@@ -189,7 +191,13 @@ public class Reservoir
         ).Run();
     }
 
-    public void ReduceVolume(ShaderRegion reduceRegion, ReduceFunction reduceFunction, bool debugEnabled = false)
+
+    public void ReduceInfoDuplicateVolume(ShaderRegion reduceRegion, ReduceFunction reduceFunction, bool debugEnabled = false)
+    {
+        ReduceInfoVolume(reduceRegion, reduceFunction, PaintGridDuplicate.Info, debugEnabled);
+    }
+
+    private void ReduceInfoVolume(ShaderRegion reduceRegion, ReduceFunction reduceFunction, ComputeBuffer info, bool debugEnabled = false)
     {
         // shader is hardcoded to deal with 2x2 blocks (processing 4 values per thread)
         Vector2Int REDUCE_BLOCK_SIZE = new Vector2Int(2, 2);
@@ -203,11 +211,11 @@ public class Reservoir
                 REDUCE_BLOCK_SIZE);
 
             new ComputeShaderTask(
-                "Reservoir/ReduceVolume",
+                "Reservoir/ReduceInfoVolume",
                 reduceShaderRegion,
                 new List<CSAttribute>
                 {
-                    new CSComputeBuffer("ReservoirInfoDuplicate", PaintGridDuplicate.Info),
+                    new CSComputeBuffer("ReservoirInfo", info),
                     new CSInt3("ReservoirSize", Size),
                     new CSInt2("ReduceRegionSize", reduceRegion.Size),
                     new CSInt("ReduceFunction", (int) reduceFunction),

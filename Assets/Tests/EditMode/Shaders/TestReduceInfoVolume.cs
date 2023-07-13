@@ -84,7 +84,7 @@ public class TestReservoirReduceVolume
             reductionPosition + new Vector2Int(reductionSize.x - 1, 0),
             reductionPosition + new Vector2Int(0, reductionSize.y - 1),
             reductionPosition + new Vector2Int(reductionSize.x - 1, reductionSize.y - 1));
-        Reservoir.ReduceVolume(sr, ReduceFunction.Max, false);
+        Reservoir.ReduceInfoDuplicateVolume(sr, ReduceFunction.Max, false);
 
 
         // Assert
@@ -115,7 +115,7 @@ public class TestReservoirReduceVolume
             reductionPosition + new Vector2Int(reductionSize.x - 1, 0),
             reductionPosition + new Vector2Int(0, reductionSize.y - 1),
             reductionPosition + new Vector2Int(reductionSize.x - 1, reductionSize.y - 1));
-        Reservoir.ReduceVolume(sr, ReduceFunction.Max, false);
+        Reservoir.ReduceInfoDuplicateVolume(sr, ReduceFunction.Max, false);
 
 
         // Assert
@@ -147,7 +147,7 @@ public class TestReservoirReduceVolume
             reductionPosition + new Vector2Int(reductionSize.x - 1, 0),
             reductionPosition + new Vector2Int(0, reductionSize.y - 1),
             reductionPosition + new Vector2Int(reductionSize.x - 1, reductionSize.y - 1));
-        Reservoir.ReduceVolume(sr, ReduceFunction.Add, false);
+        Reservoir.ReduceInfoDuplicateVolume(sr, ReduceFunction.Add, false);
 
 
         // Assert
@@ -178,7 +178,7 @@ public class TestReservoirReduceVolume
             reductionPosition + new Vector2Int(reductionSize.x - 1, 0),
             reductionPosition + new Vector2Int(0, reductionSize.y - 1),
             reductionPosition + new Vector2Int(reductionSize.x - 1, reductionSize.y - 1));
-        Reservoir.ReduceVolume(sr, ReduceFunction.Add, false);
+        Reservoir.ReduceInfoDuplicateVolume(sr, ReduceFunction.Add, false);
 
 
         // Assert

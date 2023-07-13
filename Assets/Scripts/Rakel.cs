@@ -253,11 +253,11 @@ public class Rakel
         if (Info.AutoZEnabled == 1)
         {
             // reduce canvas volume
-            canvas.Reservoir.DuplicateActive(
+            canvas.Reservoir.DuplicateActiveInfo(
                 rakelMappedInfo,
                 new Vector2Int(Reservoir.Size.x, Reservoir.Size.y),
                 emitSR);
-            canvas.Reservoir.ReduceVolumeAvg(
+            canvas.Reservoir.ReduceInfoVolumeAvg(
                 rakelMappedInfo,
                 new Vector2Int(Reservoir.Size.x, Reservoir.Size.y),
                 emitSR,
@@ -311,7 +311,7 @@ public class Rakel
                 },
                 false
             ).Run();
-            canvas.Reservoir.ReduceVolumeAvg(
+            canvas.Reservoir.ReduceInfoVolumeAvg(
                 rakelMappedInfo,
                 new Vector2Int(Reservoir.Size.x, Reservoir.Size.y),
                 emitSR,
