@@ -1,6 +1,15 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
+public unsafe struct FilledRingbuffer
+{
+    public float CurrentAvg;
+    public fixed float Overlap[9 * 9];
+    public int Pointer;
+    public int Size;
+
+}
+
 public struct RakelInfo
 {
     public const int SizeInBytes = 8 * sizeof(float) + 10 * 3 * sizeof(float);
@@ -43,6 +52,8 @@ public class Rakel
 
     public ComputeBuffer InfoBuffer;
     public RakelInfo Info;
+    ComputeBuffer CanvasVolumeAvgRingbuffer;
+    private const int CANVAS_VOLUME_AVG_RINGBUFFER_SIZE = 40; // TODO make dependent on resolution?
     ComputeBuffer ReducedCanvasVolume;
     ComputeBuffer ReducedRakelVolume;
 
@@ -82,6 +93,17 @@ public class Rakel
         InfoBuffer = new ComputeBuffer(1, RakelInfo.SizeInBytes);
         InfoBuffer.SetData(new RakelInfo[] { Info });
 
+        // this is actually a struct:
+        // - float CurrentAvg;
+        // - int Pointer;
+        // - int Size;
+        // - float[CANVAS_VOLUME_RINGBUFFER_SIZE] Elements;
+        // we don't do an actual struct, because then we can't parametrize CANVAS_VOLUME_RINGBUFFER_SIZE dynamically
+        CanvasVolumeAvgRingbuffer = new ComputeBuffer(3 + CANVAS_VOLUME_AVG_RINGBUFFER_SIZE, sizeof(float));
+        float[] canvasVolumeAvgRingbufferData = new float[3 + CANVAS_VOLUME_AVG_RINGBUFFER_SIZE];
+        canvasVolumeAvgRingbufferData[2] = CANVAS_VOLUME_AVG_RINGBUFFER_SIZE; // set size, rest is initialized in shader
+        CanvasVolumeAvgRingbuffer.SetData(canvasVolumeAvgRingbufferData);
+
         ReducedCanvasVolume = new ComputeBuffer(1, sizeof(float));
         ReducedRakelVolume = new ComputeBuffer(1, sizeof(float));
         float[] reducedVolumeData = new float[1];
@@ -91,6 +113,7 @@ public class Rakel
 
     public void NewStroke()
     {
+        strokeBegin = true;
         //float[] distortionMapData = new float[DistortionMapSize.x * DistortionMapSize.y];
 
         ////float noiseCapRatio = 0.6f;
@@ -241,6 +264,8 @@ public class Rakel
         return rakelMappedInfo;
     }
 
+    private bool strokeBegin;
+
     public void RecalculatePositionBaseZ(
         Canvas_ canvas,
         ComputeBuffer rakelMappedInfo,
@@ -269,6 +294,21 @@ public class Rakel
             //canvas.Reservoir.ReduceVolumeMax(
             //    emitSR,
             //    ReducedCanvasVolume);
+
+            // apply floating avg to canvas volume
+            new ComputeShaderTask(
+                "RakelState/ApplyFloatingAvg",
+                new ShaderRegion(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
+                new List<CSAttribute>()
+                {
+                    new CSComputeBuffer("ReducedVolumeSource", ReducedCanvasVolume),
+
+                    new CSComputeBuffer("AvgRingbuffer", CanvasVolumeAvgRingbuffer),
+                    new CSInt("StrokeBegin", strokeBegin ? 1 : 0)
+                },
+                true
+            ).Run();
+            strokeBegin = false;
 
             // reduce rakel volume
             new ComputeShaderTask(
@@ -326,7 +366,7 @@ public class Rakel
                 new ShaderRegion(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
                 new List<CSAttribute>()
                 {
-                    new CSComputeBuffer("ReducedCanvasVolumeSource", ReducedCanvasVolume),
+                    new CSComputeBuffer("ReducedCanvasVolumeSource", CanvasVolumeAvgRingbuffer),
                     new CSComputeBuffer("ReducedRakelVolumeSource", ReducedRakelVolume),
 
                     new CSFloat("LayerThickness_MAX", layerThickness_MAX),
@@ -472,6 +512,8 @@ public class Rakel
 
         ReducedCanvasVolume.Dispose();
         ReducedRakelVolume.Dispose();
+
+        CanvasVolumeAvgRingbuffer.Dispose();
     }
 }
 
