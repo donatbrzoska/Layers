@@ -17,6 +17,10 @@ void main (uint3 id_ : SV_DispatchThreadID)
     id__ = id_;
     if (is_relevant_thread(id(), CalculationSize))
     {
-        ReservoirInfo[XY(DividendPosition.x, DividendPosition.y, ReservoirSize.x)].volume /= (float)Divisor[0];
+        // NOTE:
+        // Doing unzero in this context is kind of hacky, the dividend is the
+        // add reduced volume. If divisor is zero, there are no active pixels,
+        // which means that the result of this should not be used anyways.
+        ReservoirInfo[XY(DividendPosition.x, DividendPosition.y, ReservoirSize.x)].volume /= unzero((float)Divisor[0]);
     }
 }
