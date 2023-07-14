@@ -16,7 +16,7 @@ public class NormalScaleController : MonoBehaviour
 
     public void Start()
     {
-        Slider.SetValueWithoutNotify(OilPaintEngine.Configuration.NormalScale);
+        Slider.SetValueWithoutNotify(OilPaintEngine.Configuration.CanvasConfiguration.NormalScale);
     }
 
     public void OnValueChanged(float arg0)

@@ -4,12 +4,9 @@ public class Configuration
 {
     public int TextureResolution;
     public ColorSpace ColorSpace;
-    public float NormalScale;
-    public float CanvasCellVolume;
-    public int CanvasDiffuseDepth;
-    public float CanvasDiffuseRatio;
 
     public InputConfiguration InputConfiguration;
+    public CanvasConfiguration CanvasConfiguration;
     public RakelConfiguration RakelConfiguration;
     public FillConfiguration FillConfiguration;
     public TransferConfiguration TransferConfiguration;
@@ -18,12 +15,9 @@ public class Configuration
     {
         TextureResolution = 40;
         ColorSpace = ColorSpace.RGB;
-        NormalScale = 0.015f;
-        CanvasCellVolume = 1;
-        CanvasDiffuseDepth = 0;
-        CanvasDiffuseRatio = 0.2f;
 
         InputConfiguration = new InputConfiguration();
+        CanvasConfiguration = new CanvasConfiguration();
         RakelConfiguration = new RakelConfiguration();
         FillConfiguration = new FillConfiguration();
         TransferConfiguration = new TransferConfiguration();
@@ -122,6 +116,22 @@ public class InputConfiguration
         RakelTilt = new InputValue() { Source = InputSourceType.Keyboard, Value = 0 };
 
         StrokeStateSource = InputSourceType.Mouse;
+    }
+}
+
+public class CanvasConfiguration
+{
+    public float NormalScale;
+    public float CellVolume;
+    public int DiffuseDepth;
+    public float DiffuseRatio;
+
+    public CanvasConfiguration()
+    {
+        NormalScale = 0.015f;
+        CellVolume = 1;
+        DiffuseDepth = 0;
+        DiffuseRatio = 0.2f;
     }
 }
 
