@@ -2,18 +2,26 @@
 
 public class KeyboardRakelPressure : FloatValueSource
 {
-    private const float PRESSURE_STEP = 0.01f;
+    private FrameStopwatch FrameStopwatch;
+    private float PRESSURE_STEP_PER_SECOND = 1;
+
+    public KeyboardRakelPressure()
+    {
+        FrameStopwatch = new FrameStopwatch();
+    }
 
     public override void Update()
     {
+        FrameStopwatch.Update();
+
         if (Input.GetKey(KeyCode.Q))
         {
-            Value -= PRESSURE_STEP;
+            Value -= FrameStopwatch.SecondsSinceLastFrame * PRESSURE_STEP_PER_SECOND;
             Value = Mathf.Clamp01(Value);
         }
         if (Input.GetKey(KeyCode.W))
         {
-            Value += PRESSURE_STEP;
+            Value += FrameStopwatch.SecondsSinceLastFrame * PRESSURE_STEP_PER_SECOND;
             Value = Mathf.Clamp01(Value);
         }
     }

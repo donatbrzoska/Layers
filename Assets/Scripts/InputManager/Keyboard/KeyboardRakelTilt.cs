@@ -2,17 +2,25 @@
 
 public class KeyboardRakelTilt : FloatValueSource
 {
-    private float TILT_STEP = 0.2f;
+    private FrameStopwatch FrameStopwatch;
+    private float TILT_STEP_PER_SECOND = 50;
+
+    public KeyboardRakelTilt()
+    {
+        FrameStopwatch = new FrameStopwatch();
+    }
 
     public override void Update()
     {
+        FrameStopwatch.Update();
+
         if (Input.GetKey(KeyCode.A))
         {
-            Value += TILT_STEP;
+            Value += FrameStopwatch.SecondsSinceLastFrame * TILT_STEP_PER_SECOND;
         }
         if (Input.GetKey(KeyCode.S))
         {
-            Value -= TILT_STEP;
+            Value -= FrameStopwatch.SecondsSinceLastFrame * TILT_STEP_PER_SECOND;
         }
 
         Value = Rakel.ClampTilt(Value);
