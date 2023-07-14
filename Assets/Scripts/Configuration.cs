@@ -171,13 +171,7 @@ public class TransferConfiguration
     public float PickupVolume_MAX;
     public float LayerThickness_MAX;
 
-    public float BaseSink_MAX
-    {
-        get
-        {
-            return LayerThickness_MAX;
-        }
-    }
+    public float BaseSink_MAX_Ratio;
     public float TiltSink_MAX;
 
     public TransferConfiguration()
@@ -193,6 +187,7 @@ public class TransferConfiguration
         PickupVolume_MIN = 0.1f;// 0.3f;
         PickupVolume_MAX = 0.65f;
 
+        BaseSink_MAX_Ratio = 1;
         LayerThickness_MAX = 4 * Paint.VOLUME_THICKNESS;
 
         TiltSink_MAX = 4 * Paint.VOLUME_THICKNESS;

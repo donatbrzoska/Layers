@@ -10,7 +10,7 @@ float Pressure;
 float Rotation;
 float Tilt;
 float MAX_SUPPORTED_TILT;
-float BaseSink_MAX;
+float BaseSink_MAX_Ratio;
 float TiltSink_MAX;
 
 RWStructuredBuffer<Rakel> RakelInfo;
@@ -31,6 +31,8 @@ void main (uint3 id_ : SV_DispatchThreadID)
 
         if (AutoZEnabled == 0)
         {
+            // TODO include canvas position -> this would also require info about the direction the canvas is oriented
+            rakel.actual_layer_thickness = Position.z;
             rakel.position_base_z = Position.z;
         }
 
@@ -40,7 +42,8 @@ void main (uint3 id_ : SV_DispatchThreadID)
         }
         else
         {
-            float sink = BaseSink_MAX + rakel.tilt / MAX_SUPPORTED_TILT * TiltSink_MAX;
+            float base_sink_max = rakel.actual_layer_thickness * BaseSink_MAX_Ratio;
+            float sink = base_sink_max + rakel.tilt / MAX_SUPPORTED_TILT * TiltSink_MAX;
             // NOTE: This assumes that canvas is always faced to negative z direction
             rakel.position.z = rakel.position_base_z + rakel.pressure * sink;
             // prevent sink through canvas
