@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 public struct RakelInfo
 {
-    public const int SizeInBytes = 8 * sizeof(float) + 10 * 3 * sizeof(float);
+    public const int SizeInBytes = 1 * sizeof(int) + 7 * sizeof(float) + 10 * 3 * sizeof(float);
 
     public float Length;
     public float Width;
