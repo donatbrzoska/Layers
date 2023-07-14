@@ -29,12 +29,6 @@ public class OilPaintEngine : MonoBehaviour
     {
         Config = new Configuration();
 
-        //Configuration.LoadDebug();
-        //Configuration.RakelRotation = 22;
-        //Configuration.RakelTilt = 20;
-        //Configuration.FillConfiguration.VolumeMode = VolumeMode.Flat;
-        //Configuration.FillConfiguration.Volume = 30;
-
         CreateInputManager();
 
         if (BENCHMARK_STEPS > 0)

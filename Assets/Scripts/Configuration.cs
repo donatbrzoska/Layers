@@ -23,72 +23,12 @@ public class Configuration
         TransferConfig = new TransferConfiguration();
     }
 
-    public void LoadDebug()
-    {
-        TextureResolution = 1;
-
-        RakelConfig.Length = 4;
-        RakelConfig.Width = 2;
-
-        FillConfig.Volume = 1;
-        FillConfig.VolumeMode = VolumeMode.Flat;
-        FillConfig.ColorMode = ColorMode.Colorful;
-
-        TransferConfig.EmitVolumeApplicationReservoirRate = 1; // unused
-        TransferConfig.EmitVolumePickupReservoirRate = 0; // unused
-        TransferConfig.PickupVolume_MAX = 0;
-    }
-
     public void LoadBenchmark()
     {
         TextureResolution = 50;
 
         RakelConfig.Length = 1;
         RakelConfig.Width = 1;
-    }
-
-    public void LoadPixelMapping()
-    {
-        TextureResolution = 80;
-
-        InputConfig.RakelRotation.Source = InputSourceType.Mouse;
-
-        TransferConfig.EmitVolumePickupReservoirRate = 0;
-        TransferConfig.PickupVolume_MAX = 0;
-
-        FillConfig.Color = Color_.CadmiumGreen;
-        FillConfig.Volume = 300;
-        FillConfig.VolumeMode = VolumeMode.Flat;
-    }
-
-    public void LoadPresentation()
-    {
-        TextureResolution = 80;
-
-        InputConfig.RakelRotation.Source = InputSourceType.Mouse;
-
-        FillConfig.Color = Color_.DarkRed;
-        FillConfig.Volume = 600;
-        FillConfig.VolumeMode = VolumeMode.Perlin;
-
-        /*
-         * Curve
-         * > Clear Rakel
-         * > Fill with Cadmium Yellow
-         * Back and forth
-         * 
-         * > FillConfiguration.Volume = 200;
-         * > FillConfiguration.Mode = FillMode.PerlinNoiseColored
-         * Line and back
-         * Smear from left to right and from right to left
-         */
-    }
-
-    public void LoadMappingResults()
-    {
-        TextureResolution = 80;
-        FillConfig.Volume = 40;
-        FillConfig.VolumeMode = VolumeMode.Flat;
     }
 }
 
