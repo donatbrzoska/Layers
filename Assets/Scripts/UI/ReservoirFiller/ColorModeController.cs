@@ -9,7 +9,7 @@ public class ColorModeController : DropdownController
 
     public void Start()
     {
-        Dropdown.SetValueWithoutNotify((int)OilPaintEngine.Configuration.FillConfiguration.ColorMode);
+        Dropdown.SetValueWithoutNotify((int)OilPaintEngine.Config.FillConfig.ColorMode);
     }
 
     override public void OnValueChanged(int value)

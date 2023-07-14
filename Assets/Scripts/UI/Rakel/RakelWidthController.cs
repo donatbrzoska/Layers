@@ -3,7 +3,7 @@ public class RakelWidthController : InputFieldController
 {
     public void Start()
     {
-        InputField.SetTextWithoutNotify("" + OilPaintEngine.Configuration.RakelConfiguration.Width);
+        InputField.SetTextWithoutNotify("" + OilPaintEngine.Config.RakelConfig.Width);
     }
 
     override public void OnValueChanged(string arg0)

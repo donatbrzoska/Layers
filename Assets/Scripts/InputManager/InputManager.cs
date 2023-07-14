@@ -43,13 +43,13 @@ public class InputManager
 
     private StrokeStateSource StrokeStateSource;
 
-    private InputConfiguration InputConfiguration;
+    private InputConfiguration InputConfig;
 
-    public InputManager(InputConfiguration inputConfiguration)
+    public InputManager(InputConfiguration inputConfig)
     {
-        InputConfiguration = inputConfiguration;
+        InputConfig = inputConfig;
 
-        switch (inputConfiguration.RakelPositionX.Source)
+        switch (inputConfig.RakelPositionX.Source)
         {
             case InputSourceType.Text:
                 RakelPositionXSource = new TextRakelPositionX();
@@ -61,10 +61,10 @@ public class InputManager
                 RakelPositionXSource = new PenRakelPositionX();
                 break;
             default:
-                Debug.LogError(string.Format("Unsupported InputSourceType '{0}' for RakelPositionXSource", inputConfiguration.RakelPositionX.Source.ToString())); 
+                Debug.LogError(string.Format("Unsupported InputSourceType '{0}' for RakelPositionXSource", inputConfig.RakelPositionX.Source.ToString())); 
                 break;
         }
-        switch (inputConfiguration.RakelPositionY.Source)
+        switch (inputConfig.RakelPositionY.Source)
         {
             case InputSourceType.Text:
                 RakelPositionYSource = new TextRakelPositionY();
@@ -76,10 +76,10 @@ public class InputManager
                 RakelPositionYSource = new PenRakelPositionY();
                 break;
             default:
-                Debug.LogError(string.Format("Unsupported InputSourceType '{0}' for RakelPositionYSource", inputConfiguration.RakelPositionY.Source.ToString()));
+                Debug.LogError(string.Format("Unsupported InputSourceType '{0}' for RakelPositionYSource", inputConfig.RakelPositionY.Source.ToString()));
                 break;
         }
-        switch (inputConfiguration.RakelPositionZ.Source)
+        switch (inputConfig.RakelPositionZ.Source)
         {
             case InputSourceType.Text:
                 RakelPositionZSource = new TextRakelPositionZ();
@@ -88,10 +88,10 @@ public class InputManager
                 RakelPositionZSource = new AutoRakelPositionZ();
                 break;
             default:
-                Debug.LogError(string.Format("Unsupported InputSourceType '{0}' for RakelPositionZSource", inputConfiguration.RakelPositionZ.Source.ToString()));
+                Debug.LogError(string.Format("Unsupported InputSourceType '{0}' for RakelPositionZSource", inputConfig.RakelPositionZ.Source.ToString()));
                 break;
         }
-        switch (inputConfiguration.RakelPressure.Source)
+        switch (inputConfig.RakelPressure.Source)
         {
             case InputSourceType.Text:
                 RakelPressureSource = new TextRakelPressure();
@@ -103,10 +103,10 @@ public class InputManager
                 RakelPressureSource = new PenRakelPressure();
                 break;
             default:
-                Debug.LogError(string.Format("Unsupported InputSourceType '{0}' for RakelPressureSource", inputConfiguration.RakelPressure.Source.ToString()));
+                Debug.LogError(string.Format("Unsupported InputSourceType '{0}' for RakelPressureSource", inputConfig.RakelPressure.Source.ToString()));
                 break;
         }
-        switch (inputConfiguration.RakelRotation.Source)
+        switch (inputConfig.RakelRotation.Source)
         {
             case InputSourceType.Text:
                 RakelRotationSource = new TextRakelRotation();
@@ -118,10 +118,10 @@ public class InputManager
                 RakelRotationSource = new PenRakelRotation();
                 break;
             default:
-                Debug.LogError(string.Format("Unsupported InputSourceType '{0}' for RakelRotationSource", inputConfiguration.RakelRotation.Source.ToString()));
+                Debug.LogError(string.Format("Unsupported InputSourceType '{0}' for RakelRotationSource", inputConfig.RakelRotation.Source.ToString()));
                 break;
         }
-        switch (inputConfiguration.RakelTilt.Source)
+        switch (inputConfig.RakelTilt.Source)
         {
             case InputSourceType.Text:
                 RakelTiltSource = new TextRakelTilt();
@@ -130,21 +130,21 @@ public class InputManager
                 RakelTiltSource = new KeyboardRakelTilt();
                 break;
             default:
-                Debug.LogError(string.Format("Unsupported InputSourceType '{0}' for RakelTiltSource", inputConfiguration.RakelTilt.Source.ToString()));
+                Debug.LogError(string.Format("Unsupported InputSourceType '{0}' for RakelTiltSource", inputConfig.RakelTilt.Source.ToString()));
                 break;
         }
 
         // HACK This is necessary for keeping the complete current configuration
         // Ideally we wouldn't need to reinitialize the entire InputManager every
         // time a value changes, but it works and there is no time to fix it
-        RakelPositionXSource.Value = inputConfiguration.RakelPositionX.Value;
-        RakelPositionYSource.Value = inputConfiguration.RakelPositionY.Value;
-        RakelPositionZSource.Value = inputConfiguration.RakelPositionZ.Value;
-        RakelPressureSource.Value = inputConfiguration.RakelPressure.Value;
-        RakelRotationSource.Value = inputConfiguration.RakelRotation.Value;
-        RakelTiltSource.Value = inputConfiguration.RakelTilt.Value;
+        RakelPositionXSource.Value = inputConfig.RakelPositionX.Value;
+        RakelPositionYSource.Value = inputConfig.RakelPositionY.Value;
+        RakelPositionZSource.Value = inputConfig.RakelPositionZ.Value;
+        RakelPressureSource.Value = inputConfig.RakelPressure.Value;
+        RakelRotationSource.Value = inputConfig.RakelRotation.Value;
+        RakelTiltSource.Value = inputConfig.RakelTilt.Value;
 
-        switch (inputConfiguration.StrokeStateSource)
+        switch (inputConfig.StrokeStateSource)
         {
             case InputSourceType.Mouse:
                 StrokeStateSource = new MouseStrokeState();
@@ -153,7 +153,7 @@ public class InputManager
                 StrokeStateSource = new PenStrokeState();
                 break;
             default:
-                Debug.LogError(string.Format("Unsupported InputSourceType '{0}' for StrokeStateSource", inputConfiguration.StrokeStateSource.ToString()));
+                Debug.LogError(string.Format("Unsupported InputSourceType '{0}' for StrokeStateSource", inputConfig.StrokeStateSource.ToString()));
                 break;
         }
     }
@@ -161,17 +161,17 @@ public class InputManager
     public void Update()
     {
         RakelPositionXSource.Update();
-        InputConfiguration.RakelPositionX.Value = RakelPositionXSource.Value;
+        InputConfig.RakelPositionX.Value = RakelPositionXSource.Value;
         RakelPositionYSource.Update();
-        InputConfiguration.RakelPositionY.Value = RakelPositionYSource.Value;
+        InputConfig.RakelPositionY.Value = RakelPositionYSource.Value;
         RakelPositionZSource.Update();
-        InputConfiguration.RakelPositionZ.Value = RakelPositionZSource.Value;
+        InputConfig.RakelPositionZ.Value = RakelPositionZSource.Value;
         RakelPressureSource.Update();
-        InputConfiguration.RakelPressure.Value = RakelPressureSource.Value;
+        InputConfig.RakelPressure.Value = RakelPressureSource.Value;
         RakelRotationSource.Update();
-        InputConfiguration.RakelRotation.Value = RakelRotationSource.Value;
+        InputConfig.RakelRotation.Value = RakelRotationSource.Value;
         RakelTiltSource.Update();
-        InputConfiguration.RakelTilt.Value = RakelTiltSource.Value;
+        InputConfig.RakelTilt.Value = RakelTiltSource.Value;
 
         StrokeStateSource.Update();
     }

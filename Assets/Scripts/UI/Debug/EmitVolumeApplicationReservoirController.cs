@@ -3,7 +3,7 @@ public class EmitVolumeApplicationReservoirController : InputFieldController
 {
     public void Start()
     {
-        InputField.SetTextWithoutNotify("" + OilPaintEngine.Configuration.TransferConfiguration.EmitVolumeApplicationReservoirRate);
+        InputField.SetTextWithoutNotify("" + OilPaintEngine.Config.TransferConfig.EmitVolumeApplicationReservoirRate);
     }
 
     override public void OnValueChanged(string arg0)

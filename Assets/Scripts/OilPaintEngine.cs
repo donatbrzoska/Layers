@@ -17,7 +17,7 @@ public class OilPaintEngine : MonoBehaviour
     private bool UsePen;
     private bool PenConfigLoaded;
 
-    public Configuration Configuration { get; private set; }
+    public Configuration Config { get; private set; }
     public InputManager InputManager { get; private set; }
 
     public TransferEngine TransferEngine;
@@ -27,7 +27,7 @@ public class OilPaintEngine : MonoBehaviour
 
     void Awake()
     {
-        Configuration = new Configuration();
+        Config = new Configuration();
 
         //Configuration.LoadDebug();
         //Configuration.RakelRotation = 22;
@@ -39,13 +39,13 @@ public class OilPaintEngine : MonoBehaviour
 
         if (BENCHMARK_STEPS > 0)
         {
-            Configuration.LoadBenchmark();
+            Config.LoadBenchmark();
         }
     }
 
     void CreateInputManager()
     {
-        InputManager = new InputManager(Configuration.InputConfiguration);
+        InputManager = new InputManager(Config.InputConfig);
     }
 
     void Start()
@@ -65,7 +65,7 @@ public class OilPaintEngine : MonoBehaviour
         float width = GameObject.Find("Canvas").GetComponent<Transform>().localScale.x * 10; // convert scale attribute to world space
         float height = GameObject.Find("Canvas").GetComponent<Transform>().localScale.y * 10; // convert scale attribute to world space
         Vector3 position = GameObject.Find("Canvas").GetComponent<Transform>().position;
-        Canvas = new Canvas_(width, height, LAYERS_MAX, Configuration.CanvasConfiguration.CellVolume, Configuration.CanvasConfiguration.DiffuseDepth, Configuration.CanvasConfiguration.DiffuseRatio, position, Configuration.TextureResolution, Configuration.CanvasConfiguration.NormalScale, Configuration.ColorSpace);
+        Canvas = new Canvas_(width, height, LAYERS_MAX, Config.CanvasConfig.CellVolume, Config.CanvasConfig.DiffuseDepth, Config.CanvasConfig.DiffuseRatio, position, Config.TextureResolution, Config.CanvasConfig.NormalScale, Config.ColorSpace);
 
         Renderer renderer = GameObject.Find("Canvas").GetComponent<Renderer>();
         renderer.material.SetTexture("_MainTex", Canvas.Texture);
@@ -85,19 +85,19 @@ public class OilPaintEngine : MonoBehaviour
         DisposeRakel();
 
         Rakel = new Rakel(
-            Configuration.RakelConfiguration.Length,
-            Configuration.RakelConfiguration.Width,
-            Configuration.TextureResolution,
+            Config.RakelConfig.Length,
+            Config.RakelConfig.Width,
+            Config.TextureResolution,
             LAYERS_MAX,
-            Configuration.RakelConfiguration.CellVolume,
-            Configuration.RakelConfiguration.DiffuseDepth,
-            Configuration.RakelConfiguration.DiffuseRatio,
+            Config.RakelConfig.CellVolume,
+            Config.RakelConfig.DiffuseDepth,
+            Config.RakelConfig.DiffuseRatio,
             ANCHOR_RATIO_Y,
             ANCHOR_RATIO_X);
 
         Debug.Log("Rakel is "
-                  + Configuration.RakelConfiguration.Length * Configuration.TextureResolution + "x" + Configuration.RakelConfiguration.Width * Configuration.TextureResolution
-                  + " = " + Configuration.RakelConfiguration.Length * Configuration.TextureResolution * Configuration.RakelConfiguration.Width * Configuration.TextureResolution);
+                  + Config.RakelConfig.Length * Config.TextureResolution + "x" + Config.RakelConfig.Width * Config.TextureResolution
+                  + " = " + Config.RakelConfig.Length * Config.TextureResolution * Config.RakelConfig.Width * Config.TextureResolution);
     }
 
     void CreateOilPaintTransferEngine()
@@ -114,11 +114,11 @@ public class OilPaintEngine : MonoBehaviour
     {
         if (Pen.current.IsActuated() && !PenConfigLoaded)
         {
-            Configuration.InputConfiguration.RakelPressure.Source = InputSourceType.Pen;
-            Configuration.InputConfiguration.RakelPositionX.Source = InputSourceType.Pen;
-            Configuration.InputConfiguration.RakelPositionY.Source = InputSourceType.Pen;
+            Config.InputConfig.RakelPressure.Source = InputSourceType.Pen;
+            Config.InputConfig.RakelPositionX.Source = InputSourceType.Pen;
+            Config.InputConfig.RakelPositionY.Source = InputSourceType.Pen;
             //Configuration.InputConfiguration.RakelRotation.Source = InputSourceType.Pen;
-            Configuration.InputConfiguration.StrokeStateSource = InputSourceType.Pen;
+            Config.InputConfig.StrokeStateSource = InputSourceType.Pen;
 
             CreateInputManager();
 
@@ -136,7 +136,7 @@ public class OilPaintEngine : MonoBehaviour
                     0,
                     0,
                     0,
-                    Configuration.TransferConfiguration,
+                    Config.TransferConfig,
                     Rakel,
                     Canvas);
             }
@@ -155,7 +155,7 @@ public class OilPaintEngine : MonoBehaviour
                 if (InputManager.InStroke)
                 {
                     Vector3 position = new Vector3(InputManager.RakelPositionX, InputManager.RakelPositionY, InputManager.RakelPositionZ);
-                    int autoZEnabled = Configuration.InputConfiguration.RakelPositionZ.Source != InputSourceType.Text ? 1 : 0;
+                    int autoZEnabled = Config.InputConfig.RakelPositionZ.Source != InputSourceType.Text ? 1 : 0;
                     float pressure = InputManager.RakelPressure;
                     float rotation = InputManager.RakelRotation;
                     float tilt = InputManager.RakelTilt;
@@ -166,8 +166,8 @@ public class OilPaintEngine : MonoBehaviour
                         pressure,
                         rotation,
                         tilt,
-                        Configuration.TransferConfiguration,
-                        Configuration.TextureResolution);
+                        Config.TransferConfig,
+                        Config.TextureResolution);
                 }
             }
         }
@@ -194,111 +194,111 @@ public class OilPaintEngine : MonoBehaviour
     // ***                                      TOP LEFT                                    ***
     // ****************************************************************************************
 
-    public bool RakelPositionXLocked { get { return Configuration.InputConfiguration.RakelPositionX.Source == InputSourceType.Text; } }
+    public bool RakelPositionXLocked { get { return Config.InputConfig.RakelPositionX.Source == InputSourceType.Text; } }
 
-    public bool RakelPositionYLocked { get { return Configuration.InputConfiguration.RakelPositionY.Source == InputSourceType.Text; } }
+    public bool RakelPositionYLocked { get { return Config.InputConfig.RakelPositionY.Source == InputSourceType.Text; } }
 
-    public bool RakelPositionZLocked { get { return Configuration.InputConfiguration.RakelPositionZ.Source == InputSourceType.Text; } }
+    public bool RakelPositionZLocked { get { return Config.InputConfig.RakelPositionZ.Source == InputSourceType.Text; } }
 
-    public bool RakelPressureLocked { get { return Configuration.InputConfiguration.RakelPressure.Source == InputSourceType.Text; } }
+    public bool RakelPressureLocked { get { return Config.InputConfig.RakelPressure.Source == InputSourceType.Text; } }
 
-    public bool RakelRotationLocked { get { return Configuration.InputConfiguration.RakelRotation.Source == InputSourceType.Text; } }
+    public bool RakelRotationLocked { get { return Config.InputConfig.RakelRotation.Source == InputSourceType.Text; } }
 
-    public bool RakelTiltLocked { get { return Configuration.InputConfiguration.RakelTilt.Source == InputSourceType.Text; } }
+    public bool RakelTiltLocked { get { return Config.InputConfig.RakelTilt.Source == InputSourceType.Text; } }
 
     public void UpdateRakelPositionX(float value)
     {
-        Configuration.InputConfiguration.RakelPositionX.Value = value;
+        Config.InputConfig.RakelPositionX.Value = value;
         CreateInputManager();
     }
 
     public void UpdateRakelPositionXLocked(bool locked)
     {
         InputSourceType penOrMouse = UsePen ? InputSourceType.Pen : InputSourceType.Mouse;
-        Configuration.InputConfiguration.RakelPositionX.Source = locked ? InputSourceType.Text : penOrMouse;
+        Config.InputConfig.RakelPositionX.Source = locked ? InputSourceType.Text : penOrMouse;
         CreateInputManager();
     }
 
     public void UpdateRakelPositionY(float value)
     {
-        Configuration.InputConfiguration.RakelPositionY.Value = value;
+        Config.InputConfig.RakelPositionY.Value = value;
         CreateInputManager();
     }
 
     public void UpdateRakelPositionYLocked(bool locked)
     {
         InputSourceType penOrMouse = UsePen ? InputSourceType.Pen : InputSourceType.Mouse;
-        Configuration.InputConfiguration.RakelPositionY.Source = locked ? InputSourceType.Text : penOrMouse;
+        Config.InputConfig.RakelPositionY.Source = locked ? InputSourceType.Text : penOrMouse;
         CreateInputManager();
     }
 
     public void UpdateRakelPositionZ(float value)
     {
-        Configuration.InputConfiguration.RakelPositionZ.Value = value;
+        Config.InputConfig.RakelPositionZ.Value = value;
         CreateInputManager();
     }
 
     public void UpdateRakelPositionZLocked(bool locked)
     {
-        Configuration.InputConfiguration.RakelPositionZ.Source = locked ? InputSourceType.Text : InputSourceType.Auto;
+        Config.InputConfig.RakelPositionZ.Source = locked ? InputSourceType.Text : InputSourceType.Auto;
         CreateInputManager();
     }
 
     public void UpdateRakelPressure(float value)
     {
-        Configuration.InputConfiguration.RakelPressure.Value = value;
+        Config.InputConfig.RakelPressure.Value = value;
         CreateInputManager();
     }
 
     public void UpdateRakelPressureLocked(bool locked)
     {
         InputSourceType penOrKeyboard = UsePen ? InputSourceType.Pen : InputSourceType.Keyboard;
-        Configuration.InputConfiguration.RakelPressure.Source = locked ? InputSourceType.Text : penOrKeyboard;
+        Config.InputConfig.RakelPressure.Source = locked ? InputSourceType.Text : penOrKeyboard;
         CreateInputManager();
     }
 
     public void UpdateRakelRotation(float rotation)
     {
-        Configuration.InputConfiguration.RakelRotation.Value = rotation;
+        Config.InputConfig.RakelRotation.Value = rotation;
         CreateInputManager();
     }
 
     public void UpdateRakelRotationLocked(bool locked)
     {
         InputSourceType penOrMouse = UsePen ? InputSourceType.Pen : InputSourceType.Mouse;
-        Configuration.InputConfiguration.RakelRotation.Source = locked ? InputSourceType.Text : penOrMouse;
+        Config.InputConfig.RakelRotation.Source = locked ? InputSourceType.Text : penOrMouse;
         CreateInputManager();
     }
 
     public void UpdateRakelTilt(float tilt)
     {
-        Configuration.InputConfiguration.RakelTilt.Value = tilt;
+        Config.InputConfig.RakelTilt.Value = tilt;
         CreateInputManager();
     }
 
     public void UpdateRakelTiltLocked(bool locked)
     {
-        Configuration.InputConfiguration.RakelTilt.Source = locked ? InputSourceType.Text : InputSourceType.Keyboard;
+        Config.InputConfig.RakelTilt.Source = locked ? InputSourceType.Text : InputSourceType.Keyboard;
         CreateInputManager();
     }
 
     public void UpdateRakelLength(float worldSpaceLength)
     {
-        Configuration.RakelConfiguration.Length = worldSpaceLength;
+        Config.RakelConfig.Length = worldSpaceLength;
         CreateRakel();
         CreateInputInterpolator();
     }
 
     public void UpdateRakelWidth(float worldSpaceWidth)
     {
-        Configuration.RakelConfiguration.Width = worldSpaceWidth;
+        Config.RakelConfig.Width = worldSpaceWidth;
         CreateRakel();
         CreateInputInterpolator();
     }
 
     public void UpdateTextureResolution(int pixelsPerWorldSpaceUnit)
     {
-        Configuration.TextureResolution = pixelsPerWorldSpaceUnit;
+        Config.TextureResolution = pixelsPerWorldSpaceUnit;
         CreateCanvas();
         CreateRakel();
         CreateInputInterpolator();
@@ -310,35 +310,35 @@ public class OilPaintEngine : MonoBehaviour
 
     public void UpdateFillColor(Color_ color)
     {
-        Configuration.FillConfiguration.Color = color;
+        Config.FillConfig.Color = color;
     }
 
     public void UpdateColorMode(ColorMode mode)
     {
-        Configuration.FillConfiguration.ColorMode = mode;
+        Config.FillConfig.ColorMode = mode;
     }
 
     public void UpdateFillVolume(int volume)
     {
-        Configuration.FillConfiguration.Volume = volume;
+        Config.FillConfig.Volume = volume;
     }
 
     public void UpdateVolumeMode(VolumeMode mode)
     {
-        Configuration.FillConfiguration.VolumeMode = mode;
+        Config.FillConfig.VolumeMode = mode;
     }
 
     public void FillApply()
     {
-        FillConfiguration fillConfig = Configuration.FillConfiguration;
+        FillConfiguration fillConfig = Config.FillConfig;
 
         ColorFiller colorFiller;
         if (fillConfig.ColorMode == ColorMode.Flat)
         {
-            colorFiller = new FlatColorFiller(fillConfig.Color, Configuration.ColorSpace);
+            colorFiller = new FlatColorFiller(fillConfig.Color, Config.ColorSpace);
         } else
         {
-            colorFiller = new GradientColorFiller(fillConfig.ColorMode, Configuration.ColorSpace);
+            colorFiller = new GradientColorFiller(fillConfig.ColorMode, Config.ColorSpace);
         }
 
         VolumeFiller volumeFiller;
@@ -377,27 +377,27 @@ public class OilPaintEngine : MonoBehaviour
 
     public void UpdateEmitVolumeApplicationReservoir(float value)
     {
-        Configuration.TransferConfiguration.EmitVolumeApplicationReservoirRate = value;
+        Config.TransferConfig.EmitVolumeApplicationReservoirRate = value;
     }
 
     public void UpdateEmitVolumePickupReservoir(float value)
     {
-        Configuration.TransferConfiguration.EmitVolumePickupReservoirRate = value;
+        Config.TransferConfig.EmitVolumePickupReservoirRate = value;
     }
 
     public void UpdatePickupVolume(float value)
     {
-        Configuration.TransferConfiguration.PickupVolume_MAX = value;
+        Config.TransferConfig.PickupVolume_MAX = value;
     }
 
     public void UpdateLayerThickness_MAX(float value)
     {
-        Configuration.TransferConfiguration.LayerThickness_MAX = value;
+        Config.TransferConfig.LayerThickness_MAX = value;
     }
 
     public void UpdateNormalScale(float value)
     {
-        Configuration.CanvasConfiguration.NormalScale = value;
+        Config.CanvasConfig.NormalScale = value;
         Canvas.NormalScale = value;
         Canvas.Render(Canvas.GetFullShaderRegion());
     }

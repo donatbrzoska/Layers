@@ -3,7 +3,7 @@ public class FillVolumeController : InputFieldController
 {
     public void Start()
     {
-        InputField.SetTextWithoutNotify("" + OilPaintEngine.Configuration.FillConfiguration.Volume);
+        InputField.SetTextWithoutNotify("" + OilPaintEngine.Config.FillConfig.Volume);
     }
 
     override public void OnValueChanged(string arg0)

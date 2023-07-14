@@ -8,19 +8,19 @@ public struct SimulationStep
     public float RakelPressure;
     public float RakelRotation;
     public float RakelTilt;
-    public TransferConfiguration TransferConfiguration;
+    public TransferConfiguration TransferConfig;
     public Rakel Rakel;
     public Canvas_ Canvas;
 
     public SimulationStep(Vector3 rakelPosition, int autoZEnabled, float rakelPressure, float rakelRotation, float rakelTilt,
-        TransferConfiguration transferConfiguration, Rakel rakel, Canvas_ canvas)
+        TransferConfiguration transferConfig, Rakel rakel, Canvas_ canvas)
     {
         RakelPosition = rakelPosition;
         AutoZEnabled = autoZEnabled;
         RakelPressure = rakelPressure;
         RakelRotation = rakelRotation;
         RakelTilt = rakelTilt;
-        TransferConfiguration = transferConfiguration;
+        TransferConfig = transferConfig;
         Rakel = rakel;
         Canvas = canvas;
     }
@@ -44,11 +44,11 @@ public class TransferEngine
 
     public void EnqueueOrRun(
         Vector3 rakelPosition, int autoZEnabled, float rakelPressure, float rakelRotation, float rakelTilt,
-        TransferConfiguration transferConfiguration,
+        TransferConfiguration transferConfig,
         Rakel rakel,
         Canvas_ canvas)
     {
-        SimulationStep s = new SimulationStep(rakelPosition, autoZEnabled, rakelPressure, rakelRotation, rakelTilt, transferConfiguration, rakel, canvas);
+        SimulationStep s = new SimulationStep(rakelPosition, autoZEnabled, rakelPressure, rakelRotation, rakelTilt, transferConfig, rakel, canvas);
 
         if (DelayedExection)
         {
@@ -56,7 +56,7 @@ public class TransferEngine
         }
         else
         {
-            SimulateStep(s.RakelPosition, s.AutoZEnabled, s.RakelPressure, s.RakelRotation, s.RakelTilt, s.TransferConfiguration, s.Rakel, s.Canvas);
+            SimulateStep(s.RakelPosition, s.AutoZEnabled, s.RakelPressure, s.RakelRotation, s.RakelTilt, s.TransferConfig, s.Rakel, s.Canvas);
         }
     }
 
@@ -67,7 +67,7 @@ public class TransferEngine
             while (n-- >= 0 && SimulationSteps.Count > 0)
             {
                 SimulationStep s = SimulationSteps.Dequeue();
-                SimulateStep(s.RakelPosition, s.AutoZEnabled, s.RakelPressure, s.RakelRotation, s.RakelTilt, s.TransferConfiguration, s.Rakel, s.Canvas);
+                SimulateStep(s.RakelPosition, s.AutoZEnabled, s.RakelPressure, s.RakelRotation, s.RakelTilt, s.TransferConfig, s.Rakel, s.Canvas);
             }
         }
     }
@@ -89,7 +89,7 @@ public class TransferEngine
     // Tilt 0 means Rakel is parallel to canvas
     public void SimulateStep(
         Vector3 rakelPosition, int autoZEnabled, float rakelPressure, float rakelRotation, float rakelTilt,
-        TransferConfiguration transferConfiguration,
+        TransferConfiguration transferConfig,
         Rakel rakel,
         Canvas_ canvas)
     {
@@ -106,7 +106,7 @@ public class TransferEngine
 
         //Debug.Log("Applying at x=" + wsc.MapToPixel(rakelPosition));
 
-        rakel.UpdateState(rakelPosition, transferConfiguration.BaseSink_MAX_Ratio, transferConfiguration.TiltSink_MAX, autoZEnabled, 0, rakelPressure, rakelRotation, rakelTilt);
+        rakel.UpdateState(rakelPosition, transferConfig.BaseSink_MAX_Ratio, transferConfig.TiltSink_MAX, autoZEnabled, 0, rakelPressure, rakelRotation, rakelTilt);
 
         ShaderRegion canvasEmitSR = rakel.Reservoir.GetFullShaderRegion();
 
@@ -127,9 +127,9 @@ public class TransferEngine
             canvas,
             rakelMappedInfo,
             rakelEmitSR,
-            transferConfiguration.LayerThickness_MAX,
-            transferConfiguration.BaseSink_MAX_Ratio,
-            transferConfiguration.TiltSink_MAX);
+            transferConfig.LayerThickness_MAX,
+            transferConfig.BaseSink_MAX_Ratio,
+            transferConfig.TiltSink_MAX);
 
         // Now that the rakel position is calculated, we can actually
         // determine the distance to the rakel and the volume to emit also
@@ -140,7 +140,7 @@ public class TransferEngine
             canvas,
             rakelMappedInfo,
             rakelEmitSR,
-            transferConfiguration.EmitVolume_MIN);
+            transferConfig.EmitVolume_MIN);
 
 
         // 2. Do paint transfer and rendering
@@ -148,7 +148,7 @@ public class TransferEngine
             rakel,
             canvasEmitSR,
             //transferConfiguration.PickupDistance_MAX,
-            transferConfiguration.PickupVolume_MIN
+            transferConfig.PickupVolume_MIN
             //transferConfiguration.PickupVolume_MAX,
             );
 

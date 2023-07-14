@@ -9,7 +9,7 @@ public class VolumeModeController : DropdownController
 
     public void Start()
     {
-        Dropdown.SetValueWithoutNotify((int)OilPaintEngine.Configuration.FillConfiguration.VolumeMode);
+        Dropdown.SetValueWithoutNotify((int)OilPaintEngine.Config.FillConfig.VolumeMode);
     }
 
     override public void OnValueChanged(int value)

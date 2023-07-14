@@ -3,7 +3,7 @@ public class LayerThicknessController : InputFieldController
 {
     public void Start()
     {
-        InputField.SetTextWithoutNotify("" + OilPaintEngine.Configuration.TransferConfiguration.LayerThickness_MAX);
+        InputField.SetTextWithoutNotify("" + OilPaintEngine.Config.TransferConfig.LayerThickness_MAX);
     }
 
     override public void OnValueChanged(string arg0)

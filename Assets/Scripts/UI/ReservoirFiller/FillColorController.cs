@@ -17,7 +17,7 @@ public class FillColorController : DropdownController
 
     public void Start()
     {
-        Dropdown.SetValueWithoutNotify((int)OilPaintEngine.Configuration.FillConfiguration.Color);
+        Dropdown.SetValueWithoutNotify((int)OilPaintEngine.Config.FillConfig.Color);
     }
 
     override public void OnValueChanged(int value)

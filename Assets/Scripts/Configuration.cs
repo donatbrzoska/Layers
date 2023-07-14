@@ -5,71 +5,71 @@ public class Configuration
     public int TextureResolution;
     public ColorSpace ColorSpace;
 
-    public InputConfiguration InputConfiguration;
-    public CanvasConfiguration CanvasConfiguration;
-    public RakelConfiguration RakelConfiguration;
-    public FillConfiguration FillConfiguration;
-    public TransferConfiguration TransferConfiguration;
+    public InputConfiguration InputConfig;
+    public CanvasConfiguration CanvasConfig;
+    public RakelConfiguration RakelConfig;
+    public FillConfiguration FillConfig;
+    public TransferConfiguration TransferConfig;
 
     public Configuration()
     {
         TextureResolution = 40;
         ColorSpace = ColorSpace.RGB;
 
-        InputConfiguration = new InputConfiguration();
-        CanvasConfiguration = new CanvasConfiguration();
-        RakelConfiguration = new RakelConfiguration();
-        FillConfiguration = new FillConfiguration();
-        TransferConfiguration = new TransferConfiguration();
+        InputConfig = new InputConfiguration();
+        CanvasConfig = new CanvasConfiguration();
+        RakelConfig = new RakelConfiguration();
+        FillConfig = new FillConfiguration();
+        TransferConfig = new TransferConfiguration();
     }
 
     public void LoadDebug()
     {
         TextureResolution = 1;
 
-        RakelConfiguration.Length = 4;
-        RakelConfiguration.Width = 2;
+        RakelConfig.Length = 4;
+        RakelConfig.Width = 2;
 
-        FillConfiguration.Volume = 1;
-        FillConfiguration.VolumeMode = VolumeMode.Flat;
-        FillConfiguration.ColorMode = ColorMode.Colorful;
+        FillConfig.Volume = 1;
+        FillConfig.VolumeMode = VolumeMode.Flat;
+        FillConfig.ColorMode = ColorMode.Colorful;
 
-        TransferConfiguration.EmitVolumeApplicationReservoirRate = 1; // unused
-        TransferConfiguration.EmitVolumePickupReservoirRate = 0; // unused
-        TransferConfiguration.PickupVolume_MAX = 0;
+        TransferConfig.EmitVolumeApplicationReservoirRate = 1; // unused
+        TransferConfig.EmitVolumePickupReservoirRate = 0; // unused
+        TransferConfig.PickupVolume_MAX = 0;
     }
 
     public void LoadBenchmark()
     {
         TextureResolution = 50;
 
-        RakelConfiguration.Length = 1;
-        RakelConfiguration.Width = 1;
+        RakelConfig.Length = 1;
+        RakelConfig.Width = 1;
     }
 
     public void LoadPixelMapping()
     {
         TextureResolution = 80;
 
-        InputConfiguration.RakelRotation.Source = InputSourceType.Mouse;
+        InputConfig.RakelRotation.Source = InputSourceType.Mouse;
 
-        TransferConfiguration.EmitVolumePickupReservoirRate = 0;
-        TransferConfiguration.PickupVolume_MAX = 0;
+        TransferConfig.EmitVolumePickupReservoirRate = 0;
+        TransferConfig.PickupVolume_MAX = 0;
 
-        FillConfiguration.Color = Color_.CadmiumGreen;
-        FillConfiguration.Volume = 300;
-        FillConfiguration.VolumeMode = VolumeMode.Flat;
+        FillConfig.Color = Color_.CadmiumGreen;
+        FillConfig.Volume = 300;
+        FillConfig.VolumeMode = VolumeMode.Flat;
     }
 
     public void LoadPresentation()
     {
         TextureResolution = 80;
 
-        InputConfiguration.RakelRotation.Source = InputSourceType.Mouse;
+        InputConfig.RakelRotation.Source = InputSourceType.Mouse;
 
-        FillConfiguration.Color = Color_.DarkRed;
-        FillConfiguration.Volume = 600;
-        FillConfiguration.VolumeMode = VolumeMode.Perlin;
+        FillConfig.Color = Color_.DarkRed;
+        FillConfig.Volume = 600;
+        FillConfig.VolumeMode = VolumeMode.Perlin;
 
         /*
          * Curve
@@ -87,8 +87,8 @@ public class Configuration
     public void LoadMappingResults()
     {
         TextureResolution = 80;
-        FillConfiguration.Volume = 40;
-        FillConfiguration.VolumeMode = VolumeMode.Flat;
+        FillConfig.Volume = 40;
+        FillConfig.VolumeMode = VolumeMode.Flat;
     }
 }
 
