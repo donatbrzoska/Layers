@@ -56,12 +56,29 @@ public class OilPaintEngine : MonoBehaviour
     {
         DisposeCanvas();
 
-        float width = GameObject.Find("Canvas").GetComponent<Transform>().localScale.x * 10; // convert scale attribute to world space
-        float height = GameObject.Find("Canvas").GetComponent<Transform>().localScale.y * 10; // convert scale attribute to world space
-        Vector3 position = GameObject.Find("Canvas").GetComponent<Transform>().position;
-        Canvas = new Canvas_(width, height, LAYERS_MAX, Config.CanvasConfig.CellVolume, Config.CanvasConfig.DiffuseDepth, Config.CanvasConfig.DiffuseRatio, position, Config.TextureResolution, Config.CanvasConfig.NormalScale, Config.ColorSpace);
+        Vector3 localScale = new Vector3(
+            Config.CanvasConfig.Width / 10, // convert world space to local scale
+            1, // convert world space to local scale
+            Config.CanvasConfig.Height / 10);
+        GameObject canvas_ = GameObject.Find("Canvas");
+        Transform canvasTransform = canvas_.GetComponent<Transform>();
+        canvasTransform.localScale = localScale;
 
-        Renderer renderer = GameObject.Find("Canvas").GetComponent<Renderer>();
+        // HACK:
+        // For some reason, writing to transform.localScale does not have an
+        // effect, so we need to recreate the canvas game object every time
+        GameObject canvas = GameObject.CreatePrimitive(PrimitiveType.Plane);
+        canvas.transform.position = canvasTransform.position;
+        canvas.transform.localScale = canvasTransform.localScale;
+        canvas.transform.rotation = canvasTransform.rotation;
+        Destroy(canvas_);
+        canvas.name = "Canvas";
+        canvas.tag = "Canvas";
+
+        Vector3 position = canvas.transform.position;
+        Canvas = new Canvas_(Config.CanvasConfig.Width, Config.CanvasConfig.Height, LAYERS_MAX, Config.CanvasConfig.CellVolume, Config.CanvasConfig.DiffuseDepth, Config.CanvasConfig.DiffuseRatio, position, Config.TextureResolution, Config.CanvasConfig.NormalScale, Config.ColorSpace);
+
+        Renderer renderer = canvas.GetComponent<Renderer>();
         renderer.material.SetTexture("_MainTex", Canvas.Texture);
         renderer.material.EnableKeyword("_NORMALMAP");
         renderer.material.SetTexture("_BumpMap", Canvas.NormalMap);
@@ -287,6 +304,20 @@ public class OilPaintEngine : MonoBehaviour
     {
         Config.RakelConfig.Width = worldSpaceWidth;
         CreateRakel();
+        CreateInputInterpolator();
+    }
+
+    public void UpdateCanvasFormatA(int formatA)
+    {
+        Config.CanvasConfig.FormatA = formatA;
+        CreateCanvas();
+        CreateInputInterpolator();
+    }
+
+    public void UpdateCanvasFormatB(int formatB)
+    {
+        Config.CanvasConfig.FormatB = formatB;
+        CreateCanvas();
         CreateInputInterpolator();
     }
 

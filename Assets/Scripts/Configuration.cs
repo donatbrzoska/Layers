@@ -2,7 +2,20 @@
 
 public class Configuration
 {
-    public int TextureResolution;
+    private int TextureResolution_;
+    public int TextureResolution
+    {
+        get
+        {
+            return TextureResolution_;
+        }
+        set
+        {
+            TextureResolution_ = value;
+            CanvasConfig = new CanvasConfiguration(TextureResolution_);
+            RakelConfig = new RakelConfiguration(TextureResolution_);
+        }
+    }
     public ColorSpace ColorSpace;
 
     public InputConfiguration InputConfig;
@@ -13,12 +26,12 @@ public class Configuration
 
     public Configuration()
     {
-        TextureResolution = 40;
+        TextureResolution_ = 40;
         ColorSpace = ColorSpace.RGB;
 
         InputConfig = new InputConfiguration();
-        CanvasConfig = new CanvasConfiguration();
-        RakelConfig = new RakelConfiguration();
+        CanvasConfig = new CanvasConfiguration(TextureResolution_);
+        RakelConfig = new RakelConfiguration(TextureResolution_);
         FillConfig = new FillConfiguration();
         TransferConfig = new TransferConfiguration();
     }
@@ -61,13 +74,60 @@ public class InputConfiguration
 
 public class CanvasConfiguration
 {
+    private const float MAX_WIDTH = 15;
+    private const float MAX_HEIGHT = 10;
+
+    public int FormatA;
+    public int FormatB;
+    private int Resolution;
+
+    public float Width
+    {
+        get
+        {
+            float ratio = (float)FormatA / FormatB;
+            if (ratio < MAX_WIDTH / MAX_HEIGHT)
+            {
+                float height = MAX_HEIGHT;
+                float width = height * ratio;
+                return width;
+            }
+            else
+            {
+                return MAX_WIDTH;
+            }
+        }
+    }
+
+    public float Height
+    {
+        get
+        {
+            float ratio = (float)FormatA / FormatB;
+            if (ratio < MAX_WIDTH / MAX_HEIGHT)
+            {
+                return MAX_HEIGHT;
+            }
+            else
+            {
+                float width = MAX_WIDTH;
+                float height = width / ratio;
+                return height;
+            }
+        }
+    }
+
     public float NormalScale;
     public float CellVolume;
     public int DiffuseDepth;
     public float DiffuseRatio;
 
-    public CanvasConfiguration()
+    public CanvasConfiguration(int resolution)
     {
+        FormatA = 3;
+        FormatB = 2;
+        Resolution = resolution;
+
         NormalScale = 0.015f;
         CellVolume = 1;
         DiffuseDepth = 0;
@@ -79,14 +139,16 @@ public class RakelConfiguration
 {
     public float Length;
     public float Width;
+    public int Resolution;
     public float CellVolume;
     public int DiffuseDepth;
     public float DiffuseRatio;
 
-    public RakelConfiguration()
+    public RakelConfiguration(int resolution)
     {
         Length = 2.5f;
         Width = 0.5f;
+        Resolution = resolution;
         CellVolume = 4;
         DiffuseDepth = 0;
         DiffuseRatio = 0.2f;
