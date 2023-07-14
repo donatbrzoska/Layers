@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class OilPaintEngine : MonoBehaviour
 {
@@ -13,7 +14,8 @@ public class OilPaintEngine : MonoBehaviour
     public int LAYERS_MAX;
     public int STEPS_PER_FRAME;
 
-    public bool USE_PEN;
+    private bool UsePen;
+    private bool PenConfigLoaded;
 
     public Configuration Configuration { get; private set; }
     public InputManager InputManager { get; private set; }
@@ -32,15 +34,6 @@ public class OilPaintEngine : MonoBehaviour
         //Configuration.RakelTilt = 20;
         //Configuration.FillConfiguration.VolumeMode = VolumeMode.Flat;
         //Configuration.FillConfiguration.Volume = 30;
-
-        if (USE_PEN)
-        {
-            Configuration.InputConfiguration.RakelPressure.Source = InputSourceType.Pen;
-            Configuration.InputConfiguration.RakelPositionX.Source = InputSourceType.Pen;
-            Configuration.InputConfiguration.RakelPositionY.Source = InputSourceType.Pen;
-            //Configuration.InputConfiguration.RakelRotation.Source = InputSourceType.Pen;
-            Configuration.InputConfiguration.StrokeStateSource = InputSourceType.Pen;
-        }
 
         CreateInputManager();
 
@@ -119,6 +112,20 @@ public class OilPaintEngine : MonoBehaviour
 
     void Update()
     {
+        if (Pen.current.IsActuated() && !PenConfigLoaded)
+        {
+            Configuration.InputConfiguration.RakelPressure.Source = InputSourceType.Pen;
+            Configuration.InputConfiguration.RakelPositionX.Source = InputSourceType.Pen;
+            Configuration.InputConfiguration.RakelPositionY.Source = InputSourceType.Pen;
+            //Configuration.InputConfiguration.RakelRotation.Source = InputSourceType.Pen;
+            Configuration.InputConfiguration.StrokeStateSource = InputSourceType.Pen;
+
+            CreateInputManager();
+
+            UsePen = true;
+            PenConfigLoaded = true;
+        }
+
         if (BENCHMARK_STEPS > 0){
             for (int i = 0; i < BENCHMARK_STEPS; i++){
                 float x = Random.Range(-5f, 5f);
@@ -207,7 +214,7 @@ public class OilPaintEngine : MonoBehaviour
 
     public void UpdateRakelPositionXLocked(bool locked)
     {
-        InputSourceType penOrMouse = USE_PEN ? InputSourceType.Pen : InputSourceType.Mouse;
+        InputSourceType penOrMouse = UsePen ? InputSourceType.Pen : InputSourceType.Mouse;
         Configuration.InputConfiguration.RakelPositionX.Source = locked ? InputSourceType.Text : penOrMouse;
         CreateInputManager();
     }
@@ -220,7 +227,7 @@ public class OilPaintEngine : MonoBehaviour
 
     public void UpdateRakelPositionYLocked(bool locked)
     {
-        InputSourceType penOrMouse = USE_PEN ? InputSourceType.Pen : InputSourceType.Mouse;
+        InputSourceType penOrMouse = UsePen ? InputSourceType.Pen : InputSourceType.Mouse;
         Configuration.InputConfiguration.RakelPositionY.Source = locked ? InputSourceType.Text : penOrMouse;
         CreateInputManager();
     }
@@ -245,7 +252,7 @@ public class OilPaintEngine : MonoBehaviour
 
     public void UpdateRakelPressureLocked(bool locked)
     {
-        InputSourceType penOrKeyboard = USE_PEN ? InputSourceType.Pen : InputSourceType.Keyboard;
+        InputSourceType penOrKeyboard = UsePen ? InputSourceType.Pen : InputSourceType.Keyboard;
         Configuration.InputConfiguration.RakelPressure.Source = locked ? InputSourceType.Text : penOrKeyboard;
         CreateInputManager();
     }
@@ -258,7 +265,7 @@ public class OilPaintEngine : MonoBehaviour
 
     public void UpdateRakelRotationLocked(bool locked)
     {
-        InputSourceType penOrMouse = USE_PEN ? InputSourceType.Pen : InputSourceType.Mouse;
+        InputSourceType penOrMouse = UsePen ? InputSourceType.Pen : InputSourceType.Mouse;
         Configuration.InputConfiguration.RakelRotation.Source = locked ? InputSourceType.Text : penOrMouse;
         CreateInputManager();
     }

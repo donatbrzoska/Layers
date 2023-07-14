@@ -10847,7 +10847,6 @@ MonoBehaviour:
   ANCHOR_RATIO_Y: 0.5
   LAYERS_MAX: 20
   STEPS_PER_FRAME: 200
-  USE_PEN: 0
 --- !u!114 &1643505815
 MonoBehaviour:
   m_ObjectHideFlags: 0
