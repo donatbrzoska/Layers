@@ -59,6 +59,10 @@ public class Rakel
 
     private bool StrokeBegin;
 
+    private float CurrentStrokeLength;
+    private bool TiltNoiseEnabled;
+    private NoiseFilter1D TiltNoise;
+
     public Rakel(float length, float width, int resolution, int layers_MAX, float cellVolume, int diffuseDepth, float diffuseRatio, float anchorRatioLength = 0.5f, float anchorRatioWidth = 1)
     {
         Vector3Int reservoirSize = new Vector3Int((int)(width * resolution), (int)(length * resolution), layers_MAX);
@@ -92,9 +96,16 @@ public class Rakel
         ReducedRakelVolume.SetData(reducedVolumeData);
     }
 
-    public void NewStroke()
+    public void NewStroke(bool tiltNoiseEnabled, float tiltNoiseFrequency, float tiltNoiseAmplitude)
     {
         StrokeBegin = true;
+
+        TiltNoiseEnabled = tiltNoiseEnabled;
+        if (TiltNoiseEnabled)
+        {
+            CurrentStrokeLength = 0;
+            TiltNoise = new NoiseFilter1D(tiltNoiseFrequency, tiltNoiseAmplitude);
+        }
 
         //float[] distortionMapData = new float[DistortionMapSize.x * DistortionMapSize.y];
 
@@ -131,11 +142,20 @@ public class Rakel
 
     public void UpdateState(Vector3 position, float baseSink_MAX, float layerSink_MAX_Ratio, float tiltSink_MAX, int autoZEnabled, int zZero, float pressure, float rotation, float tilt)
     {
+        Vector2 previousPosition = new Vector2(Info.Position.x, Info.Position.y);
+        Vector2 newPosition = new Vector2(position.x, position.y);
+        float distanceSinceLastPosition = (newPosition - previousPosition).magnitude;
+        CurrentStrokeLength += distanceSinceLastPosition;
+
         // Update info on CPU for rakel rendering
         Info.Position = position;
         Info.AutoZEnabled = autoZEnabled;
         Info.Pressure = pressure;
         Info.Rotation = rotation;
+        if (TiltNoiseEnabled)
+        {
+            tilt = TiltNoise.Filter(tilt, CurrentStrokeLength);
+        }
         Info.Tilt = ClampTilt(Mathf.Max(Mathf.Min(tilt, MAX_SUPPORTED_TILT), MIN_SUPPORTED_TILT));
 
         Vector3 ulOrigin = new Vector3(0, Info.Length, 0);

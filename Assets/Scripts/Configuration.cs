@@ -144,6 +144,10 @@ public class RakelConfiguration
     public int DiffuseDepth;
     public float DiffuseRatio;
 
+    public bool TiltNoiseEnabled;
+    public float TiltNoiseFrequency;
+    public float TiltNoiseAmplitude;
+
     public RakelConfiguration(int resolution)
     {
         Length = 2f;
@@ -152,6 +156,10 @@ public class RakelConfiguration
         CellVolume = 2;
         DiffuseDepth = 0;
         DiffuseRatio = 0.2f;
+
+        TiltNoiseEnabled = true;
+        TiltNoiseFrequency = 45;
+        TiltNoiseAmplitude = 1;
     }
 }
 

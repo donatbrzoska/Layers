@@ -160,7 +160,7 @@ public class OilPaintEngine : MonoBehaviour
             {
                 if (InputManager.StrokeBegin)
                 {
-                    InputInterpolator.NewStroke();
+                    InputInterpolator.NewStroke(Config.RakelConfig.TiltNoiseEnabled, Config.RakelConfig.TiltNoiseFrequency, Config.RakelConfig.TiltNoiseAmplitude);
                 }
 
                 if (InputManager.InStroke)
@@ -291,6 +291,21 @@ public class OilPaintEngine : MonoBehaviour
     {
         Config.InputConfig.RakelTilt.Source = locked ? InputSourceType.Text : InputSourceType.Keyboard;
         CreateInputManager();
+    }
+
+    public void UpdateRakelTiltNoiseEnabled(bool enabled)
+    {
+        Config.RakelConfig.TiltNoiseEnabled = enabled;
+    }
+
+    public void UpdateRakelTiltNoiseFrequency(float frequency)
+    {
+        Config.RakelConfig.TiltNoiseFrequency = frequency;
+    }
+
+    public void UpdateRakelTiltNoiseAmplitude(float amplitude)
+    {
+        Config.RakelConfig.TiltNoiseAmplitude = amplitude;
     }
 
     public void UpdateRakelLength(float worldSpaceLength)
