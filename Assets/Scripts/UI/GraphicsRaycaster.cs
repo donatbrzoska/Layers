@@ -19,12 +19,12 @@ public class GraphicsRaycaster : MonoBehaviour
         m_EventSystem = GetComponent<EventSystem>();
     }
 
-    public bool UIBlocking()
+    public bool UIBlocking(Vector3 inputDevicePosition)
     {
         //Set up the new Pointer Event
         m_PointerEventData = new PointerEventData(m_EventSystem);
         //Set the Pointer Event Position to that of the mouse position
-        m_PointerEventData.position = Input.mousePosition;
+        m_PointerEventData.position = inputDevicePosition;
 
         //Create a list of Raycast Results
         List<RaycastResult> results = new List<RaycastResult>();

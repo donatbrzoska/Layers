@@ -17,7 +17,7 @@ public class PenStrokeState : StrokeStateSource
 
         if (DrawingEnabled)
         {
-            StrokeBegin = Pen.current.press.wasPressedThisFrame && !GraphicsRaycaster.UIBlocking();
+            StrokeBegin = Pen.current.press.wasPressedThisFrame && !GraphicsRaycaster.UIBlocking(Pen.current.position.ReadValue());
             if (StrokeBegin)
             {
                 InStroke = true;

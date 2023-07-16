@@ -16,7 +16,7 @@ public class MouseStrokeState : StrokeStateSource
 
         if (DrawingEnabled)
         {
-            StrokeBegin = Input.GetMouseButtonDown(0) && !GraphicsRaycaster.UIBlocking();
+            StrokeBegin = Input.GetMouseButtonDown(0) && !GraphicsRaycaster.UIBlocking(Input.mousePosition);
             if (StrokeBegin)
             {
                 InStroke = true;
