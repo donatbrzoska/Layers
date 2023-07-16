@@ -7,6 +7,9 @@
 RWStructuredBuffer<MappedInfo> PaintSourceMappedInfo;
 uint2 PaintSourceReservoirSize;
 
+RWStructuredBuffer<ColumnInfo> ReservoirInfo;
+uint3 ReservoirSize;
+
 RWStructuredBuffer<int> ActiveCount;
 
 
@@ -24,7 +27,10 @@ void main (uint3 id_ : SV_DispatchThreadID)
         int2 pixel = id() + CalculationPosition;
 
         if (pixel_in_array_range(reservoir_pixel_nearest, PaintSourceReservoirSize)) {
-            InterlockedAdd(ActiveCount[0], 1);
+            float volume = ReservoirInfo[XY(pixel.x, pixel.y, ReservoirSize.x)].volume;
+            if (volume > 0) {
+                InterlockedAdd(ActiveCount[0], 1);
+            }
         }
     }
 }

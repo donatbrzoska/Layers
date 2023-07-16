@@ -203,6 +203,9 @@ public class Reservoir
                 new CSComputeBuffer("PaintSourceMappedInfo", paintSourceMappedInfo),
                 new CSInt2("PaintSourceReservoirSize", paintSourceReservoirSize),
 
+                new CSComputeBuffer("ReservoirInfo", info),
+                new CSInt3("ReservoirSize", Size),
+
                 new CSComputeBuffer("ActiveCount", activeCount),
             },
             false
