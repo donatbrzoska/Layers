@@ -136,7 +136,7 @@ public class InputManager
 
         // HACK This is necessary for keeping the complete current configuration
         // Ideally we wouldn't need to reinitialize the entire InputManager every
-        // time a value changes, but it works and there is no time to fix it
+        // time a value changes via GUI, but it works and there is no time to fix it
         RakelPositionXSource.Value = inputConfig.RakelPositionX.Value;
         RakelPositionYSource.Value = inputConfig.RakelPositionY.Value;
         RakelPositionZSource.Value = inputConfig.RakelPositionZ.Value;
