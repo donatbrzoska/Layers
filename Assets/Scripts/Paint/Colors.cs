@@ -7,26 +7,22 @@ public enum Color_
     IvoryBlack,
     DarkRed,
     UltramarineBlue,
-    UltramarineBlueRAL,
     LemonYellow,
     CadmiumYellow,
     CadmiumOrange,
     CadmiumRed,
     CadmiumGreen,
     CadmiumGreenLight,
-    //Anthracite,
-    //Red_,
-    //Green,
-    //Blue,
-    //DarkBlue,
-    //Yellow,
-    //Orange,
-    //Purple,
-    //White,
-    //Black,
-    //RedRed,
-    //GreenGreen,
-    //BlueBlue
+    _________,
+    Green,
+    Blue,
+    Purple,
+    LavenderLight,
+    Lavender,
+    TealLight,
+    TealDark,
+    Rose,
+
 }
 
 public enum ColorSpace
@@ -79,11 +75,8 @@ public class Colors
 
         { Color_.DarkRed, new ColorInfo() { Name = "Red", Color = new Color(0.58f, 0.06f, 0f)} },
 
-        // https://www.color-name.com/ultramarine.color
-        { Color_.UltramarineBlue, new ColorInfo() { Name = "Ultramarine Blue", Color = new Color(33/255f, 66/255f, 171/255f) } },
-
         // https://www.color-name.com/ultramarine-blue-ral.color
-        { Color_.UltramarineBlueRAL, new ColorInfo() { Name = "Ultramarine Blue (RAL)", Color = new Color(30/255f, 54/255f, 123/255f) } }, // RAL
+        { Color_.UltramarineBlue, new ColorInfo() { Name = "Ultramarine Blue", Color = new Color(30/255f, 54/255f, 123/255f) } }, // RAL
 
         // https://www.color-name.com/lemon-yellow.color
         { Color_.LemonYellow, new ColorInfo() { Name = "Lemon Yellow", Color = new Color(254/255f, 242/255f, 80/255f) } },
@@ -103,19 +96,17 @@ public class Colors
         // just taken from https://www.kremer-pigmente.com/en/shop/pigments/44500-cadmium-green-light.html
         { Color_.CadmiumGreenLight, new ColorInfo() { Name = "Cadmium Green Light", Color = new Color(128/255f, 181/255f, 46/255f) } },
 
-        //{ Color_.Anthracite, new ColorInfo() { Name = "Anthracite", Color = new Color(0.25f, 0.25f, 0.25f) } },
-        //{ Color_.Red_, new ColorInfo() { Name = "Red_", Color = new Color(0.8f, 0.08f, 0.03f) } },
-        //{ Color_.Green, new ColorInfo() { Name = "Green", Color = new Color(0.02f, 0.57f, 0.04f) } },
-        //{ Color_.Blue, new ColorInfo() { Name = "Blue", Color = new Color(0.12f, 0.49f, 0.93f) } },
-        //{ Color_.DarkBlue, new ColorInfo() { Name = "Dark Blue", Color = new Color(0.05f, 0.12f, 0.32f)} },
-        //{ Color_.Yellow, new ColorInfo() { Name = "Yellow", Color = new Color(1f, 0.88f, 0.12f) } },
-        //{ Color_.Orange, new ColorInfo() { Name = "Orange", Color = new Color(1f, 0.64f, 0.06f) } },
-        //{ Color_.Purple, new ColorInfo() { Name = "Purple", Color = new Color(0.5f, 0.3f, 0.99f) } },
-        //{ Color_.White, new ColorInfo() { Name = "White", Color = new Color(0.99f, 0.99f, 0.99f) } },
-        //{ Color_.Black, new ColorInfo() { Name = "Black", Color = new Color(0.01f, 0.01f, 0.01f) } },
-        //{ Color_.RedRed, new ColorInfo() { Name = "Red Red", Color = new Color(1f, 0f, 0f) } },
-        //{ Color_.GreenGreen, new ColorInfo() { Name = "Green Green", Color = new Color(0f, 1f, 0f) } },
-        //{ Color_.BlueBlue, new ColorInfo() { Name = "Blue Blue", Color = new Color(0f, 0f, 1f) } },
+        // just taken from https://www.kremer-pigmente.com/en/shop/pigments/44500-cadmium-green-light.html
+        { Color_._________, new ColorInfo() { Name = "_________", Color = new Color(128/255f, 181/255f, 46/255f) } },
+
+        { Color_.Green, new ColorInfo() { Name = "Green", Color = new Color(0.02f, 0.57f, 0.04f) } },
+        { Color_.Blue, new ColorInfo() { Name = "Blue", Color = new Color(0.12f, 0.49f, 0.93f) } },
+        { Color_.Purple, new ColorInfo() { Name = "Purple", Color = new Color(0.5f, 0.3f, 0.99f) } },
+        { Color_.LavenderLight, new ColorInfo() { Name = "Lavender Light", Color = new Color(196/255f, 196/255f, 252/255f) } },
+        { Color_.Lavender, new ColorInfo() { Name = "Lavender", Color = new Color(150/255f, 150/255f, 254/255f) } },
+        { Color_.TealLight, new ColorInfo() { Name = "TealLight", Color = new Color(102/255f, 178/255f, 178/255f) } },
+        { Color_.TealDark, new ColorInfo() { Name = "TealDark", Color = new Color(0/255f, 81/255f, 81/255f) } },
+        { Color_.Rose, new ColorInfo() { Name = "Rose", Color = new Color(246/255f, 152/255f, 215/255f) } },
     };
 
     public static Color RGB2RYB(Color rgb)

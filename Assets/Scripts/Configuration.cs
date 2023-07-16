@@ -164,7 +164,7 @@ public class FillConfiguration
 
     public FillConfiguration()
     {
-        Color = Color_.UltramarineBlueRAL;
+        Color = Color_.LavenderLight;
         ColorMode = ColorMode.Flat;
         Volume = 60;
         VolumeMode = VolumeMode.Perlin;
