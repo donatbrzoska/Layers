@@ -4,6 +4,7 @@ using UnityEngine;
 public class TestEmitFromCanvas
 {
     private float BASE_SINK_MAX = 0;
+    private float LAYER_SINK_MAX_RATIO = 0;
     private float TILT_SINK_MAX = 0;
     private const int AUTO_Z_ENABLED = 0;
     private const int ZZERO = 0;
@@ -89,7 +90,7 @@ public class TestEmitFromCanvas
         Canvas.Reservoir.Duplicate(false);
 
         Rakel.UpdateState(
-            new Vector3(-5, 0.5f, 0), BASE_SINK_MAX, TILT_SINK_MAX, AUTO_Z_ENABLED, ZZERO, PRESSURE,
+            new Vector3(-5, 0.5f, 0), BASE_SINK_MAX, LAYER_SINK_MAX_RATIO, TILT_SINK_MAX, AUTO_Z_ENABLED, ZZERO, PRESSURE,
             0, 0);
 
         // Act
@@ -128,7 +129,7 @@ public class TestEmitFromCanvas
         Canvas.Reservoir.Duplicate(false);
 
         Rakel.UpdateState(
-            new Vector3(-5, 0.5f, -Paint.VOLUME_THICKNESS), BASE_SINK_MAX, TILT_SINK_MAX, AUTO_Z_ENABLED, ZZERO, PRESSURE,
+            new Vector3(-5, 0.5f, -Paint.VOLUME_THICKNESS), BASE_SINK_MAX, LAYER_SINK_MAX_RATIO, TILT_SINK_MAX, AUTO_Z_ENABLED, ZZERO, PRESSURE,
             0, 0);
 
         // Act
@@ -182,7 +183,7 @@ public class TestEmitFromCanvas
         Canvas.Reservoir.Duplicate(false);
 
         Rakel.UpdateState(
-            new Vector3(-5, 0.5f, (INIT_LAYERS - PICKED_UP_LAYERS) * -Paint.VOLUME_THICKNESS), BASE_SINK_MAX, TILT_SINK_MAX, AUTO_Z_ENABLED, ZZERO, PRESSURE,
+            new Vector3(-5, 0.5f, (INIT_LAYERS - PICKED_UP_LAYERS) * -Paint.VOLUME_THICKNESS), BASE_SINK_MAX, LAYER_SINK_MAX_RATIO, TILT_SINK_MAX, AUTO_Z_ENABLED, ZZERO, PRESSURE,
             0, 0);
 
         // Act
@@ -263,7 +264,7 @@ public class TestEmitFromCanvas
         Canvas.Reservoir.Duplicate(false);
 
         Rakel.UpdateState(
-            new Vector3(-5, 0.5f, (INIT_LAYERS - PICKED_UP_LAYERS) * -Paint.VOLUME_THICKNESS), BASE_SINK_MAX, TILT_SINK_MAX, AUTO_Z_ENABLED, ZZERO, PRESSURE,
+            new Vector3(-5, 0.5f, (INIT_LAYERS - PICKED_UP_LAYERS) * -Paint.VOLUME_THICKNESS), BASE_SINK_MAX, LAYER_SINK_MAX_RATIO, TILT_SINK_MAX, AUTO_Z_ENABLED, ZZERO, PRESSURE,
             0, 0);
 
         // Act
@@ -353,7 +354,7 @@ public class TestEmitFromCanvas
         Canvas.Reservoir.Duplicate(false);
 
         Rakel.UpdateState(
-            new Vector3(-5, 0.5f, -Paint.VOLUME_THICKNESS), BASE_SINK_MAX, TILT_SINK_MAX, AUTO_Z_ENABLED, ZZERO, PRESSURE,
+            new Vector3(-5, 0.5f, -Paint.VOLUME_THICKNESS), BASE_SINK_MAX, LAYER_SINK_MAX_RATIO, TILT_SINK_MAX, AUTO_Z_ENABLED, ZZERO, PRESSURE,
             30, 0);
 
         // Act

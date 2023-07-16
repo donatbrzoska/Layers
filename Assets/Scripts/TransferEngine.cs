@@ -106,7 +106,7 @@ public class TransferEngine
 
         //Debug.Log("Applying at x=" + wsc.MapToPixel(rakelPosition));
 
-        rakel.UpdateState(rakelPosition, transferConfig.BaseSink_MAX_Ratio, transferConfig.TiltSink_MAX, autoZEnabled, 0, rakelPressure, rakelRotation, rakelTilt);
+        rakel.UpdateState(rakelPosition, transferConfig.BaseSink_MAX, transferConfig.LayerSink_MAX_Ratio, transferConfig.TiltSink_MAX, autoZEnabled, 0, rakelPressure, rakelRotation, rakelTilt);
 
         ShaderRegion canvasEmitSR = rakel.Reservoir.GetFullShaderRegion();
 
@@ -128,7 +128,8 @@ public class TransferEngine
             rakelMappedInfo,
             rakelEmitSR,
             transferConfig.LayerThickness_MAX,
-            transferConfig.BaseSink_MAX_Ratio,
+            transferConfig.BaseSink_MAX,
+            transferConfig.LayerSink_MAX_Ratio,
             transferConfig.TiltSink_MAX);
 
         // Now that the rakel position is calculated, we can actually

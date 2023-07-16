@@ -5,6 +5,7 @@ using UnityEngine;
 public class TestEmitFromRakel
 {
     private float BASE_SINK_MAX = 0;
+    private float LAYER_SINK_MAX_RATIO = 0;
     private float TILT_SINK_MAX = 0;
     private const int AUTO_Z_ENABLED = 0;
     private const int ZZERO = 0;
@@ -66,7 +67,7 @@ public class TestEmitFromRakel
         // Arrange
         Rakel.Fill(new ReservoirFiller(ColorFiller, new FlatVolumeFiller(BARELY_SURFACES_TOUCH_VOLUME)));
         Rakel.UpdateState(
-            new Vector3(-5, -0.5f, APPLIED_LAYERS * -Paint.VOLUME_THICKNESS), BASE_SINK_MAX, TILT_SINK_MAX, AUTO_Z_ENABLED, ZZERO, PRESSURE,
+            new Vector3(-5, -0.5f, APPLIED_LAYERS * -Paint.VOLUME_THICKNESS), BASE_SINK_MAX, LAYER_SINK_MAX_RATIO, TILT_SINK_MAX, AUTO_Z_ENABLED, ZZERO, PRESSURE,
             0,
             0);
         ShaderRegion rakelEmitSR = new ShaderRegion(
@@ -121,7 +122,7 @@ public class TestEmitFromRakel
         // Arrange
         Rakel.Fill(new ReservoirFiller(ColorFiller, new FlatVolumeFiller(COMPLETE_SURFACES_TOUCH_VOLUME)));
         Rakel.UpdateState(
-            new Vector3(-5, -0.5f, LAYERS * -Paint.VOLUME_THICKNESS), BASE_SINK_MAX, TILT_SINK_MAX, AUTO_Z_ENABLED, ZZERO, PRESSURE,
+            new Vector3(-5, -0.5f, LAYERS * -Paint.VOLUME_THICKNESS), BASE_SINK_MAX, LAYER_SINK_MAX_RATIO, TILT_SINK_MAX, AUTO_Z_ENABLED, ZZERO, PRESSURE,
             0,
             0);
         ShaderRegion rakelEmitSR = new ShaderRegion(
@@ -176,7 +177,7 @@ public class TestEmitFromRakel
         // Arrange
         Rakel.Fill(new ReservoirFiller(ColorFiller, new FlatVolumeFiller(BASICALLY_COMPLETE_SURFACES_TOUCH_VOLUME)));
         Rakel.UpdateState(
-            new Vector3(-5, -0.5f, LAYERS * -Paint.VOLUME_THICKNESS), BASE_SINK_MAX, TILT_SINK_MAX, AUTO_Z_ENABLED, ZZERO, PRESSURE,
+            new Vector3(-5, -0.5f, LAYERS * -Paint.VOLUME_THICKNESS), BASE_SINK_MAX, LAYER_SINK_MAX_RATIO, TILT_SINK_MAX, AUTO_Z_ENABLED, ZZERO, PRESSURE,
             30,
             0);
         ShaderRegion rakelEmitSR = new ShaderRegion(
@@ -230,7 +231,7 @@ public class TestEmitFromRakel
         // Arrange
         Rakel.Fill(new ReservoirFiller(ColorFiller, new FlatVolumeFiller(COMPLETE_SURFACES_TOUCH_VOLUME)));
         Rakel.UpdateState(
-            new Vector3(-5, -0.5f, LAYERS * -Paint.VOLUME_THICKNESS), BASE_SINK_MAX, TILT_SINK_MAX, AUTO_Z_ENABLED, ZZERO, PRESSURE,
+            new Vector3(-5, -0.5f, LAYERS * -Paint.VOLUME_THICKNESS), BASE_SINK_MAX, LAYER_SINK_MAX_RATIO, TILT_SINK_MAX, AUTO_Z_ENABLED, ZZERO, PRESSURE,
             0,
             0);
         ShaderRegion rakelEmitSR = new ShaderRegion(
