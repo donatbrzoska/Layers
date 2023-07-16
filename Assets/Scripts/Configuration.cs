@@ -146,8 +146,8 @@ public class RakelConfiguration
 
     public RakelConfiguration(int resolution)
     {
-        Length = 2.5f;
-        Width = 0.5f;
+        Length = 2f;
+        Width = 0.8f;
         Resolution = resolution;
         CellVolume = 4;
         DiffuseDepth = 0;
