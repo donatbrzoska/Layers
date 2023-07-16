@@ -149,7 +149,7 @@ public class RakelConfiguration
         Length = 2f;
         Width = 0.8f;
         Resolution = resolution;
-        CellVolume = 4;
+        CellVolume = 2;
         DiffuseDepth = 0;
         DiffuseRatio = 0.2f;
     }
