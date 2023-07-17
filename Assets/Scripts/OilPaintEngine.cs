@@ -128,7 +128,10 @@ public class OilPaintEngine : MonoBehaviour
             Config.InputConfig.RakelPressure.Source = InputSourceType.Pen;
             Config.InputConfig.RakelPositionX.Source = InputSourceType.Pen;
             Config.InputConfig.RakelPositionY.Source = InputSourceType.Pen;
-            //Configuration.InputConfiguration.RakelRotation.Source = InputSourceType.Pen;
+            if (Config.InputConfig.RakelRotation.Source == InputSourceType.Mouse)
+            {
+                Config.InputConfig.RakelRotation.Source = InputSourceType.Pen;
+            }
             Config.InputConfig.StrokeStateSource = InputSourceType.Pen;
 
             CreateInputManager();
