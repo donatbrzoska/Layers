@@ -163,7 +163,11 @@ public class OilPaintEngine : MonoBehaviour
             {
                 if (InputManager.StrokeBegin)
                 {
-                    InputInterpolator.NewStroke(Config.RakelConfig.TiltNoiseEnabled, Config.RakelConfig.TiltNoiseFrequency, Config.RakelConfig.TiltNoiseAmplitude);
+                    InputInterpolator.NewStroke(
+                        Config.RakelConfig.TiltNoiseEnabled,
+                        Config.RakelConfig.TiltNoiseFrequency,
+                        Config.RakelConfig.TiltNoiseAmplitude,
+                        Config.TransferConfig.CanvasSnapshotBufferEnabled);
                 }
 
                 if (InputManager.InStroke)
@@ -431,6 +435,11 @@ public class OilPaintEngine : MonoBehaviour
     public void UpdatePickupVolume(float value)
     {
         Config.TransferConfig.PickupVolume_MAX = value;
+    }
+
+    public void UpdateCanvasSnapshotBufferEnabled(bool value)
+    {
+        Config.TransferConfig.CanvasSnapshotBufferEnabled = value;
     }
 
     public void UpdateLayerThickness_MAX(float value)

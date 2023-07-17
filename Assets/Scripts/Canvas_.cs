@@ -84,8 +84,9 @@ public class Canvas_
         Rakel rakel,
         ShaderRegion shaderRegion,
         //float pickupDistance_MAX,
-        float pickupVolume_MIN
+        float pickupVolume_MIN,
         //float pickupVolume_MAX,
+        bool canvasSnapshotBufferEnabled
         )
     {
         ComputeBuffer canvasMappedInfo = new ComputeBuffer(shaderRegion.PixelCount, MappedInfo.SizeInBytes);
@@ -150,19 +151,20 @@ public class Canvas_
             false
         ).Run();
 
+        PaintGrid canvasSampleSource = canvasSnapshotBufferEnabled ? Reservoir.PaintGridStrokeCopy : Reservoir.PaintGridImprintCopy;
         new ComputeShaderTask(
             "Pickup/VolumeToPickup",
             shaderRegion,
             new List<CSAttribute>()
             {
                 new CSComputeBuffer("RakelInfo", rakel.InfoBuffer),
-                new CSComputeBuffer("RakelReservoirInfoDuplicate", rakel.Reservoir.PaintGridSampleSource.Info),
+                new CSComputeBuffer("RakelReservoirInfoDuplicate", rakel.Reservoir.PaintGridImprintCopy.Info),
                 new CSInt3("RakelReservoirSize", rakel.Reservoir.Size),
                 new CSInt2("ReservoirPixelPickupRadius", RESERVOIR_PIXEL_PICKUP_RADIUS),
                 new CSComputeBuffer("CanvasMappedInfo", canvasMappedInfo),
 
                 new CSFloat3("CanvasPosition", Position),
-                new CSComputeBuffer("CanvasReservoirInfoDuplicate", Reservoir.PaintGridSampleSource.Info),
+                new CSComputeBuffer("CanvasReservoirInfoDuplicate", canvasSampleSource.Info),
                 new CSInt3("CanvasReservoirSize", Reservoir.Size),
 
                 //new CSFloat("RakelTilt_MAX", Rakel.MAX_SUPPORTED_TILT),
@@ -194,8 +196,8 @@ public class Canvas_
 
                 new CSComputeBuffer("CanvasReservoirInfo", Reservoir.PaintGrid.Info),
                 new CSComputeBuffer("CanvasReservoirContent", Reservoir.PaintGrid.Content),
-                new CSComputeBuffer("CanvasReservoirInfoDuplicate", Reservoir.PaintGridSampleSource.Info),
-                new CSComputeBuffer("CanvasReservoirContentDuplicate", Reservoir.PaintGridSampleSource.Content),
+                new CSComputeBuffer("CanvasReservoirInfoDuplicate", canvasSampleSource.Info),
+                new CSComputeBuffer("CanvasReservoirContentDuplicate", canvasSampleSource.Content),
                 new CSInt3("CanvasReservoirSize", Reservoir.Size),
                 new CSFloat("CanvasReservoirCellVolume", Reservoir.PaintGrid.CellVolume),
 

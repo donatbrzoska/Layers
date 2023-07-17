@@ -10,6 +10,8 @@ public class TestEmitFromCanvas
     private const int ZZERO = 0;
     private const float PRESSURE = 0;
 
+    private const bool CSB_ENABLED = false;
+
     private const float CELL_VOLUME = 1;
     private const int DIFFUSE_DEPTH = 0;
     private const float DIFFUSE_RATIO = 0;
@@ -87,7 +89,7 @@ public class TestEmitFromCanvas
         // Arrange
         ShaderRegion canvasEmitSR = Rakel.Reservoir.GetFullShaderRegion();
         Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen, ColorSpace.RGB), new FlatVolumeFiller(1)));
-        Canvas.Reservoir.Duplicate(false);
+        Canvas.Reservoir.DoImprintCopy(false);
 
         Rakel.UpdateState(
             new Vector3(-5, 0.5f, 0), BASE_SINK_MAX, LAYER_SINK_MAX_RATIO, TILT_SINK_MAX, AUTO_Z_ENABLED, ZZERO, PRESSURE,
@@ -97,7 +99,8 @@ public class TestEmitFromCanvas
         CanvasEmittedPaint = Canvas.EmitPaint(
             Rakel,
             canvasEmitSR,
-            0);
+            0,
+            CSB_ENABLED);
 
 
         // Assert
@@ -126,7 +129,7 @@ public class TestEmitFromCanvas
         // Arrange
         ShaderRegion canvasEmitSR = Rakel.Reservoir.GetFullShaderRegion();
         Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen, ColorSpace.RGB), new FlatVolumeFiller(2)));
-        Canvas.Reservoir.Duplicate(false);
+        Canvas.Reservoir.DoImprintCopy(false);
 
         Rakel.UpdateState(
             new Vector3(-5, 0.5f, -Paint.VOLUME_THICKNESS), BASE_SINK_MAX, LAYER_SINK_MAX_RATIO, TILT_SINK_MAX, AUTO_Z_ENABLED, ZZERO, PRESSURE,
@@ -136,7 +139,8 @@ public class TestEmitFromCanvas
         CanvasEmittedPaint = Canvas.EmitPaint(
             Rakel,
             canvasEmitSR,
-            0);
+            0,
+            CSB_ENABLED);
 
 
         // Assert
@@ -180,7 +184,7 @@ public class TestEmitFromCanvas
         // Arrange
         ShaderRegion canvasEmitSR = Rakel.Reservoir.GetFullShaderRegion();
         Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen, ColorSpace.RGB), new FlatVolumeFiller(INIT_LAYERS)));
-        Canvas.Reservoir.Duplicate(false);
+        Canvas.Reservoir.DoImprintCopy(false);
 
         Rakel.UpdateState(
             new Vector3(-5, 0.5f, (INIT_LAYERS - PICKED_UP_LAYERS) * -Paint.VOLUME_THICKNESS), BASE_SINK_MAX, LAYER_SINK_MAX_RATIO, TILT_SINK_MAX, AUTO_Z_ENABLED, ZZERO, PRESSURE,
@@ -190,7 +194,8 @@ public class TestEmitFromCanvas
         CanvasEmittedPaint = Canvas.EmitPaint(
             Rakel,
             canvasEmitSR,
-            0);
+            0,
+            CSB_ENABLED);
 
 
         // Assert
@@ -261,7 +266,7 @@ public class TestEmitFromCanvas
         // Arrange
         ShaderRegion canvasEmitSR = Rakel.Reservoir.GetFullShaderRegion();
         Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen, ColorSpace.RGB), new FlatVolumeFiller(INIT_LAYERS)));
-        Canvas.Reservoir.Duplicate(false);
+        Canvas.Reservoir.DoImprintCopy(false);
 
         Rakel.UpdateState(
             new Vector3(-5, 0.5f, (INIT_LAYERS - PICKED_UP_LAYERS) * -Paint.VOLUME_THICKNESS), BASE_SINK_MAX, LAYER_SINK_MAX_RATIO, TILT_SINK_MAX, AUTO_Z_ENABLED, ZZERO, PRESSURE,
@@ -271,7 +276,8 @@ public class TestEmitFromCanvas
         CanvasEmittedPaint = Canvas.EmitPaint(
             Rakel,
             canvasEmitSR,
-            0);
+            0,
+            CSB_ENABLED);
 
 
         // Assert
@@ -351,7 +357,7 @@ public class TestEmitFromCanvas
         // Arrange
         ShaderRegion canvasEmitSR = Rakel.Reservoir.GetFullShaderRegion();
         Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen, ColorSpace.RGB), new FlatVolumeFiller(2)));
-        Canvas.Reservoir.Duplicate(false);
+        Canvas.Reservoir.DoImprintCopy(false);
 
         Rakel.UpdateState(
             new Vector3(-5, 0.5f, -Paint.VOLUME_THICKNESS), BASE_SINK_MAX, LAYER_SINK_MAX_RATIO, TILT_SINK_MAX, AUTO_Z_ENABLED, ZZERO, PRESSURE,
@@ -361,7 +367,8 @@ public class TestEmitFromCanvas
         CanvasEmittedPaint = Canvas.EmitPaint(
             Rakel,
             canvasEmitSR,
-            0);
+            0,
+            CSB_ENABLED);
 
 
         // Assert

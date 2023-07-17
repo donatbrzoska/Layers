@@ -13,7 +13,8 @@ public class Reservoir
     public Vector3Int Size;
 
     public PaintGrid PaintGrid;
-    public PaintGrid PaintGridSampleSource;
+    public PaintGrid PaintGridImprintCopy;
+    public PaintGrid PaintGridStrokeCopy;
 
     public ComputeBuffer PaintGridInfoSnapshot;
     public ComputeBuffer Workspace;
@@ -26,10 +27,11 @@ public class Reservoir
         Size = new Vector3Int(width, height, layers);
 
         PaintGrid = new PaintGrid(Size, cellVolume, diffuseDepth, diffuseRatio);
-        PaintGridSampleSource = new PaintGrid(Size, cellVolume, diffuseDepth, diffuseRatio);
+        PaintGridImprintCopy = new PaintGrid(Size, cellVolume, diffuseDepth, diffuseRatio);
 
         // only used by canvas
         // TODO provide possibility to deactivate this
+        PaintGridStrokeCopy = new PaintGrid(Size, cellVolume, diffuseDepth, diffuseRatio);
         PaintGridInfoSnapshot = new ComputeBuffer(Size.x * Size.y, ColumnInfo.SizeInBytes);
         Workspace = new ComputeBuffer(Size.x * Size.y, sizeof(float));
     }
@@ -49,22 +51,37 @@ public class Reservoir
         );
     }
 
-    public void Duplicate(bool debugEnabled = false)
+    public void DoImprintCopy(bool debugEnabled = false)
     {
-        Duplicate(GetFullShaderRegion(), debugEnabled);
+        DoImprintCopy(GetFullShaderRegion(), debugEnabled);
     }
 
-    public void Duplicate(ShaderRegion sr, bool debugEnabled = false)
+    public void DoImprintCopy(ShaderRegion sr, bool debugEnabled = false)
+    {
+        Duplicate(PaintGrid, PaintGridImprintCopy, sr, debugEnabled);
+    }
+
+    public void DoStrokeCopy(bool debugEnabled = false)
+    {
+        Duplicate(PaintGrid, PaintGridStrokeCopy, GetFullShaderRegion(), debugEnabled);
+    }
+
+    public void DoStrokeCopy(ShaderRegion sr, bool debugEnabled = false)
+    {
+        Duplicate(PaintGrid, PaintGridStrokeCopy, sr, debugEnabled);
+    }
+
+    public void Duplicate(PaintGrid source, PaintGrid target, ShaderRegion sr, bool debugEnabled = false)
     {
         new ComputeShaderTask(
             "Reservoir/ReservoirDuplication",
             sr,
             new List<CSAttribute>()
             {
-                new CSComputeBuffer("ReservoirInfo", PaintGrid.Info),
-                new CSComputeBuffer("ReservoirContent", PaintGrid.Content),
-                new CSComputeBuffer("ReservoirInfoDuplicate", PaintGridSampleSource.Info),
-                new CSComputeBuffer("ReservoirContentDuplicate", PaintGridSampleSource.Content),
+                new CSComputeBuffer("ReservoirInfo", source.Info),
+                new CSComputeBuffer("ReservoirContent", source.Content),
+                new CSComputeBuffer("ReservoirInfoDuplicate", target.Info),
+                new CSComputeBuffer("ReservoirContentDuplicate", target.Content),
                 new CSInt3("ReservoirSize", Size),
             },
             debugEnabled
@@ -262,8 +279,9 @@ public class Reservoir
     public void Dispose()
     {
         PaintGrid.Dispose();
-        PaintGridSampleSource.Dispose();
+        PaintGridImprintCopy.Dispose();
 
+        PaintGridStrokeCopy.Dispose();
         PaintGridInfoSnapshot.Dispose();
         Workspace.Dispose();
     }

@@ -84,6 +84,18 @@ public class TransferEngine
         }
     }
 
+    public void NewStroke (
+        Rakel rakel, bool tiltNoiseEnabled, float tiltNoiseFrequency, float tiltNoiseAmplitude,
+        Canvas_ canvas, bool csbEnabled)
+    {
+        rakel.NewStroke(tiltNoiseEnabled, tiltNoiseFrequency, tiltNoiseAmplitude);
+
+        if (csbEnabled)
+        {
+            canvas.Reservoir.DoStrokeCopy(false);
+        }
+    }
+
     // Position is located at Rakel Anchor
     // Rotation 0 means Rakel is directed to the right
     // Tilt 0 means Rakel is parallel to canvas
@@ -119,8 +131,8 @@ public class TransferEngine
 
 
         // 1. duplicate, so we can sample from there and only delete from original
-        canvas.Reservoir.Duplicate(rakelEmitSR, false);
-        rakel.Reservoir.Duplicate(canvasEmitSR, false);
+        rakel.Reservoir.DoImprintCopy(canvasEmitSR, false);
+        canvas.Reservoir.DoImprintCopy(rakelEmitSR, false);
 
 
         // 2. Calculate rakel position based on paint height on canvas
@@ -153,8 +165,9 @@ public class TransferEngine
             rakel,
             canvasEmitSR,
             //transferConfiguration.PickupDistance_MAX,
-            transferConfig.PickupVolume_MIN
+            transferConfig.PickupVolume_MIN,
             //transferConfiguration.PickupVolume_MAX,
+            transferConfig.CanvasSnapshotBufferEnabled
             );
 
         PaintGrid rakelEmittedPaint = rakel.EmitPaint(

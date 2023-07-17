@@ -78,7 +78,7 @@ public class TestEmitFromRakel
         );
 
         ComputeBuffer rakelMappedInfo = Rakel.CalculateRakelMappedInfo(rakelEmitSR, Canvas);
-        Rakel.Reservoir.Duplicate();
+        Rakel.Reservoir.DoImprintCopy();
         Rakel.CalculateRakelMappedInfo_Part2(Canvas, rakelMappedInfo, rakelEmitSR, 0);
 
 
@@ -133,7 +133,7 @@ public class TestEmitFromRakel
         );
 
         ComputeBuffer rakelMappedInfo = Rakel.CalculateRakelMappedInfo(rakelEmitSR, Canvas);
-        Rakel.Reservoir.Duplicate();
+        Rakel.Reservoir.DoImprintCopy();
         Rakel.CalculateRakelMappedInfo_Part2(Canvas, rakelMappedInfo, rakelEmitSR, 0);
 
 
@@ -188,7 +188,7 @@ public class TestEmitFromRakel
         );
 
         ComputeBuffer rakelMappedInfo = Rakel.CalculateRakelMappedInfo(rakelEmitSR, Canvas);
-        Rakel.Reservoir.Duplicate();
+        Rakel.Reservoir.DoImprintCopy();
         Rakel.CalculateRakelMappedInfo_Part2(Canvas, rakelMappedInfo, rakelEmitSR, 0);
 
 
@@ -242,7 +242,7 @@ public class TestEmitFromRakel
         );
 
         ComputeBuffer rakelMappedInfo = Rakel.CalculateRakelMappedInfo(rakelEmitSR, Canvas);
-        Rakel.Reservoir.Duplicate();
+        Rakel.Reservoir.DoImprintCopy();
         Rakel.CalculateRakelMappedInfo_Part2(Canvas, rakelMappedInfo, rakelEmitSR, 0);
 
 

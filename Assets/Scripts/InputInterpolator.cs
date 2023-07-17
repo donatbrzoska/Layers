@@ -21,14 +21,14 @@ public class InputInterpolator
         Canvas = canvas;
     }
 
-    public void NewStroke(bool tiltNoiseEnabled, float tiltNoiseFrequency, float tiltNoiseAmplitude)
+    public void NewStroke(bool tiltNoiseEnabled, float tiltNoiseFrequency, float tiltNoiseAmplitude, bool csbEnabled)
     {
         PreviousRakelPosition = NO_POSITION;
         PreviousRakelPressure = NO_VALUE;
         PreviousRakelRotation = NO_VALUE;
         PreviousRakelTilt = NO_VALUE;
 
-        Rakel.NewStroke(tiltNoiseEnabled, tiltNoiseFrequency, tiltNoiseAmplitude);
+        TransferEngine.NewStroke(Rakel, tiltNoiseEnabled, tiltNoiseFrequency, tiltNoiseAmplitude, Canvas, csbEnabled);
     }
 
     public void AddNode(Vector3 rakelPosition, int autoZEnabled, float rakelPressure, float rakelRotation, float rakelTilt, TransferConfiguration transferConfig, int interpolationResolution)

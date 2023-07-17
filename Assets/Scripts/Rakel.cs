@@ -389,11 +389,11 @@ public class Rakel
             new List<CSAttribute>()
             {
                 new CSComputeBuffer("RakelInfo", InfoBuffer),
-                new CSComputeBuffer("RakelReservoirInfoDuplicate", Reservoir.PaintGridSampleSource.Info),
+                new CSComputeBuffer("RakelReservoirInfoDuplicate", Reservoir.PaintGridImprintCopy.Info),
                 new CSInt3("RakelReservoirSize", Reservoir.Size),
 
                 new CSFloat("CanvasPositionZ", canvas.Position.z),
-                new CSComputeBuffer("CanvasReservoirInfoDuplicate", canvas.Reservoir.PaintGridSampleSource.Info),
+                new CSComputeBuffer("CanvasReservoirInfoDuplicate", canvas.Reservoir.PaintGridImprintCopy.Info),
                 new CSInt3("CanvasReservoirSize", canvas.Reservoir.Size),
                 new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
 
@@ -441,8 +441,8 @@ public class Rakel
             {
                 new CSComputeBuffer("RakelReservoirInfo", Reservoir.PaintGrid.Info),
                 new CSComputeBuffer("RakelReservoirContent", Reservoir.PaintGrid.Content),
-                new CSComputeBuffer("RakelReservoirInfoDuplicate", Reservoir.PaintGridSampleSource.Info),
-                new CSComputeBuffer("RakelReservoirContentDuplicate", Reservoir.PaintGridSampleSource.Content),
+                new CSComputeBuffer("RakelReservoirInfoDuplicate", Reservoir.PaintGridImprintCopy.Info),
+                new CSComputeBuffer("RakelReservoirContentDuplicate", Reservoir.PaintGridImprintCopy.Content),
                 new CSInt3("RakelReservoirSize", Reservoir.Size),
                 new CSFloat("RakelReservoirCellVolume", Reservoir.PaintGrid.CellVolume),
 
