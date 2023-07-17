@@ -117,12 +117,18 @@ public class TransferEngine
             canvas.MapToPixelInRange(rakel.Info.LowerRight)
         );
 
+
+        // 1. duplicate, so we can sample from there and only delete from original
+        canvas.Reservoir.Duplicate(rakelEmitSR, false);
+        rakel.Reservoir.Duplicate(canvasEmitSR, false);
+
+
+        // 2. Calculate rakel position based on paint height on canvas
+        //    For this, we already calculate rakel mapped info
         ComputeBuffer rakelMappedInfo = rakel.CalculateRakelMappedInfo(
             rakelEmitSR,
             canvas);
 
-
-        // 1. Calculate rakel position based on paint height on canvas
         rakel.RecalculatePositionBaseZ(
             canvas,
             rakelMappedInfo,
@@ -134,8 +140,6 @@ public class TransferEngine
 
         // Now that the rakel position is calculated, we can actually
         // determine the distance to the rakel and the volume to emit also
-        rakel.Reservoir.Duplicate(canvasEmitSR, false);
-        canvas.Reservoir.Duplicate(rakelEmitSR, false);
 
         rakel.CalculateRakelMappedInfo_Part2(
             canvas,
@@ -144,7 +148,7 @@ public class TransferEngine
             transferConfig.EmitVolume_MIN);
 
 
-        // 2. Do paint transfer and rendering
+        // 3. Do paint transfer and rendering
         PaintGrid canvasEmittedPaint = canvas.EmitPaint(
             rakel,
             canvasEmitSR,
