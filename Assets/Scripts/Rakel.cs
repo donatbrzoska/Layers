@@ -296,13 +296,6 @@ public class Rakel
                 new Vector2Int(Reservoir.Size.x, Reservoir.Size.y),
                 emitSR,
                 ReducedCanvasVolume);
-            //canvas.Reservoir.DuplicateActive(
-            //    rakelMappedInfo,
-            //    new Vector2Int(Reservoir.Size.x, Reservoir.Size.y),
-            //    emitSR);
-            //canvas.Reservoir.ReduceVolumeMax(
-            //    emitSR,
-            //    ReducedCanvasVolume);
 
             // reduce rakel volume
             new ComputeShaderTask(
@@ -350,9 +343,6 @@ public class Rakel
                 new Vector2Int(Reservoir.Size.x, Reservoir.Size.y),
                 emitSR,
                 ReducedRakelVolume);
-            //canvas.Reservoir.ReduceVolumeMax(
-            //    emitSR,
-            //    ReducedRakelVolume);
 
             // update rakel position base z
             new ComputeShaderTask(

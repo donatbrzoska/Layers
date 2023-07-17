@@ -100,21 +100,6 @@ public class Reservoir
             PaintGridInfoWorkspace,
             debugEnabled);
     }
-    
-    public void DuplicateActiveInfo(
-        ComputeBuffer paintSourceMappedInfo,
-        Vector2Int paintSourceReservoirSize,
-        ShaderRegion shaderRegion,
-        bool debugEnabled = false)
-    {
-        DuplicateActiveInfo_(
-            paintSourceMappedInfo,
-            paintSourceReservoirSize,
-            shaderRegion,
-            PaintGrid.Info,
-            PaintGridSampleSource.Info,
-            debugEnabled);
-    }
 
     private void DuplicateActiveInfo_(
         ComputeBuffer paintSourceMappedInfo,
@@ -165,21 +150,6 @@ public class Reservoir
             paintSourceReservoirSize,
             paintTargetSR,
             PaintGridInfoWorkspace,
-            resultTarget);
-    }
-    
-    // NOTE: It is assumed that the info is duplicated already
-    public void ReduceInfoVolumeAvg(
-        ComputeBuffer paintSourceMappedInfo,
-        Vector2Int paintSourceReservoirSize,
-        ShaderRegion paintTargetSR,
-        ComputeBuffer resultTarget)
-    {
-        ReduceInfoVolumeAvg_(
-            paintSourceMappedInfo,
-            paintSourceReservoirSize,
-            paintTargetSR,
-            PaintGridSampleSource.Info,
             resultTarget);
     }
 
