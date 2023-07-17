@@ -7,8 +7,8 @@
 
 RWStructuredBuffer<ColumnInfo> CanvasReservoirInfo;
 RWStructuredBuffer<Paint> CanvasReservoirContent;
-RWStructuredBuffer<ColumnInfo> CanvasReservoirInfoDuplicate;
-RWStructuredBuffer<Paint> CanvasReservoirContentDuplicate;
+RWStructuredBuffer<ColumnInfo> CanvasReservoirInfoSampleSource;
+RWStructuredBuffer<Paint> CanvasReservoirContentSampleSource;
 uint3 CanvasReservoirSize;
 float CanvasReservoirCellVolume;
 
@@ -41,7 +41,7 @@ void emit(int2 radius, int2 rakel_pixel)
                 int2 coord = canvas_reservoir_pixel_nearest + int2(x, y);
                 if (pixel_in_array_range(coord, CanvasReservoirSize.xy)) { // Prevent out of bounds access to reservoir
                     uint2 coord_ = uint2(coord.x, coord.y);
-                    int top_index = CanvasReservoirInfoDuplicate[XY(coord_.x, coord_.y, CanvasReservoirSize.x)].size - 1;
+                    int top_index = CanvasReservoirInfoSampleSource[XY(coord_.x, coord_.y, CanvasReservoirSize.x)].size - 1;
                     max_z = max(top_index, max_z);
                 }
             }
@@ -71,7 +71,7 @@ void emit(int2 radius, int2 rakel_pixel)
                             // calculate volume to emit
                             uint3 coord_ = uint3(coord.x, coord.y, z);
                             // read from duplicate
-                            Paint available = paint_grid_get(CanvasReservoirInfoDuplicate, CanvasReservoirContentDuplicate, CanvasReservoirSize, coord_);
+                            Paint available = paint_grid_get(CanvasReservoirInfoSampleSource, CanvasReservoirContentSampleSource, CanvasReservoirSize, coord_);
                             if (z==0) {
                                 float MIN_VOLUME_TO_STAY = 0.1;
                                 available.volume = max(available.volume - MIN_VOLUME_TO_STAY, 0);

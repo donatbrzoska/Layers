@@ -7,13 +7,13 @@
 #include "../paint_grid.hlsl"
 
 RWStructuredBuffer<Rakel> RakelInfo;
-RWStructuredBuffer<ColumnInfo> RakelReservoirInfoDuplicate;
+RWStructuredBuffer<ColumnInfo> RakelReservoirInfoSampleSource;
 uint3 RakelReservoirSize;
 int2 ReservoirPixelPickupRadius;
 RWStructuredBuffer<MappedInfo> CanvasMappedInfo;
 
 float3 CanvasPosition;
-RWStructuredBuffer<ColumnInfo> CanvasReservoirInfoDuplicate;
+RWStructuredBuffer<ColumnInfo> CanvasReservoirInfoSampleSource;
 uint3 CanvasReservoirSize;
 
 // float RakelTilt_MAX;
@@ -29,7 +29,7 @@ float volume_to_pickup_(int2 radius, int2 rakel_pixel)
 
     int2 canvas_reservoir_pixel_nearest = round(canvasMappedInfo.reservoir_pixel);
 
-    float volume_rakel = RakelReservoirInfoDuplicate[XY(rakel_pixel.x, rakel_pixel.y, RakelReservoirSize.x)].volume;
+    float volume_rakel = RakelReservoirInfoSampleSource[XY(rakel_pixel.x, rakel_pixel.y, RakelReservoirSize.x)].volume;
     float volume_canvas = 0; // how much volume (meaning height) is there under this reservoir pixel
     for (int y=-radius.y; y<=radius.y; y++) {
         for (int x=-radius.x; x<=radius.x; x++) {
@@ -42,7 +42,7 @@ float volume_to_pickup_(int2 radius, int2 rakel_pixel)
                 // calculate overlap part, because summed overlap might be < 1
                 // possible reasons would be: tilted rakel reservoir pixels, picking up at canvas edge
                 float overlap_part = canvasMappedInfo.overlap[i][j] / unzero(canvasMappedInfo.total_overlap);
-                volume_canvas += overlap_part * CanvasReservoirInfoDuplicate[XY(coord_.x, coord_.y, CanvasReservoirSize.x)].volume;
+                volume_canvas += overlap_part * CanvasReservoirInfoSampleSource[XY(coord_.x, coord_.y, CanvasReservoirSize.x)].volume;
             }
         }
     }
