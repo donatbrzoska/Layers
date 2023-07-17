@@ -10,7 +10,7 @@ uint3 RakelReservoirSize;
 
 int2 ReservoirPixelEmitRadius;
 RWStructuredBuffer<MappedInfo> RakelMappedInfo;
-RWStructuredBuffer<ColumnInfo> CanvasReservoirInfoDuplicate;
+RWStructuredBuffer<ColumnInfo> CanvasReservoirInfoWorkspace;
 uint3 CanvasReservoirSize;
 
 
@@ -41,6 +41,6 @@ void main (uint3 id_ : SV_DispatchThreadID)
         }
 
         int2 canvas_pixel = id() + CalculationPosition;
-        CanvasReservoirInfoDuplicate[XY(canvas_pixel.x, canvas_pixel.y, CanvasReservoirSize.x)].volume = volume_rakel;
+        CanvasReservoirInfoWorkspace[XY(canvas_pixel.x, canvas_pixel.y, CanvasReservoirSize.x)].volume = volume_rakel;
     }
 }

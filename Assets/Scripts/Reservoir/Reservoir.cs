@@ -13,10 +13,10 @@ public class Reservoir
     public Vector3Int Size;
 
     public PaintGrid PaintGrid;
-    public PaintGrid PaintGridDuplicate;
+    public PaintGrid PaintGridSampleSource;
 
     public ComputeBuffer PaintGridInfoSnapshot;
-    public ComputeBuffer PaintGridInfoSnapshotDuplicate;
+    public ComputeBuffer PaintGridInfoWorkspace;
 
     public float PixelSize { get { return 1 / (float) Resolution; } }
 
@@ -26,12 +26,12 @@ public class Reservoir
         Size = new Vector3Int(width, height, layers);
 
         PaintGrid = new PaintGrid(Size, cellVolume, diffuseDepth, diffuseRatio);
-        PaintGridDuplicate = new PaintGrid(Size, cellVolume, diffuseDepth, diffuseRatio);
+        PaintGridSampleSource = new PaintGrid(Size, cellVolume, diffuseDepth, diffuseRatio);
 
         // only used by canvas
         // TODO provide possibility to deactivate this
         PaintGridInfoSnapshot = new ComputeBuffer(Size.x * Size.y, ColumnInfo.SizeInBytes);
-        PaintGridInfoSnapshotDuplicate = new ComputeBuffer(Size.x * Size.y, ColumnInfo.SizeInBytes);
+        PaintGridInfoWorkspace = new ComputeBuffer(Size.x * Size.y, ColumnInfo.SizeInBytes);
     }
 
     public void Fill(ReservoirFiller filler)
@@ -63,8 +63,8 @@ public class Reservoir
             {
                 new CSComputeBuffer("ReservoirInfo", PaintGrid.Info),
                 new CSComputeBuffer("ReservoirContent", PaintGrid.Content),
-                new CSComputeBuffer("ReservoirInfoDuplicate", PaintGridDuplicate.Info),
-                new CSComputeBuffer("ReservoirContentDuplicate", PaintGridDuplicate.Content),
+                new CSComputeBuffer("ReservoirInfoDuplicate", PaintGridSampleSource.Info),
+                new CSComputeBuffer("ReservoirContentDuplicate", PaintGridSampleSource.Content),
                 new CSInt3("ReservoirSize", Size),
             },
             debugEnabled
@@ -86,7 +86,7 @@ public class Reservoir
         ).Run();
     }
 
-    public void DuplicateActiveInfoSnapshot(
+    public void CopySnapshotActiveInfoToWorkspace(
         ComputeBuffer paintSourceMappedInfo,
         Vector2Int paintSourceReservoirSize,
         ShaderRegion shaderRegion,
@@ -97,7 +97,7 @@ public class Reservoir
             paintSourceReservoirSize,
             shaderRegion,
             PaintGridInfoSnapshot,
-            PaintGridInfoSnapshotDuplicate,
+            PaintGridInfoWorkspace,
             debugEnabled);
     }
     
@@ -112,7 +112,7 @@ public class Reservoir
             paintSourceReservoirSize,
             shaderRegion,
             PaintGrid.Info,
-            PaintGridDuplicate.Info,
+            PaintGridSampleSource.Info,
             debugEnabled);
     }
 
@@ -153,8 +153,8 @@ public class Reservoir
         //Debug.Log("Sum is " + sum);
     }
 
-    // NOTE: It is assumed that the info is duplicated already
-    public void ReduceInfoSnapshotVolumeAvg(
+    // NOTE: It is assumed that the info is written to workspace already
+    public void ReducePaintGridInfoWorkspaceVolumeAvg(
         ComputeBuffer paintSourceMappedInfo,
         Vector2Int paintSourceReservoirSize,
         ShaderRegion paintTargetSR,
@@ -164,7 +164,7 @@ public class Reservoir
             paintSourceMappedInfo,
             paintSourceReservoirSize,
             paintTargetSR,
-            PaintGridInfoSnapshotDuplicate,
+            PaintGridInfoWorkspace,
             resultTarget);
     }
     
@@ -179,7 +179,7 @@ public class Reservoir
             paintSourceMappedInfo,
             paintSourceReservoirSize,
             paintTargetSR,
-            PaintGridDuplicate.Info,
+            PaintGridSampleSource.Info,
             resultTarget);
     }
 
@@ -260,7 +260,7 @@ public class Reservoir
         ReduceInfoVolume(
             paintTargetSR,
             ReduceFunction.Max,
-            PaintGridDuplicate.Info,
+            PaintGridSampleSource.Info,
             false);
 
         // return result
@@ -269,7 +269,7 @@ public class Reservoir
             new ShaderRegion(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
             new List<CSAttribute>()
             {
-                new CSComputeBuffer("ReducedVolumeSource", PaintGridDuplicate.Info),
+                new CSComputeBuffer("ReducedVolumeSource", PaintGridSampleSource.Info),
                 new CSInt2("ReducedVolumeSourceSize", new Vector2Int(Size.x, Size.y)),
                 new CSInt2("ReducedVolumeSourceIndex", paintTargetSR.Position),
 
@@ -282,7 +282,7 @@ public class Reservoir
 
     public void ReduceInfoDuplicateVolume(ShaderRegion reduceRegion, ReduceFunction reduceFunction, bool debugEnabled = false)
     {
-        ReduceInfoVolume(reduceRegion, reduceFunction, PaintGridDuplicate.Info, debugEnabled);
+        ReduceInfoVolume(reduceRegion, reduceFunction, PaintGridSampleSource.Info, debugEnabled);
     }
 
     private void ReduceInfoVolume(ShaderRegion reduceRegion, ReduceFunction reduceFunction, ComputeBuffer info, bool debugEnabled = false)
@@ -319,9 +319,9 @@ public class Reservoir
     public void Dispose()
     {
         PaintGrid.Dispose();
-        PaintGridDuplicate.Dispose();
+        PaintGridSampleSource.Dispose();
 
         PaintGridInfoSnapshot.Dispose();
-        PaintGridInfoSnapshotDuplicate.Dispose();
+        PaintGridInfoWorkspace.Dispose();
     }
 }

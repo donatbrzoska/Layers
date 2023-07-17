@@ -287,11 +287,11 @@ public class Rakel
         if (Info.AutoZEnabled == 1)
         {
             // reduce canvas volume
-            canvas.Reservoir.DuplicateActiveInfoSnapshot(
+            canvas.Reservoir.CopySnapshotActiveInfoToWorkspace(
                 rakelMappedInfo,
                 new Vector2Int(Reservoir.Size.x, Reservoir.Size.y),
                 emitSR);
-            canvas.Reservoir.ReduceInfoSnapshotVolumeAvg(
+            canvas.Reservoir.ReducePaintGridInfoWorkspaceVolumeAvg(
                 rakelMappedInfo,
                 new Vector2Int(Reservoir.Size.x, Reservoir.Size.y),
                 emitSR,
@@ -306,7 +306,7 @@ public class Rakel
 
             // reduce rakel volume
             new ComputeShaderTask(
-                "RakelState/WriteSampledRakelVolumesToDuplicate",
+                "RakelState/WriteSampledRakelVolumesToWorkspace",
                 emitSR,
                 new List<CSAttribute>()
                 {
@@ -315,7 +315,7 @@ public class Rakel
 
                     new CSInt2("ReservoirPixelEmitRadius", ReservoirPixelEmitRadius),
                     new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
-                    new CSComputeBuffer("CanvasReservoirInfoDuplicate", canvas.Reservoir.PaintGridDuplicate.Info),
+                    new CSComputeBuffer("CanvasReservoirInfoWorkspace", canvas.Reservoir.PaintGridInfoWorkspace),
                     new CSInt3("CanvasReservoirSize", canvas.Reservoir.Size),
                 },
                 false
@@ -340,12 +340,12 @@ public class Rakel
                 new List<CSAttribute>()
                 {
                     new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
-                    new CSComputeBuffer("CanvasReservoirInfoDuplicate", canvas.Reservoir.PaintGridDuplicate.Info),
+                    new CSComputeBuffer("SampledRakelVolumes", canvas.Reservoir.PaintGridInfoWorkspace),
                     new CSInt3("CanvasReservoirSize", canvas.Reservoir.Size),
                 },
                 false
             ).Run();
-            canvas.Reservoir.ReduceInfoVolumeAvg(
+            canvas.Reservoir.ReducePaintGridInfoWorkspaceVolumeAvg(
                 rakelMappedInfo,
                 new Vector2Int(Reservoir.Size.x, Reservoir.Size.y),
                 emitSR,
@@ -399,11 +399,11 @@ public class Rakel
             new List<CSAttribute>()
             {
                 new CSComputeBuffer("RakelInfo", InfoBuffer),
-                new CSComputeBuffer("RakelReservoirInfoDuplicate", Reservoir.PaintGridDuplicate.Info),
+                new CSComputeBuffer("RakelReservoirInfoDuplicate", Reservoir.PaintGridSampleSource.Info),
                 new CSInt3("RakelReservoirSize", Reservoir.Size),
 
                 new CSFloat("CanvasPositionZ", canvas.Position.z),
-                new CSComputeBuffer("CanvasReservoirInfoDuplicate", canvas.Reservoir.PaintGridDuplicate.Info),
+                new CSComputeBuffer("CanvasReservoirInfoDuplicate", canvas.Reservoir.PaintGridSampleSource.Info),
                 new CSInt3("CanvasReservoirSize", canvas.Reservoir.Size),
                 new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
 
@@ -451,8 +451,8 @@ public class Rakel
             {
                 new CSComputeBuffer("RakelReservoirInfo", Reservoir.PaintGrid.Info),
                 new CSComputeBuffer("RakelReservoirContent", Reservoir.PaintGrid.Content),
-                new CSComputeBuffer("RakelReservoirInfoDuplicate", Reservoir.PaintGridDuplicate.Info),
-                new CSComputeBuffer("RakelReservoirContentDuplicate", Reservoir.PaintGridDuplicate.Content),
+                new CSComputeBuffer("RakelReservoirInfoDuplicate", Reservoir.PaintGridSampleSource.Info),
+                new CSComputeBuffer("RakelReservoirContentDuplicate", Reservoir.PaintGridSampleSource.Content),
                 new CSInt3("RakelReservoirSize", Reservoir.Size),
                 new CSFloat("RakelReservoirCellVolume", Reservoir.PaintGrid.CellVolume),
 
