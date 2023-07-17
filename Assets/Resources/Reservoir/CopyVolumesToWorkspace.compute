@@ -1,0 +1,22 @@
+#include "../ShaderBase/shader_base.hlsl"
+
+#include "../Paint/paint.hlsl"
+#include "../paint_grid.hlsl"
+
+RWStructuredBuffer<ColumnInfo> ReservoirInfo;
+RWStructuredBuffer<float> Workspace;
+uint3 ReservoirSize;
+
+
+#pragma kernel main
+
+[numthreads(32,1,1)]
+void main (uint3 id_ : SV_DispatchThreadID)
+{
+    id__ = id_;
+    if (is_relevant_thread(id(), CalculationSize))
+    {
+        int2 pixel = id() + CalculationPosition;
+        Workspace[XY(pixel.x, pixel.y, ReservoirSize.x)] = ReservoirInfo[XY(pixel.x, pixel.y, ReservoirSize.x)].volume;
+    }
+}

@@ -8,7 +8,7 @@ RWStructuredBuffer<MappedInfo> PaintSourceMappedInfo;
 uint2 PaintSourceReservoirSize;
 
 RWStructuredBuffer<ColumnInfo> ReservoirInfo;
-RWStructuredBuffer<ColumnInfo> ReservoirInfoDuplicate;
+RWStructuredBuffer<float> Workspace;
 uint3 ReservoirSize;
 
 
@@ -33,6 +33,6 @@ void main (uint3 id_ : SV_DispatchThreadID)
             c = ReservoirInfo[XY(pixel.x, pixel.y, ReservoirSize.x)];
         }
 
-        ReservoirInfoDuplicate[XY(pixel.x, pixel.y, ReservoirSize.x)] = c;
+        Workspace[XY(pixel.x, pixel.y, ReservoirSize.x)] = c.volume;
     }
 }

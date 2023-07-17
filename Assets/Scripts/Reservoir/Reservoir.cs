@@ -16,7 +16,7 @@ public class Reservoir
     public PaintGrid PaintGridSampleSource;
 
     public ComputeBuffer PaintGridInfoSnapshot;
-    public ComputeBuffer PaintGridInfoWorkspace;
+    public ComputeBuffer Workspace;
 
     public float PixelSize { get { return 1 / (float) Resolution; } }
 
@@ -31,7 +31,7 @@ public class Reservoir
         // only used by canvas
         // TODO provide possibility to deactivate this
         PaintGridInfoSnapshot = new ComputeBuffer(Size.x * Size.y, ColumnInfo.SizeInBytes);
-        PaintGridInfoWorkspace = new ComputeBuffer(Size.x * Size.y, ColumnInfo.SizeInBytes);
+        Workspace = new ComputeBuffer(Size.x * Size.y, sizeof(float));
     }
 
     public void Fill(ReservoirFiller filler)
@@ -86,39 +86,42 @@ public class Reservoir
         ).Run();
     }
 
-    public void CopySnapshotActiveInfoToWorkspace(
-        ComputeBuffer paintSourceMappedInfo,
-        Vector2Int paintSourceReservoirSize,
-        ShaderRegion shaderRegion,
-        bool debugEnabled = false)
+    public void CopyVolumesToWorkspace(bool debugEnabled = false)
     {
-        DuplicateActiveInfo_(
-            paintSourceMappedInfo,
-            paintSourceReservoirSize,
-            shaderRegion,
-            PaintGridInfoSnapshot,
-            PaintGridInfoWorkspace,
-            debugEnabled);
+        CopyVolumesToWorkspace(PaintGrid.Info, GetFullShaderRegion(), debugEnabled);
     }
 
-    private void DuplicateActiveInfo_(
+    public void CopyVolumesToWorkspace(ComputeBuffer sourceInfo, ShaderRegion sr, bool debugEnabled = false)
+    {
+        new ComputeShaderTask(
+            "Reservoir/CopyVolumesToWorkspace",
+            sr,
+            new List<CSAttribute>()
+            {
+                new CSComputeBuffer("ReservoirInfo", sourceInfo),
+                new CSComputeBuffer("Workspace", Workspace),
+                new CSInt3("ReservoirSize", Size)
+            },
+            debugEnabled
+        ).Run();
+    }
+
+    public void CopySnapshotActiveInfoVolumesToWorkspace(
         ComputeBuffer paintSourceMappedInfo,
         Vector2Int paintSourceReservoirSize,
         ShaderRegion shaderRegion,
-        ComputeBuffer source,
-        ComputeBuffer target,
         bool debugEnabled = false)
     {
         new ComputeShaderTask(
-            "Reservoir/DuplicateActiveInfo",
+            "Reservoir/CopyActiveInfoVolumesToWorkspace",
             shaderRegion,
             new List<CSAttribute>()
             {
                 new CSComputeBuffer("PaintSourceMappedInfo", paintSourceMappedInfo),
                 new CSInt2("PaintSourceReservoirSize", paintSourceReservoirSize),
 
-                new CSComputeBuffer("ReservoirInfo", source),
-                new CSComputeBuffer("ReservoirInfoDuplicate", target),
+                new CSComputeBuffer("ReservoirInfo", PaintGridInfoSnapshot),
+                new CSComputeBuffer("Workspace", Workspace),
                 new CSInt3("ReservoirSize", Size)
             },
             debugEnabled
@@ -138,26 +141,11 @@ public class Reservoir
         //Debug.Log("Sum is " + sum);
     }
 
-    // NOTE: It is assumed that the info is written to workspace already
-    public void ReducePaintGridInfoWorkspaceVolumeAvg(
+    // NOTE: It is assumed that the data is copied to workspace already
+    public void ReduceActiveWorkspaceAvg(
         ComputeBuffer paintSourceMappedInfo,
         Vector2Int paintSourceReservoirSize,
-        ShaderRegion paintTargetSR,
-        ComputeBuffer resultTarget)
-    {
-        ReduceInfoVolumeAvg_(
-            paintSourceMappedInfo,
-            paintSourceReservoirSize,
-            paintTargetSR,
-            PaintGridInfoWorkspace,
-            resultTarget);
-    }
-
-    private void ReduceInfoVolumeAvg_(
-        ComputeBuffer paintSourceMappedInfo,
-        Vector2Int paintSourceReservoirSize,
-        ShaderRegion paintTargetSR,
-        ComputeBuffer info,
+        ShaderRegion shaderRegion,
         ComputeBuffer resultTarget)
     {
         // count pixels under paint source
@@ -167,14 +155,14 @@ public class Reservoir
 
         new ComputeShaderTask(
             "Reservoir/CountActive",
-            paintTargetSR,
+            shaderRegion,
             new List<CSAttribute>()
             {
                 new CSComputeBuffer("PaintSourceMappedInfo", paintSourceMappedInfo),
                 new CSInt2("PaintSourceReservoirSize", paintSourceReservoirSize),
 
-                new CSComputeBuffer("ReservoirInfo", info),
-                new CSInt3("ReservoirSize", Size),
+                new CSComputeBuffer("Workspace", Workspace),
+                new CSInt3("WorkspaceSize", Size),
 
                 new CSComputeBuffer("ActiveCount", activeCount),
             },
@@ -182,10 +170,9 @@ public class Reservoir
         ).Run();
 
         // do add reduce and divide by value to get average
-        ReduceInfoVolume(
-            paintTargetSR,
+        ReduceWorkspace(
+            shaderRegion,
             ReduceFunction.Add,
-            info,
             false);
 
         // divide by count and do add reduce to get average
@@ -195,9 +182,9 @@ public class Reservoir
             new ShaderRegion(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
             new List<CSAttribute>()
             {
-                new CSComputeBuffer("ReservoirInfo", info),
-                new CSInt2("ReservoirSize", new Vector2Int(Size.x, Size.y)),
-                new CSInt2("DividendPosition", paintTargetSR.Position),
+                new CSComputeBuffer("Workspace", Workspace),
+                new CSInt2("WorkspaceSize", new Vector2Int(Size.x, Size.y)),
+                new CSInt2("DividendPosition", shaderRegion.Position),
 
                 new CSComputeBuffer("Divisor", activeCount),
             },
@@ -206,56 +193,42 @@ public class Reservoir
 
         activeCount.Dispose();
 
-        // return result
-        new ComputeShaderTask(
-            "Reservoir/ExtractReducedVolume",
-            new ShaderRegion(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
-            new List<CSAttribute>()
-            {
-                new CSComputeBuffer("ReducedVolumeSource", info),
-                new CSInt2("ReducedVolumeSourceSize", new Vector2Int(Size.x, Size.y)),
-                new CSInt2("ReducedVolumeSourceIndex", paintTargetSR.Position),
-
-                new CSComputeBuffer("ReducedVolumeTarget", resultTarget),
-            },
-            false
-        ).Run();
+        ExtractReducedValue(shaderRegion, resultTarget);
     }
 
-    // NOTE: It is assumed that the reservoir is duplicated already
-    public void ReduceInfoDuplicateVolumeMax(
-        ShaderRegion paintTargetSR,
+    // NOTE: It is assumed that the data is copied to workspace already
+    public void ReduceWorkspaceMax(
+        ShaderRegion shaderRegion,
         ComputeBuffer resultTarget)
     {
-        ReduceInfoVolume(
-            paintTargetSR,
+        ReduceWorkspace(
+            shaderRegion,
             ReduceFunction.Max,
-            PaintGridSampleSource.Info,
             false);
 
-        // return result
+        ExtractReducedValue(shaderRegion, resultTarget);
+    }
+
+    public void ExtractReducedValue(
+        ShaderRegion shaderRegion,
+        ComputeBuffer resultTarget)
+    {
         new ComputeShaderTask(
-            "Reservoir/ExtractReducedVolume",
+            "Reservoir/ExtractReducedValue",
             new ShaderRegion(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
             new List<CSAttribute>()
             {
-                new CSComputeBuffer("ReducedVolumeSource", PaintGridSampleSource.Info),
-                new CSInt2("ReducedVolumeSourceSize", new Vector2Int(Size.x, Size.y)),
-                new CSInt2("ReducedVolumeSourceIndex", paintTargetSR.Position),
+                new CSComputeBuffer("ReducedValueSource", Workspace),
+                new CSInt2("ReducedValueSourceSize", new Vector2Int(Size.x, Size.y)),
+                new CSInt2("ReducedValueSourceIndex", shaderRegion.Position),
 
-                new CSComputeBuffer("ReducedVolumeTarget", resultTarget),
+                new CSComputeBuffer("ReducedValueTarget", resultTarget),
             },
             false
         ).Run();
     }
 
-
-    public void ReduceInfoDuplicateVolume(ShaderRegion reduceRegion, ReduceFunction reduceFunction, bool debugEnabled = false)
-    {
-        ReduceInfoVolume(reduceRegion, reduceFunction, PaintGridSampleSource.Info, debugEnabled);
-    }
-
-    private void ReduceInfoVolume(ShaderRegion reduceRegion, ReduceFunction reduceFunction, ComputeBuffer info, bool debugEnabled = false)
+    public void ReduceWorkspace(ShaderRegion reduceRegion, ReduceFunction reduceFunction, bool debugEnabled = false)
     {
         // shader is hardcoded to deal with 2x2 blocks (processing 4 values per thread)
         Vector2Int REDUCE_BLOCK_SIZE = new Vector2Int(2, 2);
@@ -269,12 +242,12 @@ public class Reservoir
                 REDUCE_BLOCK_SIZE);
 
             new ComputeShaderTask(
-                "Reservoir/ReduceInfoVolume",
+                "Reservoir/ReduceWorkspace",
                 reduceShaderRegion,
                 new List<CSAttribute>
                 {
-                    new CSComputeBuffer("ReservoirInfo", info),
-                    new CSInt3("ReservoirSize", Size),
+                    new CSComputeBuffer("Workspace", Workspace),
+                    new CSInt3("WorkspaceSize", Size),
                     new CSInt2("ReduceRegionSize", reduceRegion.Size),
                     new CSInt("ReduceFunction", (int) reduceFunction),
                 },
@@ -292,6 +265,6 @@ public class Reservoir
         PaintGridSampleSource.Dispose();
 
         PaintGridInfoSnapshot.Dispose();
-        PaintGridInfoWorkspace.Dispose();
+        Workspace.Dispose();
     }
 }

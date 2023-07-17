@@ -39,13 +39,17 @@ class OnesVolumeFiller : VolumeFiller
     }
 }
 
-public class TestReservoirReduceVolume
+public class TestReduceWorkspace
 {
     private const float CELL_VOLUME = 1;
     private const int DIFFUSE_DEPTH = 0;
     private const float DIFFUSE_RATIO = 0;
 
+    Vector2Int TextureSize;
+
     Reservoir Reservoir;
+    ComputeBuffer ReduceResult;
+
     ColorFiller ColorFiller;
 
     [SetUp]
@@ -53,6 +57,11 @@ public class TestReservoirReduceVolume
     {
         ColorFiller = new FlatColorFiller(Color_.TitanWhite, ColorSpace.RGB);
         new FileLogger_().OnEnable();
+    }
+
+    public void SetupReservoir()
+    {
+        Reservoir = new Reservoir(1, TextureSize.x, TextureSize.y, TextureSize.x * TextureSize.y, CELL_VOLUME, DIFFUSE_DEPTH, DIFFUSE_RATIO);
     }
 
     [TearDown]
@@ -63,47 +72,56 @@ public class TestReservoirReduceVolume
         new FileLogger_().OnDisable();
     }
 
+    float Execute(ShaderRegion shaderRegion, ReduceFunction reduceFunction, bool debugEnabled)
+    {
+        Reservoir.ReduceWorkspace(shaderRegion, reduceFunction, debugEnabled);
+
+        ReduceResult = new ComputeBuffer(1, sizeof(float));
+        Reservoir.ExtractReducedValue(shaderRegion, ReduceResult);
+        float[] result = new float[1];
+        ReduceResult.GetData(result);
+        ReduceResult.Dispose();
+        return result[0];
+    }
+
     [Test]
     public void exact_fit_max()
     {
-        Vector2Int TEXTURE_SIZE = new Vector2Int(24, 16);
+        TextureSize = new Vector2Int(24, 16);
+        SetupReservoir();
 
         // Arrange
-        Reservoir = new Reservoir(1, TEXTURE_SIZE.x, TEXTURE_SIZE.y, TEXTURE_SIZE.x * TEXTURE_SIZE.y, CELL_VOLUME, DIFFUSE_DEPTH, DIFFUSE_RATIO);
         Reservoir.Fill(new ReservoirFiller(ColorFiller, new IndexVolumeFiller(0)));
 
-        Reservoir.Duplicate();
+        Reservoir.CopyVolumesToWorkspace();
 
 
         // Act
         Vector2Int reductionPosition = Vector2Int.zero;
-        Vector2Int reductionSize = TEXTURE_SIZE;
+        Vector2Int reductionSize = TextureSize;
         // calculate points from reduction info because that is how the function is going to be used
         ShaderRegion sr = new ShaderRegion(
             reductionPosition,
             reductionPosition + new Vector2Int(reductionSize.x - 1, 0),
             reductionPosition + new Vector2Int(0, reductionSize.y - 1),
             reductionPosition + new Vector2Int(reductionSize.x - 1, reductionSize.y - 1));
-        Reservoir.ReduceInfoDuplicateVolume(sr, ReduceFunction.Max, false);
+        float result = Execute(sr, ReduceFunction.Max, false);
 
 
         // Assert
-        Reservoir.PaintGridSampleSource.ReadbackInfo();
-        float result = Reservoir.PaintGridSampleSource.Get(reductionPosition.x, reductionPosition.y).Volume;
-
         Assert.AreEqual(383, result);
     }
 
     [Test]
     public void odd_width_max()
     {
-        Vector2Int TEXTURE_SIZE = new Vector2Int(13, 9);
+        TextureSize = new Vector2Int(13, 9);
+        SetupReservoir();
 
         // Arrange
-        Reservoir = new Reservoir(1, TEXTURE_SIZE.x, TEXTURE_SIZE.y, TEXTURE_SIZE.x * TEXTURE_SIZE.y, CELL_VOLUME, DIFFUSE_DEPTH, DIFFUSE_RATIO);
         Reservoir.Fill(new ReservoirFiller(ColorFiller, new IndexVolumeFiller(0)));
 
-        Reservoir.Duplicate();
+        Reservoir.CopyVolumesToWorkspace();
 
 
         // Act
@@ -115,13 +133,10 @@ public class TestReservoirReduceVolume
             reductionPosition + new Vector2Int(reductionSize.x - 1, 0),
             reductionPosition + new Vector2Int(0, reductionSize.y - 1),
             reductionPosition + new Vector2Int(reductionSize.x - 1, reductionSize.y - 1));
-        Reservoir.ReduceInfoDuplicateVolume(sr, ReduceFunction.Max, false);
+        float result = Execute(sr, ReduceFunction.Max, false);
 
 
         // Assert
-        Reservoir.PaintGridSampleSource.ReadbackInfo();
-        float result = Reservoir.PaintGridSampleSource.Get(reductionPosition.x, reductionPosition.y).Volume;
-
         Assert.AreEqual(100, result);
     }
 
@@ -129,13 +144,13 @@ public class TestReservoirReduceVolume
     [Test]
     public void odd_width_add()
     {
-        Vector2Int TEXTURE_SIZE = new Vector2Int(13, 9);
+        TextureSize = new Vector2Int(13, 9);
+        SetupReservoir();
 
         // Arrange
-        Reservoir = new Reservoir(1, TEXTURE_SIZE.x, TEXTURE_SIZE.y, TEXTURE_SIZE.x * TEXTURE_SIZE.y, CELL_VOLUME, DIFFUSE_DEPTH, DIFFUSE_RATIO);
         Reservoir.Fill(new ReservoirFiller(ColorFiller, new OnesVolumeFiller(0)));
 
-        Reservoir.Duplicate();
+        Reservoir.CopyVolumesToWorkspace();
 
 
         // Act
@@ -147,26 +162,23 @@ public class TestReservoirReduceVolume
             reductionPosition + new Vector2Int(reductionSize.x - 1, 0),
             reductionPosition + new Vector2Int(0, reductionSize.y - 1),
             reductionPosition + new Vector2Int(reductionSize.x - 1, reductionSize.y - 1));
-        Reservoir.ReduceInfoDuplicateVolume(sr, ReduceFunction.Add, false);
+        float result = Execute(sr, ReduceFunction.Add, false);
 
 
         // Assert
-        Reservoir.PaintGridSampleSource.ReadbackInfo();
-        float result = Reservoir.PaintGridSampleSource.Get(reductionPosition.x, reductionPosition.y).Volume;
-
         Assert.AreEqual(reductionSize.x * reductionSize.y, result);
     }
 
     [Test]
     public void odd_height_add()
     {
-        Vector2Int TEXTURE_SIZE = new Vector2Int(16, 24);
+        TextureSize = new Vector2Int(16, 24);
+        SetupReservoir();
 
         // Arrange
-        Reservoir = new Reservoir(1, TEXTURE_SIZE.x, TEXTURE_SIZE.y, TEXTURE_SIZE.x * TEXTURE_SIZE.y, CELL_VOLUME, DIFFUSE_DEPTH, DIFFUSE_RATIO);
         Reservoir.Fill(new ReservoirFiller(ColorFiller, new OnesVolumeFiller(0)));
 
-        Reservoir.Duplicate();
+        Reservoir.CopyVolumesToWorkspace();
 
 
         // Act
@@ -178,13 +190,10 @@ public class TestReservoirReduceVolume
             reductionPosition + new Vector2Int(reductionSize.x - 1, 0),
             reductionPosition + new Vector2Int(0, reductionSize.y - 1),
             reductionPosition + new Vector2Int(reductionSize.x - 1, reductionSize.y - 1));
-        Reservoir.ReduceInfoDuplicateVolume(sr, ReduceFunction.Add, false);
+        float result = Execute(sr, ReduceFunction.Add, false);
 
 
         // Assert
-        Reservoir.PaintGridSampleSource.ReadbackInfo();
-        float result = Reservoir.PaintGridSampleSource.Get(reductionPosition.x, reductionPosition.y).Volume;
-
         Assert.AreEqual(reductionSize.x * reductionSize.y, result);
     }
 }

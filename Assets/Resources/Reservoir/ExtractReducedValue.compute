@@ -1,0 +1,20 @@
+#include "../ShaderBase/shader_base.hlsl"
+
+RWStructuredBuffer<float> ReducedValueSource;
+uint2 ReducedValueSourceSize;
+uint2 ReducedValueSourceIndex;
+
+RWStructuredBuffer<float> ReducedValueTarget;
+
+
+#pragma kernel main
+
+[numthreads(32,1,1)]
+void main (uint3 id_ : SV_DispatchThreadID)
+{
+    id__ = id_;
+    if (is_relevant_thread(id(), CalculationSize))
+    {
+        ReducedValueTarget[0] = ReducedValueSource[XY(ReducedValueSourceIndex.x, ReducedValueSourceIndex.y, ReducedValueSourceSize.x)];
+    }
+}

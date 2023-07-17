@@ -2,11 +2,10 @@
 
 #include "../Paint/paint.hlsl"
 #include "../mapped_info.hlsl"
-#include "../paint_grid.hlsl"
 
 RWStructuredBuffer<MappedInfo> RakelMappedInfo;
-RWStructuredBuffer<ColumnInfo> SampledRakelVolumes;
-uint3 CanvasReservoirSize;
+RWStructuredBuffer<float> SampledRakelVolumes;
+uint3 SampledRakelVolumesSize;
 
 
 #pragma kernel main
@@ -18,11 +17,11 @@ void main (uint3 id_ : SV_DispatchThreadID)
     if (is_relevant_thread(id(), CalculationSize))
     {
         int2 canvas_pixel = id() + CalculationPosition;
-        float rakel_volume = SampledRakelVolumes[XY(canvas_pixel.x, canvas_pixel.y, CanvasReservoirSize.x)].volume;
+        float rakel_volume = SampledRakelVolumes[XY(canvas_pixel.x, canvas_pixel.y, SampledRakelVolumesSize.x)];
 
         MappedInfo rakel_mapped_info = RakelMappedInfo[XY(id().x, id().y, CalculationSize.x)];
         float rakel_volume_overshoot = max(rakel_volume - rakel_mapped_info.distance / VOLUME_THICKNESS(), 0);
 
-        SampledRakelVolumes[XY(canvas_pixel.x, canvas_pixel.y, CanvasReservoirSize.x)].volume = rakel_volume_overshoot;
+        SampledRakelVolumes[XY(canvas_pixel.x, canvas_pixel.y, SampledRakelVolumesSize.x)] = rakel_volume_overshoot;
     }
 }

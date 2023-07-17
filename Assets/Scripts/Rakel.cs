@@ -287,11 +287,11 @@ public class Rakel
         if (Info.AutoZEnabled == 1)
         {
             // reduce canvas volume
-            canvas.Reservoir.CopySnapshotActiveInfoToWorkspace(
+            canvas.Reservoir.CopySnapshotActiveInfoVolumesToWorkspace(
                 rakelMappedInfo,
                 new Vector2Int(Reservoir.Size.x, Reservoir.Size.y),
                 emitSR);
-            canvas.Reservoir.ReducePaintGridInfoWorkspaceVolumeAvg(
+            canvas.Reservoir.ReduceActiveWorkspaceAvg(
                 rakelMappedInfo,
                 new Vector2Int(Reservoir.Size.x, Reservoir.Size.y),
                 emitSR,
@@ -308,8 +308,8 @@ public class Rakel
 
                     new CSInt2("ReservoirPixelEmitRadius", ReservoirPixelEmitRadius),
                     new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
-                    new CSComputeBuffer("CanvasReservoirInfoWorkspace", canvas.Reservoir.PaintGridInfoWorkspace),
-                    new CSInt3("CanvasReservoirSize", canvas.Reservoir.Size),
+                    new CSComputeBuffer("Workspace", canvas.Reservoir.Workspace),
+                    new CSInt3("WorkspaceSize", canvas.Reservoir.Size),
                 },
                 false
             ).Run();
@@ -333,12 +333,12 @@ public class Rakel
                 new List<CSAttribute>()
                 {
                     new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
-                    new CSComputeBuffer("SampledRakelVolumes", canvas.Reservoir.PaintGridInfoWorkspace),
-                    new CSInt3("CanvasReservoirSize", canvas.Reservoir.Size),
+                    new CSComputeBuffer("SampledRakelVolumes", canvas.Reservoir.Workspace),
+                    new CSInt3("SampledRakelVolumesSize", canvas.Reservoir.Size),
                 },
                 false
             ).Run();
-            canvas.Reservoir.ReducePaintGridInfoWorkspaceVolumeAvg(
+            canvas.Reservoir.ReduceActiveWorkspaceAvg(
                 rakelMappedInfo,
                 new Vector2Int(Reservoir.Size.x, Reservoir.Size.y),
                 emitSR,

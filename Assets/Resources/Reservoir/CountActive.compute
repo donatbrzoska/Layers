@@ -1,14 +1,12 @@
 #include "../ShaderBase/shader_base.hlsl"
 
-#include "../Paint/paint.hlsl"
 #include "../mapped_info.hlsl"
-#include "../paint_grid.hlsl"
 
 RWStructuredBuffer<MappedInfo> PaintSourceMappedInfo;
 uint2 PaintSourceReservoirSize;
 
-RWStructuredBuffer<ColumnInfo> ReservoirInfo;
-uint3 ReservoirSize;
+RWStructuredBuffer<float> Workspace;
+uint3 WorkspaceSize;
 
 RWStructuredBuffer<int> ActiveCount;
 
@@ -27,7 +25,7 @@ void main (uint3 id_ : SV_DispatchThreadID)
         int2 pixel = id() + CalculationPosition;
 
         if (pixel_in_array_range(reservoir_pixel_nearest, PaintSourceReservoirSize)) {
-            float volume = ReservoirInfo[XY(pixel.x, pixel.y, ReservoirSize.x)].volume;
+            float volume = Workspace[XY(pixel.x, pixel.y, WorkspaceSize.x)];
             if (volume > 0) {
                 InterlockedAdd(ActiveCount[0], 1);
             }
