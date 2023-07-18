@@ -85,7 +85,6 @@ public class Canvas_
         ShaderRegion pickupShaderRegion,
         //float pickupDistance_MAX,
         float pickupVolume_MIN,
-        //float pickupVolume_MAX,
         ShaderRegion emitShaderRegion,
         bool canvasSnapshotBufferEnabled,
         bool deletePickedUpFromCSB)
@@ -181,10 +180,8 @@ public class Canvas_
                 new CSComputeBuffer("CanvasReservoirInfoSampleSource", canvasSampleSource.Info),
                 new CSInt3("CanvasReservoirSize", Reservoir.Size),
 
-                //new CSFloat("RakelTilt_MAX", Rakel.MAX_SUPPORTED_TILT),
                 //new CSFloat("PickupDistance_MAX", pickupDistance_MAX),
                 new CSFloat("PickupVolume_MIN", pickupVolume_MIN),
-                //new CSFloat("PickupVolume_MAX", pickupVolume_MAX),
             },
             false
         ).Run();

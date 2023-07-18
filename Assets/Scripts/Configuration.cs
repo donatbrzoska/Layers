@@ -189,12 +189,10 @@ public class TransferConfiguration
 
     public float EmitDistance_MAX;
     public float PickupDistance_MAX;
+
     public float EmitVolume_MIN;
-    public float EmitVolume_MAX;
-    public float EmitVolumeApplicationReservoirRate;
-    public float EmitVolumePickupReservoirRate;
     public float PickupVolume_MIN;
-    public float PickupVolume_MAX;
+
     public float LayerThickness_MAX;
 
     public float BaseSink_MAX;
@@ -210,16 +208,12 @@ public class TransferConfiguration
         PickupDistance_MAX = EmitDistance_MAX;
 
         EmitVolume_MIN = 0.1f;
-        EmitVolume_MAX = 1;
+        PickupVolume_MIN = 0.1f;
 
-        EmitVolumeApplicationReservoirRate = 1;
-        EmitVolumePickupReservoirRate = 1.2f;
-        PickupVolume_MIN = 0.1f;// 0.3f;
-        PickupVolume_MAX = 0.65f;
+        LayerThickness_MAX = 4 * Paint.VOLUME_THICKNESS;
 
         BaseSink_MAX = 1 * Paint.VOLUME_THICKNESS;
         LayerSink_MAX_Ratio = 1;
-        LayerThickness_MAX = 4 * Paint.VOLUME_THICKNESS;
         TiltSink_MAX = 6 * Paint.VOLUME_THICKNESS;
     }
 }

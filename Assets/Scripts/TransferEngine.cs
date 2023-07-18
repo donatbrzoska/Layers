@@ -163,9 +163,7 @@ public class TransferEngine
         PaintGrid canvasEmittedPaint = canvas.EmitPaint(
             rakel,
             canvasEmitSR,
-            //transferConfiguration.PickupDistance_MAX,
             transferConfig.PickupVolume_MIN,
-            //transferConfiguration.PickupVolume_MAX,
             rakelEmitSR,
             transferConfig.CanvasSnapshotBufferEnabled,
             transferConfig.DeletePickedUpFromCSB);

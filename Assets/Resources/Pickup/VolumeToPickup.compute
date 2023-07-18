@@ -16,10 +16,8 @@ float3 CanvasPosition;
 RWStructuredBuffer<ColumnInfo> CanvasReservoirInfoSampleSource;
 uint3 CanvasReservoirSize;
 
-// float RakelTilt_MAX;
 // float PickupDistance_MAX;
 float PickupVolume_MIN;
-// float PickupVolume_MAX;
 
 
 // radius of 1 does an emit on a 3x3 area from emit source grid, based on the rounded canvas_reservoir_pixel
@@ -67,14 +65,6 @@ float volume_to_pickup_(int2 radius, int2 rakel_pixel)
     float volume_to_pickup = 0;
     if (surfaces_touch)
     {
-        // float VOLUME_TO_EMIT_TARGET = pickup_volume(
-        //     distance,
-        //     PickupDistance_MAX,
-        //     RakelTilt,
-        //     RakelTilt_MAX,
-        //     PickupVolume_MIN * PAINT_UNIT(),
-        //     PickupVolume_MAX * PAINT_UNIT());
-
         // This only really picks up paint when rakel edge is inside paint on canvas
         // Why surfaces_touch then?
         // - Paint is picked up only, when rakel is somehow touching canvas paint

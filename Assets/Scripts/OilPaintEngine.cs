@@ -427,21 +427,6 @@ public class OilPaintEngine : MonoBehaviour
     // ***                                   BOTTOM RIGHT                                   ***
     // ****************************************************************************************
 
-    public void UpdateEmitVolumeApplicationReservoir(float value)
-    {
-        Config.TransferConfig.EmitVolumeApplicationReservoirRate = value;
-    }
-
-    public void UpdateEmitVolumePickupReservoir(float value)
-    {
-        Config.TransferConfig.EmitVolumePickupReservoirRate = value;
-    }
-
-    public void UpdatePickupVolume(float value)
-    {
-        Config.TransferConfig.PickupVolume_MAX = value;
-    }
-
     public void UpdateCanvasSnapshotBufferEnabled(bool value)
     {
         Config.TransferConfig.CanvasSnapshotBufferEnabled = value;

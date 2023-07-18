@@ -398,10 +398,8 @@ public class Rakel
                 new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
 
                 new CSInt2("ReservoirPixelEmitRadius", ReservoirPixelEmitRadius),
-                //new CSFloat("RakelTilt_MAX", MAX_SUPPORTED_TILT),
                 //new CSFloat("EmitDistance_MAX", emitDistance_MAX),
                 new CSFloat("EmitVolume_MIN", emitVolume_MIN),
-                //new CSFloat("EmitVolume_MAX", emitVolume_MAX),
 
                 //new CSComputeBuffer("DistortionMap", DistortionMap),
                 //new CSInt2("DistortionMapSize", DistortionMapSize),
