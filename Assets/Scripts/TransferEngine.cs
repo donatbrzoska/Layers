@@ -136,7 +136,7 @@ public class TransferEngine
 
 
         // 2. Calculate rakel position based on paint height on canvas
-        //    For this, we already calculate rakel mapped info
+        //    For this, we already calculate parts of rakel mapped info
         ComputeBuffer rakelMappedInfo = rakel.CalculateRakelMappedInfo(
             rakelEmitSR,
             canvas);
@@ -152,7 +152,6 @@ public class TransferEngine
 
         // Now that the rakel position is calculated, we can actually
         // determine the distance to the rakel and the volume to emit also
-
         rakel.CalculateRakelMappedInfo_Part2(
             canvas,
             rakelMappedInfo,
