@@ -354,6 +354,7 @@ public class Rakel
                     new CSComputeBuffer("ReducedRakelVolumeSource", ReducedRakelVolume),
 
                     new CSFloat("LayerThickness_MAX", layerThickness_MAX),
+                    new CSFloat("MAX_SUPPORTED_TILT", MAX_SUPPORTED_TILT),
 
                     new CSComputeBuffer("RakelInfo", InfoBuffer),
                 },
