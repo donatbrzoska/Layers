@@ -209,7 +209,7 @@ public class TransferConfiguration
         // see comment in VolumeToPickup.compute)
         // 0.1 is the value so that there is pickup, even with resolution 10 and 79° tilt
         PickupDistance_MAX = 0.1f;
-        EmitDistance_MAX = 0;
+        EmitDistance_MAX = PickupDistance_MAX;
 
         EmitVolume_MIN = 0.1f;
         PickupVolume_MIN = 0.1f;
