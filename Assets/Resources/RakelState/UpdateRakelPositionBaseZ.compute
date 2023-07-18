@@ -24,7 +24,8 @@ void main (uint3 id_ : SV_DispatchThreadID)
 
         float canvas_volume_thickness = ReducedCanvasVolumeSource[0] * VOLUME_THICKNESS();
 
-        float rakel_volume_thickness = ReducedRakelVolumeSource[0] * VOLUME_THICKNESS();
+        float rakel_volume_thickness = min(rakel.previous_rakel_volume_thickness, ReducedRakelVolumeSource[0] * VOLUME_THICKNESS());
+        rakel.previous_rakel_volume_thickness = rakel_volume_thickness;
         float layer_thickness = min(rakel_volume_thickness, LayerThickness_MAX);
 
         rakel.actual_layer_thickness = layer_thickness;

@@ -8,6 +8,7 @@ struct Rakel {
     int auto_z_enabled;
     float position_base_z;
     float actual_layer_thickness;
+    float previous_rakel_volume_thickness;
     float pressure;
     float rotation;
     float tilt;
