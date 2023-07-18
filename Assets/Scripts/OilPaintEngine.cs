@@ -437,6 +437,26 @@ public class OilPaintEngine : MonoBehaviour
         Config.TransferConfig.DeletePickedUpFromCSB = value;
     }
 
+    public void UpdateEmitDistance_MAX(float value)
+    {
+        Config.TransferConfig.EmitDistance_MAX = value;
+    }
+
+    public void UpdateEmitVolume_MIN(float value)
+    {
+        Config.TransferConfig.EmitVolume_MIN = value;
+    }
+
+    public void UpdatePickupDistance_MAX(float value)
+    {
+        Config.TransferConfig.PickupDistance_MAX = value;
+    }
+
+    public void UpdatePickupVolume_MIN(float value)
+    {
+        Config.TransferConfig.PickupVolume_MIN = value;
+    }
+
     public void UpdateLayerThickness_MAX(float value)
     {
         Config.TransferConfig.LayerThickness_MAX = value;
