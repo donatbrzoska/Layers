@@ -12,6 +12,8 @@ RWStructuredBuffer<Paint> CanvasReservoirContentSampleSource;
 uint3 CanvasReservoirSize;
 float CanvasReservoirCellVolume;
 
+uint CanvasSnapshotBufferEnabled;
+
 RWStructuredBuffer<MappedInfo> CanvasMappedInfo;
 
 int2 ReservoirPixelPickupRadius;
@@ -92,20 +94,23 @@ void emit(int2 radius, int2 rakel_pixel)
             }
             target_volume_to_pickup_left -= total_emitted_volume_from_layer;
 
-            Paint emitted_from_layer_mixed = paint_create_empty();
-            emitted_from_layer_mixed.volume = total_emitted_volume_from_layer;
-            for (y=-radius.y; y<=radius.y; y++) {
-                for (x=-radius.x; x<=radius.x; x++) {
-                    uint i = y + radius.y;
-                    uint j = x + radius.x;
+            if (CanvasSnapshotBufferEnabled == 0)
+            {
+                Paint emitted_from_layer_mixed = paint_create_empty();
+                emitted_from_layer_mixed.volume = total_emitted_volume_from_layer;
+                for (y=-radius.y; y<=radius.y; y++) {
+                    for (x=-radius.x; x<=radius.x; x++) {
+                        uint i = y + radius.y;
+                        uint j = x + radius.x;
 
-                    float volume_part = emitted_from_layer[i][j].volume / unzero(total_emitted_volume_from_layer);
-                    emitted_from_layer_mixed.color += volume_part * emitted_from_layer[i][j].color;
+                        float volume_part = emitted_from_layer[i][j].volume / unzero(total_emitted_volume_from_layer);
+                        emitted_from_layer_mixed.color += volume_part * emitted_from_layer[i][j].color;
+                    }
                 }
-            }
 
-            // raw push
-            paint_grid_push(CanvasEmittedPaintInfo, CanvasEmittedPaintContent, CanvasEmittedPaintSize, id().xy, emitted_from_layer_mixed);
+                // raw push
+                paint_grid_push(CanvasEmittedPaintInfo, CanvasEmittedPaintContent, CanvasEmittedPaintSize, id().xy, emitted_from_layer_mixed);
+            }
 
             z--;
         }

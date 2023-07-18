@@ -82,20 +82,21 @@ public class Canvas_
 
     public PaintGrid EmitPaint(
         Rakel rakel,
-        ShaderRegion shaderRegion,
+        ShaderRegion pickupShaderRegion,
         //float pickupDistance_MAX,
         float pickupVolume_MIN,
         //float pickupVolume_MAX,
-        bool canvasSnapshotBufferEnabled
-        )
+        ShaderRegion emitShaderRegion,
+        bool canvasSnapshotBufferEnabled,
+        bool deletePickedUpFromCSB)
     {
-        ComputeBuffer canvasMappedInfo = new ComputeBuffer(shaderRegion.PixelCount, MappedInfo.SizeInBytes);
-        MappedInfo[] canvasMappedInfoData = new MappedInfo[shaderRegion.PixelCount];
+        ComputeBuffer canvasMappedInfo = new ComputeBuffer(pickupShaderRegion.PixelCount, MappedInfo.SizeInBytes);
+        MappedInfo[] canvasMappedInfoData = new MappedInfo[pickupShaderRegion.PixelCount];
         canvasMappedInfo.SetData(canvasMappedInfoData);
 
         new ComputeShaderTask(
             "Pickup/TransformToRakelPosition",
-            shaderRegion,
+            pickupShaderRegion,
             new List<CSAttribute>()
             {
                 new CSInt("TextureResolution", Resolution),
@@ -109,7 +110,7 @@ public class Canvas_
 
         new ComputeShaderTask(
             "Pickup/CanvasReservoirPixel",
-            shaderRegion,
+            pickupShaderRegion,
             new List<CSAttribute>()
             {
                 new CSComputeBuffer("RakelInfo", rakel.InfoBuffer),
@@ -125,7 +126,7 @@ public class Canvas_
 
         new ComputeShaderTask(
             "Pickup/DistanceFromCanvas",
-            shaderRegion,
+            pickupShaderRegion,
             new List<CSAttribute>()
             {
                 new CSComputeBuffer("RakelInfo", rakel.InfoBuffer),
@@ -139,7 +140,7 @@ public class Canvas_
 
         new ComputeShaderTask(
             "Pickup/Overlap",
-            shaderRegion,
+            pickupShaderRegion,
             new List<CSAttribute>()
             {
                 new CSComputeBuffer("RakelInfo", rakel.InfoBuffer),
@@ -151,10 +152,23 @@ public class Canvas_
             false
         ).Run();
 
-        PaintGrid canvasSampleSource = canvasSnapshotBufferEnabled ? Reservoir.PaintGridStrokeCopy : Reservoir.PaintGridImprintCopy;
+        PaintGrid canvasSampleSource = Reservoir.PaintGridImprintCopy;
+        if (canvasSnapshotBufferEnabled)
+        {
+            if (deletePickedUpFromCSB)
+            {
+                Reservoir.DoStrokeCopyCopy(emitShaderRegion, false);
+                canvasSampleSource = Reservoir.PaintGridStrokeCopyCopy;
+            }
+            else
+            {
+                canvasSampleSource = Reservoir.PaintGridStrokeCopy;
+            }
+        }
+
         new ComputeShaderTask(
             "Pickup/VolumeToPickup",
-            shaderRegion,
+            pickupShaderRegion,
             new List<CSAttribute>()
             {
                 new CSComputeBuffer("RakelInfo", rakel.InfoBuffer),
@@ -177,7 +191,7 @@ public class Canvas_
 
         // HACK canvasEmittedPaint is actually treated as a raw stack with no specified mixing parameters
         float UNUSED = 0;
-        PaintGrid canvasEmittedPaint = new PaintGrid(new Vector3Int(shaderRegion.Size.x, shaderRegion.Size.y, Reservoir.Size.z), UNUSED, (int) UNUSED, UNUSED);
+        PaintGrid canvasEmittedPaint = new PaintGrid(new Vector3Int(pickupShaderRegion.Size.x, pickupShaderRegion.Size.y, Reservoir.Size.z), UNUSED, (int) UNUSED, UNUSED);
 
         float pixelSize = 1 / (float)Reservoir.Resolution;
         float pixelDiag = pixelSize * Mathf.Sqrt(2);
@@ -187,7 +201,7 @@ public class Canvas_
 
         new ComputeShaderTask(
             "Pickup/EmitFromCanvas",
-            shaderRegion,
+            pickupShaderRegion,
             deleteConflictArea,
             new List<CSAttribute>()
             {
@@ -201,12 +215,47 @@ public class Canvas_
                 new CSInt3("CanvasReservoirSize", Reservoir.Size),
                 new CSFloat("CanvasReservoirCellVolume", Reservoir.PaintGrid.CellVolume),
 
+                new CSInt("CanvasSnapshotBufferEnabled", 0),
+
                 new CSComputeBuffer("CanvasEmittedPaintInfo", canvasEmittedPaint.Info),
                 new CSComputeBuffer("CanvasEmittedPaintContent", canvasEmittedPaint.Content),
                 new CSInt3("CanvasEmittedPaintSize", canvasEmittedPaint.Size)
             },
             false
         ).Run();
+
+        if (canvasSnapshotBufferEnabled && deletePickedUpFromCSB)
+        {
+            // HACK
+            // We cannot have more than 8 UAVs in DX11 and therefore cannot delete the
+            // picked up paint from the stroke copy. So we just run the shader a second
+            // time, now passing the stroke copy as original reservoir.
+            // (Passing the original stroke copy buffers would mean we have 9 Buffers (UAVs))
+            new ComputeShaderTask(
+                "Pickup/EmitFromCanvas",
+                pickupShaderRegion,
+                deleteConflictArea,
+                new List<CSAttribute>()
+                {
+                    new CSInt2("ReservoirPixelPickupRadius", RESERVOIR_PIXEL_PICKUP_RADIUS),
+                    new CSComputeBuffer("CanvasMappedInfo", canvasMappedInfo),
+
+                    new CSComputeBuffer("CanvasReservoirInfo", Reservoir.PaintGridStrokeCopy.Info),
+                    new CSComputeBuffer("CanvasReservoirContent", Reservoir.PaintGridStrokeCopy.Content),
+                    new CSComputeBuffer("CanvasReservoirInfoSampleSource", Reservoir.PaintGridStrokeCopyCopy.Info),
+                    new CSComputeBuffer("CanvasReservoirContentSampleSource", Reservoir.PaintGridStrokeCopyCopy.Content),
+                    new CSInt3("CanvasReservoirSize", Reservoir.Size),
+                    new CSFloat("CanvasReservoirCellVolume", Reservoir.PaintGrid.CellVolume),
+
+                    new CSInt("CanvasSnapshotBufferEnabled", 1),
+
+                    new CSComputeBuffer("CanvasEmittedPaintInfo", canvasEmittedPaint.Info),
+                    new CSComputeBuffer("CanvasEmittedPaintContent", canvasEmittedPaint.Content),
+                    new CSInt3("CanvasEmittedPaintSize", canvasEmittedPaint.Size)
+                },
+                false
+            ).Run();
+        }
 
         canvasMappedInfo.Dispose();
 

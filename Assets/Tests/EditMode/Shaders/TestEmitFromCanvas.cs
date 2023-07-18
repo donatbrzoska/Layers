@@ -11,6 +11,7 @@ public class TestEmitFromCanvas
     private const float PRESSURE = 0;
 
     private const bool CSB_ENABLED = false;
+    private const bool CSB_DELETE = false;
 
     private const float CELL_VOLUME = 1;
     private const int DIFFUSE_DEPTH = 0;
@@ -100,7 +101,8 @@ public class TestEmitFromCanvas
             Rakel,
             canvasEmitSR,
             0,
-            CSB_ENABLED);
+            Canvas.Reservoir.GetFullShaderRegion(),
+            CSB_ENABLED, CSB_DELETE);
 
 
         // Assert
@@ -140,7 +142,8 @@ public class TestEmitFromCanvas
             Rakel,
             canvasEmitSR,
             0,
-            CSB_ENABLED);
+            Canvas.Reservoir.GetFullShaderRegion(),
+            CSB_ENABLED, CSB_DELETE);
 
 
         // Assert
@@ -195,7 +198,8 @@ public class TestEmitFromCanvas
             Rakel,
             canvasEmitSR,
             0,
-            CSB_ENABLED);
+            Canvas.Reservoir.GetFullShaderRegion(),
+            CSB_ENABLED, CSB_DELETE);
 
 
         // Assert
@@ -277,7 +281,8 @@ public class TestEmitFromCanvas
             Rakel,
             canvasEmitSR,
             0,
-            CSB_ENABLED);
+            Canvas.Reservoir.GetFullShaderRegion(),
+            CSB_ENABLED, CSB_DELETE);
 
 
         // Assert
@@ -368,7 +373,8 @@ public class TestEmitFromCanvas
             Rakel,
             canvasEmitSR,
             0,
-            CSB_ENABLED);
+            Canvas.Reservoir.GetFullShaderRegion(),
+            CSB_ENABLED, CSB_DELETE);
 
 
         // Assert

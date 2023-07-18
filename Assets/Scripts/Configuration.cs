@@ -183,6 +183,7 @@ public class FillConfiguration
 public class TransferConfiguration
 {
     public bool CanvasSnapshotBufferEnabled;
+    public bool DeletePickedUpFromCSB;
 
     public float EmitDistance_MAX;
     public float PickupDistance_MAX;
@@ -201,6 +202,7 @@ public class TransferConfiguration
     public TransferConfiguration()
     {
         CanvasSnapshotBufferEnabled = true;
+        DeletePickedUpFromCSB = true;
 
         EmitDistance_MAX = 0.1f;
         PickupDistance_MAX = EmitDistance_MAX;

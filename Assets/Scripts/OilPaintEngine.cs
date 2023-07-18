@@ -442,6 +442,11 @@ public class OilPaintEngine : MonoBehaviour
         Config.TransferConfig.CanvasSnapshotBufferEnabled = value;
     }
 
+    public void UpdateDeletePickedUpFromCSB(bool value)
+    {
+        Config.TransferConfig.DeletePickedUpFromCSB = value;
+    }
+
     public void UpdateLayerThickness_MAX(float value)
     {
         Config.TransferConfig.LayerThickness_MAX = value;

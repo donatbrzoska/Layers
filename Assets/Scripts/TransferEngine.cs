@@ -167,8 +167,9 @@ public class TransferEngine
             //transferConfiguration.PickupDistance_MAX,
             transferConfig.PickupVolume_MIN,
             //transferConfiguration.PickupVolume_MAX,
-            transferConfig.CanvasSnapshotBufferEnabled
-            );
+            rakelEmitSR,
+            transferConfig.CanvasSnapshotBufferEnabled,
+            transferConfig.DeletePickedUpFromCSB);
 
         PaintGrid rakelEmittedPaint = rakel.EmitPaint(
             rakelEmitSR,

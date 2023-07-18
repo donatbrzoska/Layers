@@ -15,6 +15,7 @@ public class Reservoir
     public PaintGrid PaintGrid;
     public PaintGrid PaintGridImprintCopy;
     public PaintGrid PaintGridStrokeCopy;
+    public PaintGrid PaintGridStrokeCopyCopy;
 
     public ComputeBuffer PaintGridInfoSnapshot;
     public ComputeBuffer Workspace;
@@ -32,6 +33,7 @@ public class Reservoir
         // only used by canvas
         // TODO provide possibility to deactivate this
         PaintGridStrokeCopy = new PaintGrid(Size, cellVolume, diffuseDepth, diffuseRatio);
+        PaintGridStrokeCopyCopy = new PaintGrid(Size, cellVolume, diffuseDepth, diffuseRatio);
         PaintGridInfoSnapshot = new ComputeBuffer(Size.x * Size.y, ColumnInfo.SizeInBytes);
         Workspace = new ComputeBuffer(Size.x * Size.y, sizeof(float));
     }
@@ -63,12 +65,22 @@ public class Reservoir
 
     public void DoStrokeCopy(bool debugEnabled = false)
     {
-        Duplicate(PaintGrid, PaintGridStrokeCopy, GetFullShaderRegion(), debugEnabled);
+        DoStrokeCopy(GetFullShaderRegion(), debugEnabled);
     }
 
     public void DoStrokeCopy(ShaderRegion sr, bool debugEnabled = false)
     {
         Duplicate(PaintGrid, PaintGridStrokeCopy, sr, debugEnabled);
+    }
+
+    public void DoStrokeCopyCopy(bool debugEnabled = false)
+    {
+        DoStrokeCopyCopy(GetFullShaderRegion(), debugEnabled);
+    }
+
+    public void DoStrokeCopyCopy(ShaderRegion sr, bool debugEnabled = false)
+    {
+        Duplicate(PaintGridStrokeCopy, PaintGridStrokeCopyCopy, sr, debugEnabled);
     }
 
     public void Duplicate(PaintGrid source, PaintGrid target, ShaderRegion sr, bool debugEnabled = false)
@@ -282,6 +294,7 @@ public class Reservoir
         PaintGridImprintCopy.Dispose();
 
         PaintGridStrokeCopy.Dispose();
+        PaintGridStrokeCopyCopy.Dispose();
         PaintGridInfoSnapshot.Dispose();
         Workspace.Dispose();
     }
