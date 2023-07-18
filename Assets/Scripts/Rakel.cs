@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 public struct RakelInfo
 {
-    public const int SizeInBytes = 1 * sizeof(int) + 9 * sizeof(float) + 10 * 3 * sizeof(float);
+    public const int SizeInBytes = 1 * sizeof(int) + 8 * sizeof(float) + 10 * 3 * sizeof(float);
 
     public float Length;
     public float Width;
@@ -14,7 +14,6 @@ public struct RakelInfo
     public int AutoZEnabled;
     public float PositionBaseZ;
     public float ActualLayerThickness;
-    public float PreviousRakelVolumeThickness;
     public float Pressure;
     public float Rotation;
     public float Tilt;
@@ -86,8 +85,6 @@ public class Rakel
 
         // NOTE this has to be set after Width and Length were corrected
         Info.Anchor = new Vector3(anchorRatioWidth * Info.Width, anchorRatioLength * Info.Length, 0);
-
-        Info.PreviousRakelVolumeThickness = 1000;
 
         InfoBuffer = new ComputeBuffer(1, RakelInfo.SizeInBytes);
         InfoBuffer.SetData(new RakelInfo[] { Info });
