@@ -61,13 +61,16 @@ float volume_to_emit_(int2 radius, int2 canvas_pixel)
     if (surfaces_touch)
     {
         // TODO adjust this, when implementing dried paint
+        
+        // Adding gravity distance to this is not necessary, because as soon as surfaces_touch
+        // is fulfilled, paint is emitted (provided there is distance between paint and rakel)
         float rakel_edge_distance_from_canvas = abs(rakel.edge_z - CanvasPositionZ);
         float rakel_edge_distance_from_canvas_paint_surface = rakel_edge_distance_from_canvas - paint_thickness_canvas;
         float volume_fitting_between = max(rakel_edge_distance_from_canvas_paint_surface, 0) / VOLUME_THICKNESS();
 
         // multiply by total overlap, because we only want as much paint as there is for this reservoir pixel
         volume_to_emit = (volume_fitting_between + EmitVolume_MIN) * rakel_mapped_info.total_overlap;
-        
+
         //TODO there might be problems with rounding to negative indizes
         // VOLUME_TO_EMIT_TARGET_PU *= DistortionMap[XY(rakel_reservoir_pixel_nearest.x + DistortionMapIndex, rakel_reservoir_pixel_nearest.y, DistortionMapSize.x)];
 

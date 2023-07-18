@@ -69,7 +69,15 @@ float volume_to_pickup_(int2 radius, int2 rakel_pixel)
         //   - rakel surface
         // - Maybe the condition surfaces_touch is too realistic and not helpful, instead have certain pickup distance?
         // TODO adjust this, when implementing dried paint
+
+        // subtracting gravity distance has the effect of more picked up volume
         float rakel_edge_distance_from_canvas = abs(rakel.edge_z - CanvasPosition.z);
+        bool gravity_distance_lead_to_surfaces_touch = surface_distance >= 0;
+        if (gravity_distance_lead_to_surfaces_touch)
+        {
+            // in this case, without subtracting gravity distance, there wouldn't be any picked up volume
+            rakel_edge_distance_from_canvas = max(rakel_edge_distance_from_canvas - gravity_distance, 0);
+        }
         float rakel_edge_distance_from_canvas_paint_surface = rakel_edge_distance_from_canvas - paint_thickness_canvas;
         float how_negative = abs(min(rakel_edge_distance_from_canvas_paint_surface, 0));
         float volume_too_much_on_canvas = how_negative / VOLUME_THICKNESS();
