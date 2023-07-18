@@ -17,6 +17,8 @@ public class TestEmitFromCanvas
     private const int DIFFUSE_DEPTH = 0;
     private const float DIFFUSE_RATIO = 0;
 
+    private const float FILL_WIDTH_PART = 1;
+
     int Resolution;
 
     Rakel Rakel;
@@ -89,7 +91,7 @@ public class TestEmitFromCanvas
     {
         // Arrange
         ShaderRegion canvasEmitSR = Rakel.Reservoir.GetFullShaderRegion();
-        Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen, ColorSpace.RGB), new FlatVolumeFiller(1)));
+        Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen, ColorSpace.RGB), new FlatVolumeFiller(FILL_WIDTH_PART, 1)));
         Canvas.Reservoir.DoImprintCopy(false);
 
         Rakel.UpdateState(
@@ -130,7 +132,7 @@ public class TestEmitFromCanvas
     {
         // Arrange
         ShaderRegion canvasEmitSR = Rakel.Reservoir.GetFullShaderRegion();
-        Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen, ColorSpace.RGB), new FlatVolumeFiller(2)));
+        Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen, ColorSpace.RGB), new FlatVolumeFiller(FILL_WIDTH_PART, 2)));
         Canvas.Reservoir.DoImprintCopy(false);
 
         Rakel.UpdateState(
@@ -186,7 +188,7 @@ public class TestEmitFromCanvas
 
         // Arrange
         ShaderRegion canvasEmitSR = Rakel.Reservoir.GetFullShaderRegion();
-        Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen, ColorSpace.RGB), new FlatVolumeFiller(INIT_LAYERS)));
+        Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen, ColorSpace.RGB), new FlatVolumeFiller(FILL_WIDTH_PART, INIT_LAYERS)));
         Canvas.Reservoir.DoImprintCopy(false);
 
         Rakel.UpdateState(
@@ -269,7 +271,7 @@ public class TestEmitFromCanvas
 
         // Arrange
         ShaderRegion canvasEmitSR = Rakel.Reservoir.GetFullShaderRegion();
-        Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen, ColorSpace.RGB), new FlatVolumeFiller(INIT_LAYERS)));
+        Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen, ColorSpace.RGB), new FlatVolumeFiller(FILL_WIDTH_PART, INIT_LAYERS)));
         Canvas.Reservoir.DoImprintCopy(false);
 
         Rakel.UpdateState(
@@ -361,7 +363,7 @@ public class TestEmitFromCanvas
     {
         // Arrange
         ShaderRegion canvasEmitSR = Rakel.Reservoir.GetFullShaderRegion();
-        Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen, ColorSpace.RGB), new FlatVolumeFiller(2)));
+        Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen, ColorSpace.RGB), new FlatVolumeFiller(FILL_WIDTH_PART, 2)));
         Canvas.Reservoir.DoImprintCopy(false);
 
         Rakel.UpdateState(

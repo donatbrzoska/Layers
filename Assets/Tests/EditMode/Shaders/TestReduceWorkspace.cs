@@ -3,7 +3,7 @@ using UnityEngine;
 
 class IndexVolumeFiller : VolumeFiller
 {
-    public IndexVolumeFiller(float baseVolume) : base(baseVolume) { }
+    public IndexVolumeFiller(float widthPart, float baseVolume) : base(widthPart, baseVolume) { }
 
     public override void Fill(ColumnInfo[] targetInfo, Paint[] target, Vector3Int targetSize, float targetCellVolume)
     {
@@ -22,7 +22,7 @@ class IndexVolumeFiller : VolumeFiller
 
 class OnesVolumeFiller : VolumeFiller
 {
-    public OnesVolumeFiller(float baseVolume) : base(baseVolume) { }
+    public OnesVolumeFiller(float widthPart, float baseVolume) : base(widthPart, baseVolume) { }
 
     public override void Fill(ColumnInfo[] targetInfo, Paint[] target, Vector3Int targetSize, float targetCellVolume)
     {
@@ -44,6 +44,8 @@ public class TestReduceWorkspace
     private const float CELL_VOLUME = 1;
     private const int DIFFUSE_DEPTH = 0;
     private const float DIFFUSE_RATIO = 0;
+
+    private const float FILL_WIDTH_PART = 1;
 
     Vector2Int TextureSize;
 
@@ -91,7 +93,7 @@ public class TestReduceWorkspace
         SetupReservoir();
 
         // Arrange
-        Reservoir.Fill(new ReservoirFiller(ColorFiller, new IndexVolumeFiller(0)));
+        Reservoir.Fill(new ReservoirFiller(ColorFiller, new IndexVolumeFiller(FILL_WIDTH_PART, 0)));
 
         Reservoir.CopyVolumesToWorkspace();
 
@@ -119,7 +121,7 @@ public class TestReduceWorkspace
         SetupReservoir();
 
         // Arrange
-        Reservoir.Fill(new ReservoirFiller(ColorFiller, new IndexVolumeFiller(0)));
+        Reservoir.Fill(new ReservoirFiller(ColorFiller, new IndexVolumeFiller(FILL_WIDTH_PART, 0)));
 
         Reservoir.CopyVolumesToWorkspace();
 
@@ -148,7 +150,7 @@ public class TestReduceWorkspace
         SetupReservoir();
 
         // Arrange
-        Reservoir.Fill(new ReservoirFiller(ColorFiller, new OnesVolumeFiller(0)));
+        Reservoir.Fill(new ReservoirFiller(ColorFiller, new OnesVolumeFiller(FILL_WIDTH_PART, 0)));
 
         Reservoir.CopyVolumesToWorkspace();
 
@@ -176,7 +178,7 @@ public class TestReduceWorkspace
         SetupReservoir();
 
         // Arrange
-        Reservoir.Fill(new ReservoirFiller(ColorFiller, new OnesVolumeFiller(0)));
+        Reservoir.Fill(new ReservoirFiller(ColorFiller, new OnesVolumeFiller(FILL_WIDTH_PART, 0)));
 
         Reservoir.CopyVolumesToWorkspace();
 

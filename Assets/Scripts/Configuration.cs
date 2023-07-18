@@ -167,6 +167,7 @@ public class FillConfiguration
 {
     public Color_ Color;
     public ColorMode ColorMode;
+    public float WidthPart;
     public int Volume;
     public VolumeMode VolumeMode;
 
@@ -174,6 +175,7 @@ public class FillConfiguration
     {
         Color = Color_.LavenderLight;
         ColorMode = ColorMode.Flat;
+        WidthPart = 0.6f;
         Volume = 60;
         VolumeMode = VolumeMode.Perlin;
     }

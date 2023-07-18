@@ -2,10 +2,12 @@
 
 public abstract class VolumeFiller
 {
+    protected float WidthRatio;
     protected float BaseVolume;
 
-    protected VolumeFiller(float baseVolume)
+    protected VolumeFiller(float widthRatio, float baseVolume)
     {
+        WidthRatio = Mathf.Clamp01(widthRatio);
         BaseVolume = baseVolume * Paint.UNIT;
     }
 

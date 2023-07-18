@@ -365,6 +365,11 @@ public class OilPaintEngine : MonoBehaviour
         Config.FillConfig.ColorMode = mode;
     }
 
+    public void UpdateFillWidthPart(float value)
+    {
+        Config.FillConfig.WidthPart = value;
+    }
+
     public void UpdateFillVolume(int volume)
     {
         Config.FillConfig.Volume = volume;
@@ -391,10 +396,10 @@ public class OilPaintEngine : MonoBehaviour
         VolumeFiller volumeFiller;
         if (fillConfig.VolumeMode == VolumeMode.Flat)
         {
-            volumeFiller = new FlatVolumeFiller(fillConfig.Volume);
+            volumeFiller = new FlatVolumeFiller(fillConfig.WidthPart, fillConfig.Volume);
         } else
         {
-            volumeFiller = new PerlinVolumeFiller(fillConfig.Volume);
+            volumeFiller = new PerlinVolumeFiller(fillConfig.WidthPart, fillConfig.Volume);
         }
 
         ReservoirFiller filler = new ReservoirFiller(colorFiller, volumeFiller);

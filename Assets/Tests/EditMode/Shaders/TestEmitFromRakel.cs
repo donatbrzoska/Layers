@@ -15,6 +15,8 @@ public class TestEmitFromRakel
     private const int DIFFUSE_DEPTH = 0;
     private const float DIFFUSE_RATIO = 0;
 
+    private const float FILL_WIDTH_PART = 1;
+
     Canvas_ Canvas;
     float RakelLength = 4;
     float RakelWidth = 2;
@@ -65,7 +67,7 @@ public class TestEmitFromRakel
         int APPLIED_LAYERS = 1;
 
         // Arrange
-        Rakel.Fill(new ReservoirFiller(ColorFiller, new FlatVolumeFiller(BARELY_SURFACES_TOUCH_VOLUME)));
+        Rakel.Fill(new ReservoirFiller(ColorFiller, new FlatVolumeFiller(FILL_WIDTH_PART, BARELY_SURFACES_TOUCH_VOLUME)));
         Rakel.UpdateState(
             new Vector3(-5, -0.5f, APPLIED_LAYERS * -Paint.VOLUME_THICKNESS), BASE_SINK_MAX, LAYER_SINK_MAX_RATIO, TILT_SINK_MAX, AUTO_Z_ENABLED, ZZERO, PRESSURE,
             0,
@@ -120,7 +122,7 @@ public class TestEmitFromRakel
         int LAYERS = 1;
 
         // Arrange
-        Rakel.Fill(new ReservoirFiller(ColorFiller, new FlatVolumeFiller(COMPLETE_SURFACES_TOUCH_VOLUME)));
+        Rakel.Fill(new ReservoirFiller(ColorFiller, new FlatVolumeFiller(FILL_WIDTH_PART, COMPLETE_SURFACES_TOUCH_VOLUME)));
         Rakel.UpdateState(
             new Vector3(-5, -0.5f, LAYERS * -Paint.VOLUME_THICKNESS), BASE_SINK_MAX, LAYER_SINK_MAX_RATIO, TILT_SINK_MAX, AUTO_Z_ENABLED, ZZERO, PRESSURE,
             0,
@@ -175,7 +177,7 @@ public class TestEmitFromRakel
         int LAYERS = 1;
 
         // Arrange
-        Rakel.Fill(new ReservoirFiller(ColorFiller, new FlatVolumeFiller(BASICALLY_COMPLETE_SURFACES_TOUCH_VOLUME)));
+        Rakel.Fill(new ReservoirFiller(ColorFiller, new FlatVolumeFiller(FILL_WIDTH_PART, BASICALLY_COMPLETE_SURFACES_TOUCH_VOLUME)));
         Rakel.UpdateState(
             new Vector3(-5, -0.5f, LAYERS * -Paint.VOLUME_THICKNESS), BASE_SINK_MAX, LAYER_SINK_MAX_RATIO, TILT_SINK_MAX, AUTO_Z_ENABLED, ZZERO, PRESSURE,
             30,
@@ -229,7 +231,7 @@ public class TestEmitFromRakel
         int LAYERS = 2;
 
         // Arrange
-        Rakel.Fill(new ReservoirFiller(ColorFiller, new FlatVolumeFiller(COMPLETE_SURFACES_TOUCH_VOLUME)));
+        Rakel.Fill(new ReservoirFiller(ColorFiller, new FlatVolumeFiller(FILL_WIDTH_PART, COMPLETE_SURFACES_TOUCH_VOLUME)));
         Rakel.UpdateState(
             new Vector3(-5, -0.5f, LAYERS * -Paint.VOLUME_THICKNESS), BASE_SINK_MAX, LAYER_SINK_MAX_RATIO, TILT_SINK_MAX, AUTO_Z_ENABLED, ZZERO, PRESSURE,
             0,

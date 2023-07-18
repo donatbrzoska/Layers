@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class PerlinVolumeFiller : VolumeFiller
 {
-    public PerlinVolumeFiller(float baseVolume) : base(baseVolume) { }
+    public PerlinVolumeFiller(float widthRatio, float baseVolume) : base(widthRatio, baseVolume) { }
 
     public override void Fill(ColumnInfo[] targetInfo, Paint[] target, Vector3Int targetSize, float targetCellVolume)
     {
@@ -17,7 +17,7 @@ public class PerlinVolumeFiller : VolumeFiller
         // volume is the lowest possible value, perlin noise is added on top of that
         for (int i = 0; i < targetSize.y; i++)
         {
-            for (int j = 0; j < targetSize.x; j++)
+            for (int j = 0; j < WidthRatio * targetSize.x; j++)
             {
                 float noise = perlinNoise.ValueAt(j, i);
                 float added_volume = noise * max_added_volume;
@@ -32,7 +32,7 @@ public class PerlinVolumeFiller : VolumeFiller
         // set volume to reservoir
         for (int i = 0; i < targetSize.y; i++)
         {
-            for (int j = 0; j < targetSize.x; j++)
+            for (int j = 0; j < WidthRatio * targetSize.x; j++)
             {
                 float v = BaseVolume + (added_volumes[i, j] - added_volumes_min);
                 SetVolume(targetInfo, target, targetSize, targetCellVolume, j, i, v);
