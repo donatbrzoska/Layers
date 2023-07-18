@@ -83,7 +83,7 @@ public class Canvas_
     public PaintGrid EmitPaint(
         Rakel rakel,
         ShaderRegion pickupShaderRegion,
-        //float pickupDistance_MAX,
+        float pickupDistance_MAX,
         float pickupVolume_MIN,
         ShaderRegion emitShaderRegion,
         bool canvasSnapshotBufferEnabled,
@@ -180,7 +180,7 @@ public class Canvas_
                 new CSComputeBuffer("CanvasReservoirInfoSampleSource", canvasSampleSource.Info),
                 new CSInt3("CanvasReservoirSize", Reservoir.Size),
 
-                //new CSFloat("PickupDistance_MAX", pickupDistance_MAX),
+                new CSFloat("PickupDistance_MAX", pickupDistance_MAX),
                 new CSFloat("PickupVolume_MIN", pickupVolume_MIN),
             },
             false

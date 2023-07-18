@@ -10,6 +10,9 @@ public class TestEmitFromCanvas
     private const int ZZERO = 0;
     private const float PRESSURE = 0;
 
+    private float PICKUP_DIST_MAX = 0;
+    private float PICKUP_VOLUME_MIN = 0;
+
     private const bool CSB_ENABLED = false;
     private const bool CSB_DELETE = false;
 
@@ -102,7 +105,7 @@ public class TestEmitFromCanvas
         CanvasEmittedPaint = Canvas.EmitPaint(
             Rakel,
             canvasEmitSR,
-            0,
+            PICKUP_DIST_MAX, PICKUP_VOLUME_MIN,
             Canvas.Reservoir.GetFullShaderRegion(),
             CSB_ENABLED, CSB_DELETE);
 
@@ -143,7 +146,7 @@ public class TestEmitFromCanvas
         CanvasEmittedPaint = Canvas.EmitPaint(
             Rakel,
             canvasEmitSR,
-            0,
+            PICKUP_DIST_MAX, PICKUP_VOLUME_MIN,
             Canvas.Reservoir.GetFullShaderRegion(),
             CSB_ENABLED, CSB_DELETE);
 
@@ -199,7 +202,7 @@ public class TestEmitFromCanvas
         CanvasEmittedPaint = Canvas.EmitPaint(
             Rakel,
             canvasEmitSR,
-            0,
+            PICKUP_DIST_MAX, PICKUP_VOLUME_MIN,
             Canvas.Reservoir.GetFullShaderRegion(),
             CSB_ENABLED, CSB_DELETE);
 
@@ -282,7 +285,7 @@ public class TestEmitFromCanvas
         CanvasEmittedPaint = Canvas.EmitPaint(
             Rakel,
             canvasEmitSR,
-            0,
+            PICKUP_DIST_MAX, PICKUP_VOLUME_MIN,
             Canvas.Reservoir.GetFullShaderRegion(),
             CSB_ENABLED, CSB_DELETE);
 
@@ -374,7 +377,7 @@ public class TestEmitFromCanvas
         CanvasEmittedPaint = Canvas.EmitPaint(
             Rakel,
             canvasEmitSR,
-            0,
+            PICKUP_DIST_MAX, PICKUP_VOLUME_MIN,
             Canvas.Reservoir.GetFullShaderRegion(),
             CSB_ENABLED, CSB_DELETE);
 

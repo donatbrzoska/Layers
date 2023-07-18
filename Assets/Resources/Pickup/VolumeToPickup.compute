@@ -16,7 +16,7 @@ float3 CanvasPosition;
 RWStructuredBuffer<ColumnInfo> CanvasReservoirInfoSampleSource;
 uint3 CanvasReservoirSize;
 
-// float PickupDistance_MAX;
+float PickupDistance_MAX;
 float PickupVolume_MIN;
 
 
@@ -56,10 +56,7 @@ float volume_to_pickup_(int2 radius, int2 rakel_pixel)
     // the center of even the first pixel at the edge is not inside the paint anymore,
     // even though the edge is. This is because pixel size is pretty large compared
     // to paint size. Alternatively you would have to use very high resolutions (~1000 Pixels / Unity World Space)
-    // TODO
-    // Parametrize the 0.1, this is basically 1:1 the max distance at which the paint "gravity" acts.
-    // Right now this is chosen so that there is pickup, even with resolution 10 and 79° tilt
-    float gravity_distance = sin(radians(rakel.tilt)) * 0.1;
+    float gravity_distance = sin(radians(rakel.tilt)) * PickupDistance_MAX;
     bool surfaces_touch = surface_distance <= gravity_distance;
 
     float volume_to_pickup = 0;

@@ -369,6 +369,7 @@ public class Rakel
         Canvas_ canvas,
         ComputeBuffer rakelMappedInfo,
         ShaderRegion shaderRegion,
+        float emitDistance_MAX,
         float emitVolume_MIN)
     {
         new ComputeShaderTask(
@@ -398,7 +399,7 @@ public class Rakel
                 new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
 
                 new CSInt2("ReservoirPixelEmitRadius", ReservoirPixelEmitRadius),
-                //new CSFloat("EmitDistance_MAX", emitDistance_MAX),
+                new CSFloat("EmitDistance_MAX", emitDistance_MAX),
                 new CSFloat("EmitVolume_MIN", emitVolume_MIN),
 
                 //new CSComputeBuffer("DistortionMap", DistortionMap),

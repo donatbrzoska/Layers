@@ -11,6 +11,9 @@ public class TestEmitFromRakel
     private const int ZZERO = 0;
     private const float PRESSURE = 0;
 
+    private float EMIT_DIST_MAX = 0;
+    private float EMIT_VOLUME_MIN = 0;
+
     private const float CELL_VOLUME = 1;
     private const int DIFFUSE_DEPTH = 0;
     private const float DIFFUSE_RATIO = 0;
@@ -81,7 +84,7 @@ public class TestEmitFromRakel
 
         ComputeBuffer rakelMappedInfo = Rakel.CalculateRakelMappedInfo(rakelEmitSR, Canvas);
         Rakel.Reservoir.DoImprintCopy();
-        Rakel.CalculateRakelMappedInfo_Part2(Canvas, rakelMappedInfo, rakelEmitSR, 0);
+        Rakel.CalculateRakelMappedInfo_Part2(Canvas, rakelMappedInfo, rakelEmitSR, EMIT_DIST_MAX, EMIT_VOLUME_MIN);
 
 
         // Act
@@ -136,7 +139,7 @@ public class TestEmitFromRakel
 
         ComputeBuffer rakelMappedInfo = Rakel.CalculateRakelMappedInfo(rakelEmitSR, Canvas);
         Rakel.Reservoir.DoImprintCopy();
-        Rakel.CalculateRakelMappedInfo_Part2(Canvas, rakelMappedInfo, rakelEmitSR, 0);
+        Rakel.CalculateRakelMappedInfo_Part2(Canvas, rakelMappedInfo, rakelEmitSR, EMIT_DIST_MAX, EMIT_VOLUME_MIN);
 
 
         // Act
@@ -191,7 +194,7 @@ public class TestEmitFromRakel
 
         ComputeBuffer rakelMappedInfo = Rakel.CalculateRakelMappedInfo(rakelEmitSR, Canvas);
         Rakel.Reservoir.DoImprintCopy();
-        Rakel.CalculateRakelMappedInfo_Part2(Canvas, rakelMappedInfo, rakelEmitSR, 0);
+        Rakel.CalculateRakelMappedInfo_Part2(Canvas, rakelMappedInfo, rakelEmitSR, EMIT_DIST_MAX, EMIT_VOLUME_MIN);
 
 
         // Act
@@ -245,7 +248,7 @@ public class TestEmitFromRakel
 
         ComputeBuffer rakelMappedInfo = Rakel.CalculateRakelMappedInfo(rakelEmitSR, Canvas);
         Rakel.Reservoir.DoImprintCopy();
-        Rakel.CalculateRakelMappedInfo_Part2(Canvas, rakelMappedInfo, rakelEmitSR, 0);
+        Rakel.CalculateRakelMappedInfo_Part2(Canvas, rakelMappedInfo, rakelEmitSR, EMIT_DIST_MAX, EMIT_VOLUME_MIN);
 
 
         // Act

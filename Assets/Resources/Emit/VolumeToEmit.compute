@@ -16,7 +16,7 @@ uint3 CanvasReservoirSize;
 RWStructuredBuffer<MappedInfo> RakelMappedInfo;
 
 int2 ReservoirPixelEmitRadius;
-// float EmitDistance_MAX;
+float EmitDistance_MAX;
 float EmitVolume_MIN;
 
 // RWStructuredBuffer<float> DistortionMap;
@@ -51,13 +51,15 @@ float volume_to_emit_(int2 radius, int2 canvas_pixel)
     float paint_thickness_rakel = volume_rakel * VOLUME_THICKNESS();
     float paint_thickness_canvas = volume_canvas * VOLUME_THICKNESS();
     float surface_distance = rakel_mapped_info.distance - paint_thickness_rakel - paint_thickness_canvas;
-    bool surfaces_touch = surface_distance <= 0;
+
+    Rakel rakel = RakelInfo[0];
+
+    float gravity_distance = sin(radians(rakel.tilt)) * EmitDistance_MAX;
+    bool surfaces_touch = surface_distance <= gravity_distance;
 
     float volume_to_emit = 0;
     if (surfaces_touch)
     {
-        Rakel rakel = RakelInfo[0];
-
         // TODO adjust this, when implementing dried paint
         float rakel_edge_distance_from_canvas = abs(rakel.edge_z - CanvasPositionZ);
         float rakel_edge_distance_from_canvas_paint_surface = rakel_edge_distance_from_canvas - paint_thickness_canvas;
