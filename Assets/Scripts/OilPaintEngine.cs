@@ -497,17 +497,17 @@ public class OilPaintEngine : MonoBehaviour
     public void DoMacro2Action()
     {
         UpdateRakelLength(8);
-        Rakel.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumYellow, Config.ColorSpace), new PerlinVolumeFiller(1, 15)));
+        Rakel.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumYellow, Config.ColorSpace), new PerlinVolumeFiller(1, 10)));
 
-        InputInterpolator.NewStroke(Config.RakelConfig.TiltNoiseEnabled, Config.RakelConfig.TiltNoiseFrequency, Config.RakelConfig.TiltNoiseAmplitude, Config.TransferConfig.CanvasSnapshotBufferEnabled);
+        InputInterpolator.NewStroke(Config.RakelConfig.TiltNoiseEnabled, Config.RakelConfig.TiltNoiseFrequency, Config.RakelConfig.TiltNoiseAmplitude, Config.TransferConfig.FloatingZLength, Config.TransferConfig.CanvasSnapshotBufferEnabled);
         InputInterpolator.AddNode(
-            new Vector3(-3, 0, -0.10f), 1, 0.1f,
+            new Vector3(-3, 0, -0.10f), 1, 0.5f,
             0,
             6,
             Config.TransferConfig,
             Config.TextureResolution);
         InputInterpolator.AddNode(
-            new Vector3(3, 0, -0.10f), 1, 0.1f,
+            new Vector3(3, 0, -0.10f), 1, 0.5f,
             0,
             6,
             Config.TransferConfig,
