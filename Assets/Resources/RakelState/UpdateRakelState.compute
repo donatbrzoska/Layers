@@ -2,6 +2,7 @@
 
 #include "../rakel.hlsl"
 #include "../math.hlsl"
+#include "../floating_avg.hlsl"
 
 float3 Position;
 int AutoZEnabled;
@@ -13,6 +14,10 @@ float MAX_SUPPORTED_TILT;
 float BaseSink_MAX;
 float LayerSink_MAX_Ratio;
 float TiltSink_MAX;
+
+int FinalUpdateForStroke;
+RWStructuredBuffer<float> PositionZAvgRingbuffer;
+int StrokeBegin;
 
 RWStructuredBuffer<Rakel> RakelInfo;
 
@@ -57,6 +62,11 @@ void main (uint3 id_ : SV_DispatchThreadID)
             // TODO include canvas position -> this would also require info about the direction the canvas is oriented
             // TODO include anchor ratio, right now this only works for anchors located on rakel edge
             rakel.position.z = min(rakel.position.z, 0);
+
+            if (FinalUpdateForStroke == 1)
+            {
+                rakel.position.z = floating_avg(PositionZAvgRingbuffer, StrokeBegin, rakel.position.z);
+            }
 
             rakel.position = float3(Position.x, Position.y, rakel.position.z);
         }

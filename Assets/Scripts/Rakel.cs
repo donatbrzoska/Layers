@@ -44,6 +44,7 @@ public class Rakel
 
     public ComputeBuffer InfoBuffer;
     public RakelInfo Info;
+    private ComputeBuffer PositionZAvgRingbuffer;
     ComputeBuffer ReducedCanvasVolume;
     ComputeBuffer ReducedRakelVolume;
 
@@ -96,7 +97,7 @@ public class Rakel
         ReducedRakelVolume.SetData(reducedVolumeData);
     }
 
-    public void NewStroke(bool tiltNoiseEnabled, float tiltNoiseFrequency, float tiltNoiseAmplitude)
+    public void NewStroke(bool tiltNoiseEnabled, float tiltNoiseFrequency, float tiltNoiseAmplitude, float floatingZLength)
     {
         StrokeBegin = true;
 
@@ -106,6 +107,19 @@ public class Rakel
             CurrentStrokeLength = 0;
             TiltNoise = new NoiseFilter1D(tiltNoiseFrequency, tiltNoiseAmplitude);
         }
+
+        int positionZAvgRingbufferSize = floatingZLength > 0 ? (int)(Reservoir.Resolution * floatingZLength) : 1;
+        // this is actually a struct:
+        // - float CurrentAvg;
+        // - int Pointer;
+        // - int Size;
+        // - float[SIZE] Elements;
+        // we don't do an actual struct, because then we can't parametrize SIZE dynamically
+        PositionZAvgRingbuffer?.Dispose();
+        PositionZAvgRingbuffer = new ComputeBuffer(3 + positionZAvgRingbufferSize, sizeof(float));
+        float[] positionZAvgRingbufferData = new float[3 + positionZAvgRingbufferSize];
+        positionZAvgRingbufferData[2] = positionZAvgRingbufferSize; // set size, rest is initialized in shader
+        PositionZAvgRingbuffer.SetData(positionZAvgRingbufferData);
 
         //float[] distortionMapData = new float[DistortionMapSize.x * DistortionMapSize.y];
 
@@ -140,7 +154,7 @@ public class Rakel
         return oldValue;
     }
 
-    public void UpdateState(Vector3 position, float baseSink_MAX, float layerSink_MAX_Ratio, float tiltSink_MAX, int autoZEnabled, int zZero, float pressure, float rotation, float tilt)
+    public void UpdateState(Vector3 position, float baseSink_MAX, float layerSink_MAX_Ratio, float tiltSink_MAX, int autoZEnabled, int zZero, int finalUpdateForStroke, float pressure, float rotation, float tilt)
     {
         Vector2 previousPosition = new Vector2(Info.Position.x, Info.Position.y);
         Vector2 newPosition = new Vector2(position.x, position.y);
@@ -203,6 +217,10 @@ public class Rakel
                 new CSFloat("BaseSink_MAX", baseSink_MAX),
                 new CSFloat("LayerSink_MAX_Ratio", layerSink_MAX_Ratio),
                 new CSFloat("TiltSink_MAX", tiltSink_MAX),
+
+                new CSInt("FinalUpdateForStroke", finalUpdateForStroke),
+                new CSComputeBuffer("PositionZAvgRingbuffer", PositionZAvgRingbuffer),
+                new CSInt("StrokeBegin", StrokeBegin ? 1 : 0),
 
                 new CSComputeBuffer("RakelInfo", InfoBuffer),
             },
@@ -321,7 +339,7 @@ public class Rakel
                 ).Run();
                 // reset Z so that distance between rakel edge and canvas is 0
                 // (simplifies overshoot calculation)
-                UpdateState(Info.Position, baseSink_MAX, layerSink_MAX_Ratio, tiltSink_MAX, Info.AutoZEnabled, 1, Info.Pressure, Info.Rotation, Info.Tilt);
+                UpdateState(Info.Position, baseSink_MAX, layerSink_MAX_Ratio, tiltSink_MAX, Info.AutoZEnabled, 1, 0, Info.Pressure, Info.Rotation, Info.Tilt);
                 new ComputeShaderTask(
                     "Emit/DistanceFromRakel",
                     emitSR,
@@ -371,7 +389,7 @@ public class Rakel
                 ).Run();
 
                 // position base z was updated, so we need to recalculate
-                UpdateState(Info.Position, baseSink_MAX, layerSink_MAX_Ratio, tiltSink_MAX, Info.AutoZEnabled, 0, Info.Pressure, Info.Rotation, Info.Tilt);
+                UpdateState(Info.Position, baseSink_MAX, layerSink_MAX_Ratio, tiltSink_MAX, Info.AutoZEnabled, 0, 1, Info.Pressure, Info.Rotation, Info.Tilt);
             }
         }
 
@@ -504,6 +522,7 @@ public class Rakel
     {
         Reservoir.Dispose();
         InfoBuffer.Dispose();
+        PositionZAvgRingbuffer?.Dispose();
         DistortionMap.Dispose();
 
         ReducedCanvasVolume.Dispose();

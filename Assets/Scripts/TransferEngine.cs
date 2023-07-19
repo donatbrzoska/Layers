@@ -85,10 +85,10 @@ public class TransferEngine
     }
 
     public void NewStroke (
-        Rakel rakel, bool tiltNoiseEnabled, float tiltNoiseFrequency, float tiltNoiseAmplitude,
+        Rakel rakel, bool tiltNoiseEnabled, float tiltNoiseFrequency, float tiltNoiseAmplitude, float floatingZLength,
         Canvas_ canvas, bool csbEnabled)
     {
-        rakel.NewStroke(tiltNoiseEnabled, tiltNoiseFrequency, tiltNoiseAmplitude);
+        rakel.NewStroke(tiltNoiseEnabled, tiltNoiseFrequency, tiltNoiseAmplitude, floatingZLength);
 
         if (csbEnabled)
         {
@@ -118,7 +118,8 @@ public class TransferEngine
 
         //Debug.Log("Applying at x=" + wsc.MapToPixel(rakelPosition));
 
-        rakel.UpdateState(rakelPosition, transferConfig.BaseSink_MAX, transferConfig.LayerSink_MAX_Ratio, transferConfig.TiltSink_MAX, autoZEnabled, 0, rakelPressure, rakelRotation, rakelTilt);
+        int finalUpdateForStroke = autoZEnabled == 1 ? 0 : 1; // (when auto Z is disabled, RecalculatePositionBaseZ won't do anything)
+        rakel.UpdateState(rakelPosition, transferConfig.BaseSink_MAX, transferConfig.LayerSink_MAX_Ratio, transferConfig.TiltSink_MAX, autoZEnabled, 0, finalUpdateForStroke, rakelPressure, rakelRotation, rakelTilt);
 
         ShaderRegion canvasEmitSR = rakel.Reservoir.GetFullShaderRegion();
 

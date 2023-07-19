@@ -167,6 +167,7 @@ public class OilPaintEngine : MonoBehaviour
                         Config.RakelConfig.TiltNoiseEnabled,
                         Config.RakelConfig.TiltNoiseFrequency,
                         Config.RakelConfig.TiltNoiseAmplitude,
+                        Config.TransferConfig.FloatingZLength,
                         Config.TransferConfig.CanvasSnapshotBufferEnabled);
                 }
 

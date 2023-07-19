@@ -186,6 +186,7 @@ public class TransferConfiguration
 {
     public bool ReadjustZToRakelVolume;
     public bool ReadjustZToCanvasVolume;
+    public float FloatingZLength;
 
     public bool CanvasSnapshotBufferEnabled;
     public bool DeletePickedUpFromCSB;
@@ -208,6 +209,7 @@ public class TransferConfiguration
     {
         ReadjustZToRakelVolume = true;
         ReadjustZToCanvasVolume = true;
+        FloatingZLength = 0.5f;
 
         CanvasSnapshotBufferEnabled = true;
         DeletePickedUpFromCSB = true;
