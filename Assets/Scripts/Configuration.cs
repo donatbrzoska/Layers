@@ -227,7 +227,7 @@ public class TransferConfiguration
         LayerThickness_MAX = 4 * Paint.VOLUME_THICKNESS;
 
         BaseSink_MAX = 1 * Paint.VOLUME_THICKNESS;
-        LayerSink_MAX_Ratio = 1;
+        LayerSink_MAX_Ratio = 0.9f;
         TiltSink_MAX = 6 * Paint.VOLUME_THICKNESS;
     }
 }
