@@ -18,11 +18,11 @@ public class TestApplyFloatingAvg
         AvgRingbuffer.SetData(AvgRingbufferData);
 
         new ComputeShaderTask(
-            "RakelState/ApplyFloatingAvg",
+            "Tests/TestFloatingAvg",
             new ShaderRegion(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
             new List<CSAttribute>()
             {
-                    new CSComputeBuffer("ReducedVolumeSource", Volume),
+                    new CSComputeBuffer("ValueSourceSink", Volume),
 
                     new CSComputeBuffer("AvgRingbuffer", AvgRingbuffer),
                     new CSInt("StrokeBegin", StrokeBegin ? 1 : 0)
