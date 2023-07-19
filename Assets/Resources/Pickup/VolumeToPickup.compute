@@ -18,6 +18,7 @@ uint3 CanvasReservoirSize;
 
 float PickupDistance_MAX;
 float PickupVolume_MIN;
+uint PaintDoesPickup;
 
 
 // radius of 1 does an emit on a 3x3 area from emit source grid, based on the rounded canvas_reservoir_pixel
@@ -46,7 +47,11 @@ float volume_to_pickup_(int2 radius, int2 rakel_pixel)
     }
     float paint_thickness_rakel = volume_rakel * VOLUME_THICKNESS();
     float paint_thickness_canvas = volume_canvas * VOLUME_THICKNESS();
-    float surface_distance = canvasMappedInfo.distance - paint_thickness_rakel - paint_thickness_canvas;
+    float surface_distance = canvasMappedInfo.distance - paint_thickness_canvas;
+    if (PaintDoesPickup == 1)
+    {
+        surface_distance -= paint_thickness_rakel;
+    }
 
     Rakel rakel = RakelInfo[0];
 

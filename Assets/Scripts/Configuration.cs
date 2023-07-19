@@ -193,6 +193,8 @@ public class TransferConfiguration
     public float EmitVolume_MIN;
     public float PickupVolume_MIN;
 
+    public bool PaintDoesPickup;
+
     public float LayerThickness_MAX;
 
     public float BaseSink_MAX;
@@ -213,6 +215,8 @@ public class TransferConfiguration
 
         EmitVolume_MIN = 0.1f;
         PickupVolume_MIN = 0.1f;
+
+        PaintDoesPickup = true;
 
         LayerThickness_MAX = 4 * Paint.VOLUME_THICKNESS;
 

@@ -87,7 +87,8 @@ public class Canvas_
         float pickupVolume_MIN,
         ShaderRegion emitShaderRegion,
         bool canvasSnapshotBufferEnabled,
-        bool deletePickedUpFromCSB)
+        bool deletePickedUpFromCSB,
+        bool paintDoesPickup)
     {
         ComputeBuffer canvasMappedInfo = new ComputeBuffer(pickupShaderRegion.PixelCount, MappedInfo.SizeInBytes);
         MappedInfo[] canvasMappedInfoData = new MappedInfo[pickupShaderRegion.PixelCount];
@@ -182,6 +183,7 @@ public class Canvas_
 
                 new CSFloat("PickupDistance_MAX", pickupDistance_MAX),
                 new CSFloat("PickupVolume_MIN", pickupVolume_MIN),
+                new CSInt("PaintDoesPickup", paintDoesPickup ? 1 : 0),
             },
             false
         ).Run();

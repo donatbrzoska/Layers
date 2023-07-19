@@ -437,6 +437,11 @@ public class OilPaintEngine : MonoBehaviour
         Config.TransferConfig.DeletePickedUpFromCSB = value;
     }
 
+    public void UpdatePaintDoesPickup(bool value)
+    {
+        Config.TransferConfig.PaintDoesPickup = value;
+    }
+
     public void UpdateEmitDistance_MAX(float value)
     {
         Config.TransferConfig.EmitDistance_MAX = value;

@@ -15,6 +15,7 @@ public class TestEmitFromCanvas
 
     private const bool CSB_ENABLED = false;
     private const bool CSB_DELETE = false;
+    private const bool PAINT_DOES_PICKUP = false;
 
     private const float CELL_VOLUME = 1;
     private const int DIFFUSE_DEPTH = 0;
@@ -107,7 +108,7 @@ public class TestEmitFromCanvas
             canvasEmitSR,
             PICKUP_DIST_MAX, PICKUP_VOLUME_MIN,
             Canvas.Reservoir.GetFullShaderRegion(),
-            CSB_ENABLED, CSB_DELETE);
+            CSB_ENABLED, CSB_DELETE, PAINT_DOES_PICKUP);
 
 
         // Assert
@@ -148,7 +149,7 @@ public class TestEmitFromCanvas
             canvasEmitSR,
             PICKUP_DIST_MAX, PICKUP_VOLUME_MIN,
             Canvas.Reservoir.GetFullShaderRegion(),
-            CSB_ENABLED, CSB_DELETE);
+            CSB_ENABLED, CSB_DELETE, PAINT_DOES_PICKUP);
 
 
         // Assert
@@ -204,7 +205,7 @@ public class TestEmitFromCanvas
             canvasEmitSR,
             PICKUP_DIST_MAX, PICKUP_VOLUME_MIN,
             Canvas.Reservoir.GetFullShaderRegion(),
-            CSB_ENABLED, CSB_DELETE);
+            CSB_ENABLED, CSB_DELETE, PAINT_DOES_PICKUP);
 
 
         // Assert
@@ -287,7 +288,7 @@ public class TestEmitFromCanvas
             canvasEmitSR,
             PICKUP_DIST_MAX, PICKUP_VOLUME_MIN,
             Canvas.Reservoir.GetFullShaderRegion(),
-            CSB_ENABLED, CSB_DELETE);
+            CSB_ENABLED, CSB_DELETE, PAINT_DOES_PICKUP);
 
 
         // Assert
@@ -379,7 +380,7 @@ public class TestEmitFromCanvas
             canvasEmitSR,
             PICKUP_DIST_MAX, PICKUP_VOLUME_MIN,
             Canvas.Reservoir.GetFullShaderRegion(),
-            CSB_ENABLED, CSB_DELETE);
+            CSB_ENABLED, CSB_DELETE, PAINT_DOES_PICKUP);
 
 
         // Assert
