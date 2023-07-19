@@ -4,14 +4,14 @@ using UnityEngine;
 public class AutoRotation
 {
     private Vector2 PreviousPosition;
-    private Queue<Vector2> PreviousPositions;
+    private Queue<Vector2> PreviousDirections;
     private const int ATTENTION_LENGTH = 20;
 
     public float Value;
 
     public AutoRotation()
     {
-        PreviousPositions = new Queue<Vector2>();
+        PreviousDirections = new Queue<Vector2>();
     }
 
     public void Update(Vector2 currentPosition)
@@ -19,17 +19,18 @@ public class AutoRotation
         bool enoughDifference = (PreviousPosition - currentPosition).magnitude > 0.05;
         if (enoughDifference)
         {
-            PreviousPositions.Enqueue(currentPosition);
-            if (PreviousPositions.Count > ATTENTION_LENGTH)
+            Vector2 currentDirection = currentPosition - PreviousPosition;
+
+            PreviousDirections.Enqueue(currentDirection);
+            if (PreviousDirections.Count > ATTENTION_LENGTH)
             {
-                PreviousPositions.Dequeue();
+                PreviousDirections.Dequeue();
             }
 
             Vector2 direction = Vector2.zero;
-            foreach (Vector2 p in PreviousPositions)
+            foreach (Vector2 d in PreviousDirections)
             {
-                Vector2 currentDirection = currentPosition - p;
-                direction += currentDirection / PreviousPositions.Count;
+                direction += d;
             }
             Value = MathUtil.Angle360(Vector2.right, direction);
 
