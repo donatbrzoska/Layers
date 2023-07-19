@@ -1130,7 +1130,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Lock
+  m_Text: "\U0001F512Lock"
 --- !u!222 &78201585
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -5679,8 +5679,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 46.923798, y: -23.000004}
-  m_SizeDelta: {x: 63.0967, y: 26.5}
+  m_AnchoredPosition: {x: 46.59918, y: -23.000004}
+  m_SizeDelta: {x: 62.4475, y: 26.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &594670703
 MonoBehaviour:
@@ -19099,8 +19099,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 24.7, y: -29}
-  m_SizeDelta: {x: 95.6491, y: 26.5}
+  m_AnchoredPosition: {x: 1.8256, y: -28.7275}
+  m_SizeDelta: {x: 49.9002, y: 25.955}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2134330261
 MonoBehaviour:
