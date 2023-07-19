@@ -271,6 +271,8 @@ public class Rakel
         Canvas_ canvas,
         ComputeBuffer rakelMappedInfo,
         ShaderRegion emitSR,
+        bool readjustZToRakelVolume,
+        bool readjustZToCanvasVolume,
         float layerThickness_MAX,
         float baseSink_MAX,
         float layerSink_MAX_Ratio,
@@ -283,26 +285,30 @@ public class Rakel
                 // only snapshot will be used for paint height calculation
                 // -> newly applied paint does not have an impact
                 canvas.Reservoir.SnapshotInfo();
-                StrokeBegin = false;
             }
 
             // reduce canvas volume
-            canvas.Reservoir.CopySnapshotActiveInfoVolumesToWorkspace(
-                rakelMappedInfo,
-                new Vector2Int(Reservoir.Size.x, Reservoir.Size.y),
-                emitSR);
-            canvas.Reservoir.ReduceActiveWorkspaceAvg(
-                rakelMappedInfo,
-                new Vector2Int(Reservoir.Size.x, Reservoir.Size.y),
-                emitSR,
-                ReducedCanvasVolume);
+            if (StrokeBegin || readjustZToCanvasVolume)
+            {
+                canvas.Reservoir.CopySnapshotActiveInfoVolumesToWorkspace(
+                    rakelMappedInfo,
+                    new Vector2Int(Reservoir.Size.x, Reservoir.Size.y),
+                    emitSR);
+                canvas.Reservoir.ReduceActiveWorkspaceAvg(
+                    rakelMappedInfo,
+                    new Vector2Int(Reservoir.Size.x, Reservoir.Size.y),
+                    emitSR,
+                    ReducedCanvasVolume);
+            }
 
             // reduce rakel volume
-            new ComputeShaderTask(
-                "RakelState/WriteSampledRakelVolumesToWorkspace",
-                emitSR,
-                new List<CSAttribute>()
-                {
+            if (StrokeBegin || readjustZToRakelVolume)
+            {
+                new ComputeShaderTask(
+                    "RakelState/WriteSampledRakelVolumesToWorkspace",
+                    emitSR,
+                    new List<CSAttribute>()
+                    {
                     new CSComputeBuffer("RakelReservoirInfo", Reservoir.PaintGrid.Info),
                     new CSInt3("RakelReservoirSize", Reservoir.Size),
 
@@ -310,46 +316,49 @@ public class Rakel
                     new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
                     new CSComputeBuffer("Workspace", canvas.Reservoir.Workspace),
                     new CSInt3("WorkspaceSize", canvas.Reservoir.Size),
-                },
-                false
-            ).Run();
-            // reset Z so that distance between rakel edge and canvas is 0
-            // (simplifies overshoot calculation)
-            UpdateState(Info.Position, baseSink_MAX, layerSink_MAX_Ratio, tiltSink_MAX, Info.AutoZEnabled, 1, Info.Pressure, Info.Rotation, Info.Tilt);
-            new ComputeShaderTask(
-                "Emit/DistanceFromRakel",
-                emitSR,
-                new List<CSAttribute>()
-                {
+                    },
+                    false
+                ).Run();
+                // reset Z so that distance between rakel edge and canvas is 0
+                // (simplifies overshoot calculation)
+                UpdateState(Info.Position, baseSink_MAX, layerSink_MAX_Ratio, tiltSink_MAX, Info.AutoZEnabled, 1, Info.Pressure, Info.Rotation, Info.Tilt);
+                new ComputeShaderTask(
+                    "Emit/DistanceFromRakel",
+                    emitSR,
+                    new List<CSAttribute>()
+                    {
                 new CSComputeBuffer("RakelInfo", InfoBuffer),
 
                 new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
-                },
-                false
-            ).Run();
-            new ComputeShaderTask(
-                "RakelState/CalculateRakelVolumeOvershoot",
-                emitSR,
-                new List<CSAttribute>()
-                {
+                    },
+                    false
+                ).Run();
+                new ComputeShaderTask(
+                    "RakelState/CalculateRakelVolumeOvershoot",
+                    emitSR,
+                    new List<CSAttribute>()
+                    {
                     new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
                     new CSComputeBuffer("SampledRakelVolumes", canvas.Reservoir.Workspace),
                     new CSInt3("SampledRakelVolumesSize", canvas.Reservoir.Size),
-                },
-                false
-            ).Run();
-            canvas.Reservoir.ReduceActiveWorkspaceAvg(
-                rakelMappedInfo,
-                new Vector2Int(Reservoir.Size.x, Reservoir.Size.y),
-                emitSR,
-                ReducedRakelVolume);
+                    },
+                    false
+                ).Run();
+                canvas.Reservoir.ReduceActiveWorkspaceAvg(
+                    rakelMappedInfo,
+                    new Vector2Int(Reservoir.Size.x, Reservoir.Size.y),
+                    emitSR,
+                    ReducedRakelVolume);
+            }
 
-            // update rakel position base z
-            new ComputeShaderTask(
-                "RakelState/UpdateRakelPositionBaseZ",
-                new ShaderRegion(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
-                new List<CSAttribute>()
-                {
+            if (StrokeBegin || readjustZToCanvasVolume || readjustZToRakelVolume)
+            {
+                // update rakel position base z
+                new ComputeShaderTask(
+                    "RakelState/UpdateRakelPositionBaseZ",
+                    new ShaderRegion(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
+                    new List<CSAttribute>()
+                    {
                     new CSComputeBuffer("ReducedCanvasVolumeSource", ReducedCanvasVolume),
                     new CSComputeBuffer("ReducedRakelVolumeSource", ReducedRakelVolume),
 
@@ -357,13 +366,16 @@ public class Rakel
                     new CSFloat("MAX_SUPPORTED_TILT", MAX_SUPPORTED_TILT),
 
                     new CSComputeBuffer("RakelInfo", InfoBuffer),
-                },
-                false
-            ).Run();
+                    },
+                    false
+                ).Run();
 
-            // position base z was updated, so we need to recalculate
-            UpdateState(Info.Position, baseSink_MAX, layerSink_MAX_Ratio, tiltSink_MAX, Info.AutoZEnabled, 0, Info.Pressure, Info.Rotation, Info.Tilt);
+                // position base z was updated, so we need to recalculate
+                UpdateState(Info.Position, baseSink_MAX, layerSink_MAX_Ratio, tiltSink_MAX, Info.AutoZEnabled, 0, Info.Pressure, Info.Rotation, Info.Tilt);
+            }
         }
+
+        StrokeBegin = false;
     }
 
     public void CalculateRakelMappedInfo_Part2(

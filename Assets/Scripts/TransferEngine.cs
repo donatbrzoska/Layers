@@ -145,6 +145,8 @@ public class TransferEngine
             canvas,
             rakelMappedInfo,
             rakelEmitSR,
+            transferConfig.ReadjustZToRakelVolume,
+            transferConfig.ReadjustZToCanvasVolume,
             transferConfig.LayerThickness_MAX,
             transferConfig.BaseSink_MAX,
             transferConfig.LayerSink_MAX_Ratio,

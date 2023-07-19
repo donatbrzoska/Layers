@@ -184,6 +184,9 @@ public class FillConfiguration
 
 public class TransferConfiguration
 {
+    public bool ReadjustZToRakelVolume;
+    public bool ReadjustZToCanvasVolume;
+
     public bool CanvasSnapshotBufferEnabled;
     public bool DeletePickedUpFromCSB;
 
@@ -203,6 +206,9 @@ public class TransferConfiguration
 
     public TransferConfiguration()
     {
+        ReadjustZToRakelVolume = true;
+        ReadjustZToCanvasVolume = true;
+
         CanvasSnapshotBufferEnabled = true;
         DeletePickedUpFromCSB = true;
 
