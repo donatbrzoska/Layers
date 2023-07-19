@@ -11,7 +11,7 @@ public class PenRakelRotation : FloatValueSource
 
     public override void Update()
     {
-        AutoRotation.Update(Pen.current.position.ReadValue());
+        AutoRotation.Update(PenRakelPosition.Get());
         Value = AutoRotation.Value;
     }
 }

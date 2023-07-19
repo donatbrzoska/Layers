@@ -16,7 +16,7 @@ public class AutoRotation
 
     public void Update(Vector2 currentPosition)
     {
-        bool enoughDifference = (PreviousPosition - currentPosition).magnitude > 1;
+        bool enoughDifference = (PreviousPosition - currentPosition).magnitude > 0.05;
         if (enoughDifference)
         {
             PreviousPositions.Enqueue(currentPosition);

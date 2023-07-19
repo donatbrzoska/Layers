@@ -11,7 +11,7 @@ public class MouseRakelRotation : FloatValueSource
 
     public override void Update()
     {
-        AutoRotation.Update(Input.mousePosition);
+        AutoRotation.Update(MouseRakelPosition.Get());
         Value = AutoRotation.Value;
     }
 }
