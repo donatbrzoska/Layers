@@ -486,24 +486,34 @@ public class OilPaintEngine : MonoBehaviour
 
     public void DoMacroAction()
     {
-        //Rakel.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen, Configuration.ColorSpace), new FlatVolumeFiller(1)));
+        Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreenLight, Config.ColorSpace), new FlatVolumeFiller(1, 4)));
+        Canvas.Render(Canvas.Reservoir.GetFullShaderRegion());
 
-        //InputInterpolator.NewStroke();
-        //InputInterpolator.AddNode(
-        //    new Vector3(-3, 0, -0.10f), 0, 0,
-        //    0,
-        //    0,
-        //    Configuration.TransferConfiguration,
-        //    Configuration.TextureResolution);
-
-        int PRINTED_DEPTH = 1;
-        Canvas.Reservoir.PaintGrid.ReadbackContent();
-        LogUtil.Log(Canvas.Reservoir.PaintGrid.GetColors(), Canvas.Reservoir.Size, PRINTED_DEPTH, DebugListType.Float4, "Colors");
+        //int PRINTED_DEPTH = 1;
+        //Canvas.Reservoir.PaintGrid.ReadbackContent();
+        //LogUtil.Log(Canvas.Reservoir.PaintGrid.GetColors(), Canvas.Reservoir.Size, PRINTED_DEPTH, DebugListType.Float4, "Colors");
     }
 
     public void DoMacro2Action()
     {
-        Canvas.Reservoir.PaintGrid.ReadbackInfo();
-        LogUtil.Log(Canvas.Reservoir.PaintGrid.GetVolumes(), Canvas.Reservoir.Size.y);
+        UpdateRakelLength(8);
+        Rakel.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumYellow, Config.ColorSpace), new PerlinVolumeFiller(1, 15)));
+
+        InputInterpolator.NewStroke(Config.RakelConfig.TiltNoiseEnabled, Config.RakelConfig.TiltNoiseFrequency, Config.RakelConfig.TiltNoiseAmplitude, Config.TransferConfig.CanvasSnapshotBufferEnabled);
+        InputInterpolator.AddNode(
+            new Vector3(-3, 0, -0.10f), 1, 0.1f,
+            0,
+            6,
+            Config.TransferConfig,
+            Config.TextureResolution);
+        InputInterpolator.AddNode(
+            new Vector3(3, 0, -0.10f), 1, 0.1f,
+            0,
+            6,
+            Config.TransferConfig,
+            Config.TextureResolution);
+
+        //Canvas.Reservoir.PaintGrid.ReadbackInfo();
+        //LogUtil.Log(Canvas.Reservoir.PaintGrid.GetVolumes(), Canvas.Reservoir.Size.y);
     }
 }
