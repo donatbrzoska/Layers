@@ -276,16 +276,16 @@ public class Rakel
         float layerSink_MAX_Ratio,
         float tiltSink_MAX)
     {
-        if (StrokeBegin)
-        {
-            // only snapshot will be used for paint height calculation
-            // -> newly applied paint does not have an impact
-            canvas.Reservoir.SnapshotInfo();
-            StrokeBegin = false;
-        }
-
         if (Info.AutoZEnabled == 1)
         {
+            if (StrokeBegin)
+            {
+                // only snapshot will be used for paint height calculation
+                // -> newly applied paint does not have an impact
+                canvas.Reservoir.SnapshotInfo();
+                StrokeBegin = false;
+            }
+
             // reduce canvas volume
             canvas.Reservoir.CopySnapshotActiveInfoVolumesToWorkspace(
                 rakelMappedInfo,
