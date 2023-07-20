@@ -154,7 +154,7 @@ public class Rakel
         return oldValue;
     }
 
-    public void UpdateState(Vector3 position, float baseSink_MAX, float layerSink_MAX_Ratio, float tiltSink_MAX, int autoZEnabled, int zZero, int finalUpdateForStroke, float pressure, float rotation, float tilt)
+    public void UpdateState(Vector3 position, float baseSink_MAX, float layerSink_MAX_Ratio, float tiltSink_MAX, bool autoZEnabled, bool zZero, bool finalUpdateForStroke, float pressure, float rotation, float tilt)
     {
         Vector2 previousPosition = new Vector2(Info.Position.x, Info.Position.y);
         Vector2 newPosition = new Vector2(position.x, position.y);
@@ -163,7 +163,7 @@ public class Rakel
 
         // Update info on CPU for rakel rendering
         Info.Position = position;
-        Info.AutoZEnabled = autoZEnabled;
+        Info.AutoZEnabled = Cast.BoolToInt(autoZEnabled);
         Info.Pressure = pressure;
         Info.Rotation = rotation;
         if (TiltNoiseEnabled)
@@ -209,7 +209,7 @@ public class Rakel
             {
                 new CSFloat3("Position", Info.Position),
                 new CSInt("AutoZEnabled", Info.AutoZEnabled),
-                new CSInt("ZZero", zZero),
+                new CSInt("ZZero", Cast.BoolToInt(zZero)),
                 new CSFloat("Pressure", Info.Pressure),
                 new CSFloat("Rotation", Info.Rotation),
                 new CSFloat("Tilt", Info.Tilt),
@@ -218,9 +218,9 @@ public class Rakel
                 new CSFloat("LayerSink_MAX_Ratio", layerSink_MAX_Ratio),
                 new CSFloat("TiltSink_MAX", tiltSink_MAX),
 
-                new CSInt("FinalUpdateForStroke", finalUpdateForStroke),
+                new CSInt("FinalUpdateForStroke", Cast.BoolToInt(finalUpdateForStroke)),
                 new CSComputeBuffer("PositionZAvgRingbuffer", PositionZAvgRingbuffer),
-                new CSInt("StrokeBegin", StrokeBegin ? 1 : 0),
+                new CSInt("StrokeBegin", Cast.BoolToInt(StrokeBegin)),
 
                 new CSComputeBuffer("RakelInfo", InfoBuffer),
             },
@@ -339,7 +339,7 @@ public class Rakel
                 ).Run();
                 // reset Z so that distance between rakel edge and canvas is 0
                 // (simplifies overshoot calculation)
-                UpdateState(Info.Position, baseSink_MAX, layerSink_MAX_Ratio, tiltSink_MAX, Info.AutoZEnabled, 1, 0, Info.Pressure, Info.Rotation, Info.Tilt);
+                UpdateState(Info.Position, baseSink_MAX, layerSink_MAX_Ratio, tiltSink_MAX, Cast.IntToBool(Info.AutoZEnabled), true, false, Info.Pressure, Info.Rotation, Info.Tilt);
                 new ComputeShaderTask(
                     "Emit/DistanceFromRakel",
                     emitSR,
@@ -389,7 +389,7 @@ public class Rakel
                 ).Run();
 
                 // position base z was updated, so we need to recalculate
-                UpdateState(Info.Position, baseSink_MAX, layerSink_MAX_Ratio, tiltSink_MAX, Info.AutoZEnabled, 0, 1, Info.Pressure, Info.Rotation, Info.Tilt);
+                UpdateState(Info.Position, baseSink_MAX, layerSink_MAX_Ratio, tiltSink_MAX, Cast.IntToBool(Info.AutoZEnabled), false, true, Info.Pressure, Info.Rotation, Info.Tilt);
             }
         }
 

@@ -31,7 +31,7 @@ public class InputInterpolator
         TransferEngine.NewStroke(Rakel, tiltNoiseEnabled, tiltNoiseFrequency, tiltNoiseAmplitude, floatingZLength, Canvas, csbEnabled);
     }
 
-    public void AddNode(Vector3 rakelPosition, int autoZEnabled, float rakelPressure, float rakelRotation, float rakelTilt, TransferConfiguration transferConfig, int interpolationResolution)
+    public void AddNode(Vector3 rakelPosition, bool autoZEnabled, float rakelPressure, float rakelRotation, float rakelTilt, TransferConfiguration transferConfig, int interpolationResolution)
     {
         // only reapply if there are changes
         if (!rakelPosition.Equals(PreviousRakelPosition)

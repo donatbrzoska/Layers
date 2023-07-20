@@ -4,7 +4,7 @@ using UnityEngine;
 public struct SimulationStep
 {
     public Vector3 RakelPosition;
-    public int AutoZEnabled;
+    public bool AutoZEnabled;
     public float RakelPressure;
     public float RakelRotation;
     public float RakelTilt;
@@ -12,7 +12,7 @@ public struct SimulationStep
     public Rakel Rakel;
     public Canvas_ Canvas;
 
-    public SimulationStep(Vector3 rakelPosition, int autoZEnabled, float rakelPressure, float rakelRotation, float rakelTilt,
+    public SimulationStep(Vector3 rakelPosition, bool autoZEnabled, float rakelPressure, float rakelRotation, float rakelTilt,
         TransferConfiguration transferConfig, Rakel rakel, Canvas_ canvas)
     {
         RakelPosition = rakelPosition;
@@ -43,7 +43,7 @@ public class TransferEngine
     }
 
     public void EnqueueOrRun(
-        Vector3 rakelPosition, int autoZEnabled, float rakelPressure, float rakelRotation, float rakelTilt,
+        Vector3 rakelPosition, bool autoZEnabled, float rakelPressure, float rakelRotation, float rakelTilt,
         TransferConfiguration transferConfig,
         Rakel rakel,
         Canvas_ canvas)
@@ -100,7 +100,7 @@ public class TransferEngine
     // Rotation 0 means Rakel is directed to the right
     // Tilt 0 means Rakel is parallel to canvas
     public void SimulateStep(
-        Vector3 rakelPosition, int autoZEnabled, float rakelPressure, float rakelRotation, float rakelTilt,
+        Vector3 rakelPosition, bool autoZEnabled, float rakelPressure, float rakelRotation, float rakelTilt,
         TransferConfiguration transferConfig,
         Rakel rakel,
         Canvas_ canvas)
@@ -118,8 +118,8 @@ public class TransferEngine
 
         //Debug.Log("Applying at x=" + wsc.MapToPixel(rakelPosition));
 
-        int finalUpdateForStroke = autoZEnabled == 1 ? 0 : 1; // (when auto Z is disabled, RecalculatePositionBaseZ won't do anything)
-        rakel.UpdateState(rakelPosition, transferConfig.BaseSink_MAX, transferConfig.LayerSink_MAX_Ratio, transferConfig.TiltSink_MAX, autoZEnabled, 0, finalUpdateForStroke, rakelPressure, rakelRotation, rakelTilt);
+        bool finalUpdateForStroke = !autoZEnabled; // (when auto Z is disabled, RecalculatePositionBaseZ won't do anything)
+        rakel.UpdateState(rakelPosition, transferConfig.BaseSink_MAX, transferConfig.LayerSink_MAX_Ratio, transferConfig.TiltSink_MAX, autoZEnabled, false, finalUpdateForStroke, rakelPressure, rakelRotation, rakelTilt);
 
         ShaderRegion canvasEmitSR = rakel.Reservoir.GetFullShaderRegion();
 

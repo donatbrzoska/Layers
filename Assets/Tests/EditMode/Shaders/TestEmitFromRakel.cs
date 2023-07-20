@@ -7,9 +7,9 @@ public class TestEmitFromRakel
     private float BASE_SINK_MAX = 0;
     private float LAYER_SINK_MAX_RATIO = 0;
     private float TILT_SINK_MAX = 0;
-    private const int AUTO_Z_ENABLED = 0;
-    private const int ZZERO = 0;
-    private const int FINAL_UPDATE_FOR_STROKE = 1;
+    private const bool AUTO_Z_ENABLED = false;
+    private const bool ZZERO = false;
+    private const bool FINAL_UPDATE_FOR_STROKE = true;
     private const float PRESSURE = 0;
 
     private float EMIT_DIST_MAX = 0;

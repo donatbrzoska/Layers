@@ -147,7 +147,7 @@ public class OilPaintEngine : MonoBehaviour
                 float y = Random.Range(-3f, 3f);
                 TransferEngine.SimulateStep(
                     new Vector3(x, y, 0),
-                    0,
+                    false,
                     0,
                     0,
                     0,
@@ -175,7 +175,7 @@ public class OilPaintEngine : MonoBehaviour
                 if (InputManager.InStroke)
                 {
                     Vector3 position = new Vector3(InputManager.RakelPositionX, InputManager.RakelPositionY, InputManager.RakelPositionZ);
-                    int autoZEnabled = Config.InputConfig.RakelPositionZ.Source != InputSourceType.Text ? 1 : 0;
+                    bool autoZEnabled = Config.InputConfig.RakelPositionZ.Source != InputSourceType.Text ? true : false;
                     float pressure = InputManager.RakelPressure;
                     float rotation = InputManager.RakelRotation;
                     float tilt = InputManager.RakelTilt;
@@ -503,13 +503,13 @@ public class OilPaintEngine : MonoBehaviour
 
         InputInterpolator.NewStroke(Config.RakelConfig.TiltNoiseEnabled, Config.RakelConfig.TiltNoiseFrequency, Config.RakelConfig.TiltNoiseAmplitude, Config.TransferConfig.FloatingZLength, Config.TransferConfig.CanvasSnapshotBufferEnabled);
         InputInterpolator.AddNode(
-            new Vector3(-3, 0, -0.10f), 1, 0.5f,
+            new Vector3(-3, 0, -0.10f), true, 0.5f,
             0,
             6,
             Config.TransferConfig,
             Config.TextureResolution);
         InputInterpolator.AddNode(
-            new Vector3(3, 0, -0.10f), 1, 0.5f,
+            new Vector3(3, 0, -0.10f), true, 0.5f,
             0,
             6,
             Config.TransferConfig,
