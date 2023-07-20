@@ -527,12 +527,90 @@ public class OilPaintEngine : MonoBehaviour
     {
     }
 
+    private void DoBenchmark(Vector3 beginPosition, Vector3 endPosition, float rotation, float tilt)
+    {
+        // Parameters adjusted for windowed unity
+        STEPS_PER_FRAME = 200;
+        LAYERS_MAX = 50;
+
+        int LAYERS = 4;
+        bool AUTO_Z_ENABLED = false;
+        bool PICKUP_BENCHMARK = false;
+
+        Config.TextureResolution = 40;
+        Config.RakelConfig.Length = 4;
+        Config.RakelConfig.Width = 1;
+        Config.RakelConfig.TiltNoiseEnabled = false;
+        Config.TransferConfig.LayerThickness_MAX = LAYERS * Paint.VOLUME_THICKNESS;
+        Start();
+
+        if (PICKUP_BENCHMARK)
+        {
+            Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreenLight, Config.ColorSpace), new FlatVolumeFiller(1, 4)));
+            Canvas.Render(Canvas.Reservoir.GetFullShaderRegion());
+
+            AUTO_Z_ENABLED = false;
+            beginPosition.z = 0;
+            endPosition.z = 0;
+        }
+        else // EMIT BENCHMARK with option of no auto z
+        {
+            // NOTE that this only hits when AUTO_Z_ENABLED is false
+            beginPosition.z = -LAYERS * Paint.VOLUME_THICKNESS;
+            endPosition.z = -LAYERS * Paint.VOLUME_THICKNESS;
+
+            UpdateFillColor(Color_.CadmiumGreenLight);
+            UpdateFillVolume(100);
+            UpdateFillWidthPart(1);
+            FillApply();
+        }
+
+        InputInterpolator.NewStroke(
+            Config.RakelConfig.TiltNoiseEnabled,
+            Config.RakelConfig.TiltNoiseFrequency,
+            Config.RakelConfig.TiltNoiseAmplitude,
+            Config.TransferConfig.FloatingZLength,
+            Config.TransferConfig.CanvasSnapshotBufferEnabled);
+
+        InputInterpolator.AddNode(
+            beginPosition,
+            AUTO_Z_ENABLED,
+            0,
+            rotation,
+            tilt,
+            Config.TransferConfig,
+            Config.TextureResolution);
+
+        InputInterpolator.AddNode(
+            endPosition,
+            AUTO_Z_ENABLED,
+            0,
+            rotation,
+            tilt,
+            Config.TransferConfig,
+            Config.TextureResolution);
+    }
+
     public void DoMacro5Action()
     {
+        // straight
+        Vector3 startPosition = new Vector3(-7, 0, 0);
+        Vector3 endPosition = new Vector3(7, 0, 0);
+        float rotation = 0;
+        float tilt = 0;
+        //float tilt = 60;
+        //float tilt = 79;
+        DoBenchmark(startPosition, endPosition, rotation, tilt);
     }
 
     public void DoMacro6Action()
     {
+        // rotated diagonal
+        Vector3 startPosition = new Vector3(-4, 4, 0);
+        Vector3 endPosition = new Vector3(4, -4, 0);
+        float rotation = 45;
+        float tilt = 0;
+        DoBenchmark(startPosition, endPosition, rotation, tilt);
     }
 
     public void DoMacro7Action()
