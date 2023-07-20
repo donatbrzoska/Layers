@@ -167,7 +167,8 @@ public class TransferEngine
         if (transferConfig.CanvasSnapshotBufferEnabled)
         {
             // Keep canvas snapshot buffer (CSB) up to date:
-            // -> Copy any paint into CSB, that might get picked up in the next step
+            // -> Copy any paint into CSB, that might get picked up in the next
+            //    simulation step (not this one)
             // -> Padding of size of rakel reservoir is overkill in the most cases
             //    but also delivers update guarantee, no matter how the rakel is
             //    shaped and where the rakel anchor is located.
