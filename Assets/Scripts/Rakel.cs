@@ -44,10 +44,14 @@ public class Rakel
 
     public ComputeBuffer InfoBuffer;
     public RakelInfo Info;
-    private ComputeBuffer PositionZAvgRingbuffer;
-    private int PositionZAvgRingbufferSize;
     ComputeBuffer ReducedCanvasVolume;
     ComputeBuffer ReducedRakelVolume;
+
+    private const int RINGBUF_OFFSET = 3;
+    private ComputeBuffer PositionZAvgRingbuffer;
+    private int PositionZAvgRingbufferSize;
+    private ComputeBuffer VolumeToEmitAvgRingbuffer2D;
+    private Vector3Int VolumeToEmitAvgRingbuffer2DSize;
 
     public Reservoir Reservoir;
 
@@ -116,9 +120,21 @@ public class Rakel
         // - float[SIZE] Elements;
         // we don't do an actual struct, because then we can't parametrize SIZE dynamically
         PositionZAvgRingbuffer?.Dispose();
-        PositionZAvgRingbuffer = new ComputeBuffer(2 + PositionZAvgRingbufferSize, sizeof(float));
-        float[] positionZAvgRingbufferData = new float[2 + PositionZAvgRingbufferSize];
+        PositionZAvgRingbuffer = new ComputeBuffer(RINGBUF_OFFSET - 1 + PositionZAvgRingbufferSize, sizeof(float));
+        float[] positionZAvgRingbufferData = new float[RINGBUF_OFFSET - 1 + PositionZAvgRingbufferSize];
         PositionZAvgRingbuffer.SetData(positionZAvgRingbufferData);
+
+        float FLOATING_VOLUME_TO_EMIT_LENGTH = 0.5f;
+        VolumeToEmitAvgRingbuffer2DSize = new Vector3Int(
+            Reservoir.Size.x,
+            Reservoir.Size.y,
+            FLOATING_VOLUME_TO_EMIT_LENGTH > 0 ? (int)(Reservoir.Resolution * FLOATING_VOLUME_TO_EMIT_LENGTH) : 1);
+        VolumeToEmitAvgRingbuffer2D?.Dispose();
+        // 2D grid of ringbuffers
+        int flattenedSize = VolumeToEmitAvgRingbuffer2DSize.x * VolumeToEmitAvgRingbuffer2DSize.y * VolumeToEmitAvgRingbuffer2DSize.z;
+        VolumeToEmitAvgRingbuffer2D = new ComputeBuffer(flattenedSize, sizeof(float));
+        float[] volumeToEmitAvgRingbufferData = new float[flattenedSize];
+        VolumeToEmitAvgRingbuffer2D.SetData(volumeToEmitAvgRingbufferData);
 
         //float[] distortionMapData = new float[DistortionMapSize.x * DistortionMapSize.y];
 
@@ -392,8 +408,6 @@ public class Rakel
                 UpdateState(Info.Position, baseSink_MAX, layerSink_MAX_Ratio, tiltSink_MAX, Info.AutoZEnabled, 0, 1, Info.Pressure, Info.Rotation, Info.Tilt);
             }
         }
-
-        StrokeBegin = false;
     }
 
     public void CalculateRakelMappedInfo_Part2(
@@ -436,9 +450,15 @@ public class Rakel
                 //new CSComputeBuffer("DistortionMap", DistortionMap),
                 //new CSInt2("DistortionMapSize", DistortionMapSize),
                 //new CSInt("DistortionMapIndex", IncrementDistortionMapIndex()),
+
+                new CSComputeBuffer("VolumeToEmitAvgRingbuffer2D", VolumeToEmitAvgRingbuffer2D),
+                new CSInt3("VolumeToEmitAvgRingbuffer2DSize", VolumeToEmitAvgRingbuffer2DSize),
+                new CSInt("StrokeBegin", StrokeBegin ? 1 : 0),
             },
             false
         ).Run();
+
+        StrokeBegin = false;
     }
 
     public override string ToString()
@@ -523,6 +543,7 @@ public class Rakel
         Reservoir.Dispose();
         InfoBuffer.Dispose();
         PositionZAvgRingbuffer?.Dispose();
+        VolumeToEmitAvgRingbuffer2D?.Dispose();
         DistortionMap.Dispose();
 
         ReducedCanvasVolume.Dispose();

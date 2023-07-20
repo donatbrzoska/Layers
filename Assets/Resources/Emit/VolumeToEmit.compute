@@ -5,6 +5,7 @@
 #include "../rakel.hlsl"
 #include "../mapped_info.hlsl"
 #include "../paint_grid.hlsl"
+#include "../floating_avg.hlsl"
 
 RWStructuredBuffer<Rakel> RakelInfo;
 RWStructuredBuffer<ColumnInfo> RakelReservoirInfoDuplicate;
@@ -23,6 +24,9 @@ float EmitVolume_MIN;
 // uint2 DistortionMapSize;
 // uint DistortionMapIndex;
 
+RWStructuredBuffer<float> VolumeToEmitAvgRingbuffer2D;
+uint3 VolumeToEmitAvgRingbuffer2DSize;
+int StrokeBegin;
 
 // radius of 1 does an emit on a 3x3 area from emit source grid, based on the rounded rakel_reservoir_pixel
 float volume_to_emit_(int2 radius, int2 canvas_pixel)
@@ -91,6 +95,9 @@ void main (uint3 id_ : SV_DispatchThreadID)
         // calculate pixel position on canvas
         // was uint2 before, but negative values are possible due to padding and no prevention of that because it should not cause any more problems
         int2 canvas_pixel = id() + CalculationPosition;
-        RakelMappedInfo[XY(id().x, id().y, CalculationSize.x)].target_volume_to_transfer = volume_to_emit_(ReservoirPixelEmitRadius, canvas_pixel);
+
+        float volume_to_emit = volume_to_emit_(ReservoirPixelEmitRadius, canvas_pixel);
+        float floating_avg_volume_to_emit = floating_avg_2D(VolumeToEmitAvgRingbuffer2D, VolumeToEmitAvgRingbuffer2DSize, StrokeBegin, canvas_pixel, volume_to_emit);
+        RakelMappedInfo[XY(id().x, id().y, CalculationSize.x)].target_volume_to_transfer = floating_avg_volume_to_emit;
     }
 }
