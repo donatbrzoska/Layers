@@ -17,6 +17,7 @@ float TiltSink_MAX;
 
 int FinalUpdateForStroke;
 RWStructuredBuffer<float> PositionZAvgRingbuffer;
+int PositionZAvgRingbufferSize;
 int StrokeBegin;
 
 RWStructuredBuffer<Rakel> RakelInfo;
@@ -65,7 +66,7 @@ void main (uint3 id_ : SV_DispatchThreadID)
 
             if (FinalUpdateForStroke == 1)
             {
-                rakel.position.z = floating_avg(PositionZAvgRingbuffer, StrokeBegin, rakel.position.z);
+                rakel.position.z = floating_avg(PositionZAvgRingbuffer, PositionZAvgRingbufferSize, StrokeBegin, rakel.position.z);
             }
 
             rakel.position = float3(Position.x, Position.y, rakel.position.z);

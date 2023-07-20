@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class TestApplyFloatingAvg
 {
+    private const int RINGBUF_SIZE = 4;
+
     ComputeBuffer Volume;
     float[] VolumeData;
     ComputeBuffer AvgRingbuffer;
@@ -25,6 +27,7 @@ public class TestApplyFloatingAvg
                     new CSComputeBuffer("ValueSourceSink", Volume),
 
                     new CSComputeBuffer("AvgRingbuffer", AvgRingbuffer),
+                    new CSInt("AvgRingbufferSize", RINGBUF_SIZE),
                     new CSInt("StrokeBegin", StrokeBegin ? 1 : 0)
             },
             true
@@ -44,11 +47,9 @@ public class TestApplyFloatingAvg
     [Test]
     public void init()
     {
-        int RINGBUF_SIZE = 4;
-
         // Arrange
         VolumeData = new float[] { 2 };
-        AvgRingbufferData = new float[] { 0, 0, RINGBUF_SIZE, 0, 0, 0, 0 };
+        AvgRingbufferData = new float[] { 0, 0, 0, 0, 0, 0 };
         StrokeBegin = true;
 
         // Act
@@ -60,18 +61,16 @@ public class TestApplyFloatingAvg
             VolumeData);
 
         Assert.AreEqual(
-            new float[] { 2, 0, RINGBUF_SIZE, 2, 2, 2, 2 },
+            new float[] { 2, 0, 2, 2, 2, 2 },
             AvgRingbufferData);
     }
 
     [Test]
     public void new_value()
     {
-        int RINGBUF_SIZE = 4;
-
         // Arrange
         VolumeData = new float[] { 4 };
-        AvgRingbufferData = new float[] { 2, 0, RINGBUF_SIZE, 2, 2, 2, 2 };
+        AvgRingbufferData = new float[] { 2, 0, 2, 2, 2, 2 };
         StrokeBegin = false;
 
         // Act
@@ -83,18 +82,16 @@ public class TestApplyFloatingAvg
             VolumeData);
 
         Assert.AreEqual(
-            new float[] { 2.5f, 1, RINGBUF_SIZE, 4, 2, 2, 2 },
+            new float[] { 2.5f, 1, 4, 2, 2, 2 },
             AvgRingbufferData);
     }
 
     [Test]
     public void new_value_wrap_around_pointer()
     {
-        int RINGBUF_SIZE = 4;
-
         // Arrange
         VolumeData = new float[] { 4 };
-        AvgRingbufferData = new float[] { 2, 3, RINGBUF_SIZE, 2, 2, 2, 2 };
+        AvgRingbufferData = new float[] { 2, 3, 2, 2, 2, 2 };
         StrokeBegin = false;
 
         // Act
@@ -106,7 +103,7 @@ public class TestApplyFloatingAvg
             VolumeData);
 
         Assert.AreEqual(
-            new float[] { 2.5f, 0, RINGBUF_SIZE, 2, 2, 2, 4 },
+            new float[] { 2.5f, 0, 2, 2, 2, 4 },
             AvgRingbufferData);
     }
 }

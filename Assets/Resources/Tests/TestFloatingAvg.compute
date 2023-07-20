@@ -4,6 +4,7 @@
 
 RWStructuredBuffer<float> ValueSourceSink;
 RWStructuredBuffer<float> AvgRingbuffer;
+uint AvgRingbufferSize;
 uint StrokeBegin;
 
 #pragma kernel test_floating_avg
@@ -15,6 +16,6 @@ void test_floating_avg(uint3 id_ : SV_DispatchThreadID)
     if (is_relevant_thread(id(), CalculationSize))
     {
         float new_value = ValueSourceSink[0];
-        ValueSourceSink[0] = floating_avg(AvgRingbuffer, StrokeBegin, new_value);
+        ValueSourceSink[0] = floating_avg(AvgRingbuffer, AvgRingbufferSize, StrokeBegin, new_value);
     }
 }

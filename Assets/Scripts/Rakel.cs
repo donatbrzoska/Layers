@@ -45,6 +45,7 @@ public class Rakel
     public ComputeBuffer InfoBuffer;
     public RakelInfo Info;
     private ComputeBuffer PositionZAvgRingbuffer;
+    private int PositionZAvgRingbufferSize;
     ComputeBuffer ReducedCanvasVolume;
     ComputeBuffer ReducedRakelVolume;
 
@@ -108,17 +109,15 @@ public class Rakel
             TiltNoise = new NoiseFilter1D(tiltNoiseFrequency, tiltNoiseAmplitude);
         }
 
-        int positionZAvgRingbufferSize = floatingZLength > 0 ? (int)(Reservoir.Resolution * floatingZLength) : 1;
+        PositionZAvgRingbufferSize = floatingZLength > 0 ? (int)(Reservoir.Resolution * floatingZLength) : 1;
         // this is actually a struct:
         // - float CurrentAvg;
         // - int Pointer;
-        // - int Size;
         // - float[SIZE] Elements;
         // we don't do an actual struct, because then we can't parametrize SIZE dynamically
         PositionZAvgRingbuffer?.Dispose();
-        PositionZAvgRingbuffer = new ComputeBuffer(3 + positionZAvgRingbufferSize, sizeof(float));
-        float[] positionZAvgRingbufferData = new float[3 + positionZAvgRingbufferSize];
-        positionZAvgRingbufferData[2] = positionZAvgRingbufferSize; // set size, rest is initialized in shader
+        PositionZAvgRingbuffer = new ComputeBuffer(2 + PositionZAvgRingbufferSize, sizeof(float));
+        float[] positionZAvgRingbufferData = new float[2 + PositionZAvgRingbufferSize];
         PositionZAvgRingbuffer.SetData(positionZAvgRingbufferData);
 
         //float[] distortionMapData = new float[DistortionMapSize.x * DistortionMapSize.y];
@@ -220,6 +219,7 @@ public class Rakel
 
                 new CSInt("FinalUpdateForStroke", finalUpdateForStroke),
                 new CSComputeBuffer("PositionZAvgRingbuffer", PositionZAvgRingbuffer),
+                new CSInt("PositionZAvgRingbufferSize", PositionZAvgRingbufferSize),
                 new CSInt("StrokeBegin", StrokeBegin ? 1 : 0),
 
                 new CSComputeBuffer("RakelInfo", InfoBuffer),
