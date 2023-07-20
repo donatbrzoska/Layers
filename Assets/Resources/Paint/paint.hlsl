@@ -11,7 +11,7 @@ int PAINT_UNIT()
 
 float VOLUME_THICKNESS()
 {
-    return 0.001; // unity worldspace, so 1 volume = 1 mm
+    return 0.01; // 1 volume = 1mm = 0.01dm = 0.01 unity worldspace
 }
 
 struct Paint {

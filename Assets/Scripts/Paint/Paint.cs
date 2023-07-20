@@ -5,7 +5,7 @@ public struct Paint : IEquatable<Paint>
 {
     public static float UNIT = 1;
 
-    public static float VOLUME_THICKNESS = 0.001f;
+    public static float VOLUME_THICKNESS = 0.01f; // 1 volume = 1mm = 0.01dm = 0.01 unity worldspace
 
     public static Paint EMPTY_PAINT { get; private set; } = new Paint(Colors.NO_PAINT_COLOR, 0);
 
