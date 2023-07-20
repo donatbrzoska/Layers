@@ -164,6 +164,27 @@ public class TransferEngine
 
 
         // 3. Do paint transfer and rendering
+        if (transferConfig.CanvasSnapshotBufferEnabled)
+        {
+            // Keep canvas snapshot buffer (CSB) up to date:
+            // -> Copy any paint into CSB, that might get picked up in the next step
+            // -> Padding of size of rakel reservoir is overkill in the most cases
+            //    but also delivers update guarantee, no matter how the rakel is
+            //    shaped and where the rakel anchor is located.
+            ShaderRegion updateSR = new ShaderRegion(
+                canvas.MapToPixelInRange(rakel.Info.UpperLeft),
+                canvas.MapToPixelInRange(rakel.Info.UpperRight),
+                canvas.MapToPixelInRange(rakel.Info.LowerLeft),
+                canvas.MapToPixelInRange(rakel.Info.LowerRight),
+                Mathf.Max(rakel.Reservoir.Size.x, rakel.Reservoir.Size.y)
+            );
+            canvas.Reservoir.DoStrokeCopyUpdate(
+                rakelMappedInfo,
+                rakelEmitSR,
+                rakel.Reservoir.Size,
+                updateSR);
+        }
+
         PaintGrid canvasEmittedPaint = canvas.EmitPaint(
             rakel,
             canvasEmitSR,

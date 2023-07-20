@@ -73,6 +73,34 @@ public class Reservoir
         Duplicate(PaintGrid, PaintGridStrokeCopy, sr, debugEnabled);
     }
 
+    // only copies pixels that are currently not under the rakel
+    public void DoStrokeCopyUpdate(
+        ComputeBuffer rakelMappedInfo,
+        ShaderRegion rakelMappedInfoShaderRegion,
+        Vector3Int RakelReservoirSize,
+        ShaderRegion shaderRegion,
+        bool debugEnabled = false)
+    {
+        new ComputeShaderTask(
+            "Reservoir/CopyInactive",
+            shaderRegion,
+            new List<CSAttribute>()
+            {
+                new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
+                new CSInt2("RakelMappedInfoPosition", rakelMappedInfoShaderRegion.Position),
+                new CSInt2("RakelMappedInfoSize", rakelMappedInfoShaderRegion.Size),
+                new CSInt3("RakelReservoirSize", RakelReservoirSize),
+
+                new CSComputeBuffer("ReservoirInfo", PaintGrid.Info),
+                new CSComputeBuffer("ReservoirContent", PaintGrid.Content),
+                new CSComputeBuffer("ReservoirInfoDuplicate", PaintGridStrokeCopy.Info),
+                new CSComputeBuffer("ReservoirContentDuplicate", PaintGridStrokeCopy.Content),
+                new CSInt3("ReservoirSize", Size),
+            },
+            debugEnabled
+        ).Run();
+    }
+
     public void DoStrokeCopyCopy(bool debugEnabled = false)
     {
         DoStrokeCopyCopy(GetFullShaderRegion(), debugEnabled);
