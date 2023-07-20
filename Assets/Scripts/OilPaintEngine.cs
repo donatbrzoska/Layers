@@ -518,4 +518,28 @@ public class OilPaintEngine : MonoBehaviour
         //Canvas.Reservoir.PaintGrid.ReadbackInfo();
         //LogUtil.Log(Canvas.Reservoir.PaintGrid.GetVolumes(), Canvas.Reservoir.Size.y);
     }
+
+    public void DoMacro3Action()
+    {
+    }
+
+    public void DoMacro4Action()
+    {
+    }
+
+    public void DoMacro5Action()
+    {
+    }
+
+    public void DoMacro6Action()
+    {
+    }
+
+    public void DoMacro7Action()
+    {
+    }
+
+    public void DoMacro8Action()
+    {
+    }
 }
