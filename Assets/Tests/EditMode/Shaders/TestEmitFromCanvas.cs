@@ -14,6 +14,11 @@ public class TestEmitFromCanvas
     private float PICKUP_DIST_MAX = 0;
     private float PICKUP_VOLUME_MIN = 0;
 
+    private const bool TILT_NOISE_ENABLED = false;
+    private const float TILT_NOISE_FREQUENCY = 0;
+    private const float TILT_NOISE_AMPLITUDE = 0;
+    private const float FLOATING_Z_LENGTH = 0;
+
     private const bool CSB_ENABLED = false;
     private const bool CSB_DELETE = false;
     private const bool PAINT_DOES_PICKUP = false;
@@ -99,6 +104,7 @@ public class TestEmitFromCanvas
         Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen, ColorSpace.RGB), new FlatVolumeFiller(FILL_WIDTH_PART, 1)));
         Canvas.Reservoir.DoImprintCopy(false);
 
+        Rakel.NewStroke(TILT_NOISE_ENABLED, TILT_NOISE_FREQUENCY, TILT_NOISE_AMPLITUDE, FLOATING_Z_LENGTH);
         Rakel.UpdateState(
             new Vector3(-5, 0.5f, 0), BASE_SINK_MAX, LAYER_SINK_MAX_RATIO, TILT_SINK_MAX, AUTO_Z_ENABLED, ZZERO, FINAL_UPDATE_FOR_STROKE, PRESSURE,
             0, 0);
@@ -140,6 +146,7 @@ public class TestEmitFromCanvas
         Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen, ColorSpace.RGB), new FlatVolumeFiller(FILL_WIDTH_PART, 2)));
         Canvas.Reservoir.DoImprintCopy(false);
 
+        Rakel.NewStroke(TILT_NOISE_ENABLED, TILT_NOISE_FREQUENCY, TILT_NOISE_AMPLITUDE, FLOATING_Z_LENGTH);
         Rakel.UpdateState(
             new Vector3(-5, 0.5f, -Paint.VOLUME_THICKNESS), BASE_SINK_MAX, LAYER_SINK_MAX_RATIO, TILT_SINK_MAX, AUTO_Z_ENABLED, ZZERO, FINAL_UPDATE_FOR_STROKE, PRESSURE,
             0, 0);
@@ -196,6 +203,7 @@ public class TestEmitFromCanvas
         Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen, ColorSpace.RGB), new FlatVolumeFiller(FILL_WIDTH_PART, INIT_LAYERS)));
         Canvas.Reservoir.DoImprintCopy(false);
 
+        Rakel.NewStroke(TILT_NOISE_ENABLED, TILT_NOISE_FREQUENCY, TILT_NOISE_AMPLITUDE, FLOATING_Z_LENGTH);
         Rakel.UpdateState(
             new Vector3(-5, 0.5f, (INIT_LAYERS - PICKED_UP_LAYERS) * -Paint.VOLUME_THICKNESS), BASE_SINK_MAX, LAYER_SINK_MAX_RATIO, TILT_SINK_MAX, AUTO_Z_ENABLED, ZZERO, FINAL_UPDATE_FOR_STROKE, PRESSURE,
             0, 0);
@@ -279,6 +287,7 @@ public class TestEmitFromCanvas
         Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen, ColorSpace.RGB), new FlatVolumeFiller(FILL_WIDTH_PART, INIT_LAYERS)));
         Canvas.Reservoir.DoImprintCopy(false);
 
+        Rakel.NewStroke(TILT_NOISE_ENABLED, TILT_NOISE_FREQUENCY, TILT_NOISE_AMPLITUDE, FLOATING_Z_LENGTH);
         Rakel.UpdateState(
             new Vector3(-5, 0.5f, (INIT_LAYERS - PICKED_UP_LAYERS) * -Paint.VOLUME_THICKNESS), BASE_SINK_MAX, LAYER_SINK_MAX_RATIO, TILT_SINK_MAX, AUTO_Z_ENABLED, ZZERO, FINAL_UPDATE_FOR_STROKE, PRESSURE,
             0, 0);
@@ -371,6 +380,7 @@ public class TestEmitFromCanvas
         Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreen, ColorSpace.RGB), new FlatVolumeFiller(FILL_WIDTH_PART, 2)));
         Canvas.Reservoir.DoImprintCopy(false);
 
+        Rakel.NewStroke(TILT_NOISE_ENABLED, TILT_NOISE_FREQUENCY, TILT_NOISE_AMPLITUDE, FLOATING_Z_LENGTH);
         Rakel.UpdateState(
             new Vector3(-5, 0.5f, -Paint.VOLUME_THICKNESS), BASE_SINK_MAX, LAYER_SINK_MAX_RATIO, TILT_SINK_MAX, AUTO_Z_ENABLED, ZZERO, FINAL_UPDATE_FOR_STROKE, PRESSURE,
             30, 0);
