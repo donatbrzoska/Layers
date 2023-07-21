@@ -163,12 +163,12 @@ public class Canvas_
         {
             if (deletePickedUpFromCSB)
             {
-                Reservoir.DoStrokeCopyCopy(emitShaderRegion, false);
-                canvasSampleSource = Reservoir.PaintGridStrokeCopyCopy;
+                Reservoir.DoSnapshotImprintCopy(emitShaderRegion, false);
+                canvasSampleSource = Reservoir.PaintGridSnapshotImprintCopy;
             }
             else
             {
-                canvasSampleSource = Reservoir.PaintGridStrokeCopy;
+                canvasSampleSource = Reservoir.PaintGridSnapshot;
             }
         }
 
@@ -233,9 +233,9 @@ public class Canvas_
         {
             // HACK
             // We cannot have more than 8 UAVs in DX11 and therefore cannot delete the
-            // picked up paint from the stroke copy. So we just run the shader a second
-            // time, now passing the stroke copy as original reservoir.
-            // (Passing the original stroke copy buffers would mean we have 9 Buffers (UAVs))
+            // picked up paint from the snapshot. So we just run the shader a second
+            // time, now passing the snapshot as original reservoir.
+            // (Passing the original + snapshot buffer would mean we have 9 Buffers (UAVs))
             new ComputeShaderTask(
                 "Pickup/EmitFromCanvas",
                 pickupShaderRegion,
@@ -245,10 +245,10 @@ public class Canvas_
                     new CSInt2("ReservoirPixelPickupRadius", RESERVOIR_PIXEL_PICKUP_RADIUS),
                     new CSComputeBuffer("CanvasMappedInfo", canvasMappedInfo),
 
-                    new CSComputeBuffer("CanvasReservoirInfo", Reservoir.PaintGridStrokeCopy.Info),
-                    new CSComputeBuffer("CanvasReservoirContent", Reservoir.PaintGridStrokeCopy.Content),
-                    new CSComputeBuffer("CanvasReservoirInfoSampleSource", Reservoir.PaintGridStrokeCopyCopy.Info),
-                    new CSComputeBuffer("CanvasReservoirContentSampleSource", Reservoir.PaintGridStrokeCopyCopy.Content),
+                    new CSComputeBuffer("CanvasReservoirInfo", Reservoir.PaintGridSnapshot.Info),
+                    new CSComputeBuffer("CanvasReservoirContent", Reservoir.PaintGridSnapshot.Content),
+                    new CSComputeBuffer("CanvasReservoirInfoSampleSource", Reservoir.PaintGridSnapshotImprintCopy.Info),
+                    new CSComputeBuffer("CanvasReservoirContentSampleSource", Reservoir.PaintGridSnapshotImprintCopy.Content),
                     new CSInt3("CanvasReservoirSize", Reservoir.Size),
                     new CSFloat("CanvasReservoirCellVolume", Reservoir.PaintGrid.CellVolume),
 

@@ -93,7 +93,7 @@ public class TransferEngine
 
         if (csbEnabled)
         {
-            canvas.Reservoir.DoStrokeCopy(false);
+            canvas.Reservoir.DoSnapshot(false);
         }
     }
 
@@ -184,7 +184,7 @@ public class TransferEngine
                 canvas.MapToPixelInRange(rakel.Info.LowerRight),
                 Mathf.Max(rakel.Reservoir.Size.x, rakel.Reservoir.Size.y)
             );
-            canvas.Reservoir.DoStrokeCopyUpdate(
+            canvas.Reservoir.DoSnapshotUpdate(
                 rakelMappedInfo,
                 rakelEmitSR,
                 rakel.Reservoir.Size,

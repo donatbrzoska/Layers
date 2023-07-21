@@ -13,11 +13,15 @@ public class Reservoir
     public Vector3Int Size;
 
     public PaintGrid PaintGrid;
-    public PaintGrid PaintGridImprintCopy;
-    public PaintGrid PaintGridStrokeCopy;
-    public PaintGrid PaintGridStrokeCopyCopy;
+    public PaintGrid PaintGridImprintCopy; // only read from for sampling
 
-    public ComputeBuffer PaintGridInfoSnapshot;
+    // used for canvas snapshot buffer (CSB)
+    // Paper: Detail-Preserving Paint Modeling for 3D Brushes (Chu et al., 2010)
+    public PaintGrid PaintGridSnapshot;
+    public PaintGrid PaintGridSnapshotImprintCopy; // only read from for sampling
+
+    // used for auto z
+    public ComputeBuffer PaintGridInfoSnapshot; // technically unnecessary, when CSB is enabled
     public ComputeBuffer Workspace;
 
     public float PixelSize { get { return 1 / (float) Resolution; } }
@@ -32,8 +36,8 @@ public class Reservoir
 
         // only used by canvas
         // TODO provide possibility to deactivate this
-        PaintGridStrokeCopy = new PaintGrid(Size, cellVolume, diffuseDepth, diffuseRatio);
-        PaintGridStrokeCopyCopy = new PaintGrid(Size, cellVolume, diffuseDepth, diffuseRatio);
+        PaintGridSnapshot = new PaintGrid(Size, cellVolume, diffuseDepth, diffuseRatio);
+        PaintGridSnapshotImprintCopy = new PaintGrid(Size, cellVolume, diffuseDepth, diffuseRatio);
         PaintGridInfoSnapshot = new ComputeBuffer(Size.x * Size.y, ColumnInfo.SizeInBytes);
         Workspace = new ComputeBuffer(Size.x * Size.y, sizeof(float));
     }
@@ -63,18 +67,18 @@ public class Reservoir
         Duplicate(PaintGrid, PaintGridImprintCopy, sr, debugEnabled);
     }
 
-    public void DoStrokeCopy(bool debugEnabled = false)
+    public void DoSnapshot(bool debugEnabled = false)
     {
-        DoStrokeCopy(GetFullShaderRegion(), debugEnabled);
+        DoSnapshot(GetFullShaderRegion(), debugEnabled);
     }
 
-    public void DoStrokeCopy(ShaderRegion sr, bool debugEnabled = false)
+    public void DoSnapshot(ShaderRegion sr, bool debugEnabled = false)
     {
-        Duplicate(PaintGrid, PaintGridStrokeCopy, sr, debugEnabled);
+        Duplicate(PaintGrid, PaintGridSnapshot, sr, debugEnabled);
     }
 
     // only copies pixels that are currently not under the rakel
-    public void DoStrokeCopyUpdate(
+    public void DoSnapshotUpdate(
         ComputeBuffer rakelMappedInfo,
         ShaderRegion rakelMappedInfoShaderRegion,
         Vector3Int RakelReservoirSize,
@@ -93,22 +97,22 @@ public class Reservoir
 
                 new CSComputeBuffer("ReservoirInfo", PaintGrid.Info),
                 new CSComputeBuffer("ReservoirContent", PaintGrid.Content),
-                new CSComputeBuffer("ReservoirInfoDuplicate", PaintGridStrokeCopy.Info),
-                new CSComputeBuffer("ReservoirContentDuplicate", PaintGridStrokeCopy.Content),
+                new CSComputeBuffer("ReservoirInfoDuplicate", PaintGridSnapshot.Info),
+                new CSComputeBuffer("ReservoirContentDuplicate", PaintGridSnapshot.Content),
                 new CSInt3("ReservoirSize", Size),
             },
             debugEnabled
         ).Run();
     }
 
-    public void DoStrokeCopyCopy(bool debugEnabled = false)
+    public void DoSnapshotImprintCopy(bool debugEnabled = false)
     {
-        DoStrokeCopyCopy(GetFullShaderRegion(), debugEnabled);
+        DoSnapshotImprintCopy(GetFullShaderRegion(), debugEnabled);
     }
 
-    public void DoStrokeCopyCopy(ShaderRegion sr, bool debugEnabled = false)
+    public void DoSnapshotImprintCopy(ShaderRegion sr, bool debugEnabled = false)
     {
-        Duplicate(PaintGridStrokeCopy, PaintGridStrokeCopyCopy, sr, debugEnabled);
+        Duplicate(PaintGridSnapshot, PaintGridSnapshotImprintCopy, sr, debugEnabled);
     }
 
     public void Duplicate(PaintGrid source, PaintGrid target, ShaderRegion sr, bool debugEnabled = false)
@@ -321,8 +325,8 @@ public class Reservoir
         PaintGrid.Dispose();
         PaintGridImprintCopy.Dispose();
 
-        PaintGridStrokeCopy.Dispose();
-        PaintGridStrokeCopyCopy.Dispose();
+        PaintGridSnapshot.Dispose();
+        PaintGridSnapshotImprintCopy.Dispose();
         PaintGridInfoSnapshot.Dispose();
         Workspace.Dispose();
     }
