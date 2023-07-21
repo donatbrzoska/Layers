@@ -46,10 +46,18 @@ public class OilPaintEngine : MonoBehaviour
     {
         ComputeShaderTask.ThreadGroupSize = new Vector2Int(TH_GROUP_SIZE_X, TH_GROUP_SIZE_Y);
 
+        InputInterpolator = new InputInterpolator();
+
+        CreateTransferEngine();
         CreateCanvas();
         CreateRakel();
-        CreateTransferEngine();
-        CreateInputInterpolator();
+    }
+
+    void CreateTransferEngine()
+    {
+        DisposeTransferEngine();
+        TransferEngine = new TransferEngine(STEPS_PER_FRAME > 0 && BENCHMARK_STEPS == 0);
+        InputInterpolator.SetTransferEngine(TransferEngine);
     }
 
     void CreateCanvas()
@@ -96,6 +104,9 @@ public class OilPaintEngine : MonoBehaviour
         Debug.Log("Texture is "
                   + Canvas.Texture.width + "x" + Canvas.Texture.height
                   + " = " + Canvas.Texture.width * Canvas.Texture.height);
+
+        TransferEngine.SetCanvas(Canvas);
+        InputInterpolator.SetCanvas(Canvas);
     }
 
     void CreateRakel()
@@ -110,18 +121,9 @@ public class OilPaintEngine : MonoBehaviour
         Debug.Log("Rakel is "
                   + Config.RakelConfig.Length * Config.TextureResolution + "x" + Config.RakelConfig.Width * Config.TextureResolution
                   + " = " + Config.RakelConfig.Length * Config.TextureResolution * Config.RakelConfig.Width * Config.TextureResolution);
-    }
 
-    void CreateTransferEngine()
-    {
-        DisposeTransferEngine();
-
-        TransferEngine = new TransferEngine(Rakel, Canvas, STEPS_PER_FRAME > 0 && BENCHMARK_STEPS == 0);
-    }
-
-    void CreateInputInterpolator()
-    {
-        InputInterpolator = new InputInterpolator(TransferEngine, Rakel, Canvas);
+        TransferEngine.SetRakel(Rakel);
+        InputInterpolator.SetRakel(Rakel);
     }
 
     void Update()
@@ -337,32 +339,24 @@ public class OilPaintEngine : MonoBehaviour
     {
         Config.RakelConfig.Length = worldSpaceLength;
         CreateRakel();
-        CreateTransferEngine();
-        CreateInputInterpolator();
     }
 
     public void UpdateRakelWidth(float worldSpaceWidth)
     {
         Config.RakelConfig.Width = worldSpaceWidth;
         CreateRakel();
-        CreateTransferEngine();
-        CreateInputInterpolator();
     }
 
     public void UpdateCanvasFormatA(int formatA)
     {
         Config.CanvasConfig.FormatA = formatA;
         CreateCanvas();
-        CreateTransferEngine();
-        CreateInputInterpolator();
     }
 
     public void UpdateCanvasFormatB(int formatB)
     {
         Config.CanvasConfig.FormatB = formatB;
         CreateCanvas();
-        CreateTransferEngine();
-        CreateInputInterpolator();
     }
 
     public void UpdateTextureResolution(int pixelsPerWorldSpaceUnit)
@@ -370,8 +364,6 @@ public class OilPaintEngine : MonoBehaviour
         Config.TextureResolution = pixelsPerWorldSpaceUnit;
         CreateCanvas();
         CreateRakel();
-        CreateTransferEngine();
-        CreateInputInterpolator();
     }
 
     // ****************************************************************************************
@@ -437,15 +429,11 @@ public class OilPaintEngine : MonoBehaviour
     public void ClearRakel()
     {
         CreateRakel();
-        CreateTransferEngine();
-        CreateInputInterpolator();
     }
 
     public void ClearCanvas()
     {
         CreateCanvas();
-        CreateTransferEngine();
-        CreateInputInterpolator();
     }
 
     // ****************************************************************************************

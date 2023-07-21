@@ -36,19 +36,33 @@ public class TransferEngine
     private Canvas_ Canvas;
     private ComputeBuffer RakelMappedInfo;
 
-    public TransferEngine(Rakel rakel, Canvas_ canvas, bool delayedExecution)
+    public TransferEngine(bool delayedExecution)
     {
-        Rakel = rakel;
-        RakelMappedInfo = MappedInfo.CreateBuffer(canvas.Reservoir.Size2D);
-
-        Canvas = canvas;
-        CanvasMappedInfo = MappedInfo.CreateBuffer(rakel.Reservoir.Size2D);
-
         DelayedExection = delayedExecution;
         if (delayedExecution)
         {
             SimulationSteps = new Queue<SimulationStep>();
         }
+    }
+
+    public void SetRakel(Rakel rakel)
+    {
+        if (CanvasMappedInfo == null || Rakel.Reservoir.Size2D != rakel.Reservoir.Size2D)
+        {
+            CanvasMappedInfo?.Dispose();
+            CanvasMappedInfo = MappedInfo.CreateBuffer(rakel.Reservoir.Size2D);
+        }
+        Rakel = rakel;
+    }
+
+    public void SetCanvas(Canvas_ canvas)
+    {
+        if (RakelMappedInfo == null || Canvas.Reservoir.Size2D != canvas.Reservoir.Size2D)
+        {
+            RakelMappedInfo?.Dispose();
+            RakelMappedInfo = MappedInfo.CreateBuffer(canvas.Reservoir.Size2D);
+        }
+        Canvas = canvas;
     }
 
     public void EnqueueOrRun(

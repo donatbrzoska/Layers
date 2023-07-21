@@ -14,10 +14,22 @@ public class InputInterpolator
     private float NO_VALUE = float.NaN;
     private Vector3 NO_POSITION = Vector3.negativeInfinity;
 
-    public InputInterpolator(TransferEngine transferEngine, Rakel rakel, Canvas_ canvas)
+    public InputInterpolator()
+    {
+    }
+
+    public void SetTransferEngine(TransferEngine transferEngine)
     {
         TransferEngine = transferEngine;
+    }
+
+    public void SetRakel(Rakel rakel)
+    {
         Rakel = rakel;
+    }
+
+    public void SetCanvas(Canvas_ canvas)
+    {
         Canvas = canvas;
     }
 
