@@ -49,7 +49,7 @@ public class TestReduceWorkspace
 
     Vector2Int TextureSize;
 
-    Reservoir Reservoir;
+    CanvasReservoir Reservoir;
     ComputeBuffer ReduceResult;
 
     ColorFiller ColorFiller;
@@ -63,7 +63,7 @@ public class TestReduceWorkspace
 
     public void SetupReservoir()
     {
-        Reservoir = new Reservoir(1, TextureSize.x, TextureSize.y, TextureSize.x * TextureSize.y, CELL_VOLUME, DIFFUSE_DEPTH, DIFFUSE_RATIO);
+        Reservoir = new CanvasReservoir(1, TextureSize.x, TextureSize.y, TextureSize.x * TextureSize.y, CELL_VOLUME, DIFFUSE_DEPTH, DIFFUSE_RATIO);
     }
 
     [TearDown]

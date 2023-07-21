@@ -13,7 +13,7 @@ public class Canvas_
     public int Resolution { get; private set; }
     public Vector2Int TextureSize { get; private set; }
 
-    public Reservoir Reservoir { get; private set; }
+    public CanvasReservoir Reservoir { get; private set; }
     public RenderTexture Texture { get; private set; }
     public RenderTexture NormalMap { get; private set; }
 
@@ -49,7 +49,7 @@ public class Canvas_
         NormalScale = normalScale;
         ColorSpace = colorSpace;
 
-        Reservoir = new Reservoir(textureResolution, TextureSize.x, TextureSize.y, layers, cellVolume, diffuseDepth, diffuseRatio);
+        Reservoir = new CanvasReservoir(textureResolution, TextureSize.x, TextureSize.y, layers, cellVolume, diffuseDepth, diffuseRatio);
 
         Texture = new RenderTexture(TextureSize.x, TextureSize.y, 1);
         Texture.filterMode = FilterMode.Point;
