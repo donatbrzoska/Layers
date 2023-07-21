@@ -229,8 +229,12 @@ public class TestEmitFromRakel
 
         AssertUtil.AssertFloatsEqual(
             RakelLength * RakelWidth * Paint.UNIT,
+            //Sum(rakelEmittedVolumes));
             Sum(rakelEmittedVolumes),
-            0.1f); // lower precision, because surfaces_touch is really hard to complete with a rotated rakel
+            // Lower precision, because surfaces_touch is really hard to complete with a rotated rakel.
+            // This is because at the border, total overlap would be 0.5 for example and then paint_thickness_rakel
+            // volume will be less than what is necessary for surfaces touch
+            0.1f);
     }
 
     [Test]
