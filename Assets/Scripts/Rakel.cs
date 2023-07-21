@@ -64,7 +64,10 @@ public class Rakel
     private bool TiltNoiseEnabled;
     private NoiseFilter1D TiltNoise;
 
-    public Rakel(float length, float width, int resolution, int layers_MAX, float cellVolume, int diffuseDepth, float diffuseRatio, float anchorRatioLength = 0.5f, float anchorRatioWidth = 1)
+    public Rakel(
+        float length, float width, int resolution, int layers_MAX,
+        float cellVolume, int diffuseDepth, float diffuseRatio,
+        float anchorRatioLength = 0.5f, float anchorRatioWidth = 1)
     {
         Vector3Int reservoirSize = new Vector3Int((int)(width * resolution), (int)(length * resolution), layers_MAX);
 
@@ -154,7 +157,11 @@ public class Rakel
         return oldValue;
     }
 
-    public void UpdateState(Vector3 position, float baseSink_MAX, float layerSink_MAX_Ratio, float tiltSink_MAX, bool autoZEnabled, bool zZero, bool finalUpdateForStroke, float pressure, float rotation, float tilt)
+    public void UpdateState(
+        Vector3 position,
+       float baseSink_MAX, float layerSink_MAX_Ratio, float tiltSink_MAX,
+       bool autoZEnabled, bool zZero, bool finalUpdateForStroke,
+       float pressure, float rotation, float tilt)
     {
         Vector2 previousPosition = new Vector2(Info.Position.x, Info.Position.y);
         Vector2 newPosition = new Vector2(position.x, position.y);
@@ -339,7 +346,11 @@ public class Rakel
                 ).Run();
                 // reset Z so that distance between rakel edge and canvas is 0
                 // (simplifies overshoot calculation)
-                UpdateState(Info.Position, baseSink_MAX, layerSink_MAX_Ratio, tiltSink_MAX, Cast.IntToBool(Info.AutoZEnabled), true, false, Info.Pressure, Info.Rotation, Info.Tilt);
+                UpdateState(
+                    Info.Position,
+                    baseSink_MAX, layerSink_MAX_Ratio, tiltSink_MAX,
+                    Cast.IntToBool(Info.AutoZEnabled), true, false,
+                    Info.Pressure, Info.Rotation, Info.Tilt);
                 new ComputeShaderTask(
                     "Emit/DistanceFromRakel",
                     emitSR,
@@ -389,7 +400,11 @@ public class Rakel
                 ).Run();
 
                 // position base z was updated, so we need to recalculate
-                UpdateState(Info.Position, baseSink_MAX, layerSink_MAX_Ratio, tiltSink_MAX, Cast.IntToBool(Info.AutoZEnabled), false, true, Info.Pressure, Info.Rotation, Info.Tilt);
+                UpdateState(
+                    Info.Position,
+                    baseSink_MAX, layerSink_MAX_Ratio, tiltSink_MAX,
+                    Cast.IntToBool(Info.AutoZEnabled), false, true,
+                    Info.Pressure, Info.Rotation, Info.Tilt);
             }
         }
 

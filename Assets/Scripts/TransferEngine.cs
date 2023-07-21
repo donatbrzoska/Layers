@@ -12,7 +12,8 @@ public struct SimulationStep
     public Rakel Rakel;
     public Canvas_ Canvas;
 
-    public SimulationStep(Vector3 rakelPosition, bool autoZEnabled, float rakelPressure, float rakelRotation, float rakelTilt,
+    public SimulationStep(
+        Vector3 rakelPosition, bool autoZEnabled, float rakelPressure, float rakelRotation, float rakelTilt,
         TransferConfiguration transferConfig, Rakel rakel, Canvas_ canvas)
     {
         RakelPosition = rakelPosition;
@@ -84,7 +85,7 @@ public class TransferEngine
         }
     }
 
-    public void NewStroke (
+    public void NewStroke(
         Rakel rakel, bool tiltNoiseEnabled, float tiltNoiseFrequency, float tiltNoiseAmplitude, float floatingZLength,
         Canvas_ canvas, bool csbEnabled)
     {
@@ -119,7 +120,11 @@ public class TransferEngine
         //Debug.Log("Applying at x=" + wsc.MapToPixel(rakelPosition));
 
         bool finalUpdateForStroke = !autoZEnabled; // (when auto Z is disabled, RecalculatePositionBaseZ won't do anything)
-        rakel.UpdateState(rakelPosition, transferConfig.BaseSink_MAX, transferConfig.LayerSink_MAX_Ratio, transferConfig.TiltSink_MAX, autoZEnabled, false, finalUpdateForStroke, rakelPressure, rakelRotation, rakelTilt);
+        rakel.UpdateState(
+            rakelPosition,
+            transferConfig.BaseSink_MAX, transferConfig.LayerSink_MAX_Ratio, transferConfig.TiltSink_MAX,
+            autoZEnabled, false, finalUpdateForStroke,
+            rakelPressure, rakelRotation, rakelTilt);
 
         ShaderRegion canvasEmitSR = rakel.Reservoir.GetFullShaderRegion();
 

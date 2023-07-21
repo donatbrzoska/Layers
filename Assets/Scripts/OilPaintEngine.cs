@@ -76,7 +76,13 @@ public class OilPaintEngine : MonoBehaviour
         canvas.tag = "Canvas";
 
         Vector3 position = canvas.transform.position;
-        Canvas = new Canvas_(Config.CanvasConfig.Width, Config.CanvasConfig.Height, LAYERS_MAX, Config.CanvasConfig.CellVolume, Config.CanvasConfig.DiffuseDepth, Config.CanvasConfig.DiffuseRatio, position, Config.TextureResolution, Config.CanvasConfig.NormalScale, Config.ColorSpace);
+        Canvas = new Canvas_(
+            Config.CanvasConfig.Width, Config.CanvasConfig.Height, LAYERS_MAX,
+            Config.CanvasConfig.CellVolume, Config.CanvasConfig.DiffuseDepth, Config.CanvasConfig.DiffuseRatio,
+            position,
+            Config.TextureResolution,
+            Config.CanvasConfig.NormalScale,
+            Config.ColorSpace);
 
         Renderer renderer = canvas.GetComponent<Renderer>();
         renderer.material.SetTexture("_MainTex", Canvas.Texture);
@@ -97,15 +103,9 @@ public class OilPaintEngine : MonoBehaviour
         DisposeRakel();
 
         Rakel = new Rakel(
-            Config.RakelConfig.Length,
-            Config.RakelConfig.Width,
-            Config.TextureResolution,
-            LAYERS_MAX,
-            Config.RakelConfig.CellVolume,
-            Config.RakelConfig.DiffuseDepth,
-            Config.RakelConfig.DiffuseRatio,
-            ANCHOR_RATIO_Y,
-            ANCHOR_RATIO_X);
+            Config.RakelConfig.Length, Config.RakelConfig.Width, Config.TextureResolution, LAYERS_MAX,
+            Config.RakelConfig.CellVolume, Config.RakelConfig.DiffuseDepth, Config.RakelConfig.DiffuseRatio,
+            ANCHOR_RATIO_Y, ANCHOR_RATIO_X);
 
         Debug.Log("Rakel is "
                   + Config.RakelConfig.Length * Config.TextureResolution + "x" + Config.RakelConfig.Width * Config.TextureResolution

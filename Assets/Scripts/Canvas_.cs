@@ -25,7 +25,13 @@ public class Canvas_
 
     // It is assumed that the canvas is perpendicular to the z axis
     // Position is the center of the canvas
-    public Canvas_(float width, float height, int layers, float cellVolume, int diffuseDepth, float diffuseRatio, Vector3 position, int textureResolution, float normalScale, ColorSpace colorSpace)
+    public Canvas_(
+        float width, float height, int layers,
+        float cellVolume, int diffuseDepth, float diffuseRatio,
+        Vector3 position,
+        int textureResolution,
+        float normalScale,
+        ColorSpace colorSpace)
     {
         Size = new Vector2(width, height);
         Position = position;
