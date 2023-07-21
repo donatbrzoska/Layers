@@ -212,7 +212,7 @@ public class TransferConfiguration
         FloatingZLength = 0.5f;
 
         CanvasSnapshotBufferEnabled = true;
-        DeletePickedUpFromCSB = true;
+        DeletePickedUpFromCSB = false;
 
         // This is basically 1:1 the max distance at which the paint "gravity" acts.
         // (Paint being transferred, even though surfaces don't really touch. For details,
@@ -224,7 +224,7 @@ public class TransferConfiguration
         EmitVolume_MIN = 0.1f;
         PickupVolume_MIN = 0.1f;
 
-        PaintDoesPickup = false;
+        PaintDoesPickup = true;
 
         LayerThickness_MAX = 4 * Paint.VOLUME_THICKNESS;
 
