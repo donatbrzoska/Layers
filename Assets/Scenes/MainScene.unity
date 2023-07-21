@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.44971085, g: 0.49977827, b: 0.5756336, a: 1}
+  m_IndirectSpecularColor: {r: 0.4497106, g: 0.4997779, b: 0.5756331, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -442,8 +442,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 26.088, y: 70.769}
-  m_SizeDelta: {x: 147.82, y: 20.962}
+  m_AnchoredPosition: {x: -15.866, y: 70.769}
+  m_SizeDelta: {x: 63.912, y: 20.962}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &25650467
 MonoBehaviour:
@@ -3045,6 +3045,7 @@ GameObject:
   m_Component:
   - component: {fileID: 312198526}
   - component: {fileID: 312198528}
+  - component: {fileID: 312198529}
   m_Layer: 5
   m_Name: CSB Delete Toggle
   m_TagString: Untagged
@@ -3071,8 +3072,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 90, y: 70.769}
-  m_SizeDelta: {x: 147.82, y: 20.962}
+  m_AnchoredPosition: {x: 58.04402, y: 70.769}
+  m_SizeDelta: {x: 83.908, y: 20.962}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &312198528
 MonoBehaviour:
@@ -3122,6 +3123,18 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_IsOn: 1
+--- !u!114 &312198529
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 312198525}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20d91ec7dd01c6c4d90d152d88aef025, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &313453470
 GameObject:
   m_ObjectHideFlags: 0
