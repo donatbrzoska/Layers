@@ -48,7 +48,7 @@ public class OilPaintEngine : MonoBehaviour
 
         CreateCanvas();
         CreateRakel();
-        CreateOilPaintTransferEngine();
+        CreateTransferEngine();
         CreateInputInterpolator();
     }
 
@@ -112,7 +112,7 @@ public class OilPaintEngine : MonoBehaviour
                   + " = " + Config.RakelConfig.Length * Config.TextureResolution * Config.RakelConfig.Width * Config.TextureResolution);
     }
 
-    void CreateOilPaintTransferEngine()
+    void CreateTransferEngine()
     {
         TransferEngine = new TransferEngine(Rakel, Canvas, STEPS_PER_FRAME > 0 && BENCHMARK_STEPS == 0);
     }
@@ -429,14 +429,14 @@ public class OilPaintEngine : MonoBehaviour
     public void ClearRakel()
     {
         CreateRakel();
-        CreateOilPaintTransferEngine();
+        CreateTransferEngine();
         CreateInputInterpolator();
     }
 
     public void ClearCanvas()
     {
         CreateCanvas();
-        CreateOilPaintTransferEngine();
+        CreateTransferEngine();
         CreateInputInterpolator();
     }
 
