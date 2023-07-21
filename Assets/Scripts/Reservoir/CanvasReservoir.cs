@@ -34,7 +34,8 @@ public class CanvasReservoir : Reservoir
     // only copies pixels that are currently not under the rakel
     public void DoSnapshotUpdate(
         ComputeBuffer rakelMappedInfo,
-        ShaderRegion rakelMappedInfoShaderRegion,
+        Vector2Int rakelMappedInfoSize,
+        ShaderRegion rakelMappedInfoActiveSR,
         Vector3Int RakelReservoirSize,
         ShaderRegion shaderRegion,
         bool debugEnabled = false)
@@ -45,8 +46,9 @@ public class CanvasReservoir : Reservoir
             new List<CSAttribute>()
             {
                 new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
-                new CSInt2("RakelMappedInfoPosition", rakelMappedInfoShaderRegion.Position),
-                new CSInt2("RakelMappedInfoSize", rakelMappedInfoShaderRegion.Size),
+                new CSInt2("RakelMappedInfoSize", rakelMappedInfoSize),
+                new CSInt2("RakelMappedInfoActivePosition", rakelMappedInfoActiveSR.Position),
+                new CSInt2("RakelMappedInfoActiveSize", rakelMappedInfoActiveSR.Size),
                 new CSInt3("RakelReservoirSize", RakelReservoirSize),
 
                 new CSComputeBuffer("ReservoirInfo", PaintGrid.Info),
@@ -105,8 +107,9 @@ public class CanvasReservoir : Reservoir
     }
 
     public void CopySnapshotActiveInfoVolumesToWorkspace(
-        ComputeBuffer paintSourceMappedInfo,
-        Vector2Int paintSourceReservoirSize,
+        ComputeBuffer rakelMappedInfo,
+        Vector2Int rakelMappedInfoSize,
+        Vector2Int rakelReservoirSize,
         ShaderRegion shaderRegion,
         bool debugEnabled = false)
     {
@@ -115,8 +118,9 @@ public class CanvasReservoir : Reservoir
             shaderRegion,
             new List<CSAttribute>()
             {
-                new CSComputeBuffer("PaintSourceMappedInfo", paintSourceMappedInfo),
-                new CSInt2("PaintSourceReservoirSize", paintSourceReservoirSize),
+                new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
+                new CSInt2("RakelMappedInfoSize", rakelMappedInfoSize),
+                new CSInt2("RakelReservoirSize", rakelReservoirSize),
 
                 new CSComputeBuffer("ReservoirInfo", PaintGridInfoSnapshot),
                 new CSComputeBuffer("Workspace", Workspace),
@@ -128,8 +132,9 @@ public class CanvasReservoir : Reservoir
 
     // NOTE: It is assumed that the data is copied to workspace already
     public void ReduceActiveWorkspaceAvg(
-        ComputeBuffer paintSourceMappedInfo,
-        Vector2Int paintSourceReservoirSize,
+        ComputeBuffer rakelMappedInfo,
+        Vector2Int rakelMappedInfoSize,
+        Vector2Int rakelReservoirSize,
         ShaderRegion shaderRegion,
         ComputeBuffer resultTarget)
     {
@@ -143,8 +148,9 @@ public class CanvasReservoir : Reservoir
             shaderRegion,
             new List<CSAttribute>()
             {
-                new CSComputeBuffer("PaintSourceMappedInfo", paintSourceMappedInfo),
-                new CSInt2("PaintSourceReservoirSize", paintSourceReservoirSize),
+                new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
+                new CSInt2("RakelMappedInfoSize", rakelMappedInfoSize),
+                new CSInt2("RakelReservoirSize", rakelReservoirSize),
 
                 new CSComputeBuffer("Workspace", Workspace),
                 new CSInt3("WorkspaceSize", Size),

@@ -114,6 +114,8 @@ public class OilPaintEngine : MonoBehaviour
 
     void CreateTransferEngine()
     {
+        DisposeTransferEngine();
+
         TransferEngine = new TransferEngine(Rakel, Canvas, STEPS_PER_FRAME > 0 && BENCHMARK_STEPS == 0);
     }
 
@@ -194,8 +196,14 @@ public class OilPaintEngine : MonoBehaviour
     
     private void OnDestroy()
     {
+        DisposeTransferEngine();
         DisposeRakel();
         DisposeCanvas();
+    }
+
+    private void DisposeTransferEngine()
+    {
+        TransferEngine?.Dispose();
     }
 
     private void DisposeRakel()

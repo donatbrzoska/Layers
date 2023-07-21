@@ -8,6 +8,7 @@
 RWStructuredBuffer<Rakel> RakelInfo;
 int2 ReservoirPixelPickupRadius;
 RWStructuredBuffer<MappedInfo> CanvasMappedInfo;
+uint2 CanvasMappedInfoSize;
 
 uint3 CanvasReservoirSize;
 
@@ -19,7 +20,9 @@ void main(uint3 id_ : SV_DispatchThreadID)
     id__ = id_;
     if (is_relevant_thread(id(), CalculationSize))
     {
-        MappedInfo canvasMappedInfo = CanvasMappedInfo[XY(id().x, id().y, CalculationSize.x)];
+        int2 rakel_pixel = id() + CalculationPosition;
+
+        MappedInfo canvasMappedInfo = CanvasMappedInfo[XY(rakel_pixel.x, rakel_pixel.y, CanvasMappedInfoSize.x)];
         Rakel rakel = RakelInfo[0];
 
         // radius of 1 does an emit on a 3x3 area from emit source grid, based on the rounded canvas_reservoir_pixel
@@ -42,11 +45,11 @@ void main(uint3 id_ : SV_DispatchThreadID)
                     Rectangle reservoir_rectangle = create_rectangle(coord, 0, 0);
 
                     float overlap = calculate_exact_overlap(fragment_rectangle, reservoir_rectangle);
-                    CanvasMappedInfo[XY(id().x, id().y, CalculationSize.x)].overlap[i][j] = overlap;
+                    CanvasMappedInfo[XY(rakel_pixel.x, rakel_pixel.y, CanvasMappedInfoSize.x)].overlap[i][j] = overlap;
                     total_overlap += overlap;
                 }
             }
         }
-        CanvasMappedInfo[XY(id().x, id().y, CalculationSize.x)].total_overlap = total_overlap;
+        CanvasMappedInfo[XY(rakel_pixel.x, rakel_pixel.y, CanvasMappedInfoSize.x)].total_overlap = total_overlap;
     }
 }

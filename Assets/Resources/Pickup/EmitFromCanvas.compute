@@ -15,6 +15,7 @@ float CanvasReservoirCellVolume;
 uint CanvasSnapshotBufferEnabled;
 
 RWStructuredBuffer<MappedInfo> CanvasMappedInfo;
+uint2 CanvasMappedInfoSize;
 
 int2 ReservoirPixelPickupRadius;
 
@@ -26,7 +27,7 @@ uint3 CanvasEmittedPaintSize;
 // radius of 1 does an emit on a 3x3 area from emit source grid, based on the rounded canvas_reservoir_pixel
 void emit(int2 radius, int2 rakel_pixel)
 {
-    MappedInfo canvas_mapped_info = CanvasMappedInfo[XY(id().x, id().y, CalculationSize.x)];
+    MappedInfo canvas_mapped_info = CanvasMappedInfo[XY(rakel_pixel.x, rakel_pixel.y, CanvasMappedInfoSize.x)];
 
     float target_volume_to_pickup = canvas_mapped_info.target_volume_to_transfer;
     if (target_volume_to_pickup > 0)

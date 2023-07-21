@@ -88,6 +88,7 @@ public class Canvas_
 
     public void EmitPaint(
         Rakel rakel,
+        ComputeBuffer canvasMappedInfo,
         ShaderRegion pickupShaderRegion,
         float pickupDistance_MAX,
         float pickupVolume_MIN,
@@ -96,10 +97,6 @@ public class Canvas_
         bool deletePickedUpFromCSB,
         bool paintDoesPickup)
     {
-        ComputeBuffer canvasMappedInfo = new ComputeBuffer(pickupShaderRegion.PixelCount, MappedInfo.SizeInBytes);
-        MappedInfo[] canvasMappedInfoData = new MappedInfo[pickupShaderRegion.PixelCount];
-        canvasMappedInfo.SetData(canvasMappedInfoData);
-
         new ComputeShaderTask(
             "Pickup/TransformToRakelPosition",
             pickupShaderRegion,
@@ -110,6 +107,7 @@ public class Canvas_
                 new CSComputeBuffer("RakelInfo", rakel.InfoBuffer),
 
                 new CSComputeBuffer("CanvasMappedInfo", canvasMappedInfo),
+                new CSInt2("CanvasMappedInfoSize", rakel.Reservoir.Size2D),
             },
             false
         ).Run();
@@ -126,6 +124,7 @@ public class Canvas_
                 new CSInt3("CanvasReservoirSize", Reservoir.Size),
 
                 new CSComputeBuffer("CanvasMappedInfo", canvasMappedInfo),
+                new CSInt2("CanvasMappedInfoSize", rakel.Reservoir.Size2D),
             },
             false
         ).Run();
@@ -140,6 +139,7 @@ public class Canvas_
                 new CSFloat3("CanvasPosition", Position),
 
                 new CSComputeBuffer("CanvasMappedInfo", canvasMappedInfo),
+                new CSInt2("CanvasMappedInfoSize", rakel.Reservoir.Size2D),
             },
             false
         ).Run();
@@ -152,6 +152,7 @@ public class Canvas_
                 new CSComputeBuffer("RakelInfo", rakel.InfoBuffer),
                 new CSInt2("ReservoirPixelPickupRadius", RESERVOIR_PIXEL_PICKUP_RADIUS),
                 new CSComputeBuffer("CanvasMappedInfo", canvasMappedInfo),
+                new CSInt2("CanvasMappedInfoSize", rakel.Reservoir.Size2D),
 
                 new CSInt3("CanvasReservoirSize", Reservoir.Size),
             },
@@ -182,6 +183,7 @@ public class Canvas_
                 new CSInt3("RakelReservoirSize", rakel.Reservoir.Size),
                 new CSInt2("ReservoirPixelPickupRadius", RESERVOIR_PIXEL_PICKUP_RADIUS),
                 new CSComputeBuffer("CanvasMappedInfo", canvasMappedInfo),
+                new CSInt2("CanvasMappedInfoSize", rakel.Reservoir.Size2D),
 
                 new CSFloat3("CanvasPosition", Position),
                 new CSComputeBuffer("CanvasReservoirInfoSampleSource", canvasSampleSource.Info),
@@ -208,6 +210,7 @@ public class Canvas_
             {
                 new CSInt2("ReservoirPixelPickupRadius", RESERVOIR_PIXEL_PICKUP_RADIUS),
                 new CSComputeBuffer("CanvasMappedInfo", canvasMappedInfo),
+                new CSInt2("CanvasMappedInfoSize", rakel.Reservoir.Size2D),
 
                 new CSComputeBuffer("CanvasReservoirInfo", Reservoir.PaintGrid.Info),
                 new CSComputeBuffer("CanvasReservoirContent", Reservoir.PaintGrid.Content),
@@ -240,6 +243,7 @@ public class Canvas_
                 {
                     new CSInt2("ReservoirPixelPickupRadius", RESERVOIR_PIXEL_PICKUP_RADIUS),
                     new CSComputeBuffer("CanvasMappedInfo", canvasMappedInfo),
+                    new CSInt2("CanvasMappedInfoSize", rakel.Reservoir.Size2D),
 
                     new CSComputeBuffer("CanvasReservoirInfo", Reservoir.PaintGridSnapshot.Info),
                     new CSComputeBuffer("CanvasReservoirContent", Reservoir.PaintGridSnapshot.Content),
@@ -257,8 +261,6 @@ public class Canvas_
                 false
             ).Run();
         }
-
-        canvasMappedInfo.Dispose();
     }
 
     public void ApplyInputBuffer(ShaderRegion shaderRegion)

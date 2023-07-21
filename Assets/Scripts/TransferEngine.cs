@@ -31,12 +31,18 @@ public class TransferEngine
     private Queue<SimulationStep> SimulationSteps;
 
     private Rakel Rakel;
+    private ComputeBuffer CanvasMappedInfo;
+
     private Canvas_ Canvas;
+    private ComputeBuffer RakelMappedInfo;
 
     public TransferEngine(Rakel rakel, Canvas_ canvas, bool delayedExecution)
     {
         Rakel = rakel;
+        RakelMappedInfo = MappedInfo.CreateBuffer(canvas.Reservoir.Size2D);
+
         Canvas = canvas;
+        CanvasMappedInfo = MappedInfo.CreateBuffer(rakel.Reservoir.Size2D);
 
         DelayedExection = delayedExecution;
         if (delayedExecution)
@@ -141,13 +147,14 @@ public class TransferEngine
 
         // 2. Calculate rakel position based on paint height on canvas
         //    For this, we already calculate parts of rakel mapped info
-        ComputeBuffer rakelMappedInfo = Rakel.CalculateRakelMappedInfo(
+        Rakel.CalculateRakelMappedInfo(
             rakelEmitSR,
-            Canvas);
+            Canvas,
+            RakelMappedInfo);
 
         Rakel.RecalculatePositionBaseZ(
             Canvas,
-            rakelMappedInfo,
+            RakelMappedInfo,
             rakelEmitSR,
             transferConfig.ReadjustZToRakelVolume,
             transferConfig.ReadjustZToCanvasVolume,
@@ -160,7 +167,7 @@ public class TransferEngine
         // determine the distance to the rakel and the volume to emit also
         Rakel.CalculateRakelMappedInfo_Part2(
             Canvas,
-            rakelMappedInfo,
+            RakelMappedInfo,
             rakelEmitSR,
             transferConfig.EmitDistance_MAX,
             transferConfig.EmitVolume_MIN);
@@ -183,7 +190,8 @@ public class TransferEngine
                 Mathf.Max(Rakel.Reservoir.Size.x, Rakel.Reservoir.Size.y)
             );
             Canvas.Reservoir.DoSnapshotUpdate(
-                rakelMappedInfo,
+                RakelMappedInfo,
+                Canvas.Reservoir.Size2D,
                 rakelEmitSR,
                 Rakel.Reservoir.Size,
                 updateSR);
@@ -191,6 +199,7 @@ public class TransferEngine
 
         Canvas.EmitPaint(
             Rakel,
+            CanvasMappedInfo,
             canvasEmitSR,
             transferConfig.PickupDistance_MAX,
             transferConfig.PickupVolume_MIN,
@@ -201,8 +210,8 @@ public class TransferEngine
 
         Rakel.EmitPaint(
             Canvas,
-            rakelEmitSR,
-            rakelMappedInfo);
+            RakelMappedInfo,
+            rakelEmitSR);
 
         Canvas.ApplyInputBuffer(rakelEmitSR);
 
@@ -217,5 +226,11 @@ public class TransferEngine
                 1 // Padding because normal calculation is also based on pixels around
             ),
             false);
+    }
+
+    public void Dispose()
+    {
+        RakelMappedInfo.Dispose();
+        CanvasMappedInfo.Dispose();
     }
 }

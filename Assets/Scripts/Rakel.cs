@@ -237,12 +237,9 @@ public class Rakel
 
     public ComputeBuffer CalculateRakelMappedInfo(
         ShaderRegion shaderRegion,
-        Canvas_ canvas)
+        Canvas_ canvas,
+        ComputeBuffer rakelMappedInfo)
     {
-        ComputeBuffer rakelMappedInfo = new ComputeBuffer(shaderRegion.PixelCount, MappedInfo.SizeInBytes);
-        MappedInfo[] rakelMappedInfoData = new MappedInfo[shaderRegion.PixelCount];
-        rakelMappedInfo.SetData(rakelMappedInfoData);
-
         new ComputeShaderTask(
             "Emit/TransformToRakelOrigin",
             shaderRegion,
@@ -256,6 +253,7 @@ public class Rakel
                 new CSComputeBuffer("RakelInfo", InfoBuffer),
 
                 new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
+                new CSInt2("RakelMappedInfoSize", canvas.Reservoir.Size2D),
             },
             false
         ).Run();
@@ -269,6 +267,7 @@ public class Rakel
                 new CSInt3("RakelReservoirSize", Reservoir.Size),
 
                 new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
+                new CSInt2("RakelMappedInfoSize", canvas.Reservoir.Size2D),
             },
             false
         ).Run();
@@ -285,6 +284,7 @@ public class Rakel
 
                 new CSInt2("ReservoirPixelEmitRadius", ReservoirPixelEmitRadius),
                 new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
+                new CSInt2("RakelMappedInfoSize", canvas.Reservoir.Size2D),
             },
             false
         ).Run();
@@ -317,10 +317,12 @@ public class Rakel
             {
                 canvas.Reservoir.CopySnapshotActiveInfoVolumesToWorkspace(
                     rakelMappedInfo,
+                    canvas.Reservoir.Size2D,
                     Reservoir.Size2D,
                     emitSR);
                 canvas.Reservoir.ReduceActiveWorkspaceAvg(
                     rakelMappedInfo,
+                    canvas.Reservoir.Size2D,
                     Reservoir.Size2D,
                     emitSR,
                     ReducedCanvasVolume);
@@ -339,6 +341,7 @@ public class Rakel
 
                         new CSInt2("ReservoirPixelEmitRadius", ReservoirPixelEmitRadius),
                         new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
+                        new CSInt2("RakelMappedInfoSize", canvas.Reservoir.Size2D),
                         new CSComputeBuffer("Workspace", canvas.Reservoir.Workspace),
                         new CSInt3("WorkspaceSize", canvas.Reservoir.Size),
                     },
@@ -359,6 +362,7 @@ public class Rakel
                         new CSComputeBuffer("RakelInfo", InfoBuffer),
 
                         new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
+                        new CSInt2("RakelMappedInfoSize", canvas.Reservoir.Size2D),
                     },
                     false
                 ).Run();
@@ -368,6 +372,7 @@ public class Rakel
                     new List<CSAttribute>()
                     {
                         new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
+                        new CSInt2("RakelMappedInfoSize", canvas.Reservoir.Size2D),
                         new CSComputeBuffer("SampledRakelVolumes", canvas.Reservoir.Workspace),
                         new CSInt3("SampledRakelVolumesSize", canvas.Reservoir.Size),
                     },
@@ -375,6 +380,7 @@ public class Rakel
                 ).Run();
                 canvas.Reservoir.ReduceActiveWorkspaceAvg(
                     rakelMappedInfo,
+                    canvas.Reservoir.Size2D,
                     Reservoir.Size2D,
                     emitSR,
                     ReducedRakelVolume);
@@ -426,6 +432,7 @@ public class Rakel
                 new CSComputeBuffer("RakelInfo", InfoBuffer),
 
                 new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
+                new CSInt2("RakelMappedInfoSize", canvas.Reservoir.Size2D),
             },
             false
         ).Run();
@@ -443,6 +450,7 @@ public class Rakel
                 new CSComputeBuffer("CanvasReservoirInfoDuplicate", canvas.Reservoir.PaintGridImprintCopy.Info),
                 new CSInt3("CanvasReservoirSize", canvas.Reservoir.Size),
                 new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
+                new CSInt2("RakelMappedInfoSize", canvas.Reservoir.Size2D),
 
                 new CSInt2("ReservoirPixelEmitRadius", ReservoirPixelEmitRadius),
                 new CSFloat("EmitDistance_MAX", emitDistance_MAX),
@@ -470,8 +478,8 @@ public class Rakel
 
     public void EmitPaint(
         Canvas_ canvas,
-        ShaderRegion shaderRegion,
-        ComputeBuffer rakelMappedInfo)
+        ComputeBuffer rakelMappedInfo,
+        ShaderRegion shaderRegion)
     {
         new ComputeShaderTask(
             "Emit/EmitFromRakel",
@@ -487,6 +495,7 @@ public class Rakel
                 new CSFloat("RakelReservoirCellVolume", Reservoir.PaintGrid.CellVolume),
 
                 new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
+                new CSInt2("RakelMappedInfoSize", canvas.Reservoir.Size2D),
 
                 new CSInt2("ReservoirPixelEmitRadius", ReservoirPixelEmitRadius),
 
@@ -496,8 +505,6 @@ public class Rakel
             },
             false
         ).Run();
-
-        rakelMappedInfo.Dispose();
     }
 
     public void ApplyInputBuffer(ShaderRegion shaderRegion)

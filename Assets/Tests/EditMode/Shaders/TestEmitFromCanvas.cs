@@ -34,6 +34,7 @@ public class TestEmitFromCanvas
     Rakel Rakel;
     float RakelLength;
     float RakelWidth;
+    ComputeBuffer CanvasMappedInfo;
 
     Canvas_ Canvas;
     float CanvasWidth;
@@ -62,6 +63,7 @@ public class TestEmitFromCanvas
 
         CreateRakel();
         CreateCanvas();
+        CreateCanvasMappedInfo();
 
         new FileLogger_().OnEnable();
     }
@@ -78,6 +80,12 @@ public class TestEmitFromCanvas
         Canvas = new Canvas_(CanvasWidth, CanvasHeight, MAX_LAYERS, CELL_VOLUME, DIFFUSE_DEPTH, DIFFUSE_RATIO, new Vector3(0, 0, 0), Resolution, 0.015f, 0);
     }
 
+    private void CreateCanvasMappedInfo()
+    {
+        CanvasMappedInfo?.Dispose();
+        CanvasMappedInfo = MappedInfo.CreateBuffer(Rakel.Reservoir.Size2D);
+    }
+
     private int Pixels(float length, float width)
     {
         return (int)length * Resolution * (int)width * Resolution;
@@ -88,6 +96,7 @@ public class TestEmitFromCanvas
     {
         Canvas.Dispose();
         Rakel.Dispose();
+        CanvasMappedInfo.Dispose();
 
         new FileLogger_().OnDisable();
     }
@@ -109,6 +118,7 @@ public class TestEmitFromCanvas
         // Act
         Canvas.EmitPaint(
             Rakel,
+            CanvasMappedInfo,
             canvasEmitSR,
             PICKUP_DIST_MAX, PICKUP_VOLUME_MIN,
             Canvas.Reservoir.GetFullShaderRegion(),
@@ -151,6 +161,7 @@ public class TestEmitFromCanvas
         // Act
         Canvas.EmitPaint(
             Rakel,
+            CanvasMappedInfo,
             canvasEmitSR,
             PICKUP_DIST_MAX, PICKUP_VOLUME_MIN,
             Canvas.Reservoir.GetFullShaderRegion(),
@@ -192,6 +203,7 @@ public class TestEmitFromCanvas
     {
         RakelWidth = 6;
         CreateRakel();
+        CreateCanvasMappedInfo();
         int INIT_LAYERS = 8;
         int PICKED_UP_LAYERS = 4;
 
@@ -208,6 +220,7 @@ public class TestEmitFromCanvas
         // Act
         Canvas.EmitPaint(
             Rakel,
+            CanvasMappedInfo,
             canvasEmitSR,
             PICKUP_DIST_MAX, PICKUP_VOLUME_MIN,
             Canvas.Reservoir.GetFullShaderRegion(),
@@ -276,6 +289,7 @@ public class TestEmitFromCanvas
         RakelWidth = 6;
         CreateRakel();
         CreateCanvas();
+        CreateCanvasMappedInfo();
         int INIT_LAYERS = 8;
         int PICKED_UP_LAYERS = 4;
 
@@ -292,6 +306,7 @@ public class TestEmitFromCanvas
         // Act
         Canvas.EmitPaint(
             Rakel,
+            CanvasMappedInfo,
             canvasEmitSR,
             PICKUP_DIST_MAX, PICKUP_VOLUME_MIN,
             Canvas.Reservoir.GetFullShaderRegion(),
@@ -385,6 +400,7 @@ public class TestEmitFromCanvas
         // Act
         Canvas.EmitPaint(
             Rakel,
+            CanvasMappedInfo,
             canvasEmitSR,
             PICKUP_DIST_MAX, PICKUP_VOLUME_MIN,
             Canvas.Reservoir.GetFullShaderRegion(),

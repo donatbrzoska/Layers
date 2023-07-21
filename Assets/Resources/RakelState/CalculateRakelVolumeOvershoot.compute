@@ -4,6 +4,7 @@
 #include "../mapped_info.hlsl"
 
 RWStructuredBuffer<MappedInfo> RakelMappedInfo;
+uint2 RakelMappedInfoSize;
 RWStructuredBuffer<float> SampledRakelVolumes;
 uint3 SampledRakelVolumesSize;
 
@@ -19,7 +20,7 @@ void main (uint3 id_ : SV_DispatchThreadID)
         int2 canvas_pixel = id() + CalculationPosition;
         float rakel_volume = SampledRakelVolumes[XY(canvas_pixel.x, canvas_pixel.y, SampledRakelVolumesSize.x)];
 
-        MappedInfo rakel_mapped_info = RakelMappedInfo[XY(id().x, id().y, CalculationSize.x)];
+        MappedInfo rakel_mapped_info = RakelMappedInfo[XY(canvas_pixel.x, canvas_pixel.y, RakelMappedInfoSize.x)];
         float rakel_volume_overshoot = max(rakel_volume - rakel_mapped_info.distance / VOLUME_THICKNESS(), 0);
 
         SampledRakelVolumes[XY(canvas_pixel.x, canvas_pixel.y, SampledRakelVolumesSize.x)] = rakel_volume_overshoot;

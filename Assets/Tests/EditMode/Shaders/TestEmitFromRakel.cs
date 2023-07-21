@@ -27,6 +27,7 @@ public class TestEmitFromRakel
     private const float FILL_WIDTH_PART = 1;
 
     Canvas_ Canvas;
+    ComputeBuffer RakelMappedInfo;
     float RakelLength = 4;
     float RakelWidth = 2;
     Rakel Rakel;
@@ -51,6 +52,7 @@ public class TestEmitFromRakel
         Canvas = new Canvas_(15, 10, MAX_LAYERS, CELL_VOLUME, DIFFUSE_DEPTH, DIFFUSE_RATIO, new Vector3(0, 0, 0), 1, 0, 0);
 
         Rakel = new Rakel(RakelLength, RakelWidth, 1, MAX_LAYERS, CELL_VOLUME, DIFFUSE_DEPTH, DIFFUSE_RATIO, 0.5f, 0);
+        RakelMappedInfo = MappedInfo.CreateBuffer(Canvas.Reservoir.Size2D);
 
         ColorFiller = new FlatColorFiller(Color_.CadmiumGreen, ColorSpace.RGB);
 
@@ -62,6 +64,8 @@ public class TestEmitFromRakel
     {
         Rakel.Dispose();
         Canvas.Dispose();
+
+        RakelMappedInfo.Dispose();
 
         new FileLogger_().OnDisable();
     }
@@ -86,16 +90,16 @@ public class TestEmitFromRakel
             Canvas.MapToPixelInRange(Rakel.Info.LowerRight)
         );
 
-        ComputeBuffer rakelMappedInfo = Rakel.CalculateRakelMappedInfo(rakelEmitSR, Canvas);
+        Rakel.CalculateRakelMappedInfo(rakelEmitSR, Canvas, RakelMappedInfo);
         Rakel.Reservoir.DoImprintCopy();
-        Rakel.CalculateRakelMappedInfo_Part2(Canvas, rakelMappedInfo, rakelEmitSR, EMIT_DIST_MAX, EMIT_VOLUME_MIN);
+        Rakel.CalculateRakelMappedInfo_Part2(Canvas, RakelMappedInfo, rakelEmitSR, EMIT_DIST_MAX, EMIT_VOLUME_MIN);
 
 
         // Act
         Rakel.EmitPaint(
             Canvas,
-            rakelEmitSR,
-            rakelMappedInfo);
+            RakelMappedInfo,
+            rakelEmitSR);
 
 
         // Assert
@@ -142,16 +146,16 @@ public class TestEmitFromRakel
             Canvas.MapToPixelInRange(Rakel.Info.LowerRight)
         );
 
-        ComputeBuffer rakelMappedInfo = Rakel.CalculateRakelMappedInfo(rakelEmitSR, Canvas);
+        Rakel.CalculateRakelMappedInfo(rakelEmitSR, Canvas, RakelMappedInfo);
         Rakel.Reservoir.DoImprintCopy();
-        Rakel.CalculateRakelMappedInfo_Part2(Canvas, rakelMappedInfo, rakelEmitSR, EMIT_DIST_MAX, EMIT_VOLUME_MIN);
+        Rakel.CalculateRakelMappedInfo_Part2(Canvas, RakelMappedInfo, rakelEmitSR, EMIT_DIST_MAX, EMIT_VOLUME_MIN);
 
 
         // Act
         Rakel.EmitPaint(
             Canvas,
-            rakelEmitSR,
-            rakelMappedInfo);
+            RakelMappedInfo,
+            rakelEmitSR);
 
 
         // Assert
@@ -198,16 +202,16 @@ public class TestEmitFromRakel
             Canvas.MapToPixelInRange(Rakel.Info.LowerRight)
         );
 
-        ComputeBuffer rakelMappedInfo = Rakel.CalculateRakelMappedInfo(rakelEmitSR, Canvas);
+        Rakel.CalculateRakelMappedInfo(rakelEmitSR, Canvas, RakelMappedInfo);
         Rakel.Reservoir.DoImprintCopy();
-        Rakel.CalculateRakelMappedInfo_Part2(Canvas, rakelMappedInfo, rakelEmitSR, EMIT_DIST_MAX, EMIT_VOLUME_MIN);
+        Rakel.CalculateRakelMappedInfo_Part2(Canvas, RakelMappedInfo, rakelEmitSR, EMIT_DIST_MAX, EMIT_VOLUME_MIN);
 
 
         // Act
         Rakel.EmitPaint(
             Canvas,
-            rakelEmitSR,
-            rakelMappedInfo);
+            RakelMappedInfo,
+            rakelEmitSR);
 
 
         // Assert
@@ -257,16 +261,16 @@ public class TestEmitFromRakel
             Canvas.MapToPixelInRange(Rakel.Info.LowerRight)
         );
 
-        ComputeBuffer rakelMappedInfo = Rakel.CalculateRakelMappedInfo(rakelEmitSR, Canvas);
+        Rakel.CalculateRakelMappedInfo(rakelEmitSR, Canvas, RakelMappedInfo);
         Rakel.Reservoir.DoImprintCopy();
-        Rakel.CalculateRakelMappedInfo_Part2(Canvas, rakelMappedInfo, rakelEmitSR, EMIT_DIST_MAX, EMIT_VOLUME_MIN);
+        Rakel.CalculateRakelMappedInfo_Part2(Canvas, RakelMappedInfo, rakelEmitSR, EMIT_DIST_MAX, EMIT_VOLUME_MIN);
 
 
         // Act
         Rakel.EmitPaint(
             Canvas,
-            rakelEmitSR,
-            rakelMappedInfo);
+            RakelMappedInfo,
+            rakelEmitSR);
 
 
         // Assert

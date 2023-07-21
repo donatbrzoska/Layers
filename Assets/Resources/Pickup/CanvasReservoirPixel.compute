@@ -10,6 +10,7 @@ float2 CanvasSize;
 uint3 CanvasReservoirSize;
 
 RWStructuredBuffer<MappedInfo> CanvasMappedInfo;
+uint2 CanvasMappedInfoSize;
 
 
 // returns:
@@ -45,7 +46,9 @@ void main(uint3 id_ : SV_DispatchThreadID)
     id__ = id_;
     if (is_relevant_thread(id(), CalculationSize))
     {
-        float3 forward_transformed_rakel_pixel = CanvasMappedInfo[XY(id().x, id().y, CalculationSize.x)].transformed_pixel;
-        CanvasMappedInfo[XY(id().x, id().y, CalculationSize.x)].reservoir_pixel = project_into_canvas_reservoir(forward_transformed_rakel_pixel);
+        int2 rakel_pixel = id() + CalculationPosition;
+
+        float3 forward_transformed_rakel_pixel = CanvasMappedInfo[XY(rakel_pixel.x, rakel_pixel.y, CanvasMappedInfoSize.x)].transformed_pixel;
+        CanvasMappedInfo[XY(rakel_pixel.x, rakel_pixel.y, CanvasMappedInfoSize.x)].reservoir_pixel = project_into_canvas_reservoir(forward_transformed_rakel_pixel);
     }
 }

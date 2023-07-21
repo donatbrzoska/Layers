@@ -10,4 +10,12 @@ public unsafe struct MappedInfo
     public fixed float Overlap[9 * 9];
     public float TotalOverlap;
     public float TargetVolumeToTransfer;
+
+    public static ComputeBuffer CreateBuffer(Vector2Int size)
+    {
+        ComputeBuffer buffer = new ComputeBuffer(size.x * size.y, MappedInfo.SizeInBytes);
+        MappedInfo[] bufferData = new MappedInfo[size.x * size.y];
+        buffer.SetData(bufferData);
+        return buffer;
+    }
 }

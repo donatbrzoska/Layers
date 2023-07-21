@@ -4,8 +4,9 @@
 #include "../mapped_info.hlsl"
 #include "../paint_grid.hlsl"
 
-RWStructuredBuffer<MappedInfo> PaintSourceMappedInfo;
-uint2 PaintSourceReservoirSize;
+RWStructuredBuffer<MappedInfo> RakelMappedInfo;
+uint2 RakelMappedInfoSize;
+uint2 RakelReservoirSize;
 
 RWStructuredBuffer<ColumnInfo> ReservoirInfo;
 RWStructuredBuffer<float> Workspace;
@@ -20,16 +21,16 @@ void main (uint3 id_ : SV_DispatchThreadID)
     id__ = id_;
     if (is_relevant_thread(id(), CalculationSize))
     {
-        MappedInfo paint_source_mapped = PaintSourceMappedInfo[XY(id().x, id().y, CalculationSize.x)];
-        int2 reservoir_pixel_nearest = round(paint_source_mapped.reservoir_pixel);
-
         int2 pixel = id() + CalculationPosition;
+
+        MappedInfo rakel_mapped_info = RakelMappedInfo[XY(pixel.x, pixel.y, RakelMappedInfoSize.x)];
+        int2 reservoir_pixel_nearest = round(rakel_mapped_info.reservoir_pixel);
 
         ColumnInfo c;
         c.size = 0;
         c.write_index = 0;
         c.volume = 0;
-        if (pixel_in_array_range(reservoir_pixel_nearest, PaintSourceReservoirSize)) {
+        if (pixel_in_array_range(reservoir_pixel_nearest, RakelReservoirSize)) {
             c = ReservoirInfo[XY(pixel.x, pixel.y, ReservoirSize.x)];
         }
 

@@ -7,6 +7,7 @@ RWStructuredBuffer<Rakel> RakelInfo;
 uint3 RakelReservoirSize;
 
 RWStructuredBuffer<MappedInfo> RakelMappedInfo;
+uint2 RakelMappedInfoSize;
 
 
 // returns:
@@ -40,7 +41,9 @@ void main (uint3 id_ : SV_DispatchThreadID)
     id__ = id_;
     if (is_relevant_thread(id(), CalculationSize))
     {
-        float3 back_tranformed_canvas_pixel = RakelMappedInfo[XY(id().x, id().y, CalculationSize.x)].transformed_pixel;
-        RakelMappedInfo[XY(id().x, id().y, CalculationSize.x)].reservoir_pixel = project_into_rakel_reservoir(back_tranformed_canvas_pixel);
+        int2 canvas_pixel = id() + CalculationPosition;
+
+        float3 back_tranformed_canvas_pixel = RakelMappedInfo[XY(canvas_pixel.x, canvas_pixel.y, RakelMappedInfoSize.x)].transformed_pixel;
+        RakelMappedInfo[XY(canvas_pixel.x, canvas_pixel.y, RakelMappedInfoSize.x)].reservoir_pixel = project_into_rakel_reservoir(back_tranformed_canvas_pixel);
     }
 }
