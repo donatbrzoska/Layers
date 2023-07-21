@@ -334,13 +334,13 @@ public class Rakel
                     emitSR,
                     new List<CSAttribute>()
                     {
-                    new CSComputeBuffer("RakelReservoirInfo", Reservoir.PaintGrid.Info),
-                    new CSInt3("RakelReservoirSize", Reservoir.Size),
+                        new CSComputeBuffer("RakelReservoirInfo", Reservoir.PaintGrid.Info),
+                        new CSInt3("RakelReservoirSize", Reservoir.Size),
 
-                    new CSInt2("ReservoirPixelEmitRadius", ReservoirPixelEmitRadius),
-                    new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
-                    new CSComputeBuffer("Workspace", canvas.Reservoir.Workspace),
-                    new CSInt3("WorkspaceSize", canvas.Reservoir.Size),
+                        new CSInt2("ReservoirPixelEmitRadius", ReservoirPixelEmitRadius),
+                        new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
+                        new CSComputeBuffer("Workspace", canvas.Reservoir.Workspace),
+                        new CSInt3("WorkspaceSize", canvas.Reservoir.Size),
                     },
                     false
                 ).Run();
@@ -356,9 +356,9 @@ public class Rakel
                     emitSR,
                     new List<CSAttribute>()
                     {
-                new CSComputeBuffer("RakelInfo", InfoBuffer),
+                        new CSComputeBuffer("RakelInfo", InfoBuffer),
 
-                new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
+                        new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
                     },
                     false
                 ).Run();
@@ -367,9 +367,9 @@ public class Rakel
                     emitSR,
                     new List<CSAttribute>()
                     {
-                    new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
-                    new CSComputeBuffer("SampledRakelVolumes", canvas.Reservoir.Workspace),
-                    new CSInt3("SampledRakelVolumesSize", canvas.Reservoir.Size),
+                        new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
+                        new CSComputeBuffer("SampledRakelVolumes", canvas.Reservoir.Workspace),
+                        new CSInt3("SampledRakelVolumesSize", canvas.Reservoir.Size),
                     },
                     false
                 ).Run();
@@ -388,13 +388,13 @@ public class Rakel
                     new ShaderRegion(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
                     new List<CSAttribute>()
                     {
-                    new CSComputeBuffer("ReducedCanvasVolumeSource", ReducedCanvasVolume),
-                    new CSComputeBuffer("ReducedRakelVolumeSource", ReducedRakelVolume),
+                        new CSComputeBuffer("ReducedCanvasVolumeSource", ReducedCanvasVolume),
+                        new CSComputeBuffer("ReducedRakelVolumeSource", ReducedRakelVolume),
 
-                    new CSFloat("LayerThickness_MAX", layerThickness_MAX),
-                    new CSFloat("MAX_SUPPORTED_TILT", MAX_SUPPORTED_TILT),
+                        new CSFloat("LayerThickness_MAX", layerThickness_MAX),
+                        new CSFloat("MAX_SUPPORTED_TILT", MAX_SUPPORTED_TILT),
 
-                    new CSComputeBuffer("RakelInfo", InfoBuffer),
+                        new CSComputeBuffer("RakelInfo", InfoBuffer),
                     },
                     false
                 ).Run();
