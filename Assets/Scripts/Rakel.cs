@@ -317,11 +317,11 @@ public class Rakel
             {
                 canvas.Reservoir.CopySnapshotActiveInfoVolumesToWorkspace(
                     rakelMappedInfo,
-                    new Vector2Int(Reservoir.Size.x, Reservoir.Size.y),
+                    Reservoir.Size2D,
                     emitSR);
                 canvas.Reservoir.ReduceActiveWorkspaceAvg(
                     rakelMappedInfo,
-                    new Vector2Int(Reservoir.Size.x, Reservoir.Size.y),
+                    Reservoir.Size2D,
                     emitSR,
                     ReducedCanvasVolume);
             }
@@ -375,7 +375,7 @@ public class Rakel
                 ).Run();
                 canvas.Reservoir.ReduceActiveWorkspaceAvg(
                     rakelMappedInfo,
-                    new Vector2Int(Reservoir.Size.x, Reservoir.Size.y),
+                    Reservoir.Size2D,
                     emitSR,
                     ReducedRakelVolume);
             }

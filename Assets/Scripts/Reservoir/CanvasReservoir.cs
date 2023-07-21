@@ -168,7 +168,7 @@ public class CanvasReservoir : Reservoir
             new List<CSAttribute>()
             {
                 new CSComputeBuffer("Workspace", Workspace),
-                new CSInt2("WorkspaceSize", new Vector2Int(Size.x, Size.y)),
+                new CSInt2("WorkspaceSize", Size2D),
                 new CSInt2("DividendPosition", shaderRegion.Position),
 
                 new CSComputeBuffer("Divisor", activeCount),
@@ -204,7 +204,7 @@ public class CanvasReservoir : Reservoir
             new List<CSAttribute>()
             {
                 new CSComputeBuffer("ReducedValueSource", Workspace),
-                new CSInt2("ReducedValueSourceSize", new Vector2Int(Size.x, Size.y)),
+                new CSInt2("ReducedValueSourceSize", Size2D),
                 new CSInt2("ReducedValueSourceIndex", shaderRegion.Position),
 
                 new CSComputeBuffer("ReducedValueTarget", resultTarget),

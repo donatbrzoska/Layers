@@ -11,6 +11,15 @@ public class Reservoir
 {
     public int Resolution;
     public Vector3Int Size;
+    public Vector2Int Size2D
+    {
+        private set { }
+
+        get
+        {
+            return new Vector2Int(Size.x, Size.y);
+        }
+    }
 
     public PaintGrid PaintGrid;
     public PaintGrid PaintGridImprintCopy; // only read from for sampling
