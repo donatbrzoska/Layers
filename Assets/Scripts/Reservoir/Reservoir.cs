@@ -15,6 +15,8 @@ public class Reservoir
     public PaintGrid PaintGrid;
     public PaintGrid PaintGridImprintCopy; // only read from for sampling
 
+    public PaintGrid PaintGridInputBuffer;
+
     public float PixelSize { get { return 1 / (float) Resolution; } }
 
     public Reservoir(int resolution, int width, int height, int layers, float cellVolume, int diffuseDepth, float diffuseRatio)
@@ -24,6 +26,10 @@ public class Reservoir
 
         PaintGrid = new PaintGrid(Size, cellVolume, diffuseDepth, diffuseRatio);
         PaintGridImprintCopy = new PaintGrid(Size, cellVolume, diffuseDepth, diffuseRatio);
+
+        // HACK InputBuffer is actually treated as a raw stack with no specified mixing parameters
+        int UNUSED = 0;
+        PaintGridInputBuffer = new PaintGrid(Size, UNUSED, UNUSED, UNUSED);
     }
 
     public void Fill(ReservoirFiller filler)
@@ -85,5 +91,7 @@ public class Reservoir
     {
         PaintGrid.Dispose();
         PaintGridImprintCopy.Dispose();
+
+        PaintGridInputBuffer.Dispose();
     }
 }

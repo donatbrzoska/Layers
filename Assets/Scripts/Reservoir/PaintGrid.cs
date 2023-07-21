@@ -128,12 +128,17 @@ public class PaintGrid
     }
 
     // Only used for testing purposes
-    public float[] GetVolumes()
+    public float[] GetVolumes(ShaderRegion shaderRegion)
     {
-        float[] volumes = new float[InfoData.Length];
-        for (int i = 0; i < volumes.Length; i++)
+        float[] volumes = new float[shaderRegion.PixelCount];
+        for (int i = 0; i < shaderRegion.Size.y; i++)
         {
-            volumes[i] = InfoData[i].Volume;
+            for (int j = 0; j < shaderRegion.Size.x; j++)
+            {
+                int y = i + shaderRegion.Position.y;
+                int x = j + shaderRegion.Position.x;
+                volumes[IndexUtil.XY(j, i, shaderRegion.Size.x)] = Get(x, y).Volume;
+            }
         }
         return volumes;
     }

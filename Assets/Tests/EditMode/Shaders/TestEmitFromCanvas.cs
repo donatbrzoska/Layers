@@ -39,8 +39,6 @@ public class TestEmitFromCanvas
     float CanvasWidth;
     float CanvasHeight;
 
-    PaintGrid CanvasEmittedPaint;
-
     int MAX_LAYERS = 20;
 
     public float Sum(float[] values)
@@ -88,7 +86,6 @@ public class TestEmitFromCanvas
     [TearDown]
     public void Teardown()
     {
-        CanvasEmittedPaint.Dispose();
         Canvas.Dispose();
         Rakel.Dispose();
 
@@ -110,7 +107,7 @@ public class TestEmitFromCanvas
             0, 0);
 
         // Act
-        CanvasEmittedPaint = Canvas.EmitPaint(
+        Canvas.EmitPaint(
             Rakel,
             canvasEmitSR,
             PICKUP_DIST_MAX, PICKUP_VOLUME_MIN,
@@ -119,8 +116,8 @@ public class TestEmitFromCanvas
 
 
         // Assert
-        CanvasEmittedPaint.ReadbackInfo();
-        float[] canvasEmittedVolumes = CanvasEmittedPaint.GetVolumes();
+        Rakel.Reservoir.PaintGridInputBuffer.ReadbackInfo();
+        float[] canvasEmittedVolumes = Rakel.Reservoir.PaintGridInputBuffer.GetVolumes(canvasEmitSR);
 
         //LogUtil.Log(canvasEmittedVolumes, canvasEmitSR.Size.y, false);
 
@@ -152,7 +149,7 @@ public class TestEmitFromCanvas
             0, 0);
 
         // Act
-        CanvasEmittedPaint = Canvas.EmitPaint(
+        Canvas.EmitPaint(
             Rakel,
             canvasEmitSR,
             PICKUP_DIST_MAX, PICKUP_VOLUME_MIN,
@@ -163,8 +160,8 @@ public class TestEmitFromCanvas
         // Assert
 
         // 1. Check emitted paint
-        CanvasEmittedPaint.ReadbackInfo();
-        float[] canvasEmittedVolumes = CanvasEmittedPaint.GetVolumes();
+        Rakel.Reservoir.PaintGridInputBuffer.ReadbackInfo();
+        float[] canvasEmittedVolumes = Rakel.Reservoir.PaintGridInputBuffer.GetVolumes(canvasEmitSR);
 
         //LogUtil.Log(canvasEmittedVolumes, canvasEmitSR.Size.y, false);
 
@@ -184,7 +181,7 @@ public class TestEmitFromCanvas
 
         // 2. Check paint on canvas
         Canvas.Reservoir.PaintGrid.ReadbackInfo();
-        float[] canvasVolumes = Canvas.Reservoir.PaintGrid.GetVolumes();
+        float[] canvasVolumes = Canvas.Reservoir.PaintGrid.GetVolumes(Canvas.Reservoir.GetFullShaderRegion());
         AssertUtil.AssertFloatsEqual(
             2 * Pixels(CanvasWidth, CanvasHeight) * Paint.UNIT - Sum(canvasEmittedVolumes),
             Sum(canvasVolumes));
@@ -209,7 +206,7 @@ public class TestEmitFromCanvas
             0, 0);
 
         // Act
-        CanvasEmittedPaint = Canvas.EmitPaint(
+        Canvas.EmitPaint(
             Rakel,
             canvasEmitSR,
             PICKUP_DIST_MAX, PICKUP_VOLUME_MIN,
@@ -220,8 +217,8 @@ public class TestEmitFromCanvas
         // Assert
 
         // 1. Check emitted paint
-        CanvasEmittedPaint.ReadbackInfo();
-        float[] canvasEmittedVolumes = CanvasEmittedPaint.GetVolumes();
+        Rakel.Reservoir.PaintGridInputBuffer.ReadbackInfo();
+        float[] canvasEmittedVolumes = Rakel.Reservoir.PaintGridInputBuffer.GetVolumes(canvasEmitSR);
 
         //LogUtil.Log(canvasEmittedVolumes, canvasEmitSR.Size.y, false);
 
@@ -241,7 +238,7 @@ public class TestEmitFromCanvas
 
         // 2. Check paint on canvas
         Canvas.Reservoir.PaintGrid.ReadbackInfo();
-        float[] canvasVolumes = Canvas.Reservoir.PaintGrid.GetVolumes();
+        float[] canvasVolumes = Canvas.Reservoir.PaintGrid.GetVolumes(Canvas.Reservoir.GetFullShaderRegion());
 
         //LogUtil.Log(canvasVolumes, Canvas.TextureSize.y, false);
 
@@ -293,7 +290,7 @@ public class TestEmitFromCanvas
             0, 0);
 
         // Act
-        CanvasEmittedPaint = Canvas.EmitPaint(
+        Canvas.EmitPaint(
             Rakel,
             canvasEmitSR,
             PICKUP_DIST_MAX, PICKUP_VOLUME_MIN,
@@ -304,8 +301,8 @@ public class TestEmitFromCanvas
         // Assert
 
         // 1. Check emitted paint
-        CanvasEmittedPaint.ReadbackInfo();
-        float[] canvasEmittedVolumes = CanvasEmittedPaint.GetVolumes();
+        Rakel.Reservoir.PaintGridInputBuffer.ReadbackInfo();
+        float[] canvasEmittedVolumes = Rakel.Reservoir.PaintGridInputBuffer.GetVolumes(canvasEmitSR);
 
         //LogUtil.Log(canvasEmittedVolumes, canvasEmitSR.Size.y, false);
 
@@ -330,7 +327,7 @@ public class TestEmitFromCanvas
 
         // 2. Check paint on canvas
         Canvas.Reservoir.PaintGrid.ReadbackInfo();
-        float[] canvasVolumes = Canvas.Reservoir.PaintGrid.GetVolumes();
+        float[] canvasVolumes = Canvas.Reservoir.PaintGrid.GetVolumes(Canvas.Reservoir.GetFullShaderRegion());
 
         //LogUtil.Log(canvasVolumes, Canvas.TextureSize.y, false);
 
@@ -386,7 +383,7 @@ public class TestEmitFromCanvas
             30, 0);
 
         // Act
-        CanvasEmittedPaint = Canvas.EmitPaint(
+        Canvas.EmitPaint(
             Rakel,
             canvasEmitSR,
             PICKUP_DIST_MAX, PICKUP_VOLUME_MIN,
@@ -395,8 +392,8 @@ public class TestEmitFromCanvas
 
 
         // Assert
-        CanvasEmittedPaint.ReadbackInfo();
-        float[] canvasEmittedVolumes = CanvasEmittedPaint.GetVolumes();
+        Rakel.Reservoir.PaintGridInputBuffer.ReadbackInfo();
+        float[] canvasEmittedVolumes = Rakel.Reservoir.PaintGridInputBuffer.GetVolumes(canvasEmitSR);
 
         //LogUtil.Log(canvasEmittedVolumes, canvasEmitSR.Size.y, false);
 

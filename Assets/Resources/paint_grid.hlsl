@@ -13,6 +13,16 @@ struct ColumnInfo
     float volume;
 };
 
+ColumnInfo column_info_create_empty()
+{
+    ColumnInfo c;
+    c.size = 0;
+    c.write_index = 0;
+    c.volume = 0;
+
+    return c;
+}
+
 bool column_is_full(ColumnInfo c, uint3 pg_size)
 {
     return c.write_index == pg_size.z;
@@ -121,6 +131,16 @@ void paint_grid_reverse_transfer(
         Paint p = src_pg_content[XYZ(src_pos.x, src_pos.y, z, src_pg_size)];
         paint_grid_fill(dst_pg_info, dst_pg_content, dst_pg_size, dst_pg_cell_volume, dst_pg_diffuse_depth, dst_pg_diffuse_ratio, dst_pos, p);
     }
+}
+
+void paint_grid_clear(RWStructuredBuffer<ColumnInfo> pg_info, RWStructuredBuffer<Paint> pg_content, uint3 pg_size, uint2 clear_pos)
+{
+    for (uint z = 0; z < pg_info[XY(clear_pos.x, clear_pos.y, pg_size.x)].size; z++)
+    {
+        pg_content[XYZ(clear_pos.x, clear_pos.y, z, pg_size)] = paint_create_empty();
+    }
+
+    pg_info[XY(clear_pos.x, clear_pos.y, pg_size.x)] = column_info_create_empty();
 }
 
 // it is assumed, that cells are only emptied from top to bottom (write_index update)

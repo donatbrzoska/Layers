@@ -468,14 +468,11 @@ public class Rakel
         //PickupReservoir.Fill(Color_.CadmiumRed, volume / 2, filler);
     }
 
-    public PaintGrid EmitPaint(
+    public void EmitPaint(
+        Canvas_ canvas,
         ShaderRegion shaderRegion,
         ComputeBuffer rakelMappedInfo)
     {
-        // HACK rakelEmittedPaint is actually treated as a raw stack with no specified mixing parameters
-        float UNUSED = 0;
-        PaintGrid rakelEmittedPaint = new PaintGrid(new Vector3Int(shaderRegion.Size.x, shaderRegion.Size.y, Reservoir.Size.z), UNUSED, (int)UNUSED, UNUSED);
-
         new ComputeShaderTask(
             "Emit/EmitFromRakel",
             shaderRegion,
@@ -493,30 +490,26 @@ public class Rakel
 
                 new CSInt2("ReservoirPixelEmitRadius", ReservoirPixelEmitRadius),
 
-                new CSComputeBuffer("RakelEmittedPaintInfo", rakelEmittedPaint.Info),
-                new CSComputeBuffer("RakelEmittedPaintContent", rakelEmittedPaint.Content),
-                new CSInt3("RakelEmittedPaintSize", rakelEmittedPaint.Size),
+                new CSComputeBuffer("RakelEmittedPaintInfo", canvas.Reservoir.PaintGridInputBuffer.Info),
+                new CSComputeBuffer("RakelEmittedPaintContent", canvas.Reservoir.PaintGridInputBuffer.Content),
+                new CSInt3("RakelEmittedPaintSize", canvas.Reservoir.PaintGridInputBuffer.Size),
             },
             false
         ).Run();
 
         rakelMappedInfo.Dispose();
-
-        return rakelEmittedPaint;
     }
 
-    public void ApplyPaint(
-        ShaderRegion shaderRegion,
-        PaintGrid canvasEmittedPaint)
+    public void ApplyInputBuffer(ShaderRegion shaderRegion)
     {
         new ComputeShaderTask(
             "Pickup/ApplyBufferToRakel",
             shaderRegion,
             new List<CSAttribute>
             {
-                new CSComputeBuffer("CanvasEmittedPaintInfo", canvasEmittedPaint.Info),
-                new CSComputeBuffer("CanvasEmittedPaintContent", canvasEmittedPaint.Content),
-                new CSInt3("CanvasEmittedPaintSize", canvasEmittedPaint.Size),
+                new CSComputeBuffer("CanvasEmittedPaintInfo", Reservoir.PaintGridInputBuffer.Info),
+                new CSComputeBuffer("CanvasEmittedPaintContent", Reservoir.PaintGridInputBuffer.Content),
+                new CSInt3("CanvasEmittedPaintSize", Reservoir.PaintGridInputBuffer.Size),
 
                 new CSComputeBuffer("RakelReservoirInfo", Reservoir.PaintGrid.Info),
                 new CSComputeBuffer("RakelReservoirContent", Reservoir.PaintGrid.Content),
@@ -527,8 +520,6 @@ public class Rakel
             },
             false
         ).Run();
-
-        canvasEmittedPaint.Dispose();
     }
 
     public void Dispose()

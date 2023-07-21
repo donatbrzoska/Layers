@@ -109,7 +109,7 @@ void emit(int2 radius, int2 rakel_pixel)
                 }
 
                 // raw push
-                paint_grid_push(CanvasEmittedPaintInfo, CanvasEmittedPaintContent, CanvasEmittedPaintSize, id().xy, emitted_from_layer_mixed);
+                paint_grid_push(CanvasEmittedPaintInfo, CanvasEmittedPaintContent, CanvasEmittedPaintSize, rakel_pixel, emitted_from_layer_mixed);
             }
 
             z--;

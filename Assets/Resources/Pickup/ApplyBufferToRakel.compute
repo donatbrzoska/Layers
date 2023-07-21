@@ -28,8 +28,10 @@ void main (uint3 id_ : SV_DispatchThreadID)
         int2 rakel_pixel = id() + CalculationPosition;
 
         paint_grid_reverse_transfer(
-            CanvasEmittedPaintInfo, CanvasEmittedPaintContent, CanvasEmittedPaintSize, id().xy,
+            CanvasEmittedPaintInfo, CanvasEmittedPaintContent, CanvasEmittedPaintSize, rakel_pixel,
             RakelReservoirInfo, RakelReservoirContent, RakelReservoirSize, rakel_pixel,
             RakelReservoirCellVolume, RakelReservoirDiffuseDepth, RakelReservoirDiffuseRatio);
+
+        paint_grid_clear(CanvasEmittedPaintInfo, CanvasEmittedPaintContent, CanvasEmittedPaintSize, rakel_pixel);
     }
 }

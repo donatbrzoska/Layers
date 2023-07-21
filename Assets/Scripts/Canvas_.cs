@@ -86,7 +86,7 @@ public class Canvas_
         ).Run();
     }
 
-    public PaintGrid EmitPaint(
+    public void EmitPaint(
         Rakel rakel,
         ShaderRegion pickupShaderRegion,
         float pickupDistance_MAX,
@@ -194,10 +194,6 @@ public class Canvas_
             false
         ).Run();
 
-        // HACK canvasEmittedPaint is actually treated as a raw stack with no specified mixing parameters
-        float UNUSED = 0;
-        PaintGrid canvasEmittedPaint = new PaintGrid(new Vector3Int(pickupShaderRegion.Size.x, pickupShaderRegion.Size.y, Reservoir.Size.z), UNUSED, (int) UNUSED, UNUSED);
-
         float pixelSize = 1 / (float)Reservoir.Resolution;
         float pixelDiag = pixelSize * Mathf.Sqrt(2);
         float tiltedPixelShortSide = Mathf.Cos(rakel.Info.Tilt * Mathf.Deg2Rad) * pixelSize;
@@ -222,9 +218,9 @@ public class Canvas_
 
                 new CSInt("CanvasSnapshotBufferEnabled", 0),
 
-                new CSComputeBuffer("CanvasEmittedPaintInfo", canvasEmittedPaint.Info),
-                new CSComputeBuffer("CanvasEmittedPaintContent", canvasEmittedPaint.Content),
-                new CSInt3("CanvasEmittedPaintSize", canvasEmittedPaint.Size)
+                new CSComputeBuffer("CanvasEmittedPaintInfo", rakel.Reservoir.PaintGridInputBuffer.Info),
+                new CSComputeBuffer("CanvasEmittedPaintContent", rakel.Reservoir.PaintGridInputBuffer.Content),
+                new CSInt3("CanvasEmittedPaintSize", rakel.Reservoir.PaintGridInputBuffer.Size)
             },
             false
         ).Run();
@@ -254,31 +250,27 @@ public class Canvas_
 
                     new CSInt("CanvasSnapshotBufferEnabled", 1),
 
-                    new CSComputeBuffer("CanvasEmittedPaintInfo", canvasEmittedPaint.Info),
-                    new CSComputeBuffer("CanvasEmittedPaintContent", canvasEmittedPaint.Content),
-                    new CSInt3("CanvasEmittedPaintSize", canvasEmittedPaint.Size)
+                    new CSComputeBuffer("CanvasEmittedPaintInfo", rakel.Reservoir.PaintGridInputBuffer.Info),
+                    new CSComputeBuffer("CanvasEmittedPaintContent", rakel.Reservoir.PaintGridInputBuffer.Content),
+                    new CSInt3("CanvasEmittedPaintSize", rakel.Reservoir.PaintGridInputBuffer.Size)
                 },
                 false
             ).Run();
         }
 
         canvasMappedInfo.Dispose();
-
-        return canvasEmittedPaint;
     }
 
-    public void ApplyPaint(
-        ShaderRegion shaderRegion,
-        PaintGrid rakelEmittedPaint)
+    public void ApplyInputBuffer(ShaderRegion shaderRegion)
     {
         new ComputeShaderTask(
             "Emit/ApplyBufferToCanvas",
             shaderRegion,
             new List<CSAttribute>()
             {
-                new CSComputeBuffer("RakelEmittedPaintInfo", rakelEmittedPaint.Info),
-                new CSComputeBuffer("RakelEmittedPaintContent", rakelEmittedPaint.Content),
-                new CSInt3("RakelEmittedPaintSize", rakelEmittedPaint.Size),
+                new CSComputeBuffer("RakelEmittedPaintInfo", Reservoir.PaintGridInputBuffer.Info),
+                new CSComputeBuffer("RakelEmittedPaintContent", Reservoir.PaintGridInputBuffer.Content),
+                new CSInt3("RakelEmittedPaintSize", Reservoir.PaintGridInputBuffer.Size),
 
                 new CSComputeBuffer("CanvasReservoirInfo", Reservoir.PaintGrid.Info),
                 new CSComputeBuffer("CanvasReservoirContent", Reservoir.PaintGrid.Content),
@@ -289,8 +281,6 @@ public class Canvas_
             },
             false
         ).Run();
-
-        rakelEmittedPaint.Dispose();
     }
 
     public ShaderRegion GetFullShaderRegion()

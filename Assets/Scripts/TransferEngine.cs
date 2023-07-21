@@ -191,7 +191,7 @@ public class TransferEngine
                 updateSR);
         }
 
-        PaintGrid canvasEmittedPaint = canvas.EmitPaint(
+        canvas.EmitPaint(
             rakel,
             canvasEmitSR,
             transferConfig.PickupDistance_MAX,
@@ -201,17 +201,14 @@ public class TransferEngine
             transferConfig.DeletePickedUpFromCSB,
             transferConfig.PaintDoesPickup);
 
-        PaintGrid rakelEmittedPaint = rakel.EmitPaint(
+        rakel.EmitPaint(
+            canvas,
             rakelEmitSR,
             rakelMappedInfo);
 
-        canvas.ApplyPaint(
-            rakelEmitSR,
-            rakelEmittedPaint);
+        canvas.ApplyInputBuffer(rakelEmitSR);
 
-        rakel.ApplyPaint(
-            canvasEmitSR,
-            canvasEmittedPaint);
+        rakel.ApplyInputBuffer(canvasEmitSR);
 
         canvas.Render(
             new ShaderRegion(

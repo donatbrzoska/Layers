@@ -35,8 +35,6 @@ public class TestEmitFromRakel
 
     ColorFiller ColorFiller;
 
-    PaintGrid RakelEmittedPaint;
-
     public float Sum(float[] values)
     {
         float res = 0;
@@ -62,7 +60,6 @@ public class TestEmitFromRakel
     [TearDown]
     public void Teardown()
     {
-        RakelEmittedPaint.Dispose();
         Rakel.Dispose();
         Canvas.Dispose();
 
@@ -95,14 +92,15 @@ public class TestEmitFromRakel
 
 
         // Act
-        RakelEmittedPaint = Rakel.EmitPaint(
+        Rakel.EmitPaint(
+            Canvas,
             rakelEmitSR,
             rakelMappedInfo);
 
 
         // Assert
-        RakelEmittedPaint.ReadbackInfo();
-        float[] rakelEmittedVolumes = RakelEmittedPaint.GetVolumes();
+        Canvas.Reservoir.PaintGridInputBuffer.ReadbackInfo();
+        float[] rakelEmittedVolumes = Canvas.Reservoir.PaintGridInputBuffer.GetVolumes(rakelEmitSR);
 
         //LogUtil.Log(rakelEmittedVolumes, rakelEmitSR.Size.y, false);
 
@@ -150,14 +148,15 @@ public class TestEmitFromRakel
 
 
         // Act
-        RakelEmittedPaint = Rakel.EmitPaint(
+        Rakel.EmitPaint(
+            Canvas,
             rakelEmitSR,
             rakelMappedInfo);
 
 
         // Assert
-        RakelEmittedPaint.ReadbackInfo();
-        float[] rakelEmittedVolumes = RakelEmittedPaint.GetVolumes();
+        Canvas.Reservoir.PaintGridInputBuffer.ReadbackInfo();
+        float[] rakelEmittedVolumes = Canvas.Reservoir.PaintGridInputBuffer.GetVolumes(rakelEmitSR);
 
         //LogUtil.Log(rakelEmittedVolumes, rakelEmitSR.Size.y, false);
 
@@ -205,14 +204,15 @@ public class TestEmitFromRakel
 
 
         // Act
-        RakelEmittedPaint = Rakel.EmitPaint(
+        Rakel.EmitPaint(
+            Canvas,
             rakelEmitSR,
             rakelMappedInfo);
 
 
         // Assert
-        RakelEmittedPaint.ReadbackInfo();
-        float[] rakelEmittedVolumes = RakelEmittedPaint.GetVolumes();
+        Canvas.Reservoir.PaintGridInputBuffer.ReadbackInfo();
+        float[] rakelEmittedVolumes = Canvas.Reservoir.PaintGridInputBuffer.GetVolumes(rakelEmitSR);
 
         LogUtil.Log(rakelEmittedVolumes, rakelEmitSR.Size.y, false);
 
@@ -263,14 +263,15 @@ public class TestEmitFromRakel
 
 
         // Act
-        RakelEmittedPaint = Rakel.EmitPaint(
+        Rakel.EmitPaint(
+            Canvas,
             rakelEmitSR,
             rakelMappedInfo);
 
 
         // Assert
-        RakelEmittedPaint.ReadbackInfo();
-        float[] rakelEmittedVolumes = RakelEmittedPaint.GetVolumes();
+        Canvas.Reservoir.PaintGridInputBuffer.ReadbackInfo();
+        float[] rakelEmittedVolumes = Canvas.Reservoir.PaintGridInputBuffer.GetVolumes(rakelEmitSR);
 
         //LogUtil.Log(rakelEmittedVolumes, rakelEmitSR.Size.y, false);
 
