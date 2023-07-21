@@ -470,10 +470,8 @@ public class Rakel
 
     public PaintGrid EmitPaint(
         ShaderRegion shaderRegion,
-        Canvas_ canvas,
         ComputeBuffer rakelMappedInfo)
     {
-
         // HACK rakelEmittedPaint is actually treated as a raw stack with no specified mixing parameters
         float UNUSED = 0;
         PaintGrid rakelEmittedPaint = new PaintGrid(new Vector3Int(shaderRegion.Size.x, shaderRegion.Size.y, Reservoir.Size.z), UNUSED, (int)UNUSED, UNUSED);

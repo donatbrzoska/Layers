@@ -203,7 +203,6 @@ public class TransferEngine
 
         PaintGrid rakelEmittedPaint = rakel.EmitPaint(
             rakelEmitSR,
-            canvas,
             rakelMappedInfo);
 
         canvas.ApplyPaint(

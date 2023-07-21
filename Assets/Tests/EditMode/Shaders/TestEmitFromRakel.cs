@@ -97,7 +97,6 @@ public class TestEmitFromRakel
         // Act
         RakelEmittedPaint = Rakel.EmitPaint(
             rakelEmitSR,
-            Canvas,
             rakelMappedInfo);
 
 
@@ -153,7 +152,6 @@ public class TestEmitFromRakel
         // Act
         RakelEmittedPaint = Rakel.EmitPaint(
             rakelEmitSR,
-            Canvas,
             rakelMappedInfo);
 
 
@@ -209,7 +207,6 @@ public class TestEmitFromRakel
         // Act
         RakelEmittedPaint = Rakel.EmitPaint(
             rakelEmitSR,
-            Canvas,
             rakelMappedInfo);
 
 
@@ -264,7 +261,6 @@ public class TestEmitFromRakel
         // Act
         RakelEmittedPaint = Rakel.EmitPaint(
             rakelEmitSR,
-            Canvas,
             rakelMappedInfo);
 
 
