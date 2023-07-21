@@ -565,30 +565,34 @@ public class OilPaintEngine : MonoBehaviour
             FillApply();
         }
 
-        InputInterpolator.NewStroke(
-            Config.RakelConfig.TiltNoiseEnabled,
-            Config.RakelConfig.TiltNoiseFrequency,
-            Config.RakelConfig.TiltNoiseAmplitude,
-            Config.TransferConfig.FloatingZLength,
-            Config.TransferConfig.CanvasSnapshotBufferEnabled);
+        int RUNS = 10;
+        for (int i=0; i < RUNS; i++)
+        {
+            InputInterpolator.NewStroke(
+                Config.RakelConfig.TiltNoiseEnabled,
+                Config.RakelConfig.TiltNoiseFrequency,
+                Config.RakelConfig.TiltNoiseAmplitude,
+                Config.TransferConfig.FloatingZLength,
+                Config.TransferConfig.CanvasSnapshotBufferEnabled);
 
-        InputInterpolator.AddNode(
-            beginPosition,
-            AUTO_Z_ENABLED,
-            0,
-            rotation,
-            tilt,
-            Config.TransferConfig,
-            Config.TextureResolution);
+            InputInterpolator.AddNode(
+                beginPosition,
+                AUTO_Z_ENABLED,
+                0,
+                rotation,
+                tilt,
+                Config.TransferConfig,
+                Config.TextureResolution);
 
-        InputInterpolator.AddNode(
-            endPosition,
-            AUTO_Z_ENABLED,
-            0,
-            rotation,
-            tilt,
-            Config.TransferConfig,
-            Config.TextureResolution);
+            InputInterpolator.AddNode(
+                endPosition,
+                AUTO_Z_ENABLED,
+                0,
+                rotation,
+                tilt,
+                Config.TransferConfig,
+                Config.TextureResolution);
+        }
     }
 
     public void DoMacro5Action()
