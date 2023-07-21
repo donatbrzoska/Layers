@@ -28,7 +28,7 @@ public class InputInterpolator
         PreviousRakelRotation = NO_VALUE;
         PreviousRakelTilt = NO_VALUE;
 
-        TransferEngine.NewStroke(Rakel, tiltNoiseEnabled, tiltNoiseFrequency, tiltNoiseAmplitude, floatingZLength, Canvas, csbEnabled);
+        TransferEngine.NewStroke(tiltNoiseEnabled, tiltNoiseFrequency, tiltNoiseAmplitude, floatingZLength, csbEnabled);
     }
 
     public void AddNode(Vector3 rakelPosition, bool autoZEnabled, float rakelPressure, float rakelRotation, float rakelTilt, TransferConfiguration transferConfig, int interpolationResolution)
@@ -53,9 +53,7 @@ public class InputInterpolator
                     rakelPressure,
                     rakelRotation,
                     rakelTilt,
-                    transferConfig,
-                    Rakel,
-                    Canvas
+                    transferConfig
                 );
             }
             else
@@ -124,9 +122,7 @@ public class InputInterpolator
                         currentPressure,
                         currentRotation,
                         currentTilt,
-                        transferConfig,
-                        Rakel,
-                        Canvas
+                        transferConfig
                     );
 
                     previousPosition = currentPosition;

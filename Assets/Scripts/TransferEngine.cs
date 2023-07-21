@@ -9,12 +9,10 @@ public struct SimulationStep
     public float RakelRotation;
     public float RakelTilt;
     public TransferConfiguration TransferConfig;
-    public Rakel Rakel;
-    public Canvas_ Canvas;
 
     public SimulationStep(
         Vector3 rakelPosition, bool autoZEnabled, float rakelPressure, float rakelRotation, float rakelTilt,
-        TransferConfiguration transferConfig, Rakel rakel, Canvas_ canvas)
+        TransferConfiguration transferConfig)
     {
         RakelPosition = rakelPosition;
         AutoZEnabled = autoZEnabled;
@@ -22,8 +20,6 @@ public struct SimulationStep
         RakelRotation = rakelRotation;
         RakelTilt = rakelTilt;
         TransferConfig = transferConfig;
-        Rakel = rakel;
-        Canvas = canvas;
     }
 }
 
@@ -34,8 +30,14 @@ public class TransferEngine
     private bool DelayedExection;
     private Queue<SimulationStep> SimulationSteps;
 
-    public TransferEngine(bool delayedExecution)
+    private Rakel Rakel;
+    private Canvas_ Canvas;
+
+    public TransferEngine(Rakel rakel, Canvas_ canvas, bool delayedExecution)
     {
+        Rakel = rakel;
+        Canvas = canvas;
+
         DelayedExection = delayedExecution;
         if (delayedExecution)
         {
@@ -45,11 +47,9 @@ public class TransferEngine
 
     public void EnqueueOrRun(
         Vector3 rakelPosition, bool autoZEnabled, float rakelPressure, float rakelRotation, float rakelTilt,
-        TransferConfiguration transferConfig,
-        Rakel rakel,
-        Canvas_ canvas)
+        TransferConfiguration transferConfig)
     {
-        SimulationStep s = new SimulationStep(rakelPosition, autoZEnabled, rakelPressure, rakelRotation, rakelTilt, transferConfig, rakel, canvas);
+        SimulationStep s = new SimulationStep(rakelPosition, autoZEnabled, rakelPressure, rakelRotation, rakelTilt, transferConfig);
 
         if (DelayedExection)
         {
@@ -57,7 +57,7 @@ public class TransferEngine
         }
         else
         {
-            SimulateStep(s.RakelPosition, s.AutoZEnabled, s.RakelPressure, s.RakelRotation, s.RakelTilt, s.TransferConfig, s.Rakel, s.Canvas);
+            SimulateStep(s.RakelPosition, s.AutoZEnabled, s.RakelPressure, s.RakelRotation, s.RakelTilt, s.TransferConfig);
         }
     }
 
@@ -68,7 +68,7 @@ public class TransferEngine
             while (n-- >= 0 && SimulationSteps.Count > 0)
             {
                 SimulationStep s = SimulationSteps.Dequeue();
-                SimulateStep(s.RakelPosition, s.AutoZEnabled, s.RakelPressure, s.RakelRotation, s.RakelTilt, s.TransferConfig, s.Rakel, s.Canvas);
+                SimulateStep(s.RakelPosition, s.AutoZEnabled, s.RakelPressure, s.RakelRotation, s.RakelTilt, s.TransferConfig);
             }
         }
     }
@@ -86,14 +86,14 @@ public class TransferEngine
     }
 
     public void NewStroke(
-        Rakel rakel, bool tiltNoiseEnabled, float tiltNoiseFrequency, float tiltNoiseAmplitude, float floatingZLength,
-        Canvas_ canvas, bool csbEnabled)
+        bool tiltNoiseEnabled, float tiltNoiseFrequency, float tiltNoiseAmplitude, float floatingZLength,
+        bool csbEnabled)
     {
-        rakel.NewStroke(tiltNoiseEnabled, tiltNoiseFrequency, tiltNoiseAmplitude, floatingZLength);
+        Rakel.NewStroke(tiltNoiseEnabled, tiltNoiseFrequency, tiltNoiseAmplitude, floatingZLength);
 
         if (csbEnabled)
         {
-            canvas.Reservoir.DoSnapshot(false);
+            Canvas.Reservoir.DoSnapshot(false);
         }
     }
 
@@ -102,53 +102,51 @@ public class TransferEngine
     // Tilt 0 means Rakel is parallel to canvas
     public void SimulateStep(
         Vector3 rakelPosition, bool autoZEnabled, float rakelPressure, float rakelRotation, float rakelTilt,
-        TransferConfiguration transferConfig,
-        Rakel rakel,
-        Canvas_ canvas)
+        TransferConfiguration transferConfig)
     {
         // prevent double application on the same pixel
-        rakelPosition = canvas.AlignToPixelGrid(rakelPosition);
-        if (canvas.MapToPixel(rakelPosition).Equals(PreviousApplyPosition))
+        rakelPosition = Canvas.AlignToPixelGrid(rakelPosition);
+        if (Canvas.MapToPixel(rakelPosition).Equals(PreviousApplyPosition))
         {
             return;
         }
         else
         {
-            PreviousApplyPosition = canvas.MapToPixel(rakelPosition);
+            PreviousApplyPosition = Canvas.MapToPixel(rakelPosition);
         }
 
         //Debug.Log("Applying at x=" + wsc.MapToPixel(rakelPosition));
 
         bool finalUpdateForStroke = !autoZEnabled; // (when auto Z is disabled, RecalculatePositionBaseZ won't do anything)
-        rakel.UpdateState(
+        Rakel.UpdateState(
             rakelPosition,
             transferConfig.BaseSink_MAX, transferConfig.LayerSink_MAX_Ratio, transferConfig.TiltSink_MAX,
             autoZEnabled, false, finalUpdateForStroke,
             rakelPressure, rakelRotation, rakelTilt);
 
-        ShaderRegion canvasEmitSR = rakel.Reservoir.GetFullShaderRegion();
+        ShaderRegion canvasEmitSR = Rakel.Reservoir.GetFullShaderRegion();
 
         ShaderRegion rakelEmitSR = new ShaderRegion(
-            canvas.MapToPixelInRange(rakel.Info.UpperLeft),
-            canvas.MapToPixelInRange(rakel.Info.UpperRight),
-            canvas.MapToPixelInRange(rakel.Info.LowerLeft),
-            canvas.MapToPixelInRange(rakel.Info.LowerRight)
+            Canvas.MapToPixelInRange(Rakel.Info.UpperLeft),
+            Canvas.MapToPixelInRange(Rakel.Info.UpperRight),
+            Canvas.MapToPixelInRange(Rakel.Info.LowerLeft),
+            Canvas.MapToPixelInRange(Rakel.Info.LowerRight)
         );
 
 
         // 1. duplicate, so we can sample from there and only delete from original
-        rakel.Reservoir.DoImprintCopy(canvasEmitSR, false);
-        canvas.Reservoir.DoImprintCopy(rakelEmitSR, false);
+        Rakel.Reservoir.DoImprintCopy(canvasEmitSR, false);
+        Canvas.Reservoir.DoImprintCopy(rakelEmitSR, false);
 
 
         // 2. Calculate rakel position based on paint height on canvas
         //    For this, we already calculate parts of rakel mapped info
-        ComputeBuffer rakelMappedInfo = rakel.CalculateRakelMappedInfo(
+        ComputeBuffer rakelMappedInfo = Rakel.CalculateRakelMappedInfo(
             rakelEmitSR,
-            canvas);
+            Canvas);
 
-        rakel.RecalculatePositionBaseZ(
-            canvas,
+        Rakel.RecalculatePositionBaseZ(
+            Canvas,
             rakelMappedInfo,
             rakelEmitSR,
             transferConfig.ReadjustZToRakelVolume,
@@ -160,8 +158,8 @@ public class TransferEngine
 
         // Now that the rakel position is calculated, we can actually
         // determine the distance to the rakel and the volume to emit also
-        rakel.CalculateRakelMappedInfo_Part2(
-            canvas,
+        Rakel.CalculateRakelMappedInfo_Part2(
+            Canvas,
             rakelMappedInfo,
             rakelEmitSR,
             transferConfig.EmitDistance_MAX,
@@ -178,21 +176,21 @@ public class TransferEngine
             //    but also delivers update guarantee, no matter how the rakel is
             //    shaped and where the rakel anchor is located.
             ShaderRegion updateSR = new ShaderRegion(
-                canvas.MapToPixelInRange(rakel.Info.UpperLeft),
-                canvas.MapToPixelInRange(rakel.Info.UpperRight),
-                canvas.MapToPixelInRange(rakel.Info.LowerLeft),
-                canvas.MapToPixelInRange(rakel.Info.LowerRight),
-                Mathf.Max(rakel.Reservoir.Size.x, rakel.Reservoir.Size.y)
+                Canvas.MapToPixelInRange(Rakel.Info.UpperLeft),
+                Canvas.MapToPixelInRange(Rakel.Info.UpperRight),
+                Canvas.MapToPixelInRange(Rakel.Info.LowerLeft),
+                Canvas.MapToPixelInRange(Rakel.Info.LowerRight),
+                Mathf.Max(Rakel.Reservoir.Size.x, Rakel.Reservoir.Size.y)
             );
-            canvas.Reservoir.DoSnapshotUpdate(
+            Canvas.Reservoir.DoSnapshotUpdate(
                 rakelMappedInfo,
                 rakelEmitSR,
-                rakel.Reservoir.Size,
+                Rakel.Reservoir.Size,
                 updateSR);
         }
 
-        canvas.EmitPaint(
-            rakel,
+        Canvas.EmitPaint(
+            Rakel,
             canvasEmitSR,
             transferConfig.PickupDistance_MAX,
             transferConfig.PickupVolume_MIN,
@@ -201,21 +199,21 @@ public class TransferEngine
             transferConfig.DeletePickedUpFromCSB,
             transferConfig.PaintDoesPickup);
 
-        rakel.EmitPaint(
-            canvas,
+        Rakel.EmitPaint(
+            Canvas,
             rakelEmitSR,
             rakelMappedInfo);
 
-        canvas.ApplyInputBuffer(rakelEmitSR);
+        Canvas.ApplyInputBuffer(rakelEmitSR);
 
-        rakel.ApplyInputBuffer(canvasEmitSR);
+        Rakel.ApplyInputBuffer(canvasEmitSR);
 
-        canvas.Render(
+        Canvas.Render(
             new ShaderRegion(
-                canvas.MapToPixelInRange(rakel.Info.UpperLeft),
-                canvas.MapToPixelInRange(rakel.Info.UpperRight),
-                canvas.MapToPixelInRange(rakel.Info.LowerLeft),
-                canvas.MapToPixelInRange(rakel.Info.LowerRight),
+                Canvas.MapToPixelInRange(Rakel.Info.UpperLeft),
+                Canvas.MapToPixelInRange(Rakel.Info.UpperRight),
+                Canvas.MapToPixelInRange(Rakel.Info.LowerLeft),
+                Canvas.MapToPixelInRange(Rakel.Info.LowerRight),
                 1 // Padding because normal calculation is also based on pixels around
             ),
             false);

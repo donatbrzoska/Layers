@@ -114,7 +114,7 @@ public class OilPaintEngine : MonoBehaviour
 
     void CreateOilPaintTransferEngine()
     {
-        TransferEngine = new TransferEngine(STEPS_PER_FRAME > 0 && BENCHMARK_STEPS == 0);
+        TransferEngine = new TransferEngine(Rakel, Canvas, STEPS_PER_FRAME > 0 && BENCHMARK_STEPS == 0);
     }
 
     void CreateInputInterpolator()
@@ -151,9 +151,7 @@ public class OilPaintEngine : MonoBehaviour
                     0,
                     0,
                     0,
-                    Config.TransferConfig,
-                    Rakel,
-                    Canvas);
+                    Config.TransferConfig);
             }
         }
         else
@@ -331,6 +329,7 @@ public class OilPaintEngine : MonoBehaviour
     {
         Config.RakelConfig.Length = worldSpaceLength;
         CreateRakel();
+        CreateTransferEngine();
         CreateInputInterpolator();
     }
 
@@ -338,6 +337,7 @@ public class OilPaintEngine : MonoBehaviour
     {
         Config.RakelConfig.Width = worldSpaceWidth;
         CreateRakel();
+        CreateTransferEngine();
         CreateInputInterpolator();
     }
 
@@ -345,6 +345,7 @@ public class OilPaintEngine : MonoBehaviour
     {
         Config.CanvasConfig.FormatA = formatA;
         CreateCanvas();
+        CreateTransferEngine();
         CreateInputInterpolator();
     }
 
@@ -352,6 +353,7 @@ public class OilPaintEngine : MonoBehaviour
     {
         Config.CanvasConfig.FormatB = formatB;
         CreateCanvas();
+        CreateTransferEngine();
         CreateInputInterpolator();
     }
 
@@ -360,6 +362,7 @@ public class OilPaintEngine : MonoBehaviour
         Config.TextureResolution = pixelsPerWorldSpaceUnit;
         CreateCanvas();
         CreateRakel();
+        CreateTransferEngine();
         CreateInputInterpolator();
     }
 
@@ -426,12 +429,14 @@ public class OilPaintEngine : MonoBehaviour
     public void ClearRakel()
     {
         CreateRakel();
+        CreateOilPaintTransferEngine();
         CreateInputInterpolator();
     }
 
     public void ClearCanvas()
     {
         CreateCanvas();
+        CreateOilPaintTransferEngine();
         CreateInputInterpolator();
     }
 
