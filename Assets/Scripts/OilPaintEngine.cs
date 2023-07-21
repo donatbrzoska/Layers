@@ -531,7 +531,7 @@ public class OilPaintEngine : MonoBehaviour
     private void DoBenchmark(Vector3 beginPosition, Vector3 endPosition, float rotation, float tilt)
     {
         // Parameters adjusted for windowed unity
-        STEPS_PER_FRAME = 200;
+        STEPS_PER_FRAME = 400;
         LAYERS_MAX = 50;
 
         int LAYERS = 4;
