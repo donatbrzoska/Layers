@@ -2,20 +2,7 @@
 
 public class Configuration
 {
-    private int TextureResolution_;
-    public int TextureResolution
-    {
-        get
-        {
-            return TextureResolution_;
-        }
-        set
-        {
-            TextureResolution_ = value;
-            CanvasConfig = new CanvasConfiguration(TextureResolution_);
-            RakelConfig = new RakelConfiguration(TextureResolution_);
-        }
-    }
+    public int TextureResolution;
     public ColorSpace ColorSpace;
 
     public InputConfiguration InputConfig;
@@ -26,12 +13,12 @@ public class Configuration
 
     public Configuration()
     {
-        TextureResolution_ = 40;
+        TextureResolution = 40;
         ColorSpace = ColorSpace.RGB;
 
         InputConfig = new InputConfiguration();
-        CanvasConfig = new CanvasConfiguration(TextureResolution_);
-        RakelConfig = new RakelConfiguration(TextureResolution_);
+        CanvasConfig = new CanvasConfiguration();
+        RakelConfig = new RakelConfiguration();
         FillConfig = new FillConfiguration();
         TransferConfig = new TransferConfiguration();
     }
@@ -79,7 +66,6 @@ public class CanvasConfiguration
 
     public int FormatA;
     public int FormatB;
-    private int Resolution;
 
     public float Width
     {
@@ -122,11 +108,10 @@ public class CanvasConfiguration
     public int DiffuseDepth;
     public float DiffuseRatio;
 
-    public CanvasConfiguration(int resolution)
+    public CanvasConfiguration()
     {
         FormatA = 3;
         FormatB = 2;
-        Resolution = resolution;
 
         NormalScale = 0.015f;
         CellVolume = 1;
@@ -139,7 +124,6 @@ public class RakelConfiguration
 {
     public float Length;
     public float Width;
-    public int Resolution;
     public float CellVolume;
     public int DiffuseDepth;
     public float DiffuseRatio;
@@ -148,11 +132,10 @@ public class RakelConfiguration
     public float TiltNoiseFrequency;
     public float TiltNoiseAmplitude;
 
-    public RakelConfiguration(int resolution)
+    public RakelConfiguration()
     {
         Length = 2f;
         Width = 0.8f;
-        Resolution = resolution;
         CellVolume = 2;
         DiffuseDepth = 0;
         DiffuseRatio = 0.2f;
