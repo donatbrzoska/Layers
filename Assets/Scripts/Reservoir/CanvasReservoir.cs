@@ -9,7 +9,7 @@ public class CanvasReservoir : Reservoir
     public PaintGrid PaintGridSnapshotImprintCopy; // only read from for sampling
 
     // used for auto z
-    public ComputeBuffer PaintGridInfoSnapshot; // technically unnecessary, when CSB is enabled
+    public ComputeBuffer PaintGridInfoSnapshot; // technically unnecessary, when CSB is enabled (without delete!)
     public ComputeBuffer Workspace;
 
     public CanvasReservoir(int resolution, int width, int height, int layers, float cellVolume, int diffuseDepth, float diffuseRatio)
