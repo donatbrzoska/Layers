@@ -522,10 +522,134 @@ public class OilPaintEngine : MonoBehaviour
 
     public void DoMacro3Action()
     {
+        STEPS_PER_FRAME = -1;
+        Start();
+
+        bool AUTO_Z_ENABLED = false;
+        float HEIGHT = 4 * Paint.VOLUME_THICKNESS;
+
+        Config.TransferConfig.CanvasSnapshotBufferEnabled = false;
+        UpdateRakelLength(2);
+
+        Rakel.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumRed, Config.ColorSpace), new PerlinVolumeFiller(1, 60)));
+        InputInterpolator.NewStroke(
+            false,
+            Config.RakelConfig.TiltNoiseFrequency,
+            Config.RakelConfig.TiltNoiseAmplitude,
+            Config.TransferConfig.FloatingZLength,
+            Config.TransferConfig.CanvasSnapshotBufferEnabled);
+        InputInterpolator.AddNode(
+            new Vector3(-1, 4, -HEIGHT), AUTO_Z_ENABLED, 0,
+            90,
+            0,
+            Config.TransferConfig,
+            Config.TextureResolution);
+        InputInterpolator.AddNode(
+            new Vector3(-1, -4, -HEIGHT), AUTO_Z_ENABLED, 0,
+            90,
+            0,
+            Config.TransferConfig,
+            Config.TextureResolution);
+
+        ClearRakel();
+
+        Rakel.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreenLight, Config.ColorSpace), new PerlinVolumeFiller(1, 60)));
+        InputInterpolator.NewStroke(
+            false,
+            Config.RakelConfig.TiltNoiseFrequency,
+            Config.RakelConfig.TiltNoiseAmplitude,
+            Config.TransferConfig.FloatingZLength,
+            Config.TransferConfig.CanvasSnapshotBufferEnabled);
+        InputInterpolator.AddNode(
+            new Vector3(1, 4, -HEIGHT), AUTO_Z_ENABLED, 0,
+            90,
+            0,
+            Config.TransferConfig,
+            Config.TextureResolution);
+        InputInterpolator.AddNode(
+            new Vector3(1, -4, -HEIGHT), AUTO_Z_ENABLED, 0,
+            90,
+            0,
+            Config.TransferConfig,
+            Config.TextureResolution);
     }
 
     public void DoMacro4Action()
     {
+        bool TILT_NOISE_ENABLED = false;
+        bool AUTO_Z_ENABLED = true;
+        float PRESSURE = 0.7f;
+        float HEIGHT = 3 * Paint.VOLUME_THICKNESS;
+        float ROTATION = 0;
+        float TILT = 0;
+
+        UpdateRakelLength(2);
+        Config.TransferConfig.CanvasSnapshotBufferEnabled = false;
+
+        InputInterpolator.NewStroke(
+            TILT_NOISE_ENABLED,
+            Config.RakelConfig.TiltNoiseFrequency,
+            Config.RakelConfig.TiltNoiseAmplitude,
+            Config.TransferConfig.FloatingZLength,
+            Config.TransferConfig.CanvasSnapshotBufferEnabled);
+        InputInterpolator.AddNode(
+            new Vector3(-3, 2.5f, -HEIGHT), AUTO_Z_ENABLED, PRESSURE,
+            ROTATION,
+            TILT,
+            Config.TransferConfig,
+            Config.TextureResolution);
+        InputInterpolator.AddNode(
+            new Vector3(3, 2.5f, -HEIGHT), AUTO_Z_ENABLED, PRESSURE,
+            ROTATION,
+            TILT,
+            Config.TransferConfig,
+            Config.TextureResolution);
+
+        ClearRakel();
+        Config.TransferConfig.CanvasSnapshotBufferEnabled = true;
+        Config.TransferConfig.DeletePickedUpFromCSB = true;
+
+        InputInterpolator.NewStroke(
+            TILT_NOISE_ENABLED,
+            Config.RakelConfig.TiltNoiseFrequency,
+            Config.RakelConfig.TiltNoiseAmplitude,
+            Config.TransferConfig.FloatingZLength,
+            Config.TransferConfig.CanvasSnapshotBufferEnabled);
+        InputInterpolator.AddNode(
+            new Vector3(-3, 0, -HEIGHT), AUTO_Z_ENABLED, PRESSURE,
+            ROTATION,
+            TILT,
+            Config.TransferConfig,
+            Config.TextureResolution);
+        InputInterpolator.AddNode(
+            new Vector3(3, 0, -HEIGHT), AUTO_Z_ENABLED, PRESSURE,
+            ROTATION,
+            TILT,
+            Config.TransferConfig,
+            Config.TextureResolution);
+
+        ClearRakel();
+        Config.TransferConfig.CanvasSnapshotBufferEnabled = true;
+        Config.TransferConfig.DeletePickedUpFromCSB = false;
+
+        InputInterpolator.NewStroke(
+            TILT_NOISE_ENABLED,
+            Config.RakelConfig.TiltNoiseFrequency,
+            Config.RakelConfig.TiltNoiseAmplitude,
+            Config.TransferConfig.FloatingZLength,
+            Config.TransferConfig.CanvasSnapshotBufferEnabled);
+        InputInterpolator.AddNode(
+            new Vector3(-3, -2.5f, -HEIGHT), AUTO_Z_ENABLED, PRESSURE,
+            ROTATION,
+            TILT,
+            Config.TransferConfig,
+            Config.TextureResolution);
+        InputInterpolator.AddNode(
+            new Vector3(3, -2.5f, -HEIGHT), AUTO_Z_ENABLED, PRESSURE,
+            ROTATION,
+            TILT,
+            Config.TransferConfig,
+            Config.TextureResolution);
     }
 
     private void DoBenchmark(Vector3 beginPosition, Vector3 endPosition, float rotation, float tilt)
