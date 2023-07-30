@@ -278,6 +278,7 @@ public class Rakel
     {
         if (StrokeBegin)
         {
+            canvas.Reservoir.Triplicate();
             // only snapshot will be used for paint height calculation
             // -> newly applied paint does not have an impact
             canvas.Reservoir.SnapshotInfo();

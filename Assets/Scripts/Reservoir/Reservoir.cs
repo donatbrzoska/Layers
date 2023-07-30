@@ -14,6 +14,7 @@ public class Reservoir
 
     public PaintGrid PaintGrid;
     public PaintGrid PaintGridDuplicate;
+    public PaintGrid PaintGridTriplicate;
 
     public ComputeBuffer PaintGridInfoSnapshot;
     public ComputeBuffer PaintGridInfoSnapshotDuplicate;
@@ -28,6 +29,7 @@ public class Reservoir
         PaintGrid = new PaintGrid(Size, cellVolume, diffuseDepth, diffuseRatio);
         PaintGridDuplicate = new PaintGrid(Size, cellVolume, diffuseDepth, diffuseRatio);
 
+        PaintGridTriplicate = new PaintGrid(Size, cellVolume, diffuseDepth, diffuseRatio);
         // only used by canvas
         // TODO provide possibility to deactivate this
         PaintGridInfoSnapshot = new ComputeBuffer(Size.x * Size.y, ColumnInfo.SizeInBytes);
@@ -65,6 +67,23 @@ public class Reservoir
                 new CSComputeBuffer("ReservoirContent", PaintGrid.Content),
                 new CSComputeBuffer("ReservoirInfoDuplicate", PaintGridDuplicate.Info),
                 new CSComputeBuffer("ReservoirContentDuplicate", PaintGridDuplicate.Content),
+                new CSInt3("ReservoirSize", Size),
+            },
+            debugEnabled
+        ).Run();
+    }
+
+    public void Triplicate(bool debugEnabled = false)
+    {
+        new ComputeShaderTask(
+            "Reservoir/ReservoirDuplication",
+            GetFullShaderRegion(),
+            new List<CSAttribute>()
+            {
+                new CSComputeBuffer("ReservoirInfo", PaintGrid.Info),
+                new CSComputeBuffer("ReservoirContent", PaintGrid.Content),
+                new CSComputeBuffer("ReservoirInfoDuplicate", PaintGridTriplicate.Info),
+                new CSComputeBuffer("ReservoirContentDuplicate", PaintGridTriplicate.Content),
                 new CSInt3("ReservoirSize", Size),
             },
             debugEnabled
@@ -320,6 +339,7 @@ public class Reservoir
     {
         PaintGrid.Dispose();
         PaintGridDuplicate.Dispose();
+        PaintGridTriplicate.Dispose();
 
         PaintGridInfoSnapshot.Dispose();
         PaintGridInfoSnapshotDuplicate.Dispose();

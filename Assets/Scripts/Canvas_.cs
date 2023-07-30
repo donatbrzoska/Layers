@@ -162,7 +162,7 @@ public class Canvas_
                 new CSComputeBuffer("CanvasMappedInfo", canvasMappedInfo),
 
                 new CSFloat3("CanvasPosition", Position),
-                new CSComputeBuffer("CanvasReservoirInfoDuplicate", Reservoir.PaintGridDuplicate.Info),
+                new CSComputeBuffer("CanvasReservoirInfoDuplicate", Reservoir.PaintGridTriplicate.Info),
                 new CSInt3("CanvasReservoirSize", Reservoir.Size),
 
                 //new CSFloat("RakelTilt_MAX", Rakel.MAX_SUPPORTED_TILT),
@@ -194,8 +194,8 @@ public class Canvas_
 
                 new CSComputeBuffer("CanvasReservoirInfo", Reservoir.PaintGrid.Info),
                 new CSComputeBuffer("CanvasReservoirContent", Reservoir.PaintGrid.Content),
-                new CSComputeBuffer("CanvasReservoirInfoDuplicate", Reservoir.PaintGridDuplicate.Info),
-                new CSComputeBuffer("CanvasReservoirContentDuplicate", Reservoir.PaintGridDuplicate.Content),
+                new CSComputeBuffer("CanvasReservoirInfoDuplicate", Reservoir.PaintGridTriplicate.Info),
+                new CSComputeBuffer("CanvasReservoirContentDuplicate", Reservoir.PaintGridTriplicate.Content),
                 new CSInt3("CanvasReservoirSize", Reservoir.Size),
                 new CSFloat("CanvasReservoirCellVolume", Reservoir.PaintGrid.CellVolume),
 
