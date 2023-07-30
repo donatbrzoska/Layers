@@ -207,11 +207,11 @@ public class TransferConfiguration
         EmitVolume_MIN = 0.1f;
         PickupVolume_MIN = 0.1f;
 
-        PaintDoesPickup = true;
+        PaintDoesPickup = false;
 
         LayerThickness_MAX = 4 * Paint.VOLUME_THICKNESS;
 
-        BaseSink_MAX = 3 * Paint.VOLUME_THICKNESS;
+        BaseSink_MAX = 6 * Paint.VOLUME_THICKNESS;
         LayerSink_MAX_Ratio = 0.9f;
         TiltSink_MAX = 6 * Paint.VOLUME_THICKNESS;
     }
