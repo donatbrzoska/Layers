@@ -531,7 +531,7 @@ public class OilPaintEngine : MonoBehaviour
         Config.TransferConfig.CanvasSnapshotBufferEnabled = false;
         UpdateRakelLength(2);
 
-        Rakel.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumRed, Config.ColorSpace), new PerlinVolumeFiller(1, 60)));
+        Rakel.Fill(new ReservoirFiller(new FlatColorFiller(Color_.UltramarineBlue, Config.ColorSpace), new PerlinVolumeFiller(1, 60)));
         InputInterpolator.NewStroke(
             false,
             Config.RakelConfig.TiltNoiseFrequency,
@@ -553,7 +553,7 @@ public class OilPaintEngine : MonoBehaviour
 
         ClearRakel();
 
-        Rakel.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreenLight, Config.ColorSpace), new PerlinVolumeFiller(1, 60)));
+        Rakel.Fill(new ReservoirFiller(new FlatColorFiller(Color_.TitanWhite, Config.ColorSpace), new PerlinVolumeFiller(1, 60)));
         InputInterpolator.NewStroke(
             false,
             Config.RakelConfig.TiltNoiseFrequency,
@@ -572,19 +572,46 @@ public class OilPaintEngine : MonoBehaviour
             0,
             Config.TransferConfig,
             Config.TextureResolution);
+
+        ClearRakel();
+
+        Rakel.Fill(new ReservoirFiller(new FlatColorFiller(Color_.LavenderLight, Config.ColorSpace), new PerlinVolumeFiller(1, 60)));
+        InputInterpolator.NewStroke(
+            false,
+            Config.RakelConfig.TiltNoiseFrequency,
+            Config.RakelConfig.TiltNoiseAmplitude,
+            Config.TransferConfig.FloatingZLength,
+            Config.TransferConfig.CanvasSnapshotBufferEnabled);
+        InputInterpolator.AddNode(
+            new Vector3(3, 4, -HEIGHT), AUTO_Z_ENABLED, 0,
+            90,
+            0,
+            Config.TransferConfig,
+            Config.TextureResolution);
+        InputInterpolator.AddNode(
+            new Vector3(3, -4, -HEIGHT), AUTO_Z_ENABLED, 0,
+            90,
+            0,
+            Config.TransferConfig,
+            Config.TextureResolution);
+
+        UpdateRakelPositionZLocked(false); // auto z enabled
+        UpdateRakelPressureLocked(true);
+        UpdateRakelPressure(0.5f);
     }
 
     public void DoMacro4Action()
     {
         bool TILT_NOISE_ENABLED = false;
-        bool AUTO_Z_ENABLED = true;
-        float PRESSURE = 0.7f;
+        bool autoZEnabled = Config.InputConfig.RakelPositionZ.Source == InputSourceType.Auto;
+        float pressure = Config.InputConfig.RakelPressure.Value;
         float HEIGHT = 3 * Paint.VOLUME_THICKNESS;
         float ROTATION = 0;
         float TILT = 0;
 
         UpdateRakelLength(2);
         Config.TransferConfig.CanvasSnapshotBufferEnabled = false;
+        Config.TransferConfig.DeletePickedUpFromCSB = false;
 
         InputInterpolator.NewStroke(
             TILT_NOISE_ENABLED,
@@ -593,13 +620,13 @@ public class OilPaintEngine : MonoBehaviour
             Config.TransferConfig.FloatingZLength,
             Config.TransferConfig.CanvasSnapshotBufferEnabled);
         InputInterpolator.AddNode(
-            new Vector3(-3, 2.5f, -HEIGHT), AUTO_Z_ENABLED, PRESSURE,
+            new Vector3(-3, 2.5f, -HEIGHT), autoZEnabled, pressure,
             ROTATION,
             TILT,
             Config.TransferConfig,
             Config.TextureResolution);
         InputInterpolator.AddNode(
-            new Vector3(3, 2.5f, -HEIGHT), AUTO_Z_ENABLED, PRESSURE,
+            new Vector3(3, 2.5f, -HEIGHT), autoZEnabled, pressure,
             ROTATION,
             TILT,
             Config.TransferConfig,
@@ -616,13 +643,13 @@ public class OilPaintEngine : MonoBehaviour
             Config.TransferConfig.FloatingZLength,
             Config.TransferConfig.CanvasSnapshotBufferEnabled);
         InputInterpolator.AddNode(
-            new Vector3(-3, 0, -HEIGHT), AUTO_Z_ENABLED, PRESSURE,
+            new Vector3(-3, 0, -HEIGHT), autoZEnabled, pressure,
             ROTATION,
             TILT,
             Config.TransferConfig,
             Config.TextureResolution);
         InputInterpolator.AddNode(
-            new Vector3(3, 0, -HEIGHT), AUTO_Z_ENABLED, PRESSURE,
+            new Vector3(3, 0, -HEIGHT), autoZEnabled, pressure,
             ROTATION,
             TILT,
             Config.TransferConfig,
@@ -639,13 +666,13 @@ public class OilPaintEngine : MonoBehaviour
             Config.TransferConfig.FloatingZLength,
             Config.TransferConfig.CanvasSnapshotBufferEnabled);
         InputInterpolator.AddNode(
-            new Vector3(-3, -2.5f, -HEIGHT), AUTO_Z_ENABLED, PRESSURE,
+            new Vector3(-3, -2.5f, -HEIGHT), autoZEnabled, pressure,
             ROTATION,
             TILT,
             Config.TransferConfig,
             Config.TextureResolution);
         InputInterpolator.AddNode(
-            new Vector3(3, -2.5f, -HEIGHT), AUTO_Z_ENABLED, PRESSURE,
+            new Vector3(3, -2.5f, -HEIGHT), autoZEnabled, pressure,
             ROTATION,
             TILT,
             Config.TransferConfig,
