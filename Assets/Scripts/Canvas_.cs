@@ -26,8 +26,8 @@ public class Canvas_
     // It is assumed that the canvas is perpendicular to the z axis
     // Position is the center of the canvas
     public Canvas_(
-        float width, float height, int layers,
-        float cellVolume, int diffuseDepth, float diffuseRatio,
+        float width, float height,
+        int layers, float cellVolume,
         Vector3 position,
         int textureResolution,
         float normalScale,
@@ -49,7 +49,7 @@ public class Canvas_
         NormalScale = normalScale;
         ColorSpace = colorSpace;
 
-        Reservoir = new CanvasReservoir(textureResolution, TextureSize.x, TextureSize.y, layers, cellVolume, diffuseDepth, diffuseRatio);
+        Reservoir = new CanvasReservoir(textureResolution, TextureSize.x, TextureSize.y, layers, cellVolume);
 
         Texture = new RenderTexture(TextureSize.x, TextureSize.y, 1);
         Texture.filterMode = FilterMode.Point;
@@ -263,7 +263,7 @@ public class Canvas_
         }
     }
 
-    public void ApplyInputBuffer(ShaderRegion shaderRegion)
+    public void ApplyInputBuffer(ShaderRegion shaderRegion, int diffuseDepth, float diffuseRatio)
     {
         new ComputeShaderTask(
             "Emit/ApplyBufferToCanvas",
@@ -278,8 +278,8 @@ public class Canvas_
                 new CSComputeBuffer("CanvasReservoirContent", Reservoir.PaintGrid.Content),
                 new CSInt3("CanvasReservoirSize", Reservoir.Size),
                 new CSFloat("CanvasReservoirCellVolume", Reservoir.PaintGrid.CellVolume),
-                new CSInt("CanvasReservoirDiffuseDepth", Reservoir.PaintGrid.DiffuseDepth),
-                new CSFloat("CanvasReservoirDiffuseRatio", Reservoir.PaintGrid.DiffuseRatio),
+                new CSInt("CanvasReservoirDiffuseDepth", diffuseDepth),
+                new CSFloat("CanvasReservoirDiffuseRatio", diffuseRatio),
             },
             false
         ).Run();

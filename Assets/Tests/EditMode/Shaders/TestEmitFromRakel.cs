@@ -21,8 +21,6 @@ public class TestEmitFromRakel
     private const float FLOATING_Z_LENGTH = 0;
 
     private const float CELL_VOLUME = 1;
-    private const int DIFFUSE_DEPTH = 0;
-    private const float DIFFUSE_RATIO = 0;
 
     private const float FILL_WIDTH_PART = 1;
 
@@ -49,9 +47,9 @@ public class TestEmitFromRakel
     [SetUp]
     public void Setup()
     {
-        Canvas = new Canvas_(15, 10, MAX_LAYERS, CELL_VOLUME, DIFFUSE_DEPTH, DIFFUSE_RATIO, new Vector3(0, 0, 0), 1, 0, 0);
+        Canvas = new Canvas_(15, 10, MAX_LAYERS, CELL_VOLUME, new Vector3(0, 0, 0), 1, 0, 0);
 
-        Rakel = new Rakel(RakelLength, RakelWidth, 1, MAX_LAYERS, CELL_VOLUME, DIFFUSE_DEPTH, DIFFUSE_RATIO, 0.5f, 0);
+        Rakel = new Rakel(RakelLength, RakelWidth, 1, MAX_LAYERS, CELL_VOLUME, 0.5f, 0);
         RakelMappedInfo = MappedInfo.CreateBuffer(Canvas.Reservoir.Size2D);
 
         ColorFiller = new FlatColorFiller(Color_.CadmiumGreen, ColorSpace.RGB);

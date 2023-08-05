@@ -28,17 +28,17 @@ public class Reservoir
 
     public float PixelSize { get { return 1 / (float) Resolution; } }
 
-    public Reservoir(int resolution, int width, int height, int layers, float cellVolume, int diffuseDepth, float diffuseRatio)
+    public Reservoir(int resolution, int width, int height, int layers, float cellVolume)
     {
         Resolution = resolution;
         Size = new Vector3Int(width, height, layers);
 
-        PaintGrid = new PaintGrid(Size, cellVolume, diffuseDepth, diffuseRatio);
-        PaintGridImprintCopy = new PaintGrid(Size, cellVolume, diffuseDepth, diffuseRatio);
+        PaintGrid = new PaintGrid(Size, cellVolume);
+        PaintGridImprintCopy = new PaintGrid(Size, cellVolume);
 
         // HACK InputBuffer is actually treated as a raw stack with no specified mixing parameters
         int UNUSED = 0;
-        PaintGridInputBuffer = new PaintGrid(Size, UNUSED, UNUSED, UNUSED);
+        PaintGridInputBuffer = new PaintGrid(Size, UNUSED);
     }
 
     public void Fill(ReservoirFiller filler)

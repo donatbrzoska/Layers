@@ -65,8 +65,8 @@ public class Rakel
     private NoiseFilter1D TiltNoise;
 
     public Rakel(
-        float length, float width, int resolution, int layers_MAX,
-        float cellVolume, int diffuseDepth, float diffuseRatio,
+        float length, float width, int resolution,
+        int layers_MAX, float cellVolume,
         float anchorRatioLength = 0.5f, float anchorRatioWidth = 1)
     {
         Vector3Int reservoirSize = new Vector3Int((int)(width * resolution), (int)(length * resolution), layers_MAX);
@@ -76,9 +76,7 @@ public class Rakel
             reservoirSize.x,
             reservoirSize.y,
             reservoirSize.z,
-            cellVolume,
-            diffuseDepth,
-            diffuseRatio);
+            cellVolume);
 
         DistortionMapSize = new Vector2Int(MAX_STROKE_LENGTH, reservoirSize.y);
         DistortionMap = new ComputeBuffer(DistortionMapSize.x * DistortionMapSize.y , sizeof(float));
@@ -507,7 +505,7 @@ public class Rakel
         ).Run();
     }
 
-    public void ApplyInputBuffer(ShaderRegion shaderRegion)
+    public void ApplyInputBuffer(ShaderRegion shaderRegion, int diffuseDepth, float diffuseRatio)
     {
         new ComputeShaderTask(
             "Pickup/ApplyBufferToRakel",
@@ -522,8 +520,8 @@ public class Rakel
                 new CSComputeBuffer("RakelReservoirContent", Reservoir.PaintGrid.Content),
                 new CSInt3("RakelReservoirSize", Reservoir.Size),
                 new CSFloat("RakelReservoirCellVolume", Reservoir.PaintGrid.CellVolume),
-                new CSInt("RakelReservoirDiffuseDepth", Reservoir.PaintGrid.DiffuseDepth),
-                new CSFloat("RakelReservoirDiffuseRatio", Reservoir.PaintGrid.DiffuseRatio),
+                new CSInt("RakelReservoirDiffuseDepth", diffuseDepth),
+                new CSFloat("RakelReservoirDiffuseRatio", diffuseRatio),
             },
             false
         ).Run();

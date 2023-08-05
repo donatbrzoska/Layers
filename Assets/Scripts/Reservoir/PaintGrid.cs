@@ -50,15 +50,11 @@ public class PaintGrid
     public Paint[] ContentData;
     public Vector3Int Size;
     public float CellVolume;
-    public int DiffuseDepth;
-    public float DiffuseRatio;
 
-    public PaintGrid(Vector3Int size, float cellVolume, int diffuseDepth, float diffuseRatio)
+    public PaintGrid(Vector3Int size, float cellVolume)
     {
         Size = size;
         CellVolume = cellVolume;
-        DiffuseDepth = diffuseDepth;
-        DiffuseRatio = diffuseRatio;
 
         Info = new ComputeBuffer(size.x * size.y, ColumnInfo.SizeInBytes);
         InfoData = new ColumnInfo[size.x * size.y];

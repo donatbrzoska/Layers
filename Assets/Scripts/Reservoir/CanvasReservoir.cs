@@ -12,11 +12,11 @@ public class CanvasReservoir : Reservoir
     public ComputeBuffer PaintGridInfoSnapshot; // technically unnecessary, when CSB is enabled (without delete!)
     public ComputeBuffer Workspace;
 
-    public CanvasReservoir(int resolution, int width, int height, int layers, float cellVolume, int diffuseDepth, float diffuseRatio)
-        : base(resolution, width, height, layers, cellVolume, diffuseDepth, diffuseRatio)
+    public CanvasReservoir(int resolution, int width, int height, int layers, float cellVolume)
+        : base(resolution, width, height, layers, cellVolume)
     {
-        PaintGridSnapshot = new PaintGrid(Size, cellVolume, diffuseDepth, diffuseRatio);
-        PaintGridSnapshotImprintCopy = new PaintGrid(Size, cellVolume, diffuseDepth, diffuseRatio);
+        PaintGridSnapshot = new PaintGrid(Size, cellVolume);
+        PaintGridSnapshotImprintCopy = new PaintGrid(Size, cellVolume);
         PaintGridInfoSnapshot = new ComputeBuffer(Size.x * Size.y, ColumnInfo.SizeInBytes);
         Workspace = new ComputeBuffer(Size.x * Size.y, sizeof(float));
     }

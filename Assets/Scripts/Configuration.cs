@@ -105,8 +105,6 @@ public class CanvasConfiguration
 
     public float NormalScale;
     public float CellVolume;
-    public int DiffuseDepth;
-    public float DiffuseRatio;
 
     public CanvasConfiguration()
     {
@@ -115,8 +113,6 @@ public class CanvasConfiguration
 
         NormalScale = 0.015f;
         CellVolume = 1;
-        DiffuseDepth = 0;
-        DiffuseRatio = 0.2f;
     }
 }
 
@@ -125,8 +121,6 @@ public class RakelConfiguration
     public float Length;
     public float Width;
     public float CellVolume;
-    public int DiffuseDepth;
-    public float DiffuseRatio;
 
     public bool TiltNoiseEnabled;
     public float TiltNoiseFrequency;
@@ -137,8 +131,6 @@ public class RakelConfiguration
         Length = 2f;
         Width = 0.8f;
         CellVolume = 2;
-        DiffuseDepth = 0;
-        DiffuseRatio = 0.2f;
 
         TiltNoiseEnabled = true;
         TiltNoiseFrequency = 45;
@@ -182,6 +174,11 @@ public class TransferConfiguration
 
     public bool PaintDoesPickup;
 
+    public int RakelDiffuseDepth;
+    public float RakelDiffuseRatio;
+    public int CanvasDiffuseDepth;
+    public float CanvasDiffuseRatio;
+
     public float LayerThickness_MAX;
 
     public float BaseSink_MAX;
@@ -208,6 +205,11 @@ public class TransferConfiguration
         PickupVolume_MIN = 0.1f;
 
         PaintDoesPickup = false;
+
+        RakelDiffuseDepth = 0;
+        RakelDiffuseRatio = 0.2f;
+        CanvasDiffuseDepth = 0;
+        CanvasDiffuseRatio = 0.2f;
 
         LayerThickness_MAX = 4 * Paint.VOLUME_THICKNESS;
 

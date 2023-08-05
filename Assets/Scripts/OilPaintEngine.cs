@@ -85,8 +85,8 @@ public class OilPaintEngine : MonoBehaviour
 
         Vector3 position = canvas.transform.position;
         Canvas = new Canvas_(
-            Config.CanvasConfig.Width, Config.CanvasConfig.Height, LAYERS_MAX,
-            Config.CanvasConfig.CellVolume, Config.CanvasConfig.DiffuseDepth, Config.CanvasConfig.DiffuseRatio,
+            Config.CanvasConfig.Width, Config.CanvasConfig.Height,
+            LAYERS_MAX, Config.CanvasConfig.CellVolume,
             position,
             Config.TextureResolution,
             Config.CanvasConfig.NormalScale,
@@ -114,8 +114,8 @@ public class OilPaintEngine : MonoBehaviour
         DisposeRakel();
 
         Rakel = new Rakel(
-            Config.RakelConfig.Length, Config.RakelConfig.Width, Config.TextureResolution, LAYERS_MAX,
-            Config.RakelConfig.CellVolume, Config.RakelConfig.DiffuseDepth, Config.RakelConfig.DiffuseRatio,
+            Config.RakelConfig.Length, Config.RakelConfig.Width, Config.TextureResolution,
+            LAYERS_MAX, Config.RakelConfig.CellVolume,
             ANCHOR_RATIO_Y, ANCHOR_RATIO_X);
 
         Debug.Log("Rakel is "

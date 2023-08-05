@@ -42,8 +42,6 @@ class OnesVolumeFiller : VolumeFiller
 public class TestReduceWorkspace
 {
     private const float CELL_VOLUME = 1;
-    private const int DIFFUSE_DEPTH = 0;
-    private const float DIFFUSE_RATIO = 0;
 
     private const float FILL_WIDTH_PART = 1;
 
@@ -63,7 +61,7 @@ public class TestReduceWorkspace
 
     public void SetupReservoir()
     {
-        Reservoir = new CanvasReservoir(1, TextureSize.x, TextureSize.y, TextureSize.x * TextureSize.y, CELL_VOLUME, DIFFUSE_DEPTH, DIFFUSE_RATIO);
+        Reservoir = new CanvasReservoir(1, TextureSize.x, TextureSize.y, TextureSize.x * TextureSize.y, CELL_VOLUME);
     }
 
     [TearDown]

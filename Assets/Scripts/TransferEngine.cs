@@ -227,9 +227,9 @@ public class TransferEngine
             RakelMappedInfo,
             rakelEmitSR);
 
-        Canvas.ApplyInputBuffer(rakelEmitSR);
+        Canvas.ApplyInputBuffer(rakelEmitSR, transferConfig.CanvasDiffuseDepth, transferConfig.CanvasDiffuseRatio);
 
-        Rakel.ApplyInputBuffer(canvasEmitSR);
+        Rakel.ApplyInputBuffer(canvasEmitSR, transferConfig.RakelDiffuseDepth, transferConfig.RakelDiffuseRatio);
 
         Canvas.Render(
             new ShaderRegion(
