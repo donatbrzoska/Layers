@@ -519,6 +519,13 @@ public class OilPaintEngine : MonoBehaviour
         Canvas.Render(Canvas.GetFullShaderRegion());
     }
 
+    public void UpdateColorSpace(ColorSpace value)
+    {
+        Config.ColorSpace = value;
+        CreateRakel();
+        CreateCanvas();
+    }
+
     public void DoMacroAction()
     {
         Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreenLight, Config.ColorSpace), new FlatVolumeFiller(1, 4)));
