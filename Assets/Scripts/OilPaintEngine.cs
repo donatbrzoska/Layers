@@ -480,6 +480,38 @@ public class OilPaintEngine : MonoBehaviour
         Config.TransferConfig.LayerThickness_MAX = value;
     }
 
+    public void UpdateRakelCellVolume(float value)
+    {
+        Config.RakelConfig.CellVolume = value;
+        CreateRakel();
+    }
+
+    public void UpdateRakelDiffuseDepth(int value)
+    {
+        Config.TransferConfig.RakelDiffuseDepth = value;
+    }
+
+    public void UpdateRakelDiffuseRatio(float value)
+    {
+        Config.TransferConfig.RakelDiffuseRatio = value;
+    }
+
+    public void UpdateCanvasCellVolume(float value)
+    {
+        Config.CanvasConfig.CellVolume = value;
+        CreateCanvas();
+    }
+
+    public void UpdateCanvasDiffuseDepth(int value)
+    {
+        Config.TransferConfig.CanvasDiffuseDepth = value;
+    }
+
+    public void UpdateCanvasDiffuseRatio(float value)
+    {
+        Config.TransferConfig.CanvasDiffuseRatio = value;
+    }
+
     public void UpdateNormalScale(float value)
     {
         Config.CanvasConfig.NormalScale = value;
