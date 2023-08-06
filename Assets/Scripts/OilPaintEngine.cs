@@ -475,9 +475,9 @@ public class OilPaintEngine : MonoBehaviour
         Config.TransferConfig.PickupVolume_MIN = value;
     }
 
-    public void UpdateLayerThickness_MAX(float value)
+    public void UpdateLayerThickness_MAX_Volume(float value)
     {
-        Config.TransferConfig.LayerThickness_MAX = value;
+        Config.TransferConfig.LayerThickness_MAX_Volume = value;
     }
 
     public void UpdateRakelCellVolume(float value)
@@ -732,7 +732,7 @@ public class OilPaintEngine : MonoBehaviour
         Config.RakelConfig.Length = 4;
         Config.RakelConfig.Width = 1;
         Config.RakelConfig.TiltNoiseEnabled = false;
-        Config.TransferConfig.LayerThickness_MAX = LAYERS * Paint.VOLUME_THICKNESS;
+        Config.TransferConfig.LayerThickness_MAX_Volume = LAYERS;
         Start();
 
         if (PICKUP_BENCHMARK)

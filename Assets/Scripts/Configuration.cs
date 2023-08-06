@@ -179,11 +179,32 @@ public class TransferConfiguration
     public int CanvasDiffuseDepth;
     public float CanvasDiffuseRatio;
 
-    public float LayerThickness_MAX;
+    public float LayerThickness_MAX_Volume;
+    public float LayerThickness_MAX
+    {
+        get
+        {
+            return LayerThickness_MAX_Volume * Paint.VOLUME_THICKNESS;
+        }
+    }
 
-    public float BaseSink_MAX;
+    public float BaseSink_MAX_Volume;
+    public float BaseSink_MAX
+    {
+        get
+        {
+            return BaseSink_MAX_Volume * Paint.VOLUME_THICKNESS;
+        }
+    }
     public float LayerSink_MAX_Ratio;
-    public float TiltSink_MAX;
+    public float TiltSink_MAX_Volume;
+    public float TiltSink_MAX
+    {
+        get
+        {
+            return TiltSink_MAX_Volume * Paint.VOLUME_THICKNESS;
+        }
+    }
 
     public TransferConfiguration()
     {
@@ -211,10 +232,10 @@ public class TransferConfiguration
         CanvasDiffuseDepth = 0;
         CanvasDiffuseRatio = 0.2f;
 
-        LayerThickness_MAX = 4 * Paint.VOLUME_THICKNESS;
+        LayerThickness_MAX_Volume = 4;
 
-        BaseSink_MAX = 6 * Paint.VOLUME_THICKNESS;
+        BaseSink_MAX_Volume = 6;
         LayerSink_MAX_Ratio = 0.9f;
-        TiltSink_MAX = 6 * Paint.VOLUME_THICKNESS;
+        TiltSink_MAX_Volume = 6;
     }
 }
