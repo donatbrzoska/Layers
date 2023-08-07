@@ -480,6 +480,11 @@ public class OilPaintEngine : MonoBehaviour
         Config.TransferConfig.LayerThickness_MAX_Volume = value;
     }
 
+    public void UpdateTiltAdjustLayerThickness(bool value)
+    {
+        Config.TransferConfig.TiltAdjustLayerThickness = value;
+    }
+
     public void UpdateBaseSink_MAX_Volume(float value)
     {
         Config.TransferConfig.BaseSink_MAX_Volume = value;

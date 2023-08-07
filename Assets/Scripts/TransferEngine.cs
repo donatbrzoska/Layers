@@ -173,6 +173,7 @@ public class TransferEngine
             transferConfig.ReadjustZToRakelVolume,
             transferConfig.ReadjustZToCanvasVolume,
             transferConfig.LayerThickness_MAX,
+            transferConfig.TiltAdjustLayerThickness,
             transferConfig.BaseSink_MAX,
             transferConfig.LayerSink_MAX_Ratio,
             transferConfig.TiltSink_MAX);

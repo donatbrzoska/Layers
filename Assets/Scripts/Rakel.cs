@@ -297,6 +297,7 @@ public class Rakel
         bool readjustZToRakelVolume,
         bool readjustZToCanvasVolume,
         float layerThickness_MAX,
+        bool tiltAdjustLayerThickness,
         float baseSink_MAX,
         float layerSink_MAX_Ratio,
         float tiltSink_MAX)
@@ -396,6 +397,7 @@ public class Rakel
                         new CSComputeBuffer("ReducedRakelVolumeSource", ReducedRakelVolume),
 
                         new CSFloat("LayerThickness_MAX", layerThickness_MAX),
+                        new CSInt("TiltAdjustLayerThickness", Cast.BoolToInt(tiltAdjustLayerThickness)),
                         new CSFloat("MAX_SUPPORTED_TILT", MAX_SUPPORTED_TILT),
 
                         new CSComputeBuffer("RakelInfo", InfoBuffer),

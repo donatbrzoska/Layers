@@ -187,6 +187,7 @@ public class TransferConfiguration
             return LayerThickness_MAX_Volume * Paint.VOLUME_THICKNESS;
         }
     }
+    public bool TiltAdjustLayerThickness;
 
     public float BaseSink_MAX_Volume;
     public float BaseSink_MAX
@@ -233,6 +234,7 @@ public class TransferConfiguration
         CanvasDiffuseRatio = 0.2f;
 
         LayerThickness_MAX_Volume = 4;
+        TiltAdjustLayerThickness = true;
 
         BaseSink_MAX_Volume = 6;
         LayerSink_MAX_Ratio = 0.9f;

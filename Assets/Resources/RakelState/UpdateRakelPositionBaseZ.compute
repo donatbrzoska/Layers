@@ -8,6 +8,7 @@ RWStructuredBuffer<float> ReducedCanvasVolumeSource;
 RWStructuredBuffer<float> ReducedRakelVolumeSource;
 
 float LayerThickness_MAX;
+uint TiltAdjustLayerThickness;
 float MAX_SUPPORTED_TILT;
 
 RWStructuredBuffer<Rakel> RakelInfo;
@@ -27,14 +28,18 @@ void main (uint3 id_ : SV_DispatchThreadID)
 
         float rakel_volume_thickness = ReducedRakelVolumeSource[0] * VOLUME_THICKNESS();
         float layer_thickness = min(rakel_volume_thickness, LayerThickness_MAX);
-        // Prevent full emit, when we have a lot of tilt. Usually this would not be
-        // such a problem, but currently reservoirs are not modeled exactly and always
-        // hang down vertically - therefore when filled, we have undesirably big values
-        // for rakel_volume_thickness.
-        float layer_thickness_tilt_adjusted = layer_thickness - layer_thickness * rakel.tilt / MAX_SUPPORTED_TILT;
 
-        rakel.actual_layer_thickness = layer_thickness_tilt_adjusted;
-        rakel.position_base_z = - (canvas_volume_thickness + layer_thickness_tilt_adjusted);
+        if (TiltAdjustLayerThickness == 1)
+        {
+            // Prevent full emit, when we have a lot of tilt. Usually this would not be
+            // such a problem, but currently reservoirs are not modeled exactly and always
+            // hang down vertically - therefore when filled, we have undesirably big values
+            // for rakel_volume_thickness.
+            layer_thickness = layer_thickness - layer_thickness * rakel.tilt / MAX_SUPPORTED_TILT;
+        }
+
+        rakel.actual_layer_thickness = layer_thickness;
+        rakel.position_base_z = - (canvas_volume_thickness + layer_thickness);
         
         RakelInfo[0] = rakel;
     }
