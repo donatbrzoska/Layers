@@ -224,7 +224,7 @@ public class TransferConfiguration
         EmitDistance_MAX = 0;
 
         EmitVolume_MIN = 0.1f;
-        PickupVolume_MIN = 0.1f;
+        PickupVolume_MIN = 0;
 
         PaintDoesPickup = false;
 

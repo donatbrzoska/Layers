@@ -76,10 +76,10 @@ float volume_to_emit_(int2 radius, int2 canvas_pixel)
         // - VARIANT 3 is just here for consistency, because we use it VolumeToPickup.compute
 
         // VARIANT 1: always add EmitVolume_MIN
-        volume_to_emit = volume_fitting_between + EmitVolume_MIN;
+        // volume_to_emit = volume_fitting_between + EmitVolume_MIN;
 
         // VARIANT 2: make sure we always emit at least EmitVolume_MIN
-        // volume_to_emit = max(volume_fitting_between, EmitVolume_MIN);
+        volume_to_emit = max(volume_fitting_between, EmitVolume_MIN);
 
         // VARIANT 3: only add EmitVolume_MIN when rakel is not inside paint
         // volume_to_emit = volume_fitting_between;
