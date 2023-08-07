@@ -53,8 +53,7 @@ void main (uint3 id_ : SV_DispatchThreadID)
             float layer_sink_max = rakel.actual_layer_thickness * LayerSink_MAX_Ratio;
             float tilt_sink_max = pow(abs(rakel.tilt / MAX_SUPPORTED_TILT), (float)1/3) * TiltSink_MAX;
             // only apply (part of) base_sink, when layer_sink_max is smaller
-            float adjusted_base_sink_max = max(BaseSink_MAX - layer_sink_max, 0);
-            float sink = adjusted_base_sink_max + layer_sink_max + tilt_sink_max;
+            float sink = BaseSink_MAX + layer_sink_max + tilt_sink_max;
 
             // NOTE: This assumes that canvas is always faced to negative z direction
             rakel.position.z = rakel.position_base_z + rakel.pressure * sink;
