@@ -185,7 +185,8 @@ public class TransferEngine
             RakelMappedInfo,
             rakelEmitSR,
             transferConfig.EmitDistance_MAX,
-            transferConfig.EmitVolume_MIN);
+            transferConfig.EmitVolume_MIN,
+            transferConfig.TrueVolume_MIN_Calculation);
 
 
         // 3. Do paint transfer and rendering
@@ -218,6 +219,7 @@ public class TransferEngine
             canvasEmitSR,
             transferConfig.PickupDistance_MAX,
             transferConfig.PickupVolume_MIN,
+            transferConfig.TrueVolume_MIN_Calculation,
             rakelEmitSR,
             transferConfig.CanvasSnapshotBufferEnabled,
             transferConfig.DeletePickedUpFromCSB,

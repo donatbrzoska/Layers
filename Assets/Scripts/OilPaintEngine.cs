@@ -475,6 +475,11 @@ public class OilPaintEngine : MonoBehaviour
         Config.TransferConfig.PickupVolume_MIN = value;
     }
 
+    public void UpdateTrueVolume_MIN(bool value)
+    {
+        Config.TransferConfig.TrueVolume_MIN_Calculation = value;
+    }
+
     public void UpdateLayerThickness_MAX_Volume(float value)
     {
         Config.TransferConfig.LayerThickness_MAX_Volume = value;

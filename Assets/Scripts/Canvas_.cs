@@ -92,6 +92,7 @@ public class Canvas_
         ShaderRegion pickupShaderRegion,
         float pickupDistance_MAX,
         float pickupVolume_MIN,
+        bool trueVolume_MIN_Calculation,
         ShaderRegion emitShaderRegion,
         bool canvasSnapshotBufferEnabled,
         bool deletePickedUpFromCSB,
@@ -191,6 +192,7 @@ public class Canvas_
 
                 new CSFloat("PickupDistance_MAX", pickupDistance_MAX),
                 new CSFloat("PickupVolume_MIN", pickupVolume_MIN),
+                new CSInt("TrueVolume_MIN_Calculation", Cast.BoolToInt(trueVolume_MIN_Calculation)),
                 new CSInt("PaintDoesPickup", paintDoesPickup ? 1 : 0),
             },
             false

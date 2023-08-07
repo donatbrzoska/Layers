@@ -422,7 +422,8 @@ public class Rakel
         ComputeBuffer rakelMappedInfo,
         ShaderRegion shaderRegion,
         float emitDistance_MAX,
-        float emitVolume_MIN)
+        float emitVolume_MIN,
+        bool trueVolume_MIN_Calculation)
     {
         new ComputeShaderTask(
             "Emit/DistanceFromRakel",
@@ -455,6 +456,7 @@ public class Rakel
                 new CSInt2("ReservoirPixelEmitRadius", ReservoirPixelEmitRadius),
                 new CSFloat("EmitDistance_MAX", emitDistance_MAX),
                 new CSFloat("EmitVolume_MIN", emitVolume_MIN),
+                new CSInt("TrueVolume_MIN_Calculation", Cast.BoolToInt(trueVolume_MIN_Calculation))
 
                 //new CSComputeBuffer("DistortionMap", DistortionMap),
                 //new CSInt2("DistortionMapSize", DistortionMapSize),
