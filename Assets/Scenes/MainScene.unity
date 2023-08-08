@@ -1167,7 +1167,7 @@ RectTransform:
   m_Children:
   - {fileID: 1655954314}
   m_Father: {fileID: 1596678009}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -14298,13 +14298,13 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1522288950}
-  m_Father: {fileID: 1596678009}
-  m_RootOrder: 0
+  m_Father: {fileID: 8405833247395631253}
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -424.52887, y: -189.9}
-  m_SizeDelta: {x: 138.9422, y: 28.1687}
+  m_AnchoredPosition: {x: 5.2, y: -84.1}
+  m_SizeDelta: {x: 70, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &936528348
 MonoBehaviour:
@@ -23443,7 +23443,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Clear Rakel
+  m_text: Clear
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -24522,7 +24522,6 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 936528347}
   - {fileID: 62534904}
   m_Father: {fileID: 8405833246741699067}
   m_RootOrder: 2
@@ -32188,12 +32187,12 @@ RectTransform:
   m_Children:
   - {fileID: 8405833247052622095}
   m_Father: {fileID: 8405833247395631253}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -30.3, y: -84}
-  m_SizeDelta: {x: 80, y: 30}
+  m_AnchoredPosition: {x: -66.7, y: -84}
+  m_SizeDelta: {x: 70, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &8405833246419612565
 GameObject:
@@ -34682,7 +34681,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Color
+  m_text: Rakel Paint
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5302535af1044152a457ed104f1f4b91, type: 2}
   m_sharedMaterial: {fileID: 2164040, guid: 5302535af1044152a457ed104f1f4b91, type: 2}
@@ -34768,6 +34767,7 @@ RectTransform:
   - {fileID: 553581758}
   - {fileID: 10876315}
   - {fileID: 956587019}
+  - {fileID: 936528347}
   - {fileID: 8405833246419612564}
   m_Father: {fileID: 1799004476}
   m_RootOrder: 0
@@ -34789,7 +34789,7 @@ GameObject:
   - component: {fileID: 8405833247395631251}
   - component: {fileID: 8405833247395631252}
   m_Layer: 5
-  m_Name: Paint Color Text
+  m_Name: Paint Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
