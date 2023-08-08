@@ -292,6 +292,11 @@ public class OilPaintEngine : MonoBehaviour
         Config.TransferConfig.ReadjustZToCanvasVolume = value;
     }
 
+    public void UpdateSmoothZLength(float value)
+    {
+        Config.TransferConfig.FloatingZLength = value;
+    }
+
     public void UpdateRakelPressure(float value)
     {
         Config.InputConfig.RakelPressure.Value = value;
