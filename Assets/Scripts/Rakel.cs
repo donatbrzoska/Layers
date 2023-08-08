@@ -294,6 +294,8 @@ public class Rakel
         Canvas_ canvas,
         ComputeBuffer rakelMappedInfo,
         ShaderRegion emitSR,
+        ReduceFunction canvasVolumeReduceFunction,
+        ReduceFunction rakelVolumeReduceFunction,
         bool readjustZToRakelVolume,
         bool readjustZToCanvasVolume,
         float layerThickness_MAX,
@@ -319,11 +321,13 @@ public class Rakel
                     canvas.Reservoir.Size2D,
                     Reservoir.Size2D,
                     emitSR);
-                canvas.Reservoir.ReduceActiveWorkspaceAvg(
+
+                canvas.Reservoir.ReduceActiveWorkspace(
                     rakelMappedInfo,
                     canvas.Reservoir.Size2D,
                     Reservoir.Size2D,
                     emitSR,
+                    canvasVolumeReduceFunction,
                     ReducedCanvasVolume);
             }
 
@@ -377,11 +381,12 @@ public class Rakel
                     },
                     false
                 ).Run();
-                canvas.Reservoir.ReduceActiveWorkspaceAvg(
+                canvas.Reservoir.ReduceActiveWorkspace(
                     rakelMappedInfo,
                     canvas.Reservoir.Size2D,
                     Reservoir.Size2D,
                     emitSR,
+                    rakelVolumeReduceFunction,
                     ReducedRakelVolume);
             }
 

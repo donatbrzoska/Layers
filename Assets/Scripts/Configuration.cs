@@ -159,6 +159,8 @@ public class FillConfiguration
 
 public class TransferConfiguration
 {
+    public ReduceFunction CanvasVolumeReduceFunction;
+    public ReduceFunction RakelVolumeReduceFunction;
     public bool ReadjustZToRakelVolume;
     public bool ReadjustZToCanvasVolume;
     public float FloatingZLength;
@@ -230,6 +232,8 @@ public class TransferConfiguration
 
     public TransferConfiguration()
     {
+        CanvasVolumeReduceFunction = ReduceFunction.Avg;
+        RakelVolumeReduceFunction = ReduceFunction.Avg;
         ReadjustZToRakelVolume = true;
         ReadjustZToCanvasVolume = true;
         FloatingZLength = 0.5f;

@@ -170,6 +170,8 @@ public class TransferEngine
             Canvas,
             RakelMappedInfo,
             rakelEmitSR,
+            transferConfig.CanvasVolumeReduceFunction,
+            transferConfig.RakelVolumeReduceFunction,
             transferConfig.ReadjustZToRakelVolume,
             transferConfig.ReadjustZToCanvasVolume,
             transferConfig.LayerThickness_MAX,

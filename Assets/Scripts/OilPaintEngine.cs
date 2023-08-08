@@ -272,6 +272,16 @@ public class OilPaintEngine : MonoBehaviour
         CreateInputManager();
     }
 
+    public void UpdateRakelVolumeReduceFunction(ReduceFunction value)
+    {
+        Config.TransferConfig.RakelVolumeReduceFunction = value;
+    }
+
+    public void UpdateCanvasVolumeReduceFunction(ReduceFunction value)
+    {
+        Config.TransferConfig.CanvasVolumeReduceFunction = value;
+    }
+
     public void UpdateReadjustZToRakelVolume(bool value)
     {
         Config.TransferConfig.ReadjustZToRakelVolume = value;

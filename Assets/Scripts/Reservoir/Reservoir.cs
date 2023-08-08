@@ -1,12 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-public enum ReduceFunction
-{
-    Max,
-    Add,
-}
-
 public class Reservoir
 {
     public int Resolution;

@@ -1,8 +1,21 @@
 using UnityEngine;
 using System.Collections.Generic;
 
+public enum ReduceFunction
+{
+    Max,
+    Avg
+}
+
+public enum InternalReduceFunction
+{
+    Max,
+    Add,
+}
+
 public class CanvasReservoir : Reservoir
 {
+
     // used for canvas snapshot buffer (CSB)
     // Paper: Detail-Preserving Paint Modeling for 3D Brushes (Chu et al., 2010)
     public PaintGrid PaintGridSnapshot;
@@ -131,23 +144,26 @@ public class CanvasReservoir : Reservoir
     }
 
     // NOTE: It is assumed that the data is copied to workspace already
-    public void ReduceActiveWorkspaceAvg(
+    public void ReduceActiveWorkspace(
         ComputeBuffer rakelMappedInfo,
         Vector2Int rakelMappedInfoSize,
         Vector2Int rakelReservoirSize,
         ShaderRegion shaderRegion,
+        ReduceFunction reduceFunction,
         ComputeBuffer resultTarget)
     {
-        // count pixels under paint source
-        ComputeBuffer activeCount = new ComputeBuffer(1, sizeof(int));
-        int[] activeCountData = new int[1];
-        activeCount.SetData(activeCountData);
+        if (reduceFunction == ReduceFunction.Avg)
+        {
+            // count pixels under paint source
+            ComputeBuffer activeCount = new ComputeBuffer(1, sizeof(int));
+            int[] activeCountData = new int[1];
+            activeCount.SetData(activeCountData);
 
-        new ComputeShaderTask(
-            "Reservoir/CountActive",
-            shaderRegion,
-            new List<CSAttribute>()
-            {
+            new ComputeShaderTask(
+                "Reservoir/CountActive",
+                shaderRegion,
+                new List<CSAttribute>()
+                {
                 new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
                 new CSInt2("RakelMappedInfoSize", rakelMappedInfoSize),
                 new CSInt2("RakelReservoirSize", rakelReservoirSize),
@@ -156,33 +172,55 @@ public class CanvasReservoir : Reservoir
                 new CSInt3("WorkspaceSize", Size),
 
                 new CSComputeBuffer("ActiveCount", activeCount),
-            },
-            false
-        ).Run();
+                },
+                false
+            ).Run();
 
-        // do add reduce and divide by value to get average
-        ReduceWorkspace(
-            shaderRegion,
-            ReduceFunction.Add,
-            false);
+            // do add reduce and divide by value to get average
+            ReduceWorkspace(
+                shaderRegion,
+                InternalReduceFunction.Add,
+                false);
 
-        // divide by count and do add reduce to get average
-        new ComputeShaderTask(
+            // divide by count and do add reduce to get average
+            new ComputeShaderTask(
 
-            "Reservoir/DivideByValue",
-            new ShaderRegion(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
-            new List<CSAttribute>()
-            {
+                "Reservoir/DivideByValue",
+                new ShaderRegion(Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero),
+                new List<CSAttribute>()
+                {
                 new CSComputeBuffer("Workspace", Workspace),
                 new CSInt2("WorkspaceSize", Size2D),
                 new CSInt2("DividendPosition", shaderRegion.Position),
 
                 new CSComputeBuffer("Divisor", activeCount),
-            },
-            false
-        ).Run();
+                },
+                false
+            ).Run();
 
-        activeCount.Dispose();
+            activeCount.Dispose();
+        }
+        else
+        {
+            ReduceWorkspace(
+                shaderRegion,
+                InternalReduceFunction.Max,
+                false);
+        }
+
+        ExtractReducedValue(shaderRegion, resultTarget);
+    }
+
+    // NOTE: It is assumed that the data is copied to workspace already
+    public void ReduceActiveWorkspaceMax(
+        ShaderRegion shaderRegion,
+        ComputeBuffer resultTarget)
+    {
+        // do add reduce and divide by value to get average
+        ReduceWorkspace(
+            shaderRegion,
+            InternalReduceFunction.Max,
+            false);
 
         ExtractReducedValue(shaderRegion, resultTarget);
     }
@@ -194,7 +232,7 @@ public class CanvasReservoir : Reservoir
     {
         ReduceWorkspace(
             shaderRegion,
-            ReduceFunction.Max,
+            InternalReduceFunction.Max,
             false);
 
         ExtractReducedValue(shaderRegion, resultTarget);
@@ -219,7 +257,7 @@ public class CanvasReservoir : Reservoir
         ).Run();
     }
 
-    public void ReduceWorkspace(ShaderRegion reduceRegion, ReduceFunction reduceFunction, bool debugEnabled = false)
+    public void ReduceWorkspace(ShaderRegion reduceRegion, InternalReduceFunction reduceFunction, bool debugEnabled = false)
     {
         // shader is hardcoded to deal with 2x2 blocks (processing 4 values per thread)
         Vector2Int REDUCE_BLOCK_SIZE = new Vector2Int(2, 2);

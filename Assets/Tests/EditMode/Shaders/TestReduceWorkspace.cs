@@ -72,7 +72,7 @@ public class TestReduceWorkspace
         new FileLogger_().OnDisable();
     }
 
-    float Execute(ShaderRegion shaderRegion, ReduceFunction reduceFunction, bool debugEnabled)
+    float Execute(ShaderRegion shaderRegion, InternalReduceFunction reduceFunction, bool debugEnabled)
     {
         Reservoir.ReduceWorkspace(shaderRegion, reduceFunction, debugEnabled);
 
@@ -105,7 +105,7 @@ public class TestReduceWorkspace
             reductionPosition + new Vector2Int(reductionSize.x - 1, 0),
             reductionPosition + new Vector2Int(0, reductionSize.y - 1),
             reductionPosition + new Vector2Int(reductionSize.x - 1, reductionSize.y - 1));
-        float result = Execute(sr, ReduceFunction.Max, false);
+        float result = Execute(sr, InternalReduceFunction.Max, false);
 
 
         // Assert
@@ -133,7 +133,7 @@ public class TestReduceWorkspace
             reductionPosition + new Vector2Int(reductionSize.x - 1, 0),
             reductionPosition + new Vector2Int(0, reductionSize.y - 1),
             reductionPosition + new Vector2Int(reductionSize.x - 1, reductionSize.y - 1));
-        float result = Execute(sr, ReduceFunction.Max, false);
+        float result = Execute(sr, InternalReduceFunction.Max, false);
 
 
         // Assert
@@ -162,7 +162,7 @@ public class TestReduceWorkspace
             reductionPosition + new Vector2Int(reductionSize.x - 1, 0),
             reductionPosition + new Vector2Int(0, reductionSize.y - 1),
             reductionPosition + new Vector2Int(reductionSize.x - 1, reductionSize.y - 1));
-        float result = Execute(sr, ReduceFunction.Add, false);
+        float result = Execute(sr, InternalReduceFunction.Add, false);
 
 
         // Assert
@@ -190,7 +190,7 @@ public class TestReduceWorkspace
             reductionPosition + new Vector2Int(reductionSize.x - 1, 0),
             reductionPosition + new Vector2Int(0, reductionSize.y - 1),
             reductionPosition + new Vector2Int(reductionSize.x - 1, reductionSize.y - 1));
-        float result = Execute(sr, ReduceFunction.Add, false);
+        float result = Execute(sr, InternalReduceFunction.Add, false);
 
 
         // Assert
