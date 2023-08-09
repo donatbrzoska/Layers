@@ -746,15 +746,13 @@ public class OilPaintEngine : MonoBehaviour
     {
         // Parameters adjusted for windowed unity
         STEPS_PER_FRAME = 400;
-        CANVAS_LAYERS_MAX = 50;
-        RAKEL_LAYERS_MAX = 50;
 
         int LAYERS = 4;
         bool AUTO_Z_ENABLED = false;
         bool PICKUP_BENCHMARK = false;
 
-        Config.TextureResolution = 40;
-        Config.RakelConfig.Length = 4;
+        Config.TextureResolution = 70;
+        Config.RakelConfig.Length = 10;
         Config.RakelConfig.Width = 1;
         Config.RakelConfig.TiltNoiseEnabled = false;
         Config.TransferConfig.LayerThickness_MAX_Volume = LAYERS;
@@ -776,7 +774,7 @@ public class OilPaintEngine : MonoBehaviour
             endPosition.z = -LAYERS * Paint.VOLUME_THICKNESS;
 
             UpdateFillColor(Color_.CadmiumGreenLight);
-            UpdateFillVolume(100);
+            UpdateFillVolume(120);
             UpdateFillWidthPart(1);
             FillApply();
         }
