@@ -37,7 +37,7 @@ void main (uint3 id_ : SV_DispatchThreadID)
                 pixel.y >= RakelMappedInfoActivePosition.y && pixel.y <= rakel_mapped_info_max.y;
             if (in_rakel_mapped_info_range)
             {
-                MappedInfo rakel_mapped_info = RakelMappedInfo[XY(pixel.x, pixel.y, RakelMappedInfoSize.x)];
+                MappedInfo rakel_mapped_info = RakelMappedInfo[XY(pixel.x, pixel.y, RakelMappedInfoSize.xy)];
                 if (rakel_mapped_info.reservoir_pixel.x > -0.5 && rakel_mapped_info.reservoir_pixel.y > -0.5 &&
                     rakel_mapped_info.reservoir_pixel.x < RakelReservoirSize.x -0.5 && rakel_mapped_info.reservoir_pixel.y < RakelReservoirSize.y -0.5)
                 {

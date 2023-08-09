@@ -133,8 +133,8 @@ public class Rakel
         //    for (int y = 0; y < DistortionMapSize.y; y++)
         //    {
         //        float value = perlinNoise.ValueAt(x, y);
-        //        //distortionMapData[IndexUtil.XY(x, y, DistortionMapSize.x)] = Mathf.Clamp01(Mathf.Clamp(value, 0, noiseCapRatio) - noiseCapSubtract);
-        //        distortionMapData[IndexUtil.XY(x, y, DistortionMapSize.x)] = value;
+        //        //distortionMapData[IndexUtil.XY(x, y, DistortionMapSize)] = Mathf.Clamp01(Mathf.Clamp(value, 0, noiseCapRatio) - noiseCapSubtract);
+        //        distortionMapData[IndexUtil.XY(x, y, DistortionMapSize)] = value;
         //    }
         //}
 

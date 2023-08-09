@@ -74,7 +74,7 @@ float calculate_exact_overlap(Rectangle subject_p, Rectangle clip_p)
     // bool debug_this = adjacent_reservoir_pixel.x == 0 && adjacent_reservoir_pixel.y == 1
     //                && f2_eq(reservoir_pixel, float2(0.13, 0.87));
     // if (debug_this){
-    //     Debug[XY(id.x, id.y, CalculationSize.x)] = float2(7,7);
+    //     Debug[XY(id.x, id.y, CalculationSize.xy)] = float2(7,7);
     // }
 
     // bool debug_this = (id__().x == 2 && id__().y == 2 && debug_state().x == 0 && debug_state().y == 0);

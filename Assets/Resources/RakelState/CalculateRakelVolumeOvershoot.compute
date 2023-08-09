@@ -18,11 +18,11 @@ void main (uint3 id_ : SV_DispatchThreadID)
     if (is_relevant_thread(id(), CalculationSize))
     {
         int2 canvas_pixel = id() + CalculationPosition;
-        float rakel_volume = SampledRakelVolumes[XY(canvas_pixel.x, canvas_pixel.y, SampledRakelVolumesSize.x)];
+        float rakel_volume = SampledRakelVolumes[XY(canvas_pixel.x, canvas_pixel.y, SampledRakelVolumesSize.xy)];
 
-        MappedInfo rakel_mapped_info = RakelMappedInfo[XY(canvas_pixel.x, canvas_pixel.y, RakelMappedInfoSize.x)];
+        MappedInfo rakel_mapped_info = RakelMappedInfo[XY(canvas_pixel.x, canvas_pixel.y, RakelMappedInfoSize.xy)];
         float rakel_volume_overshoot = max(rakel_volume - rakel_mapped_info.distance / VOLUME_THICKNESS(), 0);
 
-        SampledRakelVolumes[XY(canvas_pixel.x, canvas_pixel.y, SampledRakelVolumesSize.x)] = rakel_volume_overshoot;
+        SampledRakelVolumes[XY(canvas_pixel.x, canvas_pixel.y, SampledRakelVolumesSize.xy)] = rakel_volume_overshoot;
     }
 }

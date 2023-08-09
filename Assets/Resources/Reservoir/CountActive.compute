@@ -22,11 +22,11 @@ void main (uint3 id_ : SV_DispatchThreadID)
     {
         int2 pixel = id() + CalculationPosition;
 
-        MappedInfo paint_source_mapped = RakelMappedInfo[XY(pixel.x, pixel.y, RakelMappedInfoSize.x)];
+        MappedInfo paint_source_mapped = RakelMappedInfo[XY(pixel.x, pixel.y, RakelMappedInfoSize.xy)];
         int2 reservoir_pixel_nearest = round(paint_source_mapped.reservoir_pixel);
 
         if (pixel_in_array_range(reservoir_pixel_nearest, RakelReservoirSize)) {
-            float volume = Workspace[XY(pixel.x, pixel.y, WorkspaceSize.x)];
+            float volume = Workspace[XY(pixel.x, pixel.y, WorkspaceSize.xy)];
             if (volume > 0) {
                 InterlockedAdd(ActiveCount[0], 1);
             }

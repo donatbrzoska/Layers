@@ -43,7 +43,7 @@ void main (uint3 id_ : SV_DispatchThreadID)
     {
         int2 canvas_pixel = id() + CalculationPosition;
 
-        float3 back_tranformed_canvas_pixel = RakelMappedInfo[XY(canvas_pixel.x, canvas_pixel.y, RakelMappedInfoSize.x)].transformed_pixel;
-        RakelMappedInfo[XY(canvas_pixel.x, canvas_pixel.y, RakelMappedInfoSize.x)].reservoir_pixel = project_into_rakel_reservoir(back_tranformed_canvas_pixel);
+        float3 back_tranformed_canvas_pixel = RakelMappedInfo[XY(canvas_pixel.x, canvas_pixel.y, RakelMappedInfoSize.xy)].transformed_pixel;
+        RakelMappedInfo[XY(canvas_pixel.x, canvas_pixel.y, RakelMappedInfoSize.xy)].reservoir_pixel = project_into_rakel_reservoir(back_tranformed_canvas_pixel);
     }
 }

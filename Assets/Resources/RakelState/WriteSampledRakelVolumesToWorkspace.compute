@@ -24,7 +24,7 @@ void main (uint3 id_ : SV_DispatchThreadID)
     if (is_relevant_thread(id(), CalculationSize))
     {
         int2 canvas_pixel = id() + CalculationPosition;
-        MappedInfo rakel_mapped_info = RakelMappedInfo[XY(canvas_pixel.x, canvas_pixel.y, RakelMappedInfoSize.x)];
+        MappedInfo rakel_mapped_info = RakelMappedInfo[XY(canvas_pixel.x, canvas_pixel.y, RakelMappedInfoSize.xy)];
 
         int2 rakel_reservoir_pixel_nearest = round(rakel_mapped_info.reservoir_pixel);
 
@@ -37,11 +37,11 @@ void main (uint3 id_ : SV_DispatchThreadID)
                 int2 coord = rakel_reservoir_pixel_nearest + int2(x, y);
                 if (pixel_in_array_range(coord, RakelReservoirSize.xy)) { // Prevent out of bounds access to reservoir. Also, if it's not in range, this overlap part is not (and must not be!) used anyways.
                     uint2 coord_ = uint2(coord.x, coord.y);
-                    volume_rakel += rakel_mapped_info.overlap[i][j] * RakelReservoirInfo[XY(coord_.x, coord_.y, RakelReservoirSize.x)].volume;
+                    volume_rakel += rakel_mapped_info.overlap[i][j] * RakelReservoirInfo[XY(coord_.x, coord_.y, RakelReservoirSize.xy)].volume;
                 }
             }
         }
 
-        Workspace[XY(canvas_pixel.x, canvas_pixel.y, WorkspaceSize.x)] = volume_rakel;
+        Workspace[XY(canvas_pixel.x, canvas_pixel.y, WorkspaceSize.xy)] = volume_rakel;
     }
 }

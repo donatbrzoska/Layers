@@ -49,6 +49,13 @@ public class PaintGrid
     public ComputeBuffer Content;
     public Paint[] ContentData;
     public Vector3Int Size;
+    public Vector2Int Size2D
+    {
+        get
+        {
+            return new Vector2Int(Size.x, Size.y);
+        }
+    }
     public float CellVolume;
 
     public PaintGrid(Vector3Int size, float cellVolume)
@@ -87,7 +94,7 @@ public class PaintGrid
     // Only used for testing purposes
     public ColumnInfo Get(int x, int y)
     {
-        return InfoData[IndexUtil.XY(x, y, Size.x)];
+        return InfoData[IndexUtil.XY(x, y, Size2D)];
     }
 
     // Only used for testing purposes
@@ -133,7 +140,7 @@ public class PaintGrid
             {
                 int y = i + shaderRegion.Position.y;
                 int x = j + shaderRegion.Position.x;
-                volumes[IndexUtil.XY(j, i, shaderRegion.Size.x)] = Get(x, y).Volume;
+                volumes[IndexUtil.XY(j, i, shaderRegion.Size)] = Get(x, y).Volume;
             }
         }
         return volumes;

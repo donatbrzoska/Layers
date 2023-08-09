@@ -17,6 +17,6 @@ void main (uint3 id_ : SV_DispatchThreadID)
     if (is_relevant_thread(id(), CalculationSize))
     {
         int2 pixel = id() + CalculationPosition;
-        Workspace[XY(pixel.x, pixel.y, ReservoirSize.x)] = ReservoirInfo[XY(pixel.x, pixel.y, ReservoirSize.x)].volume;
+        Workspace[XY(pixel.x, pixel.y, ReservoirSize.xy)] = ReservoirInfo[XY(pixel.x, pixel.y, ReservoirSize.xy)].volume;
     }
 }

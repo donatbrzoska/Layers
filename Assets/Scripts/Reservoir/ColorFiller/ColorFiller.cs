@@ -17,7 +17,7 @@ public abstract class ColorFiller
             actualColor = Colors.RGB2RYB(actualColor);
         }
 
-        ColumnInfo ci = targetInfo[IndexUtil.XY(x, y, targetSize.x)];
+        ColumnInfo ci = targetInfo[IndexUtil.XY(x, y, new Vector2Int(targetSize.x, targetSize.y))];
         for (int z = 0; z < ci.Size; z++)
         {
             target[IndexUtil.XYZ(x, y, z, targetSize)].Color = actualColor;

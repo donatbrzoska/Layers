@@ -15,6 +15,6 @@ void main (uint3 id_ : SV_DispatchThreadID)
     id__ = id_;
     if (is_relevant_thread(id(), CalculationSize))
     {
-        ReducedValueTarget[0] = ReducedValueSource[XY(ReducedValueSourceIndex.x, ReducedValueSourceIndex.y, ReducedValueSourceSize.x)];
+        ReducedValueTarget[0] = ReducedValueSource[XY(ReducedValueSourceIndex.x, ReducedValueSourceIndex.y, ReducedValueSourceSize.xy)];
     }
 }

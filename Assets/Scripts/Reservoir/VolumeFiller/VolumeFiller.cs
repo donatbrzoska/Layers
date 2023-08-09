@@ -24,9 +24,9 @@ public abstract class VolumeFiller
             left -= cellVolume;
             z++;
         }
-        targetInfo[IndexUtil.XY(x, y, targetSize.x)].Size = z;
-        targetInfo[IndexUtil.XY(x, y, targetSize.x)].WriteIndex = z;
-        targetInfo[IndexUtil.XY(x, y, targetSize.x)].Volume = volume - left;
+        targetInfo[IndexUtil.XY(x, y, new Vector2Int(targetSize.x, targetSize.y))].Size = z;
+        targetInfo[IndexUtil.XY(x, y, new Vector2Int(targetSize.x, targetSize.y))].WriteIndex = z;
+        targetInfo[IndexUtil.XY(x, y, new Vector2Int(targetSize.x, targetSize.y))].Volume = volume - left;
     }
 
     public abstract void Fill(ColumnInfo[] targetInfo, Paint[] target, Vector3Int targetSize, float targetCellVolume);

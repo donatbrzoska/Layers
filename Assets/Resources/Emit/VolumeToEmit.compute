@@ -29,7 +29,7 @@ uint TrueVolume_MIN_Calculation;
 // radius of 1 does an emit on a 3x3 area from emit source grid, based on the rounded rakel_reservoir_pixel
 float volume_to_emit_(int2 radius, int2 canvas_pixel)
 {
-    MappedInfo rakel_mapped_info = RakelMappedInfo[XY(canvas_pixel.x, canvas_pixel.y, RakelMappedInfoSize.x)];
+    MappedInfo rakel_mapped_info = RakelMappedInfo[XY(canvas_pixel.x, canvas_pixel.y, RakelMappedInfoSize.xy)];
 
     int2 rakel_reservoir_pixel_nearest = round(rakel_mapped_info.reservoir_pixel);
 
@@ -45,11 +45,11 @@ float volume_to_emit_(int2 radius, int2 canvas_pixel)
                 // calculate overlap part, because summed overlap might be < 1
                 // possible reason would be emitting up at rakel edge
                 float overlap_part = rakel_mapped_info.overlap[i][j] / unzero(rakel_mapped_info.total_overlap);
-                volume_rakel += overlap_part * RakelReservoirInfoDuplicate[XY(coord_.x, coord_.y, RakelReservoirSize.x)].volume;
+                volume_rakel += overlap_part * RakelReservoirInfoDuplicate[XY(coord_.x, coord_.y, RakelReservoirSize.xy)].volume;
             }
         }
     }
-    float volume_canvas = CanvasReservoirInfoDuplicate[XY(canvas_pixel.x, canvas_pixel.y, CanvasReservoirSize.x)].volume;
+    float volume_canvas = CanvasReservoirInfoDuplicate[XY(canvas_pixel.x, canvas_pixel.y, CanvasReservoirSize.xy)].volume;
     float paint_thickness_rakel = volume_rakel * VOLUME_THICKNESS();
     float paint_thickness_canvas = volume_canvas * VOLUME_THICKNESS();
     float surface_distance = rakel_mapped_info.distance - paint_thickness_rakel - paint_thickness_canvas;
@@ -98,7 +98,7 @@ float volume_to_emit_(int2 radius, int2 canvas_pixel)
         volume_to_emit *= rakel_mapped_info.total_overlap;
         
         //TODO there might be problems with rounding to negative indizes
-        // VOLUME_TO_EMIT_TARGET_PU *= DistortionMap[XY(rakel_reservoir_pixel_nearest.x + DistortionMapIndex, rakel_reservoir_pixel_nearest.y, DistortionMapSize.x)];
+        // VOLUME_TO_EMIT_TARGET_PU *= DistortionMap[XY(rakel_reservoir_pixel_nearest.x + DistortionMapIndex, rakel_reservoir_pixel_nearest.y, DistortionMapSize.xy)];
 
     }
     return volume_to_emit;
@@ -115,6 +115,6 @@ void main (uint3 id_ : SV_DispatchThreadID)
         // calculate pixel position on canvas
         // was uint2 before, but negative values are possible due to padding and no prevention of that because it should not cause any more problems
         int2 canvas_pixel = id() + CalculationPosition;
-        RakelMappedInfo[XY(canvas_pixel.x, canvas_pixel.y, RakelMappedInfoSize.x)].target_volume_to_transfer = volume_to_emit_(ReservoirPixelEmitRadius, canvas_pixel);
+        RakelMappedInfo[XY(canvas_pixel.x, canvas_pixel.y, RakelMappedInfoSize.xy)].target_volume_to_transfer = volume_to_emit_(ReservoirPixelEmitRadius, canvas_pixel);
     }
 }

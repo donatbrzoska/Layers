@@ -29,7 +29,7 @@ void main(uint3 id_ : SV_DispatchThreadID)
     {
         int2 rakel_pixel = id() + CalculationPosition;
 
-        float3 forward_transformed_rakel_pixel = CanvasMappedInfo[XY(rakel_pixel.x, rakel_pixel.y, CanvasMappedInfoSize.x)].transformed_pixel;
-        CanvasMappedInfo[XY(rakel_pixel.x, rakel_pixel.y, CanvasMappedInfoSize.x)].distance = distance_from_canvas_(forward_transformed_rakel_pixel);
+        float3 forward_transformed_rakel_pixel = CanvasMappedInfo[XY(rakel_pixel.x, rakel_pixel.y, CanvasMappedInfoSize.xy)].transformed_pixel;
+        CanvasMappedInfo[XY(rakel_pixel.x, rakel_pixel.y, CanvasMappedInfoSize.xy)].distance = distance_from_canvas_(forward_transformed_rakel_pixel);
     }
 }

@@ -16,6 +16,6 @@ void main (uint3 id_ : SV_DispatchThreadID)
     id__ = id_;
     if (is_relevant_thread(id(), CalculationSize))
     {
-        ReservoirInfoSnapshot[XY(id().x, id().y, ReservoirSize.x)] = ReservoirInfo[XY(id().x, id().y, ReservoirSize.x)];
+        ReservoirInfoSnapshot[XY(id().x, id().y, ReservoirSize.xy)] = ReservoirInfo[XY(id().x, id().y, ReservoirSize.xy)];
     }
 }

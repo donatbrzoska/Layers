@@ -23,7 +23,7 @@ void main (uint3 id_ : SV_DispatchThreadID)
     {
         int2 pixel = id() + CalculationPosition;
 
-        MappedInfo rakel_mapped_info = RakelMappedInfo[XY(pixel.x, pixel.y, RakelMappedInfoSize.x)];
+        MappedInfo rakel_mapped_info = RakelMappedInfo[XY(pixel.x, pixel.y, RakelMappedInfoSize.xy)];
         int2 reservoir_pixel_nearest = round(rakel_mapped_info.reservoir_pixel);
 
         ColumnInfo c;
@@ -31,9 +31,9 @@ void main (uint3 id_ : SV_DispatchThreadID)
         c.write_index = 0;
         c.volume = 0;
         if (pixel_in_array_range(reservoir_pixel_nearest, RakelReservoirSize)) {
-            c = ReservoirInfo[XY(pixel.x, pixel.y, ReservoirSize.x)];
+            c = ReservoirInfo[XY(pixel.x, pixel.y, ReservoirSize.xy)];
         }
 
-        Workspace[XY(pixel.x, pixel.y, ReservoirSize.x)] = c.volume;
+        Workspace[XY(pixel.x, pixel.y, ReservoirSize.xy)] = c.volume;
     }
 }

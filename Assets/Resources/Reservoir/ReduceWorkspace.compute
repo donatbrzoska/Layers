@@ -31,10 +31,10 @@ void reduce_volume(uint3 id_ : SV_DispatchThreadID)
         uint2 i_ul = i_base + upper;
         uint2 i_ur = i_base + right + upper;
 
-        float value_ll = Workspace[XY(i_ll.x, i_ll.y, WorkspaceSize.x)] * in_reduce_bounds(i_ll, i_base);
-        float value_lr = Workspace[XY(i_lr.x, i_lr.y, WorkspaceSize.x)] * in_reduce_bounds(i_lr, i_base);
-        float value_ul = Workspace[XY(i_ul.x, i_ul.y, WorkspaceSize.x)] * in_reduce_bounds(i_ul, i_base);
-        float value_ur = Workspace[XY(i_ur.x, i_ur.y, WorkspaceSize.x)] * in_reduce_bounds(i_ur, i_base);
+        float value_ll = Workspace[XY(i_ll.x, i_ll.y, WorkspaceSize.xy)] * in_reduce_bounds(i_ll, i_base);
+        float value_lr = Workspace[XY(i_lr.x, i_lr.y, WorkspaceSize.xy)] * in_reduce_bounds(i_lr, i_base);
+        float value_ul = Workspace[XY(i_ul.x, i_ul.y, WorkspaceSize.xy)] * in_reduce_bounds(i_ul, i_base);
+        float value_ur = Workspace[XY(i_ur.x, i_ur.y, WorkspaceSize.xy)] * in_reduce_bounds(i_ur, i_base);
 
         float result = 0;
         if (ReduceFunction == 0) // max
@@ -45,6 +45,6 @@ void reduce_volume(uint3 id_ : SV_DispatchThreadID)
         {
             result = value_ll + value_lr + value_ul + value_ur;
         }
-        Workspace[XY(i_ll.x, i_ll.y, WorkspaceSize.x)] = result;
+        Workspace[XY(i_ll.x, i_ll.y, WorkspaceSize.xy)] = result;
     }
 }
