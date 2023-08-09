@@ -599,163 +599,146 @@ public class OilPaintEngine : MonoBehaviour
         //LogUtil.Log(Canvas.Reservoir.PaintGrid.GetVolumes(), Canvas.Reservoir.Size.y);
     }
 
+    private void DoLineDown(float posX, Color_ color)
+    {
+        bool AUTO_Z_ENABLED = false;
+        float HEIGHT = 4 * Paint.VOLUME_THICKNESS;
+
+        Rakel.Fill(new ReservoirFiller(new FlatColorFiller(color, Config.ColorSpace), new FlatVolumeFiller(1, 60)));
+        InputInterpolator.NewStroke(
+            false,
+            Config.RakelConfig.TiltNoiseFrequency,
+            Config.RakelConfig.TiltNoiseAmplitude,
+            Config.TransferConfig.FloatingZLength,
+            Config.TransferConfig.CanvasSnapshotBufferEnabled);
+        InputInterpolator.AddNode(
+            new Vector3(posX, 5, -HEIGHT), AUTO_Z_ENABLED, 0,
+            90,
+            0,
+            Config.TransferConfig,
+            Config.TextureResolution);
+        InputInterpolator.AddNode(
+            new Vector3(posX, -5, -HEIGHT), AUTO_Z_ENABLED, 0,
+            90,
+            0,
+            Config.TransferConfig,
+            Config.TextureResolution);
+    }
+
+    private void DoThreeLinesDown(float posX, float lineWidth, Color_ color1, Color_ color2, Color_ color3)
+    {
+        ClearRakel();
+        DoLineDown(posX - lineWidth, color1);
+        ClearRakel();
+        DoLineDown(posX, color2);
+        ClearRakel();
+        DoLineDown(posX + lineWidth, color3);
+    }
+
     public void DoMacro3Action()
     {
         STEPS_PER_FRAME = -1;
         Start();
 
-        bool AUTO_Z_ENABLED = false;
-        float HEIGHT = 4 * Paint.VOLUME_THICKNESS;
+        float RAKEL_LENGTH = 0.8f;
 
         Config.TransferConfig.CanvasSnapshotBufferEnabled = false;
-        UpdateRakelLength(2);
+        UpdateRakelLength(RAKEL_LENGTH);
 
-        Rakel.Fill(new ReservoirFiller(new FlatColorFiller(Color_.UltramarineBlue, Config.ColorSpace), new PerlinVolumeFiller(1, 60)));
-        InputInterpolator.NewStroke(
-            false,
-            Config.RakelConfig.TiltNoiseFrequency,
-            Config.RakelConfig.TiltNoiseAmplitude,
-            Config.TransferConfig.FloatingZLength,
-            Config.TransferConfig.CanvasSnapshotBufferEnabled);
-        InputInterpolator.AddNode(
-            new Vector3(-1, 4, -HEIGHT), AUTO_Z_ENABLED, 0,
-            90,
-            0,
-            Config.TransferConfig,
-            Config.TextureResolution);
-        InputInterpolator.AddNode(
-            new Vector3(-1, -4, -HEIGHT), AUTO_Z_ENABLED, 0,
-            90,
-            0,
-            Config.TransferConfig,
-            Config.TextureResolution);
+        Color_ COLOR_1 = Color_.UltramarineBlue;
+        Color_ COLOR_2 = Color_.TitanWhite;
+        Color_ COLOR_3 = Color_.LavenderLight;
 
-        ClearRakel();
+        float total_gap = 15 - 3 * 3 * RAKEL_LENGTH;
+        float x1 = -7.5f + 1 * total_gap / 4 + 1.5f * RAKEL_LENGTH;
+        float x2 = -7.5f + 2 * total_gap / 4 + 1.5f * RAKEL_LENGTH + 1 * 3 * RAKEL_LENGTH;
+        float x3 = -7.5f + 3 * total_gap / 4 + 1.5f * RAKEL_LENGTH + 2 * 3 * RAKEL_LENGTH;
+        DoThreeLinesDown(x1, RAKEL_LENGTH, COLOR_1, COLOR_2, COLOR_3);
+        DoThreeLinesDown(x2, RAKEL_LENGTH, COLOR_1, COLOR_2, COLOR_3);
+        DoThreeLinesDown(x3, RAKEL_LENGTH, COLOR_1, COLOR_2, COLOR_3);
 
-        Rakel.Fill(new ReservoirFiller(new FlatColorFiller(Color_.TitanWhite, Config.ColorSpace), new PerlinVolumeFiller(1, 60)));
-        InputInterpolator.NewStroke(
-            false,
-            Config.RakelConfig.TiltNoiseFrequency,
-            Config.RakelConfig.TiltNoiseAmplitude,
-            Config.TransferConfig.FloatingZLength,
-            Config.TransferConfig.CanvasSnapshotBufferEnabled);
-        InputInterpolator.AddNode(
-            new Vector3(1, 4, -HEIGHT), AUTO_Z_ENABLED, 0,
-            90,
-            0,
-            Config.TransferConfig,
-            Config.TextureResolution);
-        InputInterpolator.AddNode(
-            new Vector3(1, -4, -HEIGHT), AUTO_Z_ENABLED, 0,
-            90,
-            0,
-            Config.TransferConfig,
-            Config.TextureResolution);
-
-        ClearRakel();
-
-        Rakel.Fill(new ReservoirFiller(new FlatColorFiller(Color_.LavenderLight, Config.ColorSpace), new PerlinVolumeFiller(1, 60)));
-        InputInterpolator.NewStroke(
-            false,
-            Config.RakelConfig.TiltNoiseFrequency,
-            Config.RakelConfig.TiltNoiseAmplitude,
-            Config.TransferConfig.FloatingZLength,
-            Config.TransferConfig.CanvasSnapshotBufferEnabled);
-        InputInterpolator.AddNode(
-            new Vector3(3, 4, -HEIGHT), AUTO_Z_ENABLED, 0,
-            90,
-            0,
-            Config.TransferConfig,
-            Config.TextureResolution);
-        InputInterpolator.AddNode(
-            new Vector3(3, -4, -HEIGHT), AUTO_Z_ENABLED, 0,
-            90,
-            0,
-            Config.TransferConfig,
-            Config.TextureResolution);
-
+        
+        // setup default config for macro 4
+        // by doing it here, you can also change it before executing macro 4
         UpdateRakelPositionZLocked(false); // auto z enabled
+
         UpdateRakelPressureLocked(true);
         UpdateRakelPressure(0.5f);
+
+        UpdateRakelPressureLocked(true);
+        UpdateRakelTilt(0);
+    }
+
+    private void DoSwipeRight(float posX0, float posX1, float posY)
+    {
+        bool autoZEnabled = Config.InputConfig.RakelPositionZ.Source == InputSourceType.Auto;
+        
+        InputInterpolator.NewStroke(
+            Config.RakelConfig.TiltNoiseEnabled,
+            Config.RakelConfig.TiltNoiseFrequency,
+            Config.RakelConfig.TiltNoiseAmplitude,
+            Config.TransferConfig.FloatingZLength,
+            Config.TransferConfig.CanvasSnapshotBufferEnabled);
+        InputInterpolator.AddNode(
+            new Vector3(posX0, posY, InputManager.RakelPositionZ), autoZEnabled, InputManager.RakelPressure,
+            InputManager.RakelRotation,
+            InputManager.RakelTilt,
+            Config.TransferConfig,
+            Config.TextureResolution);
+        InputInterpolator.AddNode(
+            new Vector3(posX1, posY, InputManager.RakelPositionZ), autoZEnabled, InputManager.RakelPressure,
+            InputManager.RakelRotation,
+            InputManager.RakelTilt,
+            Config.TransferConfig,
+            Config.TextureResolution);
+    }
+
+    private void DoFourSwipesRight(float posX0, float posX1)
+    {
+        UpdateRakelLength(2);
+        UpdateRakelTiltNoiseEnabled(false);
+        UpdateRakelPositionZ(-3 * Paint.VOLUME_THICKNESS);
+
+        ClearRakel();
+        UpdateRakelPressure(0);
+        DoSwipeRight(posX0, posX1, 3.75f);
+        ClearRakel();
+        UpdateRakelPressure(0.333f);
+        DoSwipeRight(posX0, posX1, 1.25f);
+        ClearRakel();
+        UpdateRakelPressure(0.666f);
+        DoSwipeRight(posX0, posX1, -1.25f);
+        ClearRakel();
+        UpdateRakelPressure(1);
+        DoSwipeRight(posX0, posX1, -3.75f);
     }
 
     public void DoMacro4Action()
     {
-        bool TILT_NOISE_ENABLED = false;
-        bool autoZEnabled = Config.InputConfig.RakelPositionZ.Source == InputSourceType.Auto;
-        float pressure = Config.InputConfig.RakelPressure.Value;
-        float HEIGHT = 3 * Paint.VOLUME_THICKNESS;
-        float ROTATION = 0;
-        float TILT = 0;
+        float MACRO3_RAKEL_LENGTH = 0.8f;
+        float total_gap = 15 - 3 * 3 * MACRO3_RAKEL_LENGTH;
+        float x1 = -7.5f + 1 * total_gap / 4 + 1.5f * MACRO3_RAKEL_LENGTH;
+        float x2 = -7.5f + 2 * total_gap / 4 + 1.5f * MACRO3_RAKEL_LENGTH + 1 * 3 * MACRO3_RAKEL_LENGTH;
+        float x3 = -7.5f + 3 * total_gap / 4 + 1.5f * MACRO3_RAKEL_LENGTH + 2 * 3 * MACRO3_RAKEL_LENGTH;
 
-        UpdateRakelLength(2);
+        float RAKEL_WIDTH = 1;
+        UpdateRakelWidth(RAKEL_WIDTH);
+        float x1_0 = x1 - 1.5f * MACRO3_RAKEL_LENGTH - RAKEL_WIDTH;
+        float x1_1 = x1_0 + RAKEL_WIDTH + 3 * MACRO3_RAKEL_LENGTH;
+        float x2_0 = x2 - 1.5f * MACRO3_RAKEL_LENGTH - RAKEL_WIDTH;
+        float x2_1 = x2_0 + RAKEL_WIDTH + 3 * MACRO3_RAKEL_LENGTH;
+        float x3_0 = x3 - 1.5f * MACRO3_RAKEL_LENGTH - RAKEL_WIDTH;
+        float x3_1 = x3_0 + RAKEL_WIDTH + 3 * MACRO3_RAKEL_LENGTH;
+
         Config.TransferConfig.CanvasSnapshotBufferEnabled = false;
         Config.TransferConfig.DeletePickedUpFromCSB = false;
-
-        InputInterpolator.NewStroke(
-            TILT_NOISE_ENABLED,
-            Config.RakelConfig.TiltNoiseFrequency,
-            Config.RakelConfig.TiltNoiseAmplitude,
-            Config.TransferConfig.FloatingZLength,
-            Config.TransferConfig.CanvasSnapshotBufferEnabled);
-        InputInterpolator.AddNode(
-            new Vector3(-3, 2.5f, -HEIGHT), autoZEnabled, pressure,
-            ROTATION,
-            TILT,
-            Config.TransferConfig,
-            Config.TextureResolution);
-        InputInterpolator.AddNode(
-            new Vector3(3, 2.5f, -HEIGHT), autoZEnabled, pressure,
-            ROTATION,
-            TILT,
-            Config.TransferConfig,
-            Config.TextureResolution);
-
-        ClearRakel();
+        DoFourSwipesRight(x1_0, x1_1);
         Config.TransferConfig.CanvasSnapshotBufferEnabled = true;
         Config.TransferConfig.DeletePickedUpFromCSB = true;
-
-        InputInterpolator.NewStroke(
-            TILT_NOISE_ENABLED,
-            Config.RakelConfig.TiltNoiseFrequency,
-            Config.RakelConfig.TiltNoiseAmplitude,
-            Config.TransferConfig.FloatingZLength,
-            Config.TransferConfig.CanvasSnapshotBufferEnabled);
-        InputInterpolator.AddNode(
-            new Vector3(-3, 0, -HEIGHT), autoZEnabled, pressure,
-            ROTATION,
-            TILT,
-            Config.TransferConfig,
-            Config.TextureResolution);
-        InputInterpolator.AddNode(
-            new Vector3(3, 0, -HEIGHT), autoZEnabled, pressure,
-            ROTATION,
-            TILT,
-            Config.TransferConfig,
-            Config.TextureResolution);
-
-        ClearRakel();
+        DoFourSwipesRight(x2_0, x2_1);
         Config.TransferConfig.CanvasSnapshotBufferEnabled = true;
         Config.TransferConfig.DeletePickedUpFromCSB = false;
-
-        InputInterpolator.NewStroke(
-            TILT_NOISE_ENABLED,
-            Config.RakelConfig.TiltNoiseFrequency,
-            Config.RakelConfig.TiltNoiseAmplitude,
-            Config.TransferConfig.FloatingZLength,
-            Config.TransferConfig.CanvasSnapshotBufferEnabled);
-        InputInterpolator.AddNode(
-            new Vector3(-3, -2.5f, -HEIGHT), autoZEnabled, pressure,
-            ROTATION,
-            TILT,
-            Config.TransferConfig,
-            Config.TextureResolution);
-        InputInterpolator.AddNode(
-            new Vector3(3, -2.5f, -HEIGHT), autoZEnabled, pressure,
-            ROTATION,
-            TILT,
-            Config.TransferConfig,
-            Config.TextureResolution);
+        DoFourSwipesRight(x3_0, x3_1);
     }
 
     private void DoBenchmark(Vector3 beginPosition, Vector3 endPosition, float rotation, float tilt)
