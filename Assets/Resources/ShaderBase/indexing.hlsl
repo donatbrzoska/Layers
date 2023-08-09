@@ -1,6 +1,6 @@
-uint XYZ(uint x, uint y, uint z, uint3 dimensions)
+uint XYZ(uint x, uint y, uint z, uint3 dim)
 {
-    return z * dimensions.y * dimensions.x + y * dimensions.x + x;
+    return z * dim.y * dim.x + y * dim.x + x;
 }
 
 uint XY(uint x, uint y, uint width)
