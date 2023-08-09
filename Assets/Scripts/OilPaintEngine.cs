@@ -11,7 +11,8 @@ public class OilPaintEngine : MonoBehaviour
     public float ANCHOR_RATIO_X;
     public float ANCHOR_RATIO_Y;
 
-    public int LAYERS_MAX;
+    public int CANVAS_LAYERS_MAX;
+    public int RAKEL_LAYERS_MAX;
     public int STEPS_PER_FRAME;
 
     private bool UsePen;
@@ -86,7 +87,7 @@ public class OilPaintEngine : MonoBehaviour
         Vector3 position = canvas.transform.position;
         Canvas = new Canvas_(
             Config.CanvasConfig.Width, Config.CanvasConfig.Height,
-            LAYERS_MAX, Config.CanvasConfig.CellVolume,
+            CANVAS_LAYERS_MAX, Config.CanvasConfig.CellVolume,
             position,
             Config.TextureResolution,
             Config.CanvasConfig.NormalScale,
@@ -115,7 +116,7 @@ public class OilPaintEngine : MonoBehaviour
 
         Rakel = new Rakel(
             Config.RakelConfig.Length, Config.RakelConfig.Width, Config.TextureResolution,
-            LAYERS_MAX, Config.RakelConfig.CellVolume,
+            RAKEL_LAYERS_MAX, Config.RakelConfig.CellVolume,
             ANCHOR_RATIO_Y, ANCHOR_RATIO_X);
 
         Debug.Log("Rakel is "
@@ -745,7 +746,8 @@ public class OilPaintEngine : MonoBehaviour
     {
         // Parameters adjusted for windowed unity
         STEPS_PER_FRAME = 400;
-        LAYERS_MAX = 50;
+        CANVAS_LAYERS_MAX = 50;
+        RAKEL_LAYERS_MAX = 50;
 
         int LAYERS = 4;
         bool AUTO_Z_ENABLED = false;
