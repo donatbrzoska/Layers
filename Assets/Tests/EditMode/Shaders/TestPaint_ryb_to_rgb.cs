@@ -32,16 +32,16 @@ public class TestPaint_ryb_to_rgb
     public void ryb_to_rgb_black()
     {
         // Arrange
-        Attributes.Add(new CSFloat4("RYBColor", new Color(1, 1, 1)));
+        Attributes.Add(new CSFloat3("RYBColor", new Vector3(1, 1, 1)));
 
         // Act
         ComputeShaderTask cst = Execute(KERNEL_ID_ryb_to_rgb);
 
         // Assert
-        Color result = cst.DebugValues[0];
+        Vector3 result = cst.DebugValues[0];
 
         AssertUtil.AssertColorsAreEqual(
-            new Color(0, 0, 0),
+            new Vector3(0, 0, 0),
             result);
     }
 
@@ -49,16 +49,16 @@ public class TestPaint_ryb_to_rgb
     public void ryb_to_rgb_white()
     {
         // Arrange
-        Attributes.Add(new CSFloat4("RYBColor", new Color(0, 0, 0)));
+        Attributes.Add(new CSFloat3("RYBColor", new Vector3(0, 0, 0)));
 
         // Act
         ComputeShaderTask cst = Execute(KERNEL_ID_ryb_to_rgb);
 
         // Assert
-        Color result = cst.DebugValues[0];
+        Vector3 result = cst.DebugValues[0];
 
         AssertUtil.AssertColorsAreEqual(
-            new Color(1, 1, 1),
+            new Vector3(1, 1, 1),
             result);
     }
 
@@ -66,16 +66,16 @@ public class TestPaint_ryb_to_rgb
     public void ryb_to_rgb_grey()
     {
         // Arrange
-        Attributes.Add(new CSFloat4("RYBColor", new Color(0.5f, 0.5f, 0.5f)));
+        Attributes.Add(new CSFloat3("RYBColor", new Vector3(0.5f, 0.5f, 0.5f)));
 
         // Act
         ComputeShaderTask cst = Execute(KERNEL_ID_ryb_to_rgb);
 
         // Assert
-        Color result = cst.DebugValues[0];
+        Vector3 result = cst.DebugValues[0];
 
         AssertUtil.AssertColorsAreEqual(
-            new Color(0.5f, 0.5f, 0.5f),
+            new Vector3(0.5f, 0.5f, 0.5f),
             result);
     }
 
@@ -83,16 +83,16 @@ public class TestPaint_ryb_to_rgb
     public void ryb_to_rgb_red()
     {
         // Arrange
-        Attributes.Add(new CSFloat4("RYBColor", new Color(1, 0, 0)));
+        Attributes.Add(new CSFloat3("RYBColor", new Vector3(1, 0, 0)));
 
         // Act
         ComputeShaderTask cst = Execute(KERNEL_ID_ryb_to_rgb);
 
         // Assert
-        Color result = cst.DebugValues[0];
+        Vector3 result = cst.DebugValues[0];
 
         AssertUtil.AssertColorsAreEqual(
-            new Color(1, 0, 0),
+            new Vector3(1, 0, 0),
             result);
     }
 
@@ -100,16 +100,16 @@ public class TestPaint_ryb_to_rgb
     public void ryb_to_rgb_yellow()
     {
         // Arrange
-        Attributes.Add(new CSFloat4("RYBColor", new Color(0, 1, 0)));
+        Attributes.Add(new CSFloat3("RYBColor", new Vector3(0, 1, 0)));
 
         // Act
         ComputeShaderTask cst = Execute(KERNEL_ID_ryb_to_rgb);
 
         // Assert
-        Color result = cst.DebugValues[0];
+        Vector3 result = cst.DebugValues[0];
 
         AssertUtil.AssertColorsAreEqual(
-            new Color(1, 1, 0),
+            new Vector3(1, 1, 0),
             result);
     }
 
@@ -117,16 +117,16 @@ public class TestPaint_ryb_to_rgb
     public void ryb_to_rgb_blue()
     {
         // Arrange
-        Attributes.Add(new CSFloat4("RYBColor", new Color(0, 0, 1)));
+        Attributes.Add(new CSFloat3("RYBColor", new Vector3(0, 0, 1)));
 
         // Act
         ComputeShaderTask cst = Execute(KERNEL_ID_ryb_to_rgb);
 
         // Assert
-        Color result = cst.DebugValues[0];
+        Vector3 result = cst.DebugValues[0];
 
         AssertUtil.AssertColorsAreEqual(
-            new Color(0, 0, 1),
+            new Vector3(0, 0, 1),
             result);
     }
 }

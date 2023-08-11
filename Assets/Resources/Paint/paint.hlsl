@@ -15,19 +15,19 @@ float VOLUME_THICKNESS()
 }
 
 struct Paint {
-    float4 color;
+    float3 color;
     float volume;
 };
 
 Paint paint_create_empty()
 {
     Paint p;
-    p.color = float4(0,0,0,0);
+    p.color = float3(0,0,0);
     p.volume = 0;
     return p;
 }
 
-Paint paint_create(float4 color, float volume)
+Paint paint_create(float3 color, float volume)
 {
     Paint p;
     p.color = color;
@@ -35,29 +35,26 @@ Paint paint_create(float4 color, float volume)
     return p;
 }
 
-float4 rgb_to_ryb(float4 rgba)
+float3 rgb_to_ryb(float3 rgba)
 {
     float3 rgb = float3(rgba.x, rgba.y, rgba.z);
     float3 ryb = rgb_to_ryb_st(rgb);
     // float3 ryb = rgb_to_ryb_leonard(rgb);
-    float4 ryba = float4(ryb.x, ryb.y, ryb.z, 1);
-    return ryba;
+    return ryb;
 }
 
-float4 ryb_to_rgb(float4 ryba)
+float3 ryb_to_rgb(float3 ryba)
 {
     float3 ryb = float3(ryba.x, ryba.y, ryba.z);
     float3 rgb = ryb_to_rgb_st(ryb);
     // float3 rgb = ryb_to_rgb_leonard(ryb);
-    float4 rgba = float4(rgb.x, rgb.y, rgb.z, 1);
-    return rgba;
+    return rgb;
 }
 
 // It is assumed that part_a + part_b = 1
-float4 mix_colors(float4 a, float a_part, float4 b, float b_part)
+float3 mix_colors(float3 a, float a_part, float3 b, float b_part)
 {
-    float4 result = a_part * a + b_part * b;
-    return float4(result.x, result.y, result.z, 1);
+    return a_part * a + b_part * b;
 }
 
 Paint mix(Paint a, Paint b)
@@ -86,7 +83,7 @@ bool is_empty(Paint p)
 }
 
 // p.volume is assumed to be 0..1
-Paint alpha_blend(Paint p, float4 background_color)
+Paint alpha_blend(Paint p, float3 background_color)
 {
     float real_volume = p.volume;
 

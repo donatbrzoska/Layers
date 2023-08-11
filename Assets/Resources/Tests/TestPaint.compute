@@ -20,7 +20,7 @@ void test_mix(uint3 id_ : SV_DispatchThreadID)
 
 
 RWStructuredBuffer<Paint> Paint_A_Result;
-float4 BackgroundColor;
+float3 BackgroundColor;
 
 #pragma kernel test_alpha_blend
 
@@ -36,7 +36,7 @@ void test_alpha_blend(uint3 id_ : SV_DispatchThreadID)
 }
 
 
-float4 RGBColor;
+float3 RGBColor;
 
 #pragma kernel test_rgb_to_ryb
 
@@ -46,13 +46,13 @@ void test_rgb_to_ryb(uint3 id_ : SV_DispatchThreadID)
     id__ = id_;
     if (is_relevant_thread(id(), CalculationSize))
     {
-        float4 test_rgb_to_ryb_result = rgb_to_ryb(RGBColor);
-        log_float4(test_rgb_to_ryb_result);
+        float3 test_rgb_to_ryb_result = rgb_to_ryb(RGBColor);
+        log_float3(test_rgb_to_ryb_result);
     }
 }
 
 
-float4 RYBColor;
+float3 RYBColor;
 
 #pragma kernel test_ryb_to_rgb
 
@@ -62,7 +62,7 @@ void test_ryb_to_rgb(uint3 id_ : SV_DispatchThreadID)
     id__ = id_;
     if (is_relevant_thread(id(), CalculationSize))
     {
-        float4 test_ryb_to_rgb_result = ryb_to_rgb(RYBColor);
-        log_float4(test_ryb_to_rgb_result);
+        float3 test_ryb_to_rgb_result = ryb_to_rgb(RYBColor);
+        log_float3(test_ryb_to_rgb_result);
     }
 }

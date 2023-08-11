@@ -9,7 +9,7 @@ public struct Paint : IEquatable<Paint>
 
     public static Paint EMPTY_PAINT { get; private set; } = new Paint(Colors.NO_PAINT_COLOR, 0);
 
-    public static int SizeInBytes = 4 * sizeof(float) + sizeof(float);
+    public static int SizeInBytes = 3 * sizeof(float) + sizeof(float);
 
     public static Paint operator +(Paint a, Paint b)
     {
@@ -23,18 +23,18 @@ public struct Paint : IEquatable<Paint>
         float b_part = b.Volume / summed_volume;
 
         return new Paint(
-            new Color(
-                a.Color.r * a_part + b.Color.r * b_part,
-                a.Color.g * a_part + b.Color.g * b_part,
-                a.Color.b * a_part + b.Color.b * b_part
+            new Vector3(
+                a.Color.x * a_part + b.Color.x * b_part,
+                a.Color.y * a_part + b.Color.y * b_part,
+                a.Color.z * a_part + b.Color.z * b_part
             ),
             summed_volume);
     }
 
-    public Color Color { get; set; }
+    public Vector3 Color { get; set; }
     public float Volume { get; set; }
 
-    public Paint(Color color, float volume)
+    public Paint(Vector3 color, float volume)
     {
         Color = color;
         Volume = volume;
@@ -58,15 +58,14 @@ public struct Paint : IEquatable<Paint>
 
     public override string ToString()
     {
-        return string.Format("Paint(r={0}, g={1}, b={2}, a={3}, vol={4})", Color.r, Color.g, Color.b, Color.a, Volume);
+        return string.Format("Paint(r={0}, g={1}, b={2}, vol={3})", Color.x, Color.y, Color.z, Volume);
     }
 
-    private static bool ColorsEqual(Color expected, Color actual)
+    private static bool ColorsEqual(Vector3 expected, Vector3 actual)
     {
-        bool equal = FloatsEqual(expected.a, actual.a)
-            && FloatsEqual(expected.r, actual.r)
-            && FloatsEqual(expected.g, actual.g)
-            && FloatsEqual(expected.b, actual.b);
+        bool equal = FloatsEqual(expected.x, actual.x)
+            && FloatsEqual(expected.y, actual.y)
+            && FloatsEqual(expected.z, actual.z);
         return equal;
     }
 

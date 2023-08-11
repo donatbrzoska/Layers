@@ -13,9 +13,9 @@ float NormalScale;
 RWTexture2D<float4> Texture;
 
 
-float4 CANVAS_COLOR(uint color_space)
+float3 CANVAS_COLOR(uint color_space)
 {
-    float4 rgb_color = float4(1,1,1,1);
+    float3 rgb_color = float3(1,1,1);
     return (color_space == 0) ? rgb_color : rgb_to_ryb(rgb_color);
 }
 
@@ -64,7 +64,7 @@ void update_normal(int2 canvas_pixel)
 void update_color(int2 canvas_pixel)
 {
     // default
-    float4 background_color = CANVAS_COLOR(ColorSpace);
+    float3 background_color = CANVAS_COLOR(ColorSpace);
     Paint top = paint_create_empty();
     
     // paint from canvas
@@ -82,11 +82,11 @@ void update_color(int2 canvas_pixel)
         top = alpha_blend(top, background_color);
     }
 
-    // float3 result = ryb_to_rgb(float3(1, 1, 0));
-    // p.color = float4(result.x, result.y, result.z, 1);
+    // p.color = ryb_to_rgb(float3(1, 1, 0));
 
     // set color
-    Texture[canvas_pixel] = (ColorSpace == 1) ? ryb_to_rgb(top.color) : top.color;
+    float3 c = (ColorSpace == 1) ? ryb_to_rgb(top.color) : top.color;
+    Texture[canvas_pixel] = float4(c.x, c.y, c.z, 1);
 }
 
 #pragma kernel main

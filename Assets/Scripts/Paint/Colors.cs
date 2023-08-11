@@ -34,25 +34,25 @@ public enum ColorSpace
 public struct ColorInfo
 {
     public string Name;
-    public Color Color;
+    public Vector3 Color;
 }
 
 public class Colors
 {
-    public static Color CANVAS_COLOR { get; private set; } = new Color(1, 1, 1, 1);
-    public static Color NO_PAINT_COLOR { get; private set; } = new Color(0, 0, 0, 0);
+    public static Vector3 CANVAS_COLOR { get; private set; } = new Vector3(1, 1, 1);
+    public static Vector3 NO_PAINT_COLOR { get; private set; } = new Vector3(0, 0, 0);
 
     public static string GetName(Color_ color)
     {
         return ColorMapper[color].Name;
     }
 
-    public static Color GetColor(Color_ color)
+    public static Vector3 GetColor(Color_ color)
     {
         return ColorMapper[color].Color;
     }
 
-    public static Color_ GetColor_(Color color)
+    public static Color_ GetColor_(Vector3 color)
     {
         foreach (KeyValuePair<Color_, ColorInfo> entry in ColorMapper)
         {
@@ -68,52 +68,50 @@ public class Colors
     private static Dictionary<Color_, ColorInfo> ColorMapper = new Dictionary<Color_, ColorInfo>()
     {
         // https://www.color-name.com/titanium-white.color
-        { Color_.TitanWhite, new ColorInfo() { Name = "Titan White", Color = new Color(243/255.0f, 244/255.0f, 247/255.0f) } },
+        { Color_.TitanWhite, new ColorInfo() { Name = "Titan White", Color = new Vector3(243/255.0f, 244/255.0f, 247/255.0f) } },
 
         // https://www.color-name.com/ivory-black.color
-        { Color_.IvoryBlack, new ColorInfo() { Name = "Ivory Black", Color = new Color(35/255f, 31/255f, 32/255f) } },
+        { Color_.IvoryBlack, new ColorInfo() { Name = "Ivory Black", Color = new Vector3(35/255f, 31/255f, 32/255f) } },
 
-        { Color_.DarkRed, new ColorInfo() { Name = "Red", Color = new Color(0.58f, 0.06f, 0f)} },
+        { Color_.DarkRed, new ColorInfo() { Name = "Red", Color = new Vector3(0.58f, 0.06f, 0f)} },
 
         // https://www.color-name.com/ultramarine-blue-ral.color
-        { Color_.UltramarineBlue, new ColorInfo() { Name = "Ultramarine Blue", Color = new Color(30/255f, 54/255f, 123/255f) } }, // RAL
+        { Color_.UltramarineBlue, new ColorInfo() { Name = "Ultramarine Blue", Color = new Vector3(30/255f, 54/255f, 123/255f) } }, // RAL
 
         // https://www.color-name.com/lemon-yellow.color
-        { Color_.LemonYellow, new ColorInfo() { Name = "Lemon Yellow", Color = new Color(254/255f, 242/255f, 80/255f) } },
+        { Color_.LemonYellow, new ColorInfo() { Name = "Lemon Yellow", Color = new Vector3(254/255f, 242/255f, 80/255f) } },
 
         // https://www.colorhexa.com/fff600
-        { Color_.CadmiumYellow, new ColorInfo() { Name = "Cadmium Yellow", Color = new Color(255/255f, 246/255f, 0/255f) } },
+        { Color_.CadmiumYellow, new ColorInfo() { Name = "Cadmium Yellow", Color = new Vector3(255/255f, 246/255f, 0/255f) } },
 
         // https://www.colorhexa.com/ed872d
-        { Color_.CadmiumOrange, new ColorInfo() { Name = "Cadmium Orange", Color = new Color(237/255f, 135/255f, 45/255f) } },
+        { Color_.CadmiumOrange, new ColorInfo() { Name = "Cadmium Orange", Color = new Vector3(237/255f, 135/255f, 45/255f) } },
 
         // https://www.colorhexa.com/e30022
-        { Color_.CadmiumRed, new ColorInfo() { Name = "Cadmium Red", Color = new Color(227/255f, 0/255f, 34/255f) } },
+        { Color_.CadmiumRed, new ColorInfo() { Name = "Cadmium Red", Color = new Vector3(227/255f, 0/255f, 34/255f) } },
 
         // https://www.colorhexa.com/006b3c
-        { Color_.CadmiumGreen, new ColorInfo() { Name = "Cadmium Green", Color = new Color(0/255f, 107/255f, 60/255f) } },
+        { Color_.CadmiumGreen, new ColorInfo() { Name = "Cadmium Green", Color = new Vector3(0/255f, 107/255f, 60/255f) } },
 
         // just taken from https://www.kremer-pigmente.com/en/shop/pigments/44500-cadmium-green-light.html
-        { Color_.CadmiumGreenLight, new ColorInfo() { Name = "Cadmium Green Light", Color = new Color(128/255f, 181/255f, 46/255f) } },
+        { Color_.CadmiumGreenLight, new ColorInfo() { Name = "Cadmium Green Light", Color = new Vector3(128/255f, 181/255f, 46/255f) } },
 
         // just taken from https://www.kremer-pigmente.com/en/shop/pigments/44500-cadmium-green-light.html
-        { Color_._________, new ColorInfo() { Name = "_________", Color = new Color(128/255f, 181/255f, 46/255f) } },
+        { Color_._________, new ColorInfo() { Name = "_________", Color = new Vector3(128/255f, 181/255f, 46/255f) } },
 
-        { Color_.Green, new ColorInfo() { Name = "Green", Color = new Color(0.02f, 0.57f, 0.04f) } },
-        { Color_.Blue, new ColorInfo() { Name = "Blue", Color = new Color(0.12f, 0.49f, 0.93f) } },
-        { Color_.Purple, new ColorInfo() { Name = "Purple", Color = new Color(0.5f, 0.3f, 0.99f) } },
-        { Color_.LavenderLight, new ColorInfo() { Name = "Lavender Light", Color = new Color(196/255f, 196/255f, 252/255f) } },
-        { Color_.Lavender, new ColorInfo() { Name = "Lavender", Color = new Color(150/255f, 150/255f, 254/255f) } },
-        { Color_.TealLight, new ColorInfo() { Name = "TealLight", Color = new Color(102/255f, 178/255f, 178/255f) } },
-        { Color_.TealDark, new ColorInfo() { Name = "TealDark", Color = new Color(0/255f, 81/255f, 81/255f) } },
-        { Color_.Rose, new ColorInfo() { Name = "Rose", Color = new Color(246/255f, 152/255f, 215/255f) } },
+        { Color_.Green, new ColorInfo() { Name = "Green", Color = new Vector3(0.02f, 0.57f, 0.04f) } },
+        { Color_.Blue, new ColorInfo() { Name = "Blue", Color = new Vector3(0.12f, 0.49f, 0.93f) } },
+        { Color_.Purple, new ColorInfo() { Name = "Purple", Color = new Vector3(0.5f, 0.3f, 0.99f) } },
+        { Color_.LavenderLight, new ColorInfo() { Name = "Lavender Light", Color = new Vector3(196/255f, 196/255f, 252/255f) } },
+        { Color_.Lavender, new ColorInfo() { Name = "Lavender", Color = new Vector3(150/255f, 150/255f, 254/255f) } },
+        { Color_.TealLight, new ColorInfo() { Name = "TealLight", Color = new Vector3(102/255f, 178/255f, 178/255f) } },
+        { Color_.TealDark, new ColorInfo() { Name = "TealDark", Color = new Vector3(0/255f, 81/255f, 81/255f) } },
+        { Color_.Rose, new ColorInfo() { Name = "Rose", Color = new Vector3(246/255f, 152/255f, 215/255f) } },
     };
 
-    public static Color RGB2RYB(Color rgb)
+    public static Vector3 RGB2RYB(Vector3 rgb)
     {
-        Vector3 rgb_ = new Vector3(rgb.r, rgb.g, rgb.b);
-        Vector3 result = RGB2RYB_ST(rgb_);
-        return new Color(result.x, result.y, result.z, 1);
+        return RGB2RYB_ST(rgb);
     }
 
     static Vector3 RGB2RYB_ST(Vector3 RGB)

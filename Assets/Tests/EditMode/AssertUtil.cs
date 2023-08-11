@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class AssertUtil
 {
-    public static void AssertColorsAreEqual(Color[,] expected, Color[,] actual)
+    public static void AssertColorsAreEqual(Vector3[,] expected, Vector3[,] actual)
     {
         Assert.AreEqual(expected.GetLength(0), actual.GetLength(0));
         Assert.AreEqual(expected.GetLength(1), actual.GetLength(1));
@@ -22,7 +22,7 @@ public class AssertUtil
         }
     }
 
-    public static void AssertColorsAreEqual(Color[] expected, Color[] actual)
+    public static void AssertColorsAreEqual(Vector3[] expected, Vector3[] actual)
     {
         Assert.AreEqual(expected.GetLength(0), actual.GetLength(0));
 
@@ -52,7 +52,7 @@ public class AssertUtil
         }
     }
 
-    public static void AssertColorsAreEqual(Color expected, Color actual)
+    public static void AssertColorsAreEqual(Vector3 expected, Vector3 actual)
     {
         if (!ColorsAreEqual(expected, actual))
         {
@@ -60,12 +60,11 @@ public class AssertUtil
         }
     }
 
-    private static bool ColorsAreEqual(Color expected, Color actual)
+    private static bool ColorsAreEqual(Vector3 expected, Vector3 actual)
     {
-        bool equal = FloatsEqual(expected.a, actual.a)
-            && FloatsEqual(expected.r, actual.r)
-            && FloatsEqual(expected.g, actual.g)
-            && FloatsEqual(expected.b, actual.b);
+        bool equal = FloatsEqual(expected.x, actual.x)
+            && FloatsEqual(expected.y, actual.y)
+            && FloatsEqual(expected.z, actual.z);
         return equal;
     }
 

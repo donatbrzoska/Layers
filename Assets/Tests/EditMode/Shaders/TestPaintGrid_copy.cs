@@ -38,7 +38,7 @@ public class TestPaintGrid_copy
 
     Paint P(float v)
     {
-        return new Paint(new Color(v, v, v, v), v);
+        return new Paint(new Vector3(v, v, v), v);
     }
 
     [Test]

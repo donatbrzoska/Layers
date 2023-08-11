@@ -64,15 +64,15 @@ public class TestPaintGrid_delete
 
     Paint P(float v)
     {
-        return new Paint(new Color(v, v, v, 1), v);
+        return new Paint(new Vector3(v, v, v), v);
     }
 
     Paint P(float color, float volume)
     {
-        return new Paint(new Color(color, color, color, 1), volume);
+        return new Paint(new Vector3(color, color, color), volume);
     }
 
-    Paint P0 = new Paint(new Color(0, 0, 0, 0), 0);
+    Paint P0 = new Paint(new Vector3(0, 0, 0), 0);
 
     [Test]
     public void empty_column_does_nothing()

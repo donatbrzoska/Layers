@@ -50,7 +50,7 @@ public class GradientColorFiller : ColorFiller
                         break;
                 }
 
-                SetColor(targetInfo, target, targetSize, j, i, new Color(r, g, b, 1));
+                SetColor(targetInfo, target, targetSize, j, i, new Vector3(r, g, b));
             }
         }
     }

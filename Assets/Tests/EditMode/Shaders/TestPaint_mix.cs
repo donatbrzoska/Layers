@@ -41,12 +41,12 @@ public class TestPaint_mix
     {
         // Arrange
         Paint a = new Paint();
-        a.Color = new Color(0, 0, 0, 0);
+        a.Color = new Vector3(0, 0, 0);
         a.Volume = 0;
         Paint b = new Paint();
-        b.Color = new Color(1, 1, 1, 1);
+        b.Color = new Vector3(1, 1, 1);
         b.Volume = 0;
-        Paint placeholder = new Paint(new Color(1, 2, 3, 4), 5);
+        Paint placeholder = new Paint(new Vector3(1, 2, 3), 5);
         Paint[] cbData = new Paint[] { b, a, placeholder };
 
         ComputeBuffer cb = new ComputeBuffer(3, Paint.SizeInBytes);
@@ -63,7 +63,7 @@ public class TestPaint_mix
         Paint result = cbData[2];
 
         Paint expected = new Paint();
-        expected.Color = new Color(0, 0, 0, 0);
+        expected.Color = new Vector3(0, 0, 0);
         expected.Volume = 0;
 
         Assert.AreEqual(
@@ -78,12 +78,12 @@ public class TestPaint_mix
     {
         // Arrange
         Paint a = new Paint();
-        a.Color = new Color(0, 0, 0, 0);
+        a.Color = new Vector3(0, 0, 0);
         a.Volume = 0;
         Paint b = new Paint();
-        b.Color = new Color(1, 1, 1, 1);
+        b.Color = new Vector3(1, 1, 1);
         b.Volume = 0;
-        Paint placeholder = new Paint(new Color(1, 2, 3, 4), 5);
+        Paint placeholder = new Paint(new Vector3(1, 2, 3), 5);
         Paint[] cbData = new Paint[] { b, a, placeholder };
 
         ComputeBuffer cb = new ComputeBuffer(3, Paint.SizeInBytes);
@@ -100,7 +100,7 @@ public class TestPaint_mix
         Paint result = cbData[2];
 
         Paint expected = new Paint();
-        expected.Color = new Color(0, 0, 0, 0);
+        expected.Color = new Vector3(0, 0, 0);
         expected.Volume = 0;
 
         Assert.AreEqual(
@@ -115,12 +115,12 @@ public class TestPaint_mix
     {
         // Arrange
         Paint a = new Paint();
-        a.Color = new Color(1, 1, 1, 1);
+        a.Color = new Vector3(1, 1, 1);
         a.Volume = 0.5f * Paint.UNIT;
         Paint b = new Paint();
-        b.Color = new Color(0, 0, 0, 0);
+        b.Color = new Vector3(0, 0, 0);
         b.Volume = 0;
-        Paint placeholder = new Paint(new Color(1, 2, 3, 4), 5);
+        Paint placeholder = new Paint(new Vector3(1, 2, 3), 5);
         Paint[] cbData = new Paint[] { b, a, placeholder };
 
         ComputeBuffer cb = new ComputeBuffer(3, Paint.SizeInBytes);
@@ -148,12 +148,12 @@ public class TestPaint_mix
     {
         // Arrange
         Paint a = new Paint();
-        a.Color = new Color(1, 1, 1, 1);
+        a.Color = new Vector3(1, 1, 1);
         a.Volume = 5.4f * Paint.UNIT;
         Paint b = new Paint();
-        b.Color = new Color(0, 0, 0, 0);
+        b.Color = new Vector3(0, 0, 0);
         b.Volume = 0;
-        Paint placeholder = new Paint(new Color(1, 2, 3, 4), 5);
+        Paint placeholder = new Paint(new Vector3(1, 2, 3), 5);
         Paint[] cbData = new Paint[] { b, a, placeholder };
 
         ComputeBuffer cb = new ComputeBuffer(3, Paint.SizeInBytes);
@@ -181,12 +181,12 @@ public class TestPaint_mix
     {
         // Arrange
         Paint a = new Paint();
-        a.Color = new Color(0, 0, 0, 1);
+        a.Color = new Vector3(0, 0, 0);
         a.Volume = 1 * Paint.UNIT;
         Paint b = new Paint();
-        b.Color = new Color(1, 1, 1, 1);
+        b.Color = new Vector3(1, 1, 1);
         b.Volume = 3 * Paint.UNIT;
-        Paint placeholder = new Paint(new Color(1, 2, 3, 4), 5);
+        Paint placeholder = new Paint(new Vector3(1, 2, 3), 5);
         Paint[] cbData = new Paint[] { b, a, placeholder };
 
         ComputeBuffer cb = new ComputeBuffer(3, Paint.SizeInBytes);
@@ -203,7 +203,7 @@ public class TestPaint_mix
         Paint result = cbData[2];
 
         Paint expected = new Paint();
-        expected.Color = new Color(0.75f * Paint.UNIT, 0.75f * Paint.UNIT, 0.75f * Paint.UNIT, 1);
+        expected.Color = new Vector3(0.75f * Paint.UNIT, 0.75f * Paint.UNIT, 0.75f * Paint.UNIT);
         expected.Volume = 4 * Paint.UNIT;
 
         Assert.AreEqual(
@@ -218,12 +218,12 @@ public class TestPaint_mix
     {
         // Arrange
         Paint a = new Paint();
-        a.Color = new Color(0, 0, 0, 1);
+        a.Color = new Vector3(0, 0, 0);
         a.Volume = 0.1f * Paint.UNIT;
         Paint b = new Paint();
-        b.Color = new Color(1, 1, 1, 1);
+        b.Color = new Vector3(1, 1, 1);
         b.Volume = 0.3f * Paint.UNIT;
-        Paint placeholder = new Paint(new Color(1, 2, 3, 4), 5);
+        Paint placeholder = new Paint(new Vector3(1, 2, 3), 5);
         Paint[] cbData = new Paint[] { b, a, placeholder };
 
         ComputeBuffer cb = new ComputeBuffer(3, Paint.SizeInBytes);
@@ -240,44 +240,7 @@ public class TestPaint_mix
         Paint result = cbData[2];
 
         Paint expected = new Paint();
-        expected.Color = new Color(0.75f * Paint.UNIT, 0.75f * Paint.UNIT, 0.75f * Paint.UNIT, 1);
-        expected.Volume = 0.4f * Paint.UNIT;
-
-        Assert.AreEqual(
-            expected,
-            result);
-
-        cb.Dispose();
-    }
-
-    [Test]
-    public void mix_less_than_PAINT_UNIT_differing_alpha()
-    {
-        // Arrange
-        Paint a = new Paint();
-        a.Color = new Color(0, 0, 0, 0.2f);
-        a.Volume = 0.1f * Paint.UNIT;
-        Paint b = new Paint();
-        b.Color = new Color(1, 1, 1, 0.4f);
-        b.Volume = 0.3f * Paint.UNIT;
-        Paint placeholder = new Paint(new Color(1, 2, 3, 4), 5);
-        Paint[] cbData = new Paint[] { b, a, placeholder };
-
-        ComputeBuffer cb = new ComputeBuffer(3, Paint.SizeInBytes);
-        cb.SetData(cbData);
-        Attributes.Add(new CSComputeBuffer("Paint_A_B_Result", cb));
-
-
-        // Act
-        Execute(KERNEL_ID_mix);
-
-
-        // Assert
-        cb.GetData(cbData);
-        Paint result = cbData[2];
-
-        Paint expected = new Paint();
-        expected.Color = new Color(0.75f * Paint.UNIT, 0.75f * Paint.UNIT, 0.75f * Paint.UNIT, 1);
+        expected.Color = new Vector3(0.75f * Paint.UNIT, 0.75f * Paint.UNIT, 0.75f * Paint.UNIT);
         expected.Volume = 0.4f * Paint.UNIT;
 
         Assert.AreEqual(
@@ -292,10 +255,10 @@ public class TestPaint_mix
     {
         // Arrange
         Paint a = new Paint();
-        a.Color = new Color(1, 1, 1, 1);
+        a.Color = new Vector3(1, 1, 1);
         a.Volume = 1 * Paint.UNIT;
         Paint b = a;
-        Paint placeholder = new Paint(new Color(1, 2, 3, 4), 5);
+        Paint placeholder = new Paint(new Vector3(1, 2, 3), 5);
         Paint[] cbData = new Paint[] { b, a, placeholder };
 
         ComputeBuffer cb = new ComputeBuffer(3, Paint.SizeInBytes);
@@ -312,7 +275,7 @@ public class TestPaint_mix
         Paint result = cbData[2];
 
         Paint expected = new Paint();
-        expected.Color = new Color(1 * Paint.UNIT, 1 * Paint.UNIT, 1 * Paint.UNIT, 1);
+        expected.Color = new Vector3(1 * Paint.UNIT, 1 * Paint.UNIT, 1 * Paint.UNIT);
         expected.Volume = 2 * Paint.UNIT;
 
         Assert.AreEqual(
@@ -327,12 +290,12 @@ public class TestPaint_mix
     {
         // Arrange
         Paint a = new Paint();
-        a.Color = new Color(1, 1, 1, 1);
+        a.Color = new Vector3(1, 1, 1);
         a.Volume = 1 * Paint.UNIT;
         Paint b = new Paint();
-        b.Color = new Color(1, 1, 1, 1);
+        b.Color = new Vector3(1, 1, 1);
         b.Volume = -1 * Paint.UNIT;
-        Paint placeholder = new Paint(new Color(1, 2, 3, 4), 5);
+        Paint placeholder = new Paint(new Vector3(1, 2, 3), 5);
         Paint[] cbData = new Paint[] { b, a, placeholder };
 
         ComputeBuffer cb = new ComputeBuffer(3, Paint.SizeInBytes);
@@ -349,7 +312,7 @@ public class TestPaint_mix
         Paint result = cbData[2];
 
         Paint expected = new Paint();
-        expected.Color = new Color(1 * Paint.UNIT, 1 * Paint.UNIT, 1 * Paint.UNIT, 1);
+        expected.Color = new Vector3(1 * Paint.UNIT, 1 * Paint.UNIT, 1 * Paint.UNIT);
         expected.Volume = 1 * Paint.UNIT;
 
         Assert.AreEqual(

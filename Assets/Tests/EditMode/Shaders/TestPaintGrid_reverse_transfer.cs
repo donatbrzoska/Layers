@@ -80,12 +80,12 @@ public class TestPaintGrid_reverse_transfer
 
     Paint P(float v)
     {
-        return new Paint(new Color(v, v, v, 1), v);
+        return new Paint(new Vector3(v, v, v), v);
     }
 
     Paint P(float color, float volume)
     {
-        return new Paint(new Color(color, color, color, 1), volume);
+        return new Paint(new Vector3(color, color, color), volume);
     }
 
     [Test]

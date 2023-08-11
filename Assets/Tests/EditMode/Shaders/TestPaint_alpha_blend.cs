@@ -33,14 +33,14 @@ public class TestPaint_alpha_blend
     {
         // Arrange
         Paint a = new Paint();
-        a.Color = new Color(1, 1, 1, 1);
+        a.Color = new Vector3(1, 1, 1);
         a.Volume = 0.5f;
         Paint[] cbData = new Paint[] { a, new Paint() };
 
         ComputeBuffer cb = new ComputeBuffer(2, Paint.SizeInBytes);
         cb.SetData(cbData);
         Attributes.Add(new CSComputeBuffer("Paint_A_Result", cb));
-        Attributes.Add(new CSFloat4("BackgroundColor", new Color(0, 0, 0, 0))); // not relevant
+        Attributes.Add(new CSFloat3("BackgroundColor", new Vector3(0, 0, 0))); // not relevant
 
 
         // Act
@@ -61,18 +61,18 @@ public class TestPaint_alpha_blend
     [Test]
     public void zero_volume()
     {
-        Color BACKGROUND_COLOR = new Color(1, 1, 1, 1);
+        Vector3 BACKGROUND_COLOR = new Vector3(1, 1, 1);
 
         // Arrange
         Paint a = new Paint();
-        a.Color = new Color(0.2f, 0.3f, 0.4f, 1);
+        a.Color = new Vector3(0.2f, 0.3f, 0.4f);
         a.Volume = 0;
         Paint[] cbData = new Paint[] { a, new Paint() };
 
         ComputeBuffer cb = new ComputeBuffer(2, Paint.SizeInBytes);
         cb.SetData(cbData);
         Attributes.Add(new CSComputeBuffer("Paint_A_Result", cb));
-        Attributes.Add(new CSFloat4("BackgroundColor", BACKGROUND_COLOR));
+        Attributes.Add(new CSFloat3("BackgroundColor", BACKGROUND_COLOR));
 
 
         // Act
@@ -93,7 +93,7 @@ public class TestPaint_alpha_blend
     [Test]
     public void one_volume()
     {
-        Color PAINT_COLOR = new Color(0.2f, 0.3f, 0.4f, 1);
+        Vector3 PAINT_COLOR = new Vector3(0.2f, 0.3f, 0.4f);
 
         // Arrange
         Paint a = new Paint();
@@ -104,7 +104,7 @@ public class TestPaint_alpha_blend
         ComputeBuffer cb = new ComputeBuffer(2, Paint.SizeInBytes);
         cb.SetData(cbData);
         Attributes.Add(new CSComputeBuffer("Paint_A_Result", cb));
-        Attributes.Add(new CSFloat4("BackgroundColor", new Color(1, 1, 1, 1)));
+        Attributes.Add(new CSFloat3("BackgroundColor", new Vector3(1, 1, 1)));
 
 
         // Act

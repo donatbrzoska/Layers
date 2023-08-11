@@ -9,9 +9,9 @@ public abstract class ColorFiller
         ColorSpace = colorSpace;
     }
 
-    protected void SetColor(ColumnInfo[] targetInfo, Paint[] target, Vector3Int targetSize, int x, int y, Color color)
+    protected void SetColor(ColumnInfo[] targetInfo, Paint[] target, Vector3Int targetSize, int x, int y, Vector3 color)
     {
-        Color actualColor = color;
+        Vector3 actualColor = color;
         if (ColorSpace == ColorSpace.RYB)
         {
             actualColor = Colors.RGB2RYB(actualColor);
