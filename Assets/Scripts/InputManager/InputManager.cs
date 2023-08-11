@@ -10,7 +10,7 @@ public abstract class FloatValueSource
 public abstract class StrokeStateSource
 {
     public abstract void Update();
-    public bool DrawingEnabled { get; protected set; }
+    public bool DrawingPossible { get; protected set; }
     public bool StrokeBegin { get; protected set; }
     public bool InStroke { get; protected set; }
 }
@@ -183,7 +183,7 @@ public class InputManager
     public float RakelRotation { get { return RakelRotationSource.Value; } }
     public float RakelTilt { get { return RakelTiltSource.Value; } }
 
-    public bool DrawingEnabled { get { return StrokeStateSource.DrawingEnabled; } }
+    public bool DrawingPossible { get { return StrokeStateSource.DrawingPossible; } }
     public bool StrokeBegin { get { return StrokeStateSource.StrokeBegin; } }
     public bool InStroke { get { return StrokeStateSource.InStroke; } }
 }

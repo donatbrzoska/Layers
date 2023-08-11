@@ -163,7 +163,7 @@ public class OilPaintEngine : MonoBehaviour
         {
             InputManager.Update();
 
-            if (InputManager.DrawingEnabled)
+            if (InputManager.DrawingPossible)
             {
                 if (InputManager.StrokeBegin)
                 {

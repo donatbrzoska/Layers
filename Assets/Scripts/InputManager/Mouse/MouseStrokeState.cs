@@ -11,10 +11,10 @@ public class MouseStrokeState : StrokeStateSource
 
     public override void Update()
     {
-        DrawingEnabled = Input.GetMouseButton(0);
+        DrawingPossible = Input.GetMouseButton(0);
 
 
-        if (DrawingEnabled)
+        if (DrawingPossible)
         {
             StrokeBegin = Input.GetMouseButtonDown(0) && !GraphicsRaycaster.UIBlocking(Input.mousePosition);
             if (StrokeBegin)
