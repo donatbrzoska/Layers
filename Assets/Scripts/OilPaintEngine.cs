@@ -67,8 +67,8 @@ public class OilPaintEngine : MonoBehaviour
 
         Vector3 localScale = new Vector3(
             Config.CanvasConfig.Width / 10, // convert world space to local scale
-            1, // convert world space to local scale
-            Config.CanvasConfig.Height / 10);
+            1,
+            Config.CanvasConfig.Height / 10); // convert world space to local scale
         GameObject canvas_ = GameObject.Find("Canvas");
         Transform canvasTransform = canvas_.GetComponent<Transform>();
         canvasTransform.localScale = localScale;
