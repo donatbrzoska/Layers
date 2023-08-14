@@ -600,11 +600,8 @@ public class OilPaintEngine : MonoBehaviour
         //LogUtil.Log(Canvas.Reservoir.PaintGrid.GetVolumes(), Canvas.Reservoir.Size.y);
     }
 
-    private void DoLineDown(float posX, Color_ color)
+    private void DoLineDown(float posX, Color_ color, bool autoZEnabled, float height)
     {
-        bool AUTO_Z_ENABLED = false;
-        float HEIGHT = 4 * Paint.VOLUME_THICKNESS;
-
         Rakel.Fill(new ReservoirFiller(new FlatColorFiller(color, Config.ColorSpace), new FlatVolumeFiller(1, 60)));
         InputInterpolator.NewStroke(
             false,
@@ -613,13 +610,13 @@ public class OilPaintEngine : MonoBehaviour
             Config.TransferConfig.FloatingZLength,
             Config.TransferConfig.CanvasSnapshotBufferEnabled);
         InputInterpolator.AddNode(
-            new Vector3(posX, 5, -HEIGHT), AUTO_Z_ENABLED, 0,
+            new Vector3(posX, 5, -height), autoZEnabled, 0,
             90,
             0,
             Config.TransferConfig,
             Config.TextureResolution);
         InputInterpolator.AddNode(
-            new Vector3(posX, -5, -HEIGHT), AUTO_Z_ENABLED, 0,
+            new Vector3(posX, -5, -height), autoZEnabled, 0,
             90,
             0,
             Config.TransferConfig,
@@ -628,12 +625,15 @@ public class OilPaintEngine : MonoBehaviour
 
     private void DoThreeLinesDown(float posX, float lineWidth, Color_ color1, Color_ color2, Color_ color3)
     {
+        bool AUTO_Z_ENABLED = false;
+        float HEIGHT = 4 * Paint.VOLUME_THICKNESS;
+
         ClearRakel();
-        DoLineDown(posX - lineWidth, color1);
+        DoLineDown(posX - lineWidth, color1, AUTO_Z_ENABLED, HEIGHT);
         ClearRakel();
-        DoLineDown(posX, color2);
+        DoLineDown(posX, color2, AUTO_Z_ENABLED, HEIGHT);
         ClearRakel();
-        DoLineDown(posX + lineWidth, color3);
+        DoLineDown(posX + lineWidth, color3, AUTO_Z_ENABLED, HEIGHT);
     }
 
     float MATRIX_INIT_RAKEL_LENGTH = 0.5f;
@@ -700,7 +700,7 @@ public class OilPaintEngine : MonoBehaviour
             Config.TextureResolution);
     }
 
-    private void DoSwipesRight(int swipes, float posX0, float posX1)
+    private void DoSwipesRight(int swipes, float posX0, float posX1, Color_ color, float volume)
     {
         float GAP = 0.25f;
         float MATRIX_SWIPE_RAKEL_LENGTH = (10 - GAP) / swipes - GAP;
@@ -711,23 +711,29 @@ public class OilPaintEngine : MonoBehaviour
 
         float paramBegin = 0;
         float paramEnd = 1;
-        float paramStep = (paramEnd - paramBegin)/(swipes-1);
+        float paramStep = (paramEnd - paramBegin) / (swipes - 1);
 
         float yBegin = 5 - GAP - MATRIX_SWIPE_RAKEL_LENGTH / 2;
         float yEnd = -5 + GAP + MATRIX_SWIPE_RAKEL_LENGTH / 2;
-        float yStep = (yEnd - yBegin)/(swipes-1);
+        float yStep = (yEnd - yBegin) / (swipes - 1);
 
         float paramCurrent = paramBegin;
         float yCurrent = yBegin;
-        for (int i=0; i<swipes; i++)
+        for (int i = 0; i < swipes; i++)
         {
             ClearRakel();
+            Rakel.Fill(new ReservoirFiller(new FlatColorFiller(color, ColorSpace.RGB), new FlatVolumeFiller(1, volume)));
             UpdateRakelPressure(paramCurrent);
             DoSwipeRight(posX0, posX1, yCurrent);
 
             paramCurrent += paramStep;
             yCurrent += yStep;
         }
+    }
+
+    private void DoSwipesRight(int swipes, float posX0, float posX1)
+    {
+        DoSwipesRight(swipes, posX0, posX1, Color_.TitanWhite, 0);
     }
 
     public void DoMacro4Action()
@@ -737,12 +743,13 @@ public class OilPaintEngine : MonoBehaviour
         float x3 = 2.5f + MATRIX_SWIPE_RAKEL_WIDTH + 1.5f * MATRIX_INIT_RAKEL_LENGTH;
 
         UpdateRakelWidth(MATRIX_SWIPE_RAKEL_WIDTH);
+        float SWIPE_GAP = 0.25f;
         float x1_0 = x1 - 1.5f * MATRIX_INIT_RAKEL_LENGTH - MATRIX_SWIPE_RAKEL_WIDTH;
-        float x1_1 = -2.5f - MATRIX_SWIPE_RAKEL_WIDTH;
+        float x1_1 = -2.5f - MATRIX_SWIPE_RAKEL_WIDTH - SWIPE_GAP;
         float x2_0 = x2 - 1.5f * MATRIX_INIT_RAKEL_LENGTH - MATRIX_SWIPE_RAKEL_WIDTH;
-        float x2_1 = 2.5f - MATRIX_SWIPE_RAKEL_WIDTH;
+        float x2_1 = 2.5f - MATRIX_SWIPE_RAKEL_WIDTH - SWIPE_GAP;
         float x3_0 = x3 - 1.5f * MATRIX_INIT_RAKEL_LENGTH - MATRIX_SWIPE_RAKEL_WIDTH;
-        float x3_1 = 7.5f - MATRIX_SWIPE_RAKEL_WIDTH;
+        float x3_1 = 7.5f - MATRIX_SWIPE_RAKEL_WIDTH - SWIPE_GAP;
 
         int SWIPES = 6;
 
@@ -755,6 +762,70 @@ public class OilPaintEngine : MonoBehaviour
         Config.TransferConfig.CanvasSnapshotBufferEnabled = true;
         Config.TransferConfig.DeletePickedUpFromCSB = false;
         DoSwipesRight(SWIPES, x3_0, x3_1);
+    }
+
+    public void DoMacro5Action()
+    {
+        STEPS_PER_FRAME = -1;
+        Config.TextureResolution = 70;
+        Start();
+
+        Config.TransferConfig.CanvasSnapshotBufferEnabled = false;
+        UpdateRakelLength(MATRIX_INIT_RAKEL_LENGTH);
+
+        Color_ COLOR = Color_.CadmiumYellow;
+        bool AUTO_Z_ENABLED = false;
+        float HEIGHT = 4 * Paint.VOLUME_THICKNESS;
+
+        float x1 = -7.5f + MATRIX_SWIPE_RAKEL_WIDTH + 1.5f * MATRIX_INIT_RAKEL_LENGTH;
+        float x2 = -2.5f + MATRIX_SWIPE_RAKEL_WIDTH + 1.5f * MATRIX_INIT_RAKEL_LENGTH;
+        float x3 = 2.5f + MATRIX_SWIPE_RAKEL_WIDTH + 1.5f * MATRIX_INIT_RAKEL_LENGTH;
+        ClearRakel();
+        DoLineDown(x1, COLOR, AUTO_Z_ENABLED, HEIGHT);
+        ClearRakel();
+        DoLineDown(x2, COLOR, AUTO_Z_ENABLED, HEIGHT);
+        ClearRakel();
+        DoLineDown(x3, COLOR, AUTO_Z_ENABLED, HEIGHT);
+
+
+        // setup default config for macro 6
+        // by doing it here, you can also change it before executing macro 6
+        UpdateRakelPositionZLocked(false); // auto z enabled
+
+        UpdateRakelPressureLocked(true);
+        UpdateRakelPressure(0.5f);
+
+        UpdateRakelTilt(0);
+    }
+
+    public void DoMacro6Action()
+    {
+        float x1 = -7.5f + MATRIX_SWIPE_RAKEL_WIDTH + 1.5f * MATRIX_INIT_RAKEL_LENGTH;
+        float x2 = -2.5f + MATRIX_SWIPE_RAKEL_WIDTH + 1.5f * MATRIX_INIT_RAKEL_LENGTH;
+        float x3 = 2.5f + MATRIX_SWIPE_RAKEL_WIDTH + 1.5f * MATRIX_INIT_RAKEL_LENGTH;
+
+        UpdateRakelWidth(MATRIX_SWIPE_RAKEL_WIDTH);
+        float SWIPE_GAP = 0.25f;
+        float x1_0 = x1 - 1.5f * MATRIX_INIT_RAKEL_LENGTH - MATRIX_SWIPE_RAKEL_WIDTH;
+        float x1_1 = -2.5f - MATRIX_SWIPE_RAKEL_WIDTH - SWIPE_GAP;
+        float x2_0 = x2 - 1.5f * MATRIX_INIT_RAKEL_LENGTH - MATRIX_SWIPE_RAKEL_WIDTH;
+        float x2_1 = 2.5f - MATRIX_SWIPE_RAKEL_WIDTH - SWIPE_GAP;
+        float x3_0 = x3 - 1.5f * MATRIX_INIT_RAKEL_LENGTH - MATRIX_SWIPE_RAKEL_WIDTH;
+        float x3_1 = 7.5f - MATRIX_SWIPE_RAKEL_WIDTH - SWIPE_GAP;
+
+        int SWIPES = 6;
+        Color_ COLOR = Color_.DarkRed;
+        float VOLUME = 60;
+
+        Config.TransferConfig.CanvasSnapshotBufferEnabled = false;
+        Config.TransferConfig.DeletePickedUpFromCSB = false;
+        DoSwipesRight(SWIPES, x1_0, x1_1, COLOR, VOLUME);
+        Config.TransferConfig.CanvasSnapshotBufferEnabled = true;
+        Config.TransferConfig.DeletePickedUpFromCSB = true;
+        DoSwipesRight(SWIPES, x2_0, x2_1, COLOR, VOLUME);
+        Config.TransferConfig.CanvasSnapshotBufferEnabled = true;
+        Config.TransferConfig.DeletePickedUpFromCSB = false;
+        DoSwipesRight(SWIPES, x3_0, x3_1, COLOR, VOLUME);
     }
 
     private void DoBenchmark(Vector3 beginPosition, Vector3 endPosition, float rotation, float tilt)
@@ -795,7 +866,7 @@ public class OilPaintEngine : MonoBehaviour
         }
 
         int RUNS = 10;
-        for (int i=0; i < RUNS; i++)
+        for (int i = 0; i < RUNS; i++)
         {
             InputInterpolator.NewStroke(
                 Config.RakelConfig.TiltNoiseEnabled,
@@ -824,7 +895,7 @@ public class OilPaintEngine : MonoBehaviour
         }
     }
 
-    public void DoMacro5Action()
+    public void DoMacro7Action()
     {
         // straight
         Vector3 startPosition = new Vector3(-7, 0, 0);
@@ -836,7 +907,7 @@ public class OilPaintEngine : MonoBehaviour
         DoBenchmark(startPosition, endPosition, rotation, tilt);
     }
 
-    public void DoMacro6Action()
+    public void DoMacro8Action()
     {
         // rotated diagonal
         Vector3 startPosition = new Vector3(-4, 4, 0);
@@ -844,13 +915,5 @@ public class OilPaintEngine : MonoBehaviour
         float rotation = 45;
         float tilt = 0;
         DoBenchmark(startPosition, endPosition, rotation, tilt);
-    }
-
-    public void DoMacro7Action()
-    {
-    }
-
-    public void DoMacro8Action()
-    {
     }
 }
