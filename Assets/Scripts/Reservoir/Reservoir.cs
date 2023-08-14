@@ -40,6 +40,11 @@ public class Reservoir
         PaintGrid.Fill(filler);
     }
 
+    public void ResetPGData()
+    {
+        PaintGrid.ResetData();
+    }
+
     public ShaderRegion GetFullShaderRegion()
     {
         return new ShaderRegion(

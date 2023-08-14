@@ -391,50 +391,42 @@ public class OilPaintEngine : MonoBehaviour
         Config.FillConfig.Color = color;
     }
 
-    public void UpdateColorMode(ColorMode mode)
-    {
-        Config.FillConfig.ColorMode = mode;
-    }
-
     public void UpdateFillWidthPart(float value)
     {
         Config.FillConfig.WidthPart = value;
     }
 
-    public void UpdateFillVolume(int volume)
+    public void UpdateFillBaseVolume(int volume)
     {
-        Config.FillConfig.Volume = volume;
+        Config.FillConfig.BaseVolume = volume;
     }
 
-    public void UpdateVolumeMode(VolumeMode mode)
+    public void UpdateFillNoiseVolume(int volume)
     {
-        Config.FillConfig.VolumeMode = mode;
+        Config.FillConfig.NoiseVolume = volume;
+    }
+
+    public void UpdateFillNoiseVolumeFrequencyX(int value)
+    {
+        Config.FillConfig.NoiseVolumeFrequencyX = value;
+    }
+
+    public void UpdateFillNoiseVolumeFrequencyY(int value)
+    {
+        Config.FillConfig.NoiseVolumeFrequencyY = value;
     }
 
     public void FillApply()
     {
         FillConfiguration fillConfig = Config.FillConfig;
-
-        ColorFiller colorFiller;
-        if (fillConfig.ColorMode == ColorMode.Flat)
-        {
-            colorFiller = new FlatColorFiller(fillConfig.Color, Config.ColorSpace);
-        } else
-        {
-            colorFiller = new GradientColorFiller(fillConfig.ColorMode, Config.ColorSpace);
-        }
-
-        VolumeFiller volumeFiller;
-        if (fillConfig.VolumeMode == VolumeMode.Flat)
-        {
-            volumeFiller = new FlatVolumeFiller(fillConfig.WidthPart, fillConfig.Volume);
-        } else
-        {
-            volumeFiller = new PerlinVolumeFiller(fillConfig.WidthPart, fillConfig.Volume);
-        }
-
-        ReservoirFiller filler = new ReservoirFiller(colorFiller, volumeFiller);
-        
+        ReservoirFiller filler = new ReservoirFiller(
+            fillConfig.Color,
+            Config.ColorSpace,
+            fillConfig.WidthPart,
+            fillConfig.BaseVolume,
+            fillConfig.NoiseVolume,
+            fillConfig.NoiseVolumeFrequencyX,
+            fillConfig.NoiseVolumeFrequencyY);
         Rakel.Fill(filler);
     }
 
@@ -569,7 +561,7 @@ public class OilPaintEngine : MonoBehaviour
 
     public void DoMacroAction()
     {
-        Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreenLight, Config.ColorSpace), new FlatVolumeFiller(1, 4)));
+        Canvas.Reservoir.Fill(new ReservoirFiller(Color_.CadmiumGreenLight, 4));
         Canvas.Render(Canvas.Reservoir.GetFullShaderRegion());
 
         //int PRINTED_DEPTH = 1;
@@ -580,7 +572,12 @@ public class OilPaintEngine : MonoBehaviour
     public void DoMacro2Action()
     {
         UpdateRakelLength(8);
-        Rakel.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumYellow, Config.ColorSpace), new PerlinVolumeFiller(1, 10)));
+        Rakel.Fill(new ReservoirFiller(
+            Color_.CadmiumYellow,
+            Config.ColorSpace,
+            1,
+            10, 10,
+            5, 5));
 
         InputInterpolator.NewStroke(Config.RakelConfig.TiltNoiseEnabled, Config.RakelConfig.TiltNoiseFrequency, Config.RakelConfig.TiltNoiseAmplitude, Config.TransferConfig.FloatingZLength, Config.TransferConfig.CanvasSnapshotBufferEnabled);
         InputInterpolator.AddNode(
@@ -605,7 +602,7 @@ public class OilPaintEngine : MonoBehaviour
         bool AUTO_Z_ENABLED = false;
         float HEIGHT = 4 * Paint.VOLUME_THICKNESS;
 
-        Rakel.Fill(new ReservoirFiller(new FlatColorFiller(color, Config.ColorSpace), new FlatVolumeFiller(1, 60)));
+        Rakel.Fill(new ReservoirFiller(color, 60));
         InputInterpolator.NewStroke(
             false,
             Config.RakelConfig.TiltNoiseFrequency,
@@ -775,7 +772,7 @@ public class OilPaintEngine : MonoBehaviour
 
         if (PICKUP_BENCHMARK)
         {
-            Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreenLight, Config.ColorSpace), new FlatVolumeFiller(1, 4)));
+            Canvas.Reservoir.Fill(new ReservoirFiller(Color_.CadmiumGreenLight, 4));
             Canvas.Render(Canvas.Reservoir.GetFullShaderRegion());
 
             AUTO_Z_ENABLED = false;
@@ -789,7 +786,7 @@ public class OilPaintEngine : MonoBehaviour
             endPosition.z = -LAYERS * Paint.VOLUME_THICKNESS;
 
             UpdateFillColor(Color_.CadmiumGreenLight);
-            UpdateFillVolume(120);
+            UpdateFillBaseVolume(120);
             UpdateFillWidthPart(1);
             FillApply();
         }

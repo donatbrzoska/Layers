@@ -79,6 +79,12 @@ public class PaintGrid
         Content.SetData(ContentData);
     }
 
+    public void ResetData()
+    {
+        InfoData = new ColumnInfo[Size.x * Size.y];
+        ContentData = new Paint[Size.x * Size.y * Size.z];
+    }
+
     // Only used for testing purposes
     public void ReadbackInfo()
     {

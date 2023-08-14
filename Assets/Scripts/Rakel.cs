@@ -139,6 +139,10 @@ public class Rakel
         //}
 
         //DistortionMap.SetData(distortionMapData);
+
+        // Do this, so when Fill is called next time, there is no data left
+        // in Reservoir PaintGrid from last fill
+        Reservoir.ResetPGData();
     }
 
     private int IncrementDistortionMapIndex()

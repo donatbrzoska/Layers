@@ -140,19 +140,35 @@ public class RakelConfiguration
 
 public class FillConfiguration
 {
-    public Color_ Color;
-    public ColorMode ColorMode;
     public float WidthPart;
-    public int Volume;
-    public VolumeMode VolumeMode;
+    private int BaseVolume_;
+    public int BaseVolume
+    {
+        get
+        {
+            return BaseVolume_;
+        }
+        set
+        {
+            BaseVolume_ = value;
+            NoiseVolume = value; // HACK so you don't necessarily need to readjust noise every time
+        }
+    }
+    public int NoiseVolume;
+    public float NoiseVolumeFrequencyX;
+    public float NoiseVolumeFrequencyY;
+
+    public Color_ Color;
 
     public FillConfiguration()
     {
-        Color = Color_.LavenderLight;
-        ColorMode = ColorMode.Flat;
         WidthPart = 0.6f;
-        Volume = 60;
-        VolumeMode = VolumeMode.Perlin;
+        BaseVolume = 60;
+        NoiseVolume = 60;
+        NoiseVolumeFrequencyX = 5;
+        NoiseVolumeFrequencyY = 5;
+
+        Color = Color_.LavenderLight;
     }
 
 }

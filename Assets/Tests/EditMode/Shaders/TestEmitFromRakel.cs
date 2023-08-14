@@ -23,8 +23,6 @@ public class TestEmitFromRakel
 
     private const float CELL_VOLUME = 1;
 
-    private const float FILL_WIDTH_PART = 1;
-
     Canvas_ Canvas;
     ComputeBuffer RakelMappedInfo;
     float RakelLength = 4;
@@ -33,7 +31,7 @@ public class TestEmitFromRakel
 
     int MAX_LAYERS = 20;
 
-    ColorFiller ColorFiller;
+    Color_ FillColor = Color_.CadmiumGreen;
 
     public float Sum(float[] values)
     {
@@ -52,8 +50,6 @@ public class TestEmitFromRakel
 
         Rakel = new Rakel(RakelLength, RakelWidth, 1, MAX_LAYERS, CELL_VOLUME, 0.5f, 0);
         RakelMappedInfo = MappedInfo.CreateBuffer(Canvas.Reservoir.Size2D);
-
-        ColorFiller = new FlatColorFiller(Color_.CadmiumGreen, ColorSpace.RGB);
 
         new FileLogger_().OnEnable();
     }
@@ -76,7 +72,7 @@ public class TestEmitFromRakel
         int APPLIED_LAYERS = 1;
 
         // Arrange
-        Rakel.Fill(new ReservoirFiller(ColorFiller, new FlatVolumeFiller(FILL_WIDTH_PART, BARELY_SURFACES_TOUCH_VOLUME)));
+        Rakel.Fill(new ReservoirFiller(FillColor, BARELY_SURFACES_TOUCH_VOLUME));
         Rakel.NewStroke(TILT_NOISE_ENABLED, TILT_NOISE_FREQUENCY, TILT_NOISE_AMPLITUDE, FLOATING_Z_LENGTH);
         Rakel.UpdateState(
             new Vector3(-5, -0.5f, APPLIED_LAYERS * -Paint.VOLUME_THICKNESS), BASE_SINK_MAX, LAYER_SINK_MAX_RATIO, TILT_SINK_MAX, AUTO_Z_ENABLED, ZZERO, FINAL_UPDATE_FOR_STROKE, PRESSURE,
@@ -132,7 +128,7 @@ public class TestEmitFromRakel
         int LAYERS = 1;
 
         // Arrange
-        Rakel.Fill(new ReservoirFiller(ColorFiller, new FlatVolumeFiller(FILL_WIDTH_PART, COMPLETE_SURFACES_TOUCH_VOLUME)));
+        Rakel.Fill(new ReservoirFiller(FillColor, COMPLETE_SURFACES_TOUCH_VOLUME));
         Rakel.NewStroke(TILT_NOISE_ENABLED, TILT_NOISE_FREQUENCY, TILT_NOISE_AMPLITUDE, FLOATING_Z_LENGTH);
         Rakel.UpdateState(
             new Vector3(-5, -0.5f, LAYERS * -Paint.VOLUME_THICKNESS), BASE_SINK_MAX, LAYER_SINK_MAX_RATIO, TILT_SINK_MAX, AUTO_Z_ENABLED, ZZERO, FINAL_UPDATE_FOR_STROKE, PRESSURE,
@@ -188,7 +184,7 @@ public class TestEmitFromRakel
         int LAYERS = 1;
 
         // Arrange
-        Rakel.Fill(new ReservoirFiller(ColorFiller, new FlatVolumeFiller(FILL_WIDTH_PART, BASICALLY_COMPLETE_SURFACES_TOUCH_VOLUME)));
+        Rakel.Fill(new ReservoirFiller(FillColor, BASICALLY_COMPLETE_SURFACES_TOUCH_VOLUME));
         Rakel.NewStroke(TILT_NOISE_ENABLED, TILT_NOISE_FREQUENCY, TILT_NOISE_AMPLITUDE, FLOATING_Z_LENGTH);
         Rakel.UpdateState(
             new Vector3(-5, -0.5f, LAYERS * -Paint.VOLUME_THICKNESS), BASE_SINK_MAX, LAYER_SINK_MAX_RATIO, TILT_SINK_MAX, AUTO_Z_ENABLED, ZZERO, FINAL_UPDATE_FOR_STROKE, PRESSURE,
@@ -247,7 +243,7 @@ public class TestEmitFromRakel
         int LAYERS = 2;
 
         // Arrange
-        Rakel.Fill(new ReservoirFiller(ColorFiller, new FlatVolumeFiller(FILL_WIDTH_PART, COMPLETE_SURFACES_TOUCH_VOLUME)));
+        Rakel.Fill(new ReservoirFiller(FillColor, COMPLETE_SURFACES_TOUCH_VOLUME));
         Rakel.NewStroke(TILT_NOISE_ENABLED, TILT_NOISE_FREQUENCY, TILT_NOISE_AMPLITUDE, FLOATING_Z_LENGTH);
         Rakel.UpdateState(
             new Vector3(-5, -0.5f, LAYERS * -Paint.VOLUME_THICKNESS), BASE_SINK_MAX, LAYER_SINK_MAX_RATIO, TILT_SINK_MAX, AUTO_Z_ENABLED, ZZERO, FINAL_UPDATE_FOR_STROKE, PRESSURE,

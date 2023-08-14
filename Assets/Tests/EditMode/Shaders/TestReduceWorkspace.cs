@@ -1,9 +1,9 @@
 ﻿using NUnit.Framework;
 using UnityEngine;
 
-class IndexVolumeFiller : VolumeFiller
+class IndexReservoirFiller : ReservoirFiller
 {
-    public IndexVolumeFiller(float widthPart, float baseVolume) : base(widthPart, baseVolume) { }
+    public IndexReservoirFiller(Color_ color) : base(color, 0) { }
 
     public override void Fill(ColumnInfo[] targetInfo, Paint[] target, Vector3Int targetSize, float targetCellVolume)
     {
@@ -12,7 +12,7 @@ class IndexVolumeFiller : VolumeFiller
             string res = "";
             for (int x = 0; x < targetSize.x; x++)
             {
-                SetVolume(targetInfo, target, targetSize, targetCellVolume, x, y, y * targetSize.x + x);
+                AddPaint(targetInfo, target, targetSize, targetCellVolume, x, y, y * targetSize.x + x);
                 res += string.Format("{0,3:0.}, ", y * targetSize.x + x);
             }
             //Debug.Log(res + "\n");
@@ -20,9 +20,9 @@ class IndexVolumeFiller : VolumeFiller
     }
 }
 
-class OnesVolumeFiller : VolumeFiller
+class OnesReservoirFiller : ReservoirFiller
 {
-    public OnesVolumeFiller(float widthPart, float baseVolume) : base(widthPart, baseVolume) { }
+    public OnesReservoirFiller(Color_ color) : base(color, 0) { }
 
     public override void Fill(ColumnInfo[] targetInfo, Paint[] target, Vector3Int targetSize, float targetCellVolume)
     {
@@ -31,7 +31,7 @@ class OnesVolumeFiller : VolumeFiller
             string res = "";
             for (int x = 0; x < targetSize.x; x++)
             {
-                SetVolume(targetInfo, target, targetSize, targetCellVolume, x, y, 1);
+                AddPaint(targetInfo, target, targetSize, targetCellVolume, x, y, 1);
                 res += string.Format("{0,3:0.}, ", y * targetSize.x + x);
             }
             //Debug.Log(res + "\n");
@@ -43,19 +43,16 @@ public class TestReduceWorkspace
 {
     private const float CELL_VOLUME = 1;
 
-    private const float FILL_WIDTH_PART = 1;
-
     Vector2Int TextureSize;
 
     CanvasReservoir Reservoir;
     ComputeBuffer ReduceResult;
 
-    ColorFiller ColorFiller;
+    Color_ FillColor = Color_.TitanWhite;
 
     [SetUp]
     public void Setup()
     {
-        ColorFiller = new FlatColorFiller(Color_.TitanWhite, ColorSpace.RGB);
         new FileLogger_().OnEnable();
     }
 
@@ -91,7 +88,7 @@ public class TestReduceWorkspace
         SetupReservoir();
 
         // Arrange
-        Reservoir.Fill(new ReservoirFiller(ColorFiller, new IndexVolumeFiller(FILL_WIDTH_PART, 0)));
+        Reservoir.Fill(new IndexReservoirFiller(FillColor));
 
         Reservoir.CopyVolumesToWorkspace();
 
@@ -119,7 +116,7 @@ public class TestReduceWorkspace
         SetupReservoir();
 
         // Arrange
-        Reservoir.Fill(new ReservoirFiller(ColorFiller, new IndexVolumeFiller(FILL_WIDTH_PART, 0)));
+        Reservoir.Fill(new IndexReservoirFiller(FillColor));
 
         Reservoir.CopyVolumesToWorkspace();
 
@@ -148,7 +145,7 @@ public class TestReduceWorkspace
         SetupReservoir();
 
         // Arrange
-        Reservoir.Fill(new ReservoirFiller(ColorFiller, new OnesVolumeFiller(FILL_WIDTH_PART, 0)));
+        Reservoir.Fill(new OnesReservoirFiller(FillColor));
 
         Reservoir.CopyVolumesToWorkspace();
 
@@ -176,7 +173,7 @@ public class TestReduceWorkspace
         SetupReservoir();
 
         // Arrange
-        Reservoir.Fill(new ReservoirFiller(ColorFiller, new OnesVolumeFiller(FILL_WIDTH_PART, 0)));
+        Reservoir.Fill(new OnesReservoirFiller(FillColor));
 
         Reservoir.CopyVolumesToWorkspace();
 
