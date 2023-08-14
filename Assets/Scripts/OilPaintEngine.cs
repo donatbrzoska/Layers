@@ -636,27 +636,34 @@ public class OilPaintEngine : MonoBehaviour
         DoLineDown(posX + lineWidth, color3);
     }
 
+    float MATRIX_INIT_RAKEL_LENGTH = 0.5f;
+    float MATRIX_SWIPE_RAKEL_WIDTH = 0.5f;
+
     public void DoMacro3Action()
     {
         STEPS_PER_FRAME = -1;
+        Config.TextureResolution = 70;
         Start();
 
-        float RAKEL_LENGTH = 0.8f;
-
         Config.TransferConfig.CanvasSnapshotBufferEnabled = false;
-        UpdateRakelLength(RAKEL_LENGTH);
+        UpdateRakelLength(MATRIX_INIT_RAKEL_LENGTH);
 
-        Color_ COLOR_1 = Color_.UltramarineBlue;
-        Color_ COLOR_2 = Color_.TitanWhite;
-        Color_ COLOR_3 = Color_.LavenderLight;
+        //Color_ COLOR_1 = Color_.UltramarineBlue;
+        //Color_ COLOR_2 = Color_.TitanWhite;
+        //Color_ COLOR_3 = Color_.LavenderLight;
+        //Color_ COLOR_1 = Color_.CadmiumYellow;
+        //Color_ COLOR_2 = Color_.CadmiumGreenLight;
+        //Color_ COLOR_3 = Color_.LavenderLight;
+        Color_ COLOR_1 = Color_.CadmiumYellow;
+        Color_ COLOR_2 = Color_.CadmiumRed;
+        Color_ COLOR_3 = Color_.CadmiumGreenLight;
 
-        float total_gap = 15 - 3 * 3 * RAKEL_LENGTH;
-        float x1 = -7.5f + 1 * total_gap / 4 + 1.5f * RAKEL_LENGTH;
-        float x2 = -7.5f + 2 * total_gap / 4 + 1.5f * RAKEL_LENGTH + 1 * 3 * RAKEL_LENGTH;
-        float x3 = -7.5f + 3 * total_gap / 4 + 1.5f * RAKEL_LENGTH + 2 * 3 * RAKEL_LENGTH;
-        DoThreeLinesDown(x1, RAKEL_LENGTH, COLOR_1, COLOR_2, COLOR_3);
-        DoThreeLinesDown(x2, RAKEL_LENGTH, COLOR_1, COLOR_2, COLOR_3);
-        DoThreeLinesDown(x3, RAKEL_LENGTH, COLOR_1, COLOR_2, COLOR_3);
+        float x1 = -7.5f + MATRIX_SWIPE_RAKEL_WIDTH + 1.5f * MATRIX_INIT_RAKEL_LENGTH;
+        float x2 = -2.5f + MATRIX_SWIPE_RAKEL_WIDTH + 1.5f * MATRIX_INIT_RAKEL_LENGTH;
+        float x3 =  2.5f + MATRIX_SWIPE_RAKEL_WIDTH + 1.5f * MATRIX_INIT_RAKEL_LENGTH;
+        DoThreeLinesDown(x1, MATRIX_INIT_RAKEL_LENGTH, COLOR_1, COLOR_2, COLOR_3);
+        DoThreeLinesDown(x2, MATRIX_INIT_RAKEL_LENGTH, COLOR_1, COLOR_2, COLOR_3);
+        DoThreeLinesDown(x3, MATRIX_INIT_RAKEL_LENGTH, COLOR_1, COLOR_2, COLOR_3);
 
         
         // setup default config for macro 4
@@ -666,7 +673,6 @@ public class OilPaintEngine : MonoBehaviour
         UpdateRakelPressureLocked(true);
         UpdateRakelPressure(0.5f);
 
-        UpdateRakelPressureLocked(true);
         UpdateRakelTilt(0);
     }
 
@@ -694,52 +700,61 @@ public class OilPaintEngine : MonoBehaviour
             Config.TextureResolution);
     }
 
-    private void DoFourSwipesRight(float posX0, float posX1)
+    private void DoSwipesRight(int swipes, float posX0, float posX1)
     {
-        UpdateRakelLength(2);
+        float GAP = 0.25f;
+        float MATRIX_SWIPE_RAKEL_LENGTH = (10 - GAP) / swipes - GAP;
+
+        UpdateRakelLength(MATRIX_SWIPE_RAKEL_LENGTH);
         UpdateRakelTiltNoiseEnabled(false);
         UpdateRakelPositionZ(-3 * Paint.VOLUME_THICKNESS);
 
-        ClearRakel();
-        UpdateRakelPressure(0);
-        DoSwipeRight(posX0, posX1, 3.75f);
-        ClearRakel();
-        UpdateRakelPressure(0.333f);
-        DoSwipeRight(posX0, posX1, 1.25f);
-        ClearRakel();
-        UpdateRakelPressure(0.666f);
-        DoSwipeRight(posX0, posX1, -1.25f);
-        ClearRakel();
-        UpdateRakelPressure(1);
-        DoSwipeRight(posX0, posX1, -3.75f);
+        float paramBegin = 0;
+        float paramEnd = 1;
+        float paramStep = (paramEnd - paramBegin)/(swipes-1);
+
+        float yBegin = 5 - GAP - MATRIX_SWIPE_RAKEL_LENGTH / 2;
+        float yEnd = -5 + GAP + MATRIX_SWIPE_RAKEL_LENGTH / 2;
+        float yStep = (yEnd - yBegin)/(swipes-1);
+
+        float paramCurrent = paramBegin;
+        float yCurrent = yBegin;
+        for (int i=0; i<swipes; i++)
+        {
+            ClearRakel();
+            UpdateRakelPressure(paramCurrent);
+            DoSwipeRight(posX0, posX1, yCurrent);
+
+            paramCurrent += paramStep;
+            yCurrent += yStep;
+        }
     }
 
     public void DoMacro4Action()
     {
-        float MACRO3_RAKEL_LENGTH = 0.8f;
-        float total_gap = 15 - 3 * 3 * MACRO3_RAKEL_LENGTH;
-        float x1 = -7.5f + 1 * total_gap / 4 + 1.5f * MACRO3_RAKEL_LENGTH;
-        float x2 = -7.5f + 2 * total_gap / 4 + 1.5f * MACRO3_RAKEL_LENGTH + 1 * 3 * MACRO3_RAKEL_LENGTH;
-        float x3 = -7.5f + 3 * total_gap / 4 + 1.5f * MACRO3_RAKEL_LENGTH + 2 * 3 * MACRO3_RAKEL_LENGTH;
+        float x1 = -7.5f + MATRIX_SWIPE_RAKEL_WIDTH + 1.5f * MATRIX_INIT_RAKEL_LENGTH;
+        float x2 = -2.5f + MATRIX_SWIPE_RAKEL_WIDTH + 1.5f * MATRIX_INIT_RAKEL_LENGTH;
+        float x3 = 2.5f + MATRIX_SWIPE_RAKEL_WIDTH + 1.5f * MATRIX_INIT_RAKEL_LENGTH;
 
-        float RAKEL_WIDTH = 1;
-        UpdateRakelWidth(RAKEL_WIDTH);
-        float x1_0 = x1 - 1.5f * MACRO3_RAKEL_LENGTH - RAKEL_WIDTH;
-        float x1_1 = x1_0 + RAKEL_WIDTH + 3 * MACRO3_RAKEL_LENGTH;
-        float x2_0 = x2 - 1.5f * MACRO3_RAKEL_LENGTH - RAKEL_WIDTH;
-        float x2_1 = x2_0 + RAKEL_WIDTH + 3 * MACRO3_RAKEL_LENGTH;
-        float x3_0 = x3 - 1.5f * MACRO3_RAKEL_LENGTH - RAKEL_WIDTH;
-        float x3_1 = x3_0 + RAKEL_WIDTH + 3 * MACRO3_RAKEL_LENGTH;
+        UpdateRakelWidth(MATRIX_SWIPE_RAKEL_WIDTH);
+        float x1_0 = x1 - 1.5f * MATRIX_INIT_RAKEL_LENGTH - MATRIX_SWIPE_RAKEL_WIDTH;
+        float x1_1 = -2.5f - MATRIX_SWIPE_RAKEL_WIDTH;
+        float x2_0 = x2 - 1.5f * MATRIX_INIT_RAKEL_LENGTH - MATRIX_SWIPE_RAKEL_WIDTH;
+        float x2_1 = 2.5f - MATRIX_SWIPE_RAKEL_WIDTH;
+        float x3_0 = x3 - 1.5f * MATRIX_INIT_RAKEL_LENGTH - MATRIX_SWIPE_RAKEL_WIDTH;
+        float x3_1 = 7.5f - MATRIX_SWIPE_RAKEL_WIDTH;
+
+        int SWIPES = 6;
 
         Config.TransferConfig.CanvasSnapshotBufferEnabled = false;
         Config.TransferConfig.DeletePickedUpFromCSB = false;
-        DoFourSwipesRight(x1_0, x1_1);
+        DoSwipesRight(SWIPES, x1_0, x1_1);
         Config.TransferConfig.CanvasSnapshotBufferEnabled = true;
         Config.TransferConfig.DeletePickedUpFromCSB = true;
-        DoFourSwipesRight(x2_0, x2_1);
+        DoSwipesRight(SWIPES, x2_0, x2_1);
         Config.TransferConfig.CanvasSnapshotBufferEnabled = true;
         Config.TransferConfig.DeletePickedUpFromCSB = false;
-        DoFourSwipesRight(x3_0, x3_1);
+        DoSwipesRight(SWIPES, x3_0, x3_1);
     }
 
     private void DoBenchmark(Vector3 beginPosition, Vector3 endPosition, float rotation, float tilt)
