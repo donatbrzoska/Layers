@@ -236,7 +236,7 @@ public class TransferConfiguration
         RakelVolumeReduceFunction = ReduceFunction.Avg;
         ReadjustZToRakelVolume = true;
         ReadjustZToCanvasVolume = true;
-        FloatingZLength = 0;
+        FloatingZLength = 0.5f;
 
         CanvasSnapshotBufferEnabled = true;
         DeletePickedUpFromCSB = false;
