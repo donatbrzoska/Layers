@@ -251,9 +251,9 @@ public class TransferConfiguration
         EmitVolume_MIN = 0.1f;
         PickupVolume_MIN_ICC = 0.1f;
         PickupVolume_MIN_CC = 0;
-        TrueVolume_MIN_Calculation = false;
+        TrueVolume_MIN_Calculation = true;
 
-        PaintDoesPickup = false;
+        PaintDoesPickup = true;
 
         RakelDiffuseDepth = 0;
         RakelDiffuseRatio = 0.2f;
