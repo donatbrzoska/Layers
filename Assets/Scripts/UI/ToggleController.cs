@@ -14,5 +14,13 @@ public abstract class ToggleController : MonoBehaviour
         Toggle.onValueChanged.AddListener(OnValueChanged);
     }
 
+    protected void CheckEvaluateMode()
+    {
+        if (OilPaintEngine.EVALUATE)
+        {
+            Toggle.interactable = false;
+        }
+    }
+
     public abstract void OnValueChanged(bool locked);
 }

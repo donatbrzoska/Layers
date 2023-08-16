@@ -25480,6 +25480,7 @@ MonoBehaviour:
   CANVAS_LAYERS_MAX: 32
   RAKEL_LAYERS_MAX: 64
   STEPS_PER_FRAME: 400
+  EVALUATE: 0
 --- !u!114 &1643505815
 MonoBehaviour:
   m_ObjectHideFlags: 0

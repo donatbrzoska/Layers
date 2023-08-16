@@ -15,6 +15,8 @@ public class OilPaintEngine : MonoBehaviour
     public int RAKEL_LAYERS_MAX;
     public int STEPS_PER_FRAME;
 
+    public bool EVALUATE;
+
     private bool UsePen;
     private bool PenConfigLoaded;
 
@@ -35,6 +37,11 @@ public class OilPaintEngine : MonoBehaviour
         if (BENCHMARK_STEPS > 0)
         {
             Config.LoadBenchmark();
+        }
+
+        if (EVALUATE)
+        {
+            Config.TextureResolution = 70;
         }
     }
 

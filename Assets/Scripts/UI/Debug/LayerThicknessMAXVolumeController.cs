@@ -4,6 +4,7 @@ public class LayerThicknessMAXVolumeController : InputFieldController
     public void Start()
     {
         InputField.SetTextWithoutNotify("" + OilPaintEngine.Config.TransferConfig.LayerThickness_MAX_Volume);
+        CheckEvaluateMode();
     }
 
     override public void OnValueChanged(string arg0)

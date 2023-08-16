@@ -4,6 +4,7 @@ public class CanvasDiffuseRatioController : InputFieldController
     public void Start()
     {
         InputField.SetTextWithoutNotify("" + OilPaintEngine.Config.TransferConfig.CanvasDiffuseRatio);
+        CheckEvaluateMode();
     }
 
     override public void OnValueChanged(string arg0)

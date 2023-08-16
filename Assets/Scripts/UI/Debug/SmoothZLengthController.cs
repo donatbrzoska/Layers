@@ -4,6 +4,7 @@ public class SmoothZLengthController : InputFieldController
     public void Start()
     {
         InputField.SetTextWithoutNotify("" + OilPaintEngine.Config.TransferConfig.FloatingZLength);
+        CheckEvaluateMode();
     }
 
     override public void OnValueChanged(string arg0)

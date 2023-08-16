@@ -10,6 +10,7 @@ public class RakelVolumeReduceFunctionController : DropdownController
     public void Start()
     {
         Dropdown.SetValueWithoutNotify((int)OilPaintEngine.Config.TransferConfig.RakelVolumeReduceFunction);
+        CheckEvaluateMode();
     }
 
     override public void OnValueChanged(int value)

@@ -4,6 +4,7 @@ public class PickupDistanceMAXController : InputFieldController
     public void Start()
     {
         InputField.SetTextWithoutNotify("" + OilPaintEngine.Config.TransferConfig.PickupDistance_MAX);
+        CheckEvaluateMode();
     }
 
     override public void OnValueChanged(string arg0)

@@ -4,6 +4,7 @@ public class LayerSinkMAXRatioController : InputFieldController
     public void Start()
     {
         InputField.SetTextWithoutNotify("" + OilPaintEngine.Config.TransferConfig.LayerSink_MAX_Ratio);
+        CheckEvaluateMode();
     }
 
     override public void OnValueChanged(string arg0)

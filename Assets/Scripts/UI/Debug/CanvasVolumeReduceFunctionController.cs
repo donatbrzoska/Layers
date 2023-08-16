@@ -10,6 +10,7 @@ public class CanvasVolumeReduceFunctionController : DropdownController
     public void Start()
     {
         Dropdown.SetValueWithoutNotify((int)OilPaintEngine.Config.TransferConfig.CanvasVolumeReduceFunction);
+        CheckEvaluateMode();
     }
 
     override public void OnValueChanged(int value)
