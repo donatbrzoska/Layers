@@ -21,6 +21,48 @@ public class OilPaintEngine : MonoBehaviour
     private bool PenConfigLoaded;
 
     public Configuration Config { get; private set; }
+    public PaintMode PaintMode
+    {
+        get
+        {
+            if (Config.TransferConfig.CanvasSnapshotBufferEnabled)
+            {
+                if (Config.TransferConfig.DeletePickedUpFromCSB)
+                {
+                    return PaintMode.LightSmearing;
+                }
+                else
+                {
+                    return PaintMode.IntenseSmearing;
+                }
+            }
+            else
+            {
+                return PaintMode.Blurry;
+            }
+        }
+
+        private set
+        {
+            switch (value)
+            {
+                case PaintMode.Blurry:
+                    UpdateCanvasSnapshotBufferEnabled(false);
+                    break;
+                case PaintMode.IntenseSmearing:
+                    UpdateCanvasSnapshotBufferEnabled(true);
+                    UpdateDeletePickedUpFromCSB(false);
+                    break;
+                case PaintMode.LightSmearing:
+                    UpdateCanvasSnapshotBufferEnabled(true);
+                    UpdateDeletePickedUpFromCSB(true);
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
     public InputManager InputManager { get; private set; }
 
     public TransferEngine TransferEngine;
@@ -42,6 +84,13 @@ public class OilPaintEngine : MonoBehaviour
         if (EVALUATE)
         {
             Config.TextureResolution = 70;
+
+            GameObject.Find("CSB Toggle").SetActive(false);
+            GameObject.Find("CSB Delete Toggle").SetActive(false);
+        }
+        else
+        {
+            GameObject.Find("Paint Mode Text").SetActive(false);
         }
     }
 
@@ -471,6 +520,11 @@ public class OilPaintEngine : MonoBehaviour
     public void UpdateDeletePickedUpFromCSB(bool value)
     {
         Config.TransferConfig.DeletePickedUpFromCSB = value;
+    }
+
+    public void UpdatePaintMode(PaintMode value)
+    {
+        PaintMode = value;
     }
 
     public void UpdatePaintDoesPickup(bool value)
