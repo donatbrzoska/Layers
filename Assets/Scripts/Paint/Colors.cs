@@ -3,30 +3,29 @@ using UnityEngine;
 
 public enum Color_
 {
-    TitanWhite,
-    IvoryBlack,
-    DarkRed,
-    UltramarineBlue,
+    CadmiumGreen,
+    Green,
+    CadmiumLightGreen,
     LemonYellow,
     CadmiumYellow,
     CadmiumOrange,
+    DarkOrange,
     CadmiumRed,
-    CadmiumGreen,
-    CadmiumLightGreen,
-    _________,
-    Anthracite,
-    LightGrey,
-    Green,
-    LightBlue,
-    Blue,
+    DarkRed,
+    Chocolate,
+    Bordeaux,
+    Rose,
     LightLavender,
     Lavender,
+    LightBlue,
+    Blue,
+    UltramarineBlue,
     LightTeal,
     TealDark,
-    Rose,
-    Chocolate,
-    DarkOrange,
-    Bordeaux
+    IvoryBlack,
+    Anthracite,
+    LightGrey,
+    TitanWhite
 
 }
 
@@ -100,9 +99,6 @@ public class Colors
 
         // just taken from https://www.kremer-pigmente.com/en/shop/pigments/44500-cadmium-green-light.html
         { Color_.CadmiumLightGreen, new ColorInfo() { Name = "Cadmium Light Green", Color = new Vector3(128/255f, 181/255f, 46/255f) } },
-
-        // just taken from https://www.kremer-pigmente.com/en/shop/pigments/44500-cadmium-green-light.html
-        { Color_._________, new ColorInfo() { Name = "_________", Color = new Vector3(128/255f, 181/255f, 46/255f) } },
 
         { Color_.Anthracite, new ColorInfo() { Name = "Anthracite", Color = new Vector3(0.25f, 0.25f, 0.25f) } },
         { Color_.LightGrey, new ColorInfo() { Name = "Light Grey", Color = new Vector3(217/255f, 217/255f, 217/255f) } },
