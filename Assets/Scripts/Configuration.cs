@@ -148,7 +148,7 @@ public class FillConfiguration
 
     public FillConfiguration()
     {
-        Color = Color_.LavenderLight;
+        Color = Color_.LightLavender;
         ColorMode = ColorMode.Flat;
         WidthPart = 0.6f;
         Volume = 60;

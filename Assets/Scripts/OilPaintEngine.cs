@@ -630,7 +630,7 @@ public class OilPaintEngine : MonoBehaviour
 
     public void DoMacroAction()
     {
-        Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreenLight, Config.ColorSpace), new FlatVolumeFiller(1, 4)));
+        Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumLightGreen, Config.ColorSpace), new FlatVolumeFiller(1, 4)));
         Canvas.Render(Canvas.Reservoir.GetFullShaderRegion());
 
         //int PRINTED_DEPTH = 1;
@@ -717,7 +717,7 @@ public class OilPaintEngine : MonoBehaviour
         //Color_ COLOR_3 = Color_.LavenderLight;
         Color_ COLOR_1 = Color_.CadmiumYellow;
         Color_ COLOR_2 = Color_.CadmiumRed;
-        Color_ COLOR_3 = Color_.CadmiumGreenLight;
+        Color_ COLOR_3 = Color_.CadmiumLightGreen;
 
         float x1 = -7.5f + MATRIX_SWIPE_RAKEL_WIDTH + 1.5f * MATRIX_INIT_RAKEL_LENGTH;
         float x2 = -2.5f + MATRIX_SWIPE_RAKEL_WIDTH + 1.5f * MATRIX_INIT_RAKEL_LENGTH;
@@ -907,7 +907,7 @@ public class OilPaintEngine : MonoBehaviour
 
         if (PICKUP_BENCHMARK)
         {
-            Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumGreenLight, Config.ColorSpace), new FlatVolumeFiller(1, 4)));
+            Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumLightGreen, Config.ColorSpace), new FlatVolumeFiller(1, 4)));
             Canvas.Render(Canvas.Reservoir.GetFullShaderRegion());
 
             AUTO_Z_ENABLED = false;
@@ -920,7 +920,7 @@ public class OilPaintEngine : MonoBehaviour
             beginPosition.z = -LAYERS * Paint.VOLUME_THICKNESS;
             endPosition.z = -LAYERS * Paint.VOLUME_THICKNESS;
 
-            UpdateFillColor(Color_.CadmiumGreenLight);
+            UpdateFillColor(Color_.CadmiumLightGreen);
             UpdateFillVolume(120);
             UpdateFillWidthPart(1);
             FillApply();
