@@ -77,7 +77,7 @@ public class Colors
         // https://www.color-name.com/ivory-black.color
         { Color_.IvoryBlack, new ColorInfo() { Name = "Ivory Black", Color = new Vector3(35/255f, 31/255f, 32/255f) } },
 
-        { Color_.DarkRed, new ColorInfo() { Name = "Red", Color = new Vector3(0.58f, 0.06f, 0f)} },
+        { Color_.DarkRed, new ColorInfo() { Name = "Dark Red", Color = new Vector3(0.58f, 0.06f, 0f)} },
 
         // https://www.color-name.com/ultramarine-blue-ral.color
         { Color_.UltramarineBlue, new ColorInfo() { Name = "Ultramarine Blue", Color = new Vector3(30/255f, 54/255f, 123/255f) } }, // RAL
