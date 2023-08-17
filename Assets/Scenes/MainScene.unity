@@ -35762,7 +35762,7 @@ MonoBehaviour:
   m_Interactable: 1
   m_TargetGraphic: {fileID: 8405833246993683272}
   m_Template: {fileID: 8405833246808965443}
-  m_CaptionText: {fileID: 8405833246497673613}
+  m_CaptionText: {fileID: 0}
   m_CaptionImage: {fileID: 1979913294}
   m_Placeholder: {fileID: 0}
   m_ItemText: {fileID: 8405833246206656254}
