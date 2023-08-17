@@ -14,14 +14,19 @@ public enum Color_
     CadmiumGreen,
     CadmiumGreenLight,
     _________,
+    Anthracite,
+    LightGrey,
     Green,
+    LightBlue,
     Blue,
-    Purple,
     LavenderLight,
     Lavender,
     TealLight,
     TealDark,
     Rose,
+    Chocolate,
+    DarkOrange,
+    Bordeaux
 
 }
 
@@ -99,14 +104,19 @@ public class Colors
         // just taken from https://www.kremer-pigmente.com/en/shop/pigments/44500-cadmium-green-light.html
         { Color_._________, new ColorInfo() { Name = "_________", Color = new Vector3(128/255f, 181/255f, 46/255f) } },
 
+        { Color_.Anthracite, new ColorInfo() { Name = "Anthracite", Color = new Vector3(0.25f, 0.25f, 0.25f) } },
+        { Color_.LightGrey, new ColorInfo() { Name = "Light Grey", Color = new Vector3(217/255f, 217/255f, 217/255f) } },
         { Color_.Green, new ColorInfo() { Name = "Green", Color = new Vector3(0.02f, 0.57f, 0.04f) } },
+        { Color_.LightBlue, new ColorInfo() { Name = "Light Blue", Color = new Vector3(179/255f, 217/255f, 255/255f) } },
         { Color_.Blue, new ColorInfo() { Name = "Blue", Color = new Vector3(0.12f, 0.49f, 0.93f) } },
-        { Color_.Purple, new ColorInfo() { Name = "Purple", Color = new Vector3(0.5f, 0.3f, 0.99f) } },
         { Color_.LavenderLight, new ColorInfo() { Name = "Lavender Light", Color = new Vector3(196/255f, 196/255f, 252/255f) } },
         { Color_.Lavender, new ColorInfo() { Name = "Lavender", Color = new Vector3(150/255f, 150/255f, 254/255f) } },
         { Color_.TealLight, new ColorInfo() { Name = "TealLight", Color = new Vector3(102/255f, 178/255f, 178/255f) } },
         { Color_.TealDark, new ColorInfo() { Name = "TealDark", Color = new Vector3(0/255f, 81/255f, 81/255f) } },
         { Color_.Rose, new ColorInfo() { Name = "Rose", Color = new Vector3(246/255f, 152/255f, 215/255f) } },
+        { Color_.Chocolate, new ColorInfo() { Name = "Chocolate", Color = new Vector3(123/255f, 63/255f, 0/255f) } },
+        { Color_.DarkOrange, new ColorInfo() { Name = "Dark Orange", Color = new Vector3(255/255f, 71/255f, 26/255f) } },
+        { Color_.Bordeaux, new ColorInfo() { Name = "Bordeaux", Color = new Vector3(134/255f, 45/255f, 89/255f) } },
     };
 
     public static Vector3 RGB2RYB(Vector3 rgb)
