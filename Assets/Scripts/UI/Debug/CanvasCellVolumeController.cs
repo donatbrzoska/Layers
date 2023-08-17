@@ -4,7 +4,7 @@ public class CanvasCellVolumeController : InputFieldController
     public void Start()
     {
         InputField.SetTextWithoutNotify("" + OilPaintEngine.Config.CanvasConfig.CellVolume);
-        CheckEvaluateMode();
+        MakeNonInteractableInEvaluateMode();
     }
 
     override public void OnValueChanged(string arg0)

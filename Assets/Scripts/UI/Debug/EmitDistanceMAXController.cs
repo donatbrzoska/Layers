@@ -4,7 +4,7 @@ public class EmitDistanceMAXController : InputFieldController
     public void Start()
     {
         InputField.SetTextWithoutNotify("" + OilPaintEngine.Config.TransferConfig.EmitDistance_MAX);
-        CheckEvaluateMode();
+        MakeNonInteractableInEvaluateMode();
     }
 
     override public void OnValueChanged(string arg0)

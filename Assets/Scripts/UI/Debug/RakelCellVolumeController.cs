@@ -4,7 +4,7 @@ public class RakelCellVolumeController : InputFieldController
     public void Start()
     {
         InputField.SetTextWithoutNotify("" + OilPaintEngine.Config.RakelConfig.CellVolume);
-        CheckEvaluateMode();
+        MakeNonInteractableInEvaluateMode();
     }
 
     override public void OnValueChanged(string arg0)

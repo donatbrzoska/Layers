@@ -4,7 +4,7 @@ public class ReadjustZToCanvasVolumeController : ToggleController
     void Start()
     {
         Toggle.SetIsOnWithoutNotify(OilPaintEngine.Config.TransferConfig.ReadjustZToCanvasVolume);
-        CheckEvaluateMode();
+        MakeNonInteractableInEvaluateMode();
     }
 
     override public void OnValueChanged(bool enabled)

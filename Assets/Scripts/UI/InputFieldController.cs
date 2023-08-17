@@ -14,7 +14,7 @@ public abstract class InputFieldController : MonoBehaviour
         InputField.onValueChanged.AddListener(OnValueChanged);
     }
 
-    protected void CheckEvaluateMode()
+    protected void MakeNonInteractableInEvaluateMode()
     {
         if (OilPaintEngine.EVALUATE)
         {

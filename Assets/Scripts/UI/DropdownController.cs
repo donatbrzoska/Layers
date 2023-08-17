@@ -21,7 +21,7 @@ public abstract class DropdownController : MonoBehaviour
         Dropdown.AddOptions(Enum.GetNames(enumType).ToList());
     }
 
-    protected void CheckEvaluateMode()
+    protected void MakeNonInteractableInEvaluateMode()
     {
         if (OilPaintEngine.EVALUATE)
         {

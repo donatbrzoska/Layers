@@ -4,7 +4,7 @@ public class TrueVolumeMINController : ToggleController
     void Start()
     {
         Toggle.SetIsOnWithoutNotify(OilPaintEngine.Config.TransferConfig.TrueVolume_MIN_Calculation);
-        CheckEvaluateMode();
+        MakeNonInteractableInEvaluateMode();
     }
 
     override public void OnValueChanged(bool value)

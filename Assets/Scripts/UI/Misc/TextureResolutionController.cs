@@ -4,7 +4,7 @@ public class TextureResolutionController : InputFieldController
     public void Start()
     {
         InputField.SetTextWithoutNotify("" + OilPaintEngine.Config.TextureResolution);
-        CheckEvaluateMode();
+        MakeNonInteractableInEvaluateMode();
     }
 
     override public void OnValueChanged(string arg0)

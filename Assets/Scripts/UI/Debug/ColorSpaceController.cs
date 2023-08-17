@@ -10,7 +10,7 @@ public class ColorSpaceController : DropdownController
     public void Start()
     {
         Dropdown.SetValueWithoutNotify((int)OilPaintEngine.Config.ColorSpace);
-        CheckEvaluateMode();
+        MakeNonInteractableInEvaluateMode();
     }
 
     override public void OnValueChanged(int value)

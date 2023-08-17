@@ -14,7 +14,7 @@ public abstract class ButtonController : MonoBehaviour
         Button.onClick.AddListener(OnClick);
     }
 
-    protected void CheckEvaluateMode()
+    protected void MakeNonInteractableInEvaluateMode()
     {
         if (OilPaintEngine.EVALUATE)
         {

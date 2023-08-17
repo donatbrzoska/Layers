@@ -4,7 +4,7 @@ public class RakelDiffuseDepthController : InputFieldController
     public void Start()
     {
         InputField.SetTextWithoutNotify("" + OilPaintEngine.Config.TransferConfig.RakelDiffuseDepth);
-        CheckEvaluateMode();
+        MakeNonInteractableInEvaluateMode();
     }
 
     override public void OnValueChanged(string arg0)

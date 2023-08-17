@@ -3,7 +3,7 @@ public class Macro6Controller : ButtonController
 {
     public void Start()
     {
-        CheckEvaluateMode();
+        MakeNonInteractableInEvaluateMode();
     }
 
     override public void OnClick()

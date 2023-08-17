@@ -4,7 +4,7 @@ public class TiltSinkMAXVolumeController : InputFieldController
     public void Start()
     {
         InputField.SetTextWithoutNotify("" + OilPaintEngine.Config.TransferConfig.TiltSink_MAX_Volume);
-        CheckEvaluateMode();
+        MakeNonInteractableInEvaluateMode();
     }
 
     override public void OnValueChanged(string arg0)

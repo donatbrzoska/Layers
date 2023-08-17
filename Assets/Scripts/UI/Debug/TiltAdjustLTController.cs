@@ -4,7 +4,7 @@ public class TiltAdjustLTController : ToggleController
     void Start()
     {
         Toggle.SetIsOnWithoutNotify(OilPaintEngine.Config.TransferConfig.TiltAdjustLayerThickness);
-        CheckEvaluateMode();
+        MakeNonInteractableInEvaluateMode();
     }
 
     override public void OnValueChanged(bool value)

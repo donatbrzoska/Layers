@@ -3,7 +3,7 @@ public class ClearCanvasController : ButtonController
 {
     public void Start()
     {
-        CheckEvaluateMode();
+        MakeNonInteractableInEvaluateMode();
     }
 
     override public void OnClick()

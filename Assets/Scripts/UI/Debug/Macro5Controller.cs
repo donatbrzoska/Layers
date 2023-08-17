@@ -3,7 +3,7 @@ public class Macro5Controller : ButtonController
 {
     public void Start()
     {
-        CheckEvaluateMode();
+        MakeNonInteractableInEvaluateMode();
     }
 
     override public void OnClick()
