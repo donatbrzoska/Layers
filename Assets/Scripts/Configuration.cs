@@ -263,7 +263,7 @@ public class TransferConfiguration
         LayerThickness_MAX_Volume = 4;
         TiltAdjustLayerThickness = true;
 
-        BaseSink_MAX_Volume = 4;
+        BaseSink_MAX_Volume = 1;
         LayerSink_MAX_Ratio = 0.9f;
         TiltSink_MAX_Volume = 6;
     }
