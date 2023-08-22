@@ -51,7 +51,7 @@ void main (uint3 id_ : SV_DispatchThreadID)
         else
         {
             float layer_sink_max = rakel.actual_layer_thickness * LayerSink_MAX_Ratio;
-            float tilt_sink_max = pow(abs(rakel.tilt / MAX_SUPPORTED_TILT), (float)1/3) * TiltSink_MAX;
+            float tilt_sink_max = rakel.tilt / MAX_SUPPORTED_TILT * TiltSink_MAX;
             // only apply (part of) base_sink, when layer_sink_max is smaller
             float sink = BaseSink_MAX + layer_sink_max + tilt_sink_max;
 
