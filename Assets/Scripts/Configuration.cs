@@ -118,8 +118,34 @@ public class CanvasConfiguration
 
 public class RakelConfiguration
 {
-    public float Length;
-    public float Width;
+    float MAX_SUPPORTED_LENGTH = 15;
+    float MAX_SUPPORTED_WIDTH = 2;
+
+    private float length;
+    public float Length
+    {
+        get
+        {
+            return length;
+        }
+        set
+        {
+            length = Mathf.Min(value, MAX_SUPPORTED_LENGTH);
+        }
+    }
+
+    private float width;
+    public float Width
+    {
+        get
+        {
+            return width;
+        }
+        set
+        {
+            width = Mathf.Min(value, MAX_SUPPORTED_WIDTH);
+        }
+    }
     public float CellVolume;
 
     public bool TiltNoiseEnabled;

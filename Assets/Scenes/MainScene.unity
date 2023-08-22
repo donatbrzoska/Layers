@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.4497106, g: 0.4997779, b: 0.5756331, a: 1}
+  m_IndirectSpecularColor: {r: 0.44971085, g: 0.49977827, b: 0.5756336, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -26749,7 +26749,7 @@ MonoBehaviour:
   ANCHOR_RATIO_X: 0
   ANCHOR_RATIO_Y: 0.5
   CANVAS_LAYERS_MAX: 32
-  RAKEL_LAYERS_MAX: 64
+  RAKEL_LAYERS_MAX: 128
   STEPS_PER_FRAME: 400
   EVALUATE: 0
 --- !u!114 &1643505815
