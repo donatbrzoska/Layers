@@ -198,28 +198,7 @@ public class TransferConfiguration
     public float PickupDistance_MAX;
 
     public float EmitVolume_MIN;
-    private float PickupVolume_MIN_ICC; // ICC = used for incorrect calculation (old / buggy / not as intended / inconsistent, but delivers great results)
-    private float PickupVolume_MIN_CC; // CC = used for correct calculation (new / fixed / as intended / consistent, but visually inferior)
-    public float PickupVolume_MIN
-    {
-        get
-        {
-            return TrueVolume_MIN_Calculation ? PickupVolume_MIN_CC : PickupVolume_MIN_ICC;
-        }
-
-        set
-        {
-            if (TrueVolume_MIN_Calculation == false)
-            {
-                PickupVolume_MIN_ICC = value;
-            }
-            else
-            {
-                PickupVolume_MIN_CC = value;
-            }
-        }
-    }
-    public bool TrueVolume_MIN_Calculation;
+    public float PickupVolume_MIN;
 
     public bool PaintDoesPickup;
 
@@ -275,9 +254,7 @@ public class TransferConfiguration
         EmitDistance_MAX = 0;
 
         EmitVolume_MIN = 0.1f;
-        PickupVolume_MIN_ICC = 0.1f;
-        PickupVolume_MIN_CC = 0;
-        TrueVolume_MIN_Calculation = true;
+        PickupVolume_MIN = 0;
 
         PaintDoesPickup = true;
 

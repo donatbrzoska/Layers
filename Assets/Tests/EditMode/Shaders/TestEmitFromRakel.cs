@@ -14,7 +14,6 @@ public class TestEmitFromRakel
 
     private float EMIT_DIST_MAX = 0;
     private float EMIT_VOLUME_MIN = 0;
-    private bool TRUE_VOLUME_MIN = false;
 
     private const bool TILT_NOISE_ENABLED = false;
     private const float TILT_NOISE_FREQUENCY = 0;
@@ -91,7 +90,7 @@ public class TestEmitFromRakel
 
         Rakel.CalculateRakelMappedInfo(rakelEmitSR, Canvas, RakelMappedInfo);
         Rakel.Reservoir.DoImprintCopy();
-        Rakel.CalculateRakelMappedInfo_Part2(Canvas, RakelMappedInfo, rakelEmitSR, EMIT_DIST_MAX, EMIT_VOLUME_MIN, TRUE_VOLUME_MIN);
+        Rakel.CalculateRakelMappedInfo_Part2(Canvas, RakelMappedInfo, rakelEmitSR, EMIT_DIST_MAX, EMIT_VOLUME_MIN);
 
 
         // Act
@@ -147,7 +146,7 @@ public class TestEmitFromRakel
 
         Rakel.CalculateRakelMappedInfo(rakelEmitSR, Canvas, RakelMappedInfo);
         Rakel.Reservoir.DoImprintCopy();
-        Rakel.CalculateRakelMappedInfo_Part2(Canvas, RakelMappedInfo, rakelEmitSR, EMIT_DIST_MAX, EMIT_VOLUME_MIN, TRUE_VOLUME_MIN);
+        Rakel.CalculateRakelMappedInfo_Part2(Canvas, RakelMappedInfo, rakelEmitSR, EMIT_DIST_MAX, EMIT_VOLUME_MIN);
 
 
         // Act
@@ -203,7 +202,7 @@ public class TestEmitFromRakel
 
         Rakel.CalculateRakelMappedInfo(rakelEmitSR, Canvas, RakelMappedInfo);
         Rakel.Reservoir.DoImprintCopy();
-        Rakel.CalculateRakelMappedInfo_Part2(Canvas, RakelMappedInfo, rakelEmitSR, EMIT_DIST_MAX, EMIT_VOLUME_MIN, TRUE_VOLUME_MIN);
+        Rakel.CalculateRakelMappedInfo_Part2(Canvas, RakelMappedInfo, rakelEmitSR, EMIT_DIST_MAX, EMIT_VOLUME_MIN);
 
 
         // Act
@@ -262,7 +261,7 @@ public class TestEmitFromRakel
 
         Rakel.CalculateRakelMappedInfo(rakelEmitSR, Canvas, RakelMappedInfo);
         Rakel.Reservoir.DoImprintCopy();
-        Rakel.CalculateRakelMappedInfo_Part2(Canvas, RakelMappedInfo, rakelEmitSR, EMIT_DIST_MAX, EMIT_VOLUME_MIN, TRUE_VOLUME_MIN);
+        Rakel.CalculateRakelMappedInfo_Part2(Canvas, RakelMappedInfo, rakelEmitSR, EMIT_DIST_MAX, EMIT_VOLUME_MIN);
 
 
         // Act

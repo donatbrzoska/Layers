@@ -13,7 +13,6 @@ public class TestEmitFromCanvas
 
     private float PICKUP_DIST_MAX = 0;
     private float PICKUP_VOLUME_MIN = 0;
-    private bool TRUE_VOLUME_MIN = false;
 
     private const bool TILT_NOISE_ENABLED = false;
     private const float TILT_NOISE_FREQUENCY = 0;
@@ -119,7 +118,7 @@ public class TestEmitFromCanvas
             Rakel,
             CanvasMappedInfo,
             canvasEmitSR,
-            PICKUP_DIST_MAX, PICKUP_VOLUME_MIN, TRUE_VOLUME_MIN,
+            PICKUP_DIST_MAX, PICKUP_VOLUME_MIN,
             Canvas.Reservoir.GetFullShaderRegion(),
             CSB_ENABLED, CSB_DELETE, PAINT_DOES_PICKUP);
 
@@ -162,7 +161,7 @@ public class TestEmitFromCanvas
             Rakel,
             CanvasMappedInfo,
             canvasEmitSR,
-            PICKUP_DIST_MAX, PICKUP_VOLUME_MIN, TRUE_VOLUME_MIN,
+            PICKUP_DIST_MAX, PICKUP_VOLUME_MIN,
             Canvas.Reservoir.GetFullShaderRegion(),
             CSB_ENABLED, CSB_DELETE, PAINT_DOES_PICKUP);
 
@@ -221,7 +220,7 @@ public class TestEmitFromCanvas
             Rakel,
             CanvasMappedInfo,
             canvasEmitSR,
-            PICKUP_DIST_MAX, PICKUP_VOLUME_MIN, TRUE_VOLUME_MIN,
+            PICKUP_DIST_MAX, PICKUP_VOLUME_MIN,
             Canvas.Reservoir.GetFullShaderRegion(),
             CSB_ENABLED, CSB_DELETE, PAINT_DOES_PICKUP);
 
@@ -307,7 +306,7 @@ public class TestEmitFromCanvas
             Rakel,
             CanvasMappedInfo,
             canvasEmitSR,
-            PICKUP_DIST_MAX, PICKUP_VOLUME_MIN, TRUE_VOLUME_MIN,
+            PICKUP_DIST_MAX, PICKUP_VOLUME_MIN,
             Canvas.Reservoir.GetFullShaderRegion(),
             CSB_ENABLED, CSB_DELETE, PAINT_DOES_PICKUP);
 
@@ -401,7 +400,7 @@ public class TestEmitFromCanvas
             Rakel,
             CanvasMappedInfo,
             canvasEmitSR,
-            PICKUP_DIST_MAX, PICKUP_VOLUME_MIN, TRUE_VOLUME_MIN,
+            PICKUP_DIST_MAX, PICKUP_VOLUME_MIN,
             Canvas.Reservoir.GetFullShaderRegion(),
             CSB_ENABLED, CSB_DELETE, PAINT_DOES_PICKUP);
 
