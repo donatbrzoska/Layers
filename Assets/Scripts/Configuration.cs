@@ -197,8 +197,90 @@ public class TransferConfiguration
     public float EmitDistance_MAX;
     public float PickupDistance_MAX;
 
-    public float EmitVolume_MIN;
-    public float PickupVolume_MIN;
+    private float emitVolume_MIN_NoCSB;
+    private float emitVolume_MIN_CSB;
+    private float emitVolume_MIN_CSBDelete;
+    public float EmitVolume_MIN
+    {
+        get
+        {
+            if (CanvasSnapshotBufferEnabled)
+            {
+                if (DeletePickedUpFromCSB)
+                {
+                    return emitVolume_MIN_CSBDelete;
+                }
+                else
+                {
+                    return emitVolume_MIN_CSB;
+                }
+            }
+            else
+            {
+                return emitVolume_MIN_NoCSB;
+            }
+        }
+        set
+        {
+            if (CanvasSnapshotBufferEnabled)
+            {
+                if (DeletePickedUpFromCSB)
+                {
+                    emitVolume_MIN_CSBDelete = value;
+                }
+                else
+                {
+                    emitVolume_MIN_CSB = value;
+                }
+            }
+            else
+            {
+                emitVolume_MIN_NoCSB = value;
+            }
+        }
+    }
+    private float pickupVolume_MIN_NoCSB;
+    private float pickupVolume_MIN_CSB;
+    private float pickupVolume_MIN_CSBDelete;
+    public float PickupVolume_MIN
+    {
+        get
+        {
+            if (CanvasSnapshotBufferEnabled)
+            {
+                if (DeletePickedUpFromCSB)
+                {
+                    return pickupVolume_MIN_CSBDelete;
+                }
+                else
+                {
+                    return pickupVolume_MIN_CSB;
+                }
+            }
+            else
+            {
+                return pickupVolume_MIN_NoCSB;
+            }
+        }
+        set
+        {
+            if (CanvasSnapshotBufferEnabled)
+            {
+                if (DeletePickedUpFromCSB)
+                {
+                    pickupVolume_MIN_CSBDelete = value;
+                }
+                else
+                {
+                    pickupVolume_MIN_CSB = value;
+                }
+            }
+            else
+            {
+                pickupVolume_MIN_NoCSB = value;
+            }
+        }
+    }
 
     public bool PaintDoesPickup;
 
@@ -253,8 +335,12 @@ public class TransferConfiguration
         PickupDistance_MAX = 0.1f;
         EmitDistance_MAX = 0;
 
-        EmitVolume_MIN = 0.1f;
-        PickupVolume_MIN = 0;
+        emitVolume_MIN_NoCSB = 0.1f;
+        pickupVolume_MIN_NoCSB = 0.1f;
+        emitVolume_MIN_CSB = 0.1f;
+        pickupVolume_MIN_CSB = 0;
+        emitVolume_MIN_CSBDelete = 0.2f;
+        pickupVolume_MIN_CSBDelete = 0;
 
         PaintDoesPickup = true;
 
