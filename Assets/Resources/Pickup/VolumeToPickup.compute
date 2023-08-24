@@ -94,13 +94,14 @@ float volume_to_pickup_(int2 radius, int2 rakel_pixel)
 
         // VARIANT 2: make sure we always pickup at least PickupVolume_MIN
         volume_to_pickup = max(volume_too_much_on_canvas, PickupVolume_MIN);
-
+        
         // VARIANT 3: only add PickupVolume_MIN when rakel edge is really inside paint
         // volume_to_pickup = volume_too_much_on_canvas;
         // if (volume_to_pickup > 0)
         // {
         //     volume_to_pickup += PickupVolume_MIN;
         // }
+
 
         // multiply by total overlap, because we only want as much paint as there is for this reservoir pixel
         volume_to_pickup *= canvasMappedInfo.total_overlap;
