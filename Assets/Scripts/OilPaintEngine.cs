@@ -20,6 +20,8 @@ public class OilPaintEngine : MonoBehaviour
     private bool UsePen;
     private bool PenConfigLoaded;
 
+    private bool InputLocked = false;
+
     public Configuration Config { get; private set; }
     public PaintMode PaintMode
     {
@@ -219,7 +221,12 @@ public class OilPaintEngine : MonoBehaviour
         {
             InputManager.Update();
 
-            if (InputManager.DrawingPossible)
+            if (TransferEngine.Done())
+            {
+                InputLocked = false;
+            }
+
+            if (InputManager.DrawingPossible && !InputLocked)
             {
                 if (InputManager.StrokeBegin)
                 {
@@ -248,6 +255,12 @@ public class OilPaintEngine : MonoBehaviour
                         Config.TransferConfig,
                         Config.TextureResolution);
                 }
+            }
+
+            // Prevent accidental tap while waiting for stroke computations to finish
+            if (!TransferEngine.Done() && !InputManager.DrawingPossible)
+            {
+                InputLocked = true;
             }
         }
         TransferEngine.ProcessSteps(STEPS_PER_FRAME);
