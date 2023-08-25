@@ -221,7 +221,7 @@ public class OilPaintEngine : MonoBehaviour
         {
             InputManager.Update();
 
-            if (TransferEngine.Done())
+            if (TransferEngine.IsDone())
             {
                 InputLocked = false;
             }
@@ -258,7 +258,8 @@ public class OilPaintEngine : MonoBehaviour
             }
 
             // Prevent accidental tap while waiting for stroke computations to finish
-            if (!TransferEngine.Done() && !InputManager.DrawingPossible)
+            bool inputForStrokeHasEnded = !InputManager.DrawingPossible;
+            if (inputForStrokeHasEnded && !TransferEngine.IsDone())
             {
                 InputLocked = true;
             }

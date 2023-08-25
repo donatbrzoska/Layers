@@ -93,7 +93,7 @@ public class TransferEngine
         }
     }
 
-    public bool Done()
+    public bool IsDone()
     {
         if (DelayedExection && SimulationSteps.Count > 0)
         {
