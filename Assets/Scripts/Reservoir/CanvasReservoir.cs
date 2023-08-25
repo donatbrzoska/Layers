@@ -48,7 +48,6 @@ public class CanvasReservoir : Reservoir
     public void DoSnapshotUpdate(
         ComputeBuffer rakelMappedInfo,
         Vector2Int rakelMappedInfoSize,
-        ShaderRegion rakelMappedInfoActiveSR,
         Vector3Int RakelReservoirSize,
         ShaderRegion shaderRegion,
         bool debugEnabled = false)
@@ -60,8 +59,6 @@ public class CanvasReservoir : Reservoir
             {
                 new CSComputeBuffer("RakelMappedInfo", rakelMappedInfo),
                 new CSInt2("RakelMappedInfoSize", rakelMappedInfoSize),
-                new CSInt2("RakelMappedInfoActivePosition", rakelMappedInfoActiveSR.Position),
-                new CSInt2("RakelMappedInfoActiveSize", rakelMappedInfoActiveSR.Size),
                 new CSInt3("RakelReservoirSize", RakelReservoirSize),
 
                 new CSComputeBuffer("ReservoirInfo", PaintGrid.Info),
