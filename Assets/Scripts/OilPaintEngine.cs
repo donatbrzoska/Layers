@@ -85,7 +85,7 @@ public class OilPaintEngine : MonoBehaviour
 
         if (EVALUATE)
         {
-            Config.TextureResolution = 70;
+            Config.TextureResolution = 60;
 
             GameObject.Find("CSB Toggle").SetActive(false);
             GameObject.Find("CSB Delete Toggle").SetActive(false);
