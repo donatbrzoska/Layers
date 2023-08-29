@@ -483,6 +483,8 @@ public class OilPaintEngine : MonoBehaviour
 
     public void FillApply()
     {
+        ClearRakel();
+
         FillConfiguration fillConfig = Config.FillConfig;
 
         ColorFiller colorFiller;
