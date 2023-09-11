@@ -226,7 +226,7 @@ public class OilPaintEngine : MonoBehaviour
                 InputLocked = false;
             }
 
-            if (InputManager.DrawingPossible && !InputLocked)
+            if (InputManager.InStroke && !InputLocked)
             {
                 if (InputManager.StrokeBegin)
                 {
@@ -238,27 +238,24 @@ public class OilPaintEngine : MonoBehaviour
                         Config.TransferConfig.CanvasSnapshotBufferEnabled);
                 }
 
-                if (InputManager.InStroke)
-                {
-                    Vector3 position = new Vector3(InputManager.RakelPositionX, InputManager.RakelPositionY, InputManager.RakelPositionZ);
-                    bool autoZEnabled = Config.InputConfig.RakelPositionZ.Source != InputSourceType.Text ? true : false;
-                    float pressure = InputManager.RakelPressure;
-                    float rotation = InputManager.RakelRotation;
-                    float tilt = InputManager.RakelTilt;
+                Vector3 position = new Vector3(InputManager.RakelPositionX, InputManager.RakelPositionY, InputManager.RakelPositionZ);
+                bool autoZEnabled = Config.InputConfig.RakelPositionZ.Source != InputSourceType.Text ? true : false;
+                float pressure = InputManager.RakelPressure;
+                float rotation = InputManager.RakelRotation;
+                float tilt = InputManager.RakelTilt;
 
-                    InputInterpolator.AddNode(
-                        position,
-                        autoZEnabled,
-                        pressure,
-                        rotation,
-                        tilt,
-                        Config.TransferConfig,
-                        Config.TextureResolution);
-                }
+                InputInterpolator.AddNode(
+                    position,
+                    autoZEnabled,
+                    pressure,
+                    rotation,
+                    tilt,
+                    Config.TransferConfig,
+                    Config.TextureResolution);
             }
 
             // Prevent accidental tap while waiting for stroke computations to finish
-            bool inputForStrokeHasEnded = !InputManager.DrawingPossible;
+            bool inputForStrokeHasEnded = !InputManager.InStroke;
             if (inputForStrokeHasEnded && !TransferEngine.IsDone())
             {
                 InputLocked = true;

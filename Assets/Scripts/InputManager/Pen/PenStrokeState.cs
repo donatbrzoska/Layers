@@ -12,10 +12,7 @@ public class PenStrokeState : StrokeStateSource
 
     public override void Update()
     {
-        DrawingPossible = Pen.current.pressure.ReadValue() > 0;
-
-
-        if (DrawingPossible)
+        if (Pen.current.pressure.ReadValue() > 0)
         {
             StrokeBegin = Pen.current.press.wasPressedThisFrame && !GraphicsRaycaster.UIBlocking(Pen.current.position.ReadValue());
             if (StrokeBegin)
