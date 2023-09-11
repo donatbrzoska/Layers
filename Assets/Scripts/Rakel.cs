@@ -66,8 +66,7 @@ public class Rakel
 
     public Rakel(
         float length, float width, int resolution,
-        int layers_MAX, float cellVolume,
-        float anchorRatioLength = 0.5f, float anchorRatioWidth = 1)
+        int layers_MAX, float cellVolume)
     {
         Vector3Int reservoirSize = new Vector3Int((int)(width * resolution), (int)(length * resolution), layers_MAX);
 
@@ -86,7 +85,11 @@ public class Rakel
         Info.Width = Reservoir.Size.x * Reservoir.PixelSize;
 
         // NOTE this has to be set after Width and Length were corrected
-        Info.Anchor = new Vector3(anchorRatioWidth * Info.Width, anchorRatioLength * Info.Length, 0);
+        // Anchor is on middle of rakel edge, changing this is not fully supported
+        // and will break the code!
+        // If the used input device is based on another anchor for the position
+        // it has to be transformed accordingly.
+        Info.Anchor = new Vector3(0, 0.5f * Info.Length, 0);
 
         InfoBuffer = new ComputeBuffer(1, RakelInfo.SizeInBytes);
         InfoBuffer.SetData(new RakelInfo[] { Info });

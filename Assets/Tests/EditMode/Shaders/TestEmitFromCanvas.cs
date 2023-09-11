@@ -69,7 +69,7 @@ public class TestEmitFromCanvas
     private void CreateRakel()
     {
         Rakel?.Dispose();
-        Rakel = new Rakel(RakelLength, RakelWidth, Resolution, MAX_LAYERS, CELL_VOLUME, 0.5f, 0);
+        Rakel = new Rakel(RakelLength, RakelWidth, Resolution, MAX_LAYERS, CELL_VOLUME);
     }
 
     private void CreateCanvas()

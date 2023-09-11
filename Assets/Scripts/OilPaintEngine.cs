@@ -8,9 +8,6 @@ public class OilPaintEngine : MonoBehaviour
     public int TH_GROUP_SIZE_X;
     public int TH_GROUP_SIZE_Y;
 
-    public float ANCHOR_RATIO_X;
-    public float ANCHOR_RATIO_Y;
-
     public int CANVAS_LAYERS_MAX;
     public int RAKEL_LAYERS_MAX;
     public int STEPS_PER_FRAME;
@@ -174,8 +171,7 @@ public class OilPaintEngine : MonoBehaviour
 
         Rakel = new Rakel(
             Config.RakelConfig.Length, Config.RakelConfig.Width, Config.TextureResolution,
-            RAKEL_LAYERS_MAX, Config.RakelConfig.CellVolume,
-            ANCHOR_RATIO_Y, ANCHOR_RATIO_X);
+            RAKEL_LAYERS_MAX, Config.RakelConfig.CellVolume);
 
         Debug.Log("Rakel is "
                   + Config.RakelConfig.Length * Config.TextureResolution + "x" + Config.RakelConfig.Width * Config.TextureResolution

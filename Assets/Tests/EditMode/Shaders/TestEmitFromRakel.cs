@@ -49,7 +49,7 @@ public class TestEmitFromRakel
     {
         Canvas = new Canvas_(15, 10, MAX_LAYERS, CELL_VOLUME, new Vector3(0, 0, 0), 1, 0, 0);
 
-        Rakel = new Rakel(RakelLength, RakelWidth, 1, MAX_LAYERS, CELL_VOLUME, 0.5f, 0);
+        Rakel = new Rakel(RakelLength, RakelWidth, 1, MAX_LAYERS, CELL_VOLUME);
         RakelMappedInfo = MappedInfo.CreateBuffer(Canvas.Reservoir.Size2D);
 
         ColorFiller = new FlatColorFiller(Color_.CadmiumGreen, ColorSpace.RGB);
