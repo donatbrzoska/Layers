@@ -634,35 +634,24 @@ public class OilPaintEngine : MonoBehaviour
 
     public void DoMacroAction()
     {
-        Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumLightGreen, Config.ColorSpace), new FlatVolumeFiller(1, 4)));
-        Canvas.Render(Canvas.Reservoir.GetFullShaderRegion());
+        string filepath = System.Environment.CurrentDirectory + System.IO.Path.DirectorySeparatorChar + "colors_" + System.DateTime.Now.Ticks + ".png";
 
-        //int PRINTED_DEPTH = 1;
-        //Canvas.Reservoir.PaintGrid.ReadbackContent();
-        //LogUtil.Log(Canvas.Reservoir.PaintGrid.GetColors(), Canvas.Reservoir.Size, PRINTED_DEPTH, DebugListType.Float4, "Colors");
+        FileUtil.SaveTextureToFile(
+            Canvas.Texture,
+            filepath,
+            Canvas.Texture.width,
+            Canvas.Texture.height);
     }
 
     public void DoMacro2Action()
     {
-        UpdateRakelLength(8);
-        Rakel.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumYellow, Config.ColorSpace), new PerlinVolumeFiller(1, 10)));
+        string filepath = System.Environment.CurrentDirectory + System.IO.Path.DirectorySeparatorChar + "normals_" + System.DateTime.Now.Ticks + ".png";
 
-        InputInterpolator.NewStroke(Config.RakelConfig.TiltNoiseEnabled, Config.RakelConfig.TiltNoiseFrequency, Config.RakelConfig.TiltNoiseAmplitude, Config.TransferConfig.FloatingZLength, Config.TransferConfig.CanvasSnapshotBufferEnabled);
-        InputInterpolator.AddNode(
-            new Vector3(-3, 0, -0.10f), true, 0.5f,
-            0,
-            6,
-            Config.TransferConfig,
-            Config.TextureResolution);
-        InputInterpolator.AddNode(
-            new Vector3(3, 0, -0.10f), true, 0.5f,
-            0,
-            6,
-            Config.TransferConfig,
-            Config.TextureResolution);
-
-        //Canvas.Reservoir.PaintGrid.ReadbackInfo();
-        //LogUtil.Log(Canvas.Reservoir.PaintGrid.GetVolumes(), Canvas.Reservoir.Size.y);
+        FileUtil.SaveTextureToFile(
+                Canvas.NormalMap,
+                filepath,
+                Canvas.Texture.width,
+                Canvas.Texture.height);
     }
 
     private void DoLineDown(float posX, Color_ color, bool autoZEnabled, float height)
