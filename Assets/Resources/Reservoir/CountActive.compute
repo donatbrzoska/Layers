@@ -15,11 +15,10 @@ RWStructuredBuffer<int> ActiveCount;
 #pragma kernel main
 
 [numthreads(32,1,1)]
-void main (uint3 id_ : SV_DispatchThreadID)
+void main(uint3 id_ : SV_DispatchThreadID)
 {
     id__ = id_;
-    if (is_relevant_thread(id(), CalculationSize))
-    {
+    if (is_relevant_thread(id(), CalculationSize)) {
         int2 pixel = id() + CalculationPosition;
 
         MappedInfo paint_source_mapped = RakelMappedInfo[XY(pixel.x, pixel.y, RakelMappedInfoSize.xy)];

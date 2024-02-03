@@ -28,8 +28,7 @@ float3 rgb_to_ryb_leonard(float3 RGB)
 	g -= y;
 
 	// If this unfortunate conversion combines blue and green, then cut each in half to preserve the value's maximum range.
-	if (b != 0 && g != 0)
-    {
+	if (b != 0 && g != 0) {
 		b /= 2.0;
 		g /= 2.0;
     }
@@ -40,8 +39,7 @@ float3 rgb_to_ryb_leonard(float3 RGB)
 
 	// Normalize to values.
 	float my = max(max(r, y), b);
-	if (my != 0)
-    {
+	if (my != 0) {
 		float n = mg / my;
 		r *= n;
 		y *= n;
@@ -77,8 +75,7 @@ float3 ryb_to_rgb_leonard(float3 RYB)
 	y -= g;
 	b -= g;
 
-	if (b != 0 && g != 0)
-    {
+	if (b != 0 && g != 0) {
 		b *= 2.0;
 		g *= 2.0;
     }
@@ -89,8 +86,7 @@ float3 ryb_to_rgb_leonard(float3 RYB)
 
 	// Normalize to values.
 	float mg = max(max(r, g), b);
-	if (mg != 0)
-    {
+	if (mg != 0) {
 		float n = my / mg;
 		r *= n;
 		g *= n;

@@ -3,8 +3,7 @@ float floating_avg(RWStructuredBuffer<float> avg_ringbuffer, uint stroke_begin, 
 {
     uint OFFSET = 3; // actual buffer starts at index 3
 
-    if (stroke_begin == 1)
-    {
+    if (stroke_begin == 1) {
         float current_avg = new_value;
         uint pointer = 0;
         uint size = (uint)avg_ringbuffer[2];
@@ -18,9 +17,7 @@ float floating_avg(RWStructuredBuffer<float> avg_ringbuffer, uint stroke_begin, 
         }
 
         return new_value;
-    }
-    else
-    {
+    } else {
         float current_avg = avg_ringbuffer[0];
         uint pointer = (uint)avg_ringbuffer[1];
         uint size = (uint)avg_ringbuffer[2];

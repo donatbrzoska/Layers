@@ -43,8 +43,7 @@ float3 rgb_to_ryb(float3 rgba)
     return ryb;
 }
 
-float3 ryb_to_rgb(float3 ryba)
-{
+float3 ryb_to_rgb(float3 ryba) {
     float3 ryb = float3(ryba.x, ryba.y, ryba.z);
     float3 rgb = ryb_to_rgb_st(ryb);
     // float3 rgb = ryb_to_rgb_leonard(ryb);
@@ -67,8 +66,7 @@ Paint mix(Paint a, Paint b)
     Paint result = paint_create_empty();
     result.volume = a.volume + b.volume;
 
-    if (result.volume > 0)
-    {
+    if (result.volume > 0) {
         float a_part = a.volume / result.volume;
         float b_part = 1 - a_part;
         result.color = mix_colors(a.color, a_part, b.color, b_part);

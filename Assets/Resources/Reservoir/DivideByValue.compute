@@ -9,11 +9,10 @@ RWStructuredBuffer<int> Divisor;
 #pragma kernel main
 
 [numthreads(32,1,1)]
-void main (uint3 id_ : SV_DispatchThreadID)
+void main(uint3 id_ : SV_DispatchThreadID)
 {
     id__ = id_;
-    if (is_relevant_thread(id(), CalculationSize))
-    {
+    if (is_relevant_thread(id(), CalculationSize)) {
         // NOTE:
         // Doing unzero in this context is kind of hacky, the dividend is the
         // add reduced volume. If divisor is zero, there are no active pixels,

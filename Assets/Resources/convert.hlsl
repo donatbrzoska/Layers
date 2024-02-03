@@ -3,8 +3,8 @@ float3 pixel_to_world_space(int2 pixel, uint texture_resolution, float3 surface_
 {
     float pixel_size = 1/float(texture_resolution);
     float3 positive_surface_aligned = float3(0.5*pixel_size + pixel.x*pixel_size,
-                                            0.5*pixel_size + pixel.y*pixel_size,
-                                            0);
+                                             0.5*pixel_size + pixel.y*pixel_size,
+                                             0);
 
     float3 surface_lower_left = surface_position - float3(surface_size.x/2, surface_size.y/2, 0);
     float3 surface_aligned = positive_surface_aligned + surface_lower_left;

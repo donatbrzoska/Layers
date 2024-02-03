@@ -17,8 +17,7 @@ uint3 PGSize;
 void test_paint_grid_copy(uint3 id_ : SV_DispatchThreadID)
 {
     id__ = id_;
-    if (is_relevant_thread(id(), CalculationSize))
-    {
+    if (is_relevant_thread(id(), CalculationSize)) {
         paint_grid_copy(
             SourcePGInfo, SourcePGContent, PGSize, id().xy,
             TargetPGInfo, TargetPGContent, PGSize, id().xy);
@@ -42,8 +41,7 @@ RWStructuredBuffer<Paint> NewElement;
 void test_paint_grid_fill(uint3 id_ : SV_DispatchThreadID)
 {
     id__ = id_;
-    if (is_relevant_thread(id(), CalculationSize))
-    {
+    if (is_relevant_thread(id(), CalculationSize)) {
         paint_grid_fill(PaintGridInfo, PaintGridContent, PaintGridSize, PaintGridCellVolume, PaintGridDiffuseDepth, PaintGridDiffuseRatio, NewElementPosition, NewElement[0]);
     }
 }
@@ -62,8 +60,7 @@ void test_paint_grid_fill(uint3 id_ : SV_DispatchThreadID)
 void test_paint_grid_push(uint3 id_ : SV_DispatchThreadID)
 {
     id__ = id_;
-    if (is_relevant_thread(id(), CalculationSize))
-    {
+    if (is_relevant_thread(id(), CalculationSize)) {
         paint_grid_push(PaintGridInfo, PaintGridContent, PaintGridSize, NewElementPosition, NewElement[0]);
     }
 }
@@ -86,8 +83,7 @@ uint2 TargetPGPosition;
 void test_stack_2D_reverse_transfer(uint3 id_ : SV_DispatchThreadID)
 {
     id__ = id_;
-    if (is_relevant_thread(id(), CalculationSize))
-    {
+    if (is_relevant_thread(id(), CalculationSize)) {
         uint2 src_pg_position = id().xy;
         uint2 dst_pg_position = id().xy + TargetPGPosition;
         paint_grid_reverse_transfer(
@@ -112,8 +108,7 @@ float DeleteVolume;
 void test_paint_grid_delete(uint3 id_ : SV_DispatchThreadID)
 {
     id__ = id_;
-    if (is_relevant_thread(id(), CalculationSize))
-    {
+    if (is_relevant_thread(id(), CalculationSize)) {
         paint_grid_delete(PaintGridInfo, PaintGridContent, PaintGridSize, DeletePosition, DeleteVolume);
         paint_grid_update_size(PaintGridInfo, PaintGridContent, PaintGridSize, PaintGridCellVolume, DeletePosition.xy);
     }
@@ -133,8 +128,7 @@ RWStructuredBuffer<Paint> GetResult;
 void test_paint_grid_get(uint3 id_ : SV_DispatchThreadID)
 {
     id__ = id_;
-    if (is_relevant_thread(id(), CalculationSize))
-    {
+    if (is_relevant_thread(id(), CalculationSize)) {
         GetResult[0] = paint_grid_get(PaintGridInfo, PaintGridContent, PaintGridSize, GetPosition);
     }
 }

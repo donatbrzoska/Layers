@@ -2,8 +2,7 @@ float PAINT_UNIT();
 float FLOAT_PRECISION();
 bool floats_equal(float a, float b);
 
-struct ColumnInfo
-{
+struct ColumnInfo {
     uint size;
 
     // This has a different meaning depending on the usage.
@@ -35,8 +34,7 @@ void paint_grid_copy(
 {
     dst_pg_info[XY(dst_pos.x, dst_pos.y, dst_pg_size.xy)] = src_pg_info[XY(src_pos.x, src_pos.y, src_pg_size.xy)];
 
-    for (uint z = 0; z < src_pg_info[XY(src_pos.x, src_pos.y, src_pg_size.xy)].size; z++)
-    {
+    for (uint z = 0; z < src_pg_info[XY(src_pos.x, src_pos.y, src_pg_size.xy)].size; z++) {
         dst_pg_content[XYZ(dst_pos.x, dst_pos.y, z, dst_pg_size)] = src_pg_content[XYZ(src_pos.x, src_pos.y, z, src_pg_size)];
     }
 }
@@ -50,8 +48,7 @@ void paint_grid_fill(
 
     // fill paint into column
     Paint left = p;
-    while (!is_empty(left) && !column_is_full(pg_info[XY(pos.x, pos.y, pg_size.xy)], pg_size))
-    {
+    while (!is_empty(left) && !column_is_full(pg_info[XY(pos.x, pos.y, pg_size.xy)], pg_size)) {
         uint z = pg_info[XY(pos.x, pos.y, pg_size.xy)].write_index;
         Paint top = pg_content[XYZ(pos.x, pos.y, z, pg_size)];
 
@@ -67,13 +64,11 @@ void paint_grid_fill(
 
         // update column info
         bool top_empty_before = is_empty(top);
-        if (top_empty_before)
-        {
+        if (top_empty_before) {
             pg_info[XY(pos.x, pos.y, pg_size.xy)].size++;
         }
         bool top_was_filled = floats_equal(updated_top.volume, pg_cell_volume);
-        if (top_was_filled)
-        {
+        if (top_was_filled) {
             pg_info[XY(pos.x, pos.y, pg_size.xy)].write_index++;
         }
     }
@@ -81,8 +76,7 @@ void paint_grid_fill(
     // diffuse at border (only to bottom though)
     int diffuse_steps_left = pg_diffuse_depth;
     int diffuse_index = initial_write_index;
-    while (diffuse_steps_left > 0 && diffuse_index > 0)
-    {
+    while (diffuse_steps_left > 0 && diffuse_index > 0) {
         Paint cell = pg_content[XYZ(pos.x, pos.y, diffuse_index, pg_size)];
         Paint below = pg_content[XYZ(pos.x, pos.y, diffuse_index-1, pg_size)];
 
@@ -110,8 +104,7 @@ void paint_grid_push(
     RWStructuredBuffer<ColumnInfo> pg_info, RWStructuredBuffer<Paint> pg_content, uint3 pg_size,
     uint2 pos, Paint element)
 {
-    if (!column_is_full(pg_info[XY(pos.x, pos.y, pg_size.xy)], pg_size) && !is_empty(element))
-    {
+    if (!column_is_full(pg_info[XY(pos.x, pos.y, pg_size.xy)], pg_size) && !is_empty(element)) {
         uint z = pg_info[XY(pos.x, pos.y, pg_size.xy)].size;
         pg_content[XYZ(pos.x, pos.y, z, pg_size)] = element;
 
@@ -126,8 +119,7 @@ void paint_grid_reverse_transfer(
     RWStructuredBuffer<ColumnInfo> dst_pg_info, RWStructuredBuffer<Paint> dst_pg_content, uint3 dst_pg_size, uint2 dst_pos,
     float dst_pg_cell_volume, uint dst_pg_diffuse_depth, float dst_pg_diffuse_ratio)
 {
-    for (uint z = 0; z < src_pg_info[XY(src_pos.x, src_pos.y, src_pg_size.xy)].size; z++)
-    {
+    for (uint z = 0; z < src_pg_info[XY(src_pos.x, src_pos.y, src_pg_size.xy)].size; z++) {
         Paint p = src_pg_content[XYZ(src_pos.x, src_pos.y, z, src_pg_size)];
         paint_grid_fill(dst_pg_info, dst_pg_content, dst_pg_size, dst_pg_cell_volume, dst_pg_diffuse_depth, dst_pg_diffuse_ratio, dst_pos, p);
     }
@@ -135,8 +127,7 @@ void paint_grid_reverse_transfer(
 
 void paint_grid_clear(RWStructuredBuffer<ColumnInfo> pg_info, RWStructuredBuffer<Paint> pg_content, uint3 pg_size, uint2 clear_pos)
 {
-    for (uint z = 0; z < pg_info[XY(clear_pos.x, clear_pos.y, pg_size.xy)].size; z++)
-    {
+    for (uint z = 0; z < pg_info[XY(clear_pos.x, clear_pos.y, pg_size.xy)].size; z++) {
         pg_content[XYZ(clear_pos.x, clear_pos.y, z, pg_size)] = paint_create_empty();
     }
 
@@ -156,8 +147,7 @@ void paint_grid_delete(
     float to_be_deleted = min(min(delete_volume, available.volume), pg_info[XY(delete_pos.x, delete_pos.y, pg_size.xy)].volume);
     pg_info[XY(delete_pos.x, delete_pos.y, pg_size.xy)].volume -= to_be_deleted;
     Paint updated = paint_create(available.color, available.volume - to_be_deleted);
-    if (is_empty(updated))
-    {
+    if (is_empty(updated)) {
         updated = paint_create_empty();
     }
     pg_content[XYZ(delete_pos.x, delete_pos.y, delete_pos.z, pg_size)] = updated;
@@ -172,18 +162,15 @@ void paint_grid_update_size(
 
     bool write_index_found = false;
     uint write_index = 0;
-    if (top.volume < pg_cell_volume)
-    {
+    if (top.volume < pg_cell_volume) {
         write_index_found = true;
     }
 
-    while (!is_empty(top) && z < (int)pg_size.z)
-    {
+    while (!is_empty(top) && z < (int)pg_size.z) {
         z++;
         top = pg_content[XYZ(pos.x, pos.y, (uint)z, pg_size)];
 
-        if (!write_index_found && top.volume < pg_cell_volume)
-        {
+        if (!write_index_found && top.volume < pg_cell_volume) {
             write_index = z;
             write_index_found = true;
         }

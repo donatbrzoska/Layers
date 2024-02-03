@@ -25,18 +25,16 @@ RWStructuredBuffer<Rakel> RakelInfo;
 #pragma kernel main
 
 [numthreads(32,1,1)]
-void main (uint3 id_ : SV_DispatchThreadID)
+void main(uint3 id_ : SV_DispatchThreadID)
 {
     id__ = id_;
-    if (is_relevant_thread(id(), CalculationSize))
-    {
+    if (is_relevant_thread(id(), CalculationSize)) {
         Rakel rakel = RakelInfo[0];
         rakel.pressure = Pressure;
         rakel.rotation = Rotation;
         rakel.tilt = Tilt;
 
-        if (AutoZEnabled == 0)
-        {
+        if (AutoZEnabled == 0) {
             // would need to determine actual layer thickness but disabled auto z is primarily used for exact
             // debugging, so we just skip the precision on this
             rakel.actual_layer_thickness = 0;
@@ -44,12 +42,9 @@ void main (uint3 id_ : SV_DispatchThreadID)
             rakel.position_base_z = Position.z;
         }
 
-        if (ZZero == 1)
-        {
+        if (ZZero == 1) {
             rakel.position.z = 0;
-        }
-        else
-        {
+        } else {
             float layer_sink_max = rakel.actual_layer_thickness * LayerSink_MAX_Ratio;
             float tilt_sink_max = pow(abs(rakel.tilt / MAX_SUPPORTED_TILT), (float)1/3) * TiltSink_MAX;
             // only apply (part of) base_sink, when layer_sink_max is smaller
@@ -62,8 +57,7 @@ void main (uint3 id_ : SV_DispatchThreadID)
             // TODO include anchor ratio, right now this only works for anchors located on rakel edge
             rakel.position.z = min(rakel.position.z, 0);
 
-            if (FinalUpdateForStroke == 1)
-            {
+            if (FinalUpdateForStroke == 1) {
                 rakel.position.z = floating_avg(PositionZAvgRingbuffer, StrokeBegin, rakel.position.z);
             }
 

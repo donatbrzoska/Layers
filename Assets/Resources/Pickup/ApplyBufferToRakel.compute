@@ -19,11 +19,10 @@ float RakelReservoirDiffuseRatio;
 #pragma kernel main
 
 [numthreads(32,1,1)]
-void main (uint3 id_ : SV_DispatchThreadID)
+void main(uint3 id_ : SV_DispatchThreadID)
 {
     id__ = id_;
-    if (is_relevant_thread(id(), CalculationSize))
-    {
+    if (is_relevant_thread(id(), CalculationSize)) {
         // calculate pixel position on canvas
         int2 rakel_pixel = id() + CalculationPosition;
 

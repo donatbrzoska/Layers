@@ -1,5 +1,4 @@
-struct DebugListInfo
-{
+struct DebugListInfo {
     uint Size;
     uint Type;
 };

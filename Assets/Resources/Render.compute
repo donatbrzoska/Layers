@@ -27,7 +27,7 @@ void update_normal(int2 canvas_pixel)
     uint right = clamp(canvas_pixel.x+1, 0, CanvasReservoirSize.x-1);
     uint up = clamp(canvas_pixel.y+1, 0, CanvasReservoirSize.y-1);
     uint bot = clamp(canvas_pixel.y-1, 0, CanvasReservoirSize.y-1);
-    
+
     // ... ... get volumes
     float vol_ul = CanvasReservoirInfo[XY(left,           up,             CanvasReservoirSize.xy)].volume;
     float vol_u =  CanvasReservoirInfo[XY(canvas_pixel.x, up,             CanvasReservoirSize.xy)].volume;
@@ -52,7 +52,7 @@ void update_normal(int2 canvas_pixel)
 
     // ... ... scaling and normal assembly
     float scale = NormalScale;
-    
+
     float4 normal = float4(scale * (float)(-normal_x), scale * (float)(normal_y), normal_z, 1);
     float4 normalized = normalize(normal);
     float4 halfed = (normalized + float4(1, 1, 1, 1)) / 2;
@@ -66,7 +66,7 @@ void update_color(int2 canvas_pixel)
     // default
     float3 background_color = CANVAS_COLOR(ColorSpace);
     Paint top = paint_create_empty();
-    
+
     // paint from canvas
     int top_z = CanvasReservoirInfo[XY(canvas_pixel.x, canvas_pixel.y, CanvasReservoirSize.xy)].size - 1;
     if (top_z > -1) { // there is at least one layer of paint
@@ -92,15 +92,13 @@ void update_color(int2 canvas_pixel)
 #pragma kernel main
 
 [numthreads(32,1,1)]
-void main (uint3 id_ : SV_DispatchThreadID)
+void main(uint3 id_ : SV_DispatchThreadID)
 {
     id__ = id_;
-    if (is_relevant_thread(id(), CalculationSize))
-    {
+    if (is_relevant_thread(id(), CalculationSize)) {
         // calculate pixel position on canvas
         int2 canvas_pixel = id() + CalculationPosition;
-        if (pixel_in_array_range(canvas_pixel, CanvasReservoirSize.xy))
-        {
+        if (pixel_in_array_range(canvas_pixel, CanvasReservoirSize.xy)) {
             update_normal(canvas_pixel);
             update_color(canvas_pixel);
         }

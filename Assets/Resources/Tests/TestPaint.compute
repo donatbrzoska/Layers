@@ -11,8 +11,7 @@ RWStructuredBuffer<Paint> Paint_A_B_Result;
 void test_mix(uint3 id_ : SV_DispatchThreadID)
 {
     id__ = id_;
-    if (is_relevant_thread(id(), CalculationSize))
-    {
+    if (is_relevant_thread(id(), CalculationSize)) {
         Paint test_mix_result = mix(Paint_A_B_Result[0], Paint_A_B_Result[1]);
         Paint_A_B_Result[2] = test_mix_result;
     }
@@ -28,8 +27,7 @@ float3 BackgroundColor;
 void test_alpha_blend(uint3 id_ : SV_DispatchThreadID)
 {
     id__ = id_;
-    if (is_relevant_thread(id(), CalculationSize))
-    {
+    if (is_relevant_thread(id(), CalculationSize)) {
         Paint test_alpha_blend_result = alpha_blend(Paint_A_Result[0], BackgroundColor);
         Paint_A_Result[1] = test_alpha_blend_result;
     }
@@ -44,8 +42,7 @@ float3 RGBColor;
 void test_rgb_to_ryb(uint3 id_ : SV_DispatchThreadID)
 {
     id__ = id_;
-    if (is_relevant_thread(id(), CalculationSize))
-    {
+    if (is_relevant_thread(id(), CalculationSize)) {
         float3 test_rgb_to_ryb_result = rgb_to_ryb(RGBColor);
         log_float3(test_rgb_to_ryb_result);
     }
@@ -60,8 +57,7 @@ float3 RYBColor;
 void test_ryb_to_rgb(uint3 id_ : SV_DispatchThreadID)
 {
     id__ = id_;
-    if (is_relevant_thread(id(), CalculationSize))
-    {
+    if (is_relevant_thread(id(), CalculationSize)) {
         float3 test_ryb_to_rgb_result = ryb_to_rgb(RYBColor);
         log_float3(test_ryb_to_rgb_result);
     }

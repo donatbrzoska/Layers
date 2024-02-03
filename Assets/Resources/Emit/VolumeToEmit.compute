@@ -59,8 +59,7 @@ float volume_to_emit_(int2 radius, int2 canvas_pixel)
     bool surfaces_touch = surface_distance <= gravity_distance;
 
     float volume_to_emit = 0;
-    if (surfaces_touch)
-    {
+    if (surfaces_touch) {
         // TODO adjust this, when implementing dried paint
         float rakel_edge_distance_from_canvas = abs(rakel.edge_z - CanvasPositionZ);
         float rakel_edge_distance_from_canvas_paint_surface = rakel_edge_distance_from_canvas - paint_thickness_canvas;
@@ -77,7 +76,7 @@ float volume_to_emit_(int2 radius, int2 canvas_pixel)
 
         // VARIANT 1: always add EmitVolume_MIN
         // volume_to_emit = volume_fitting_between + EmitVolume_MIN;
-        
+
         // VARIANT 2: make sure we always emit at least EmitVolume_MIN
         volume_to_emit = max(volume_fitting_between, EmitVolume_MIN);
 
@@ -90,7 +89,7 @@ float volume_to_emit_(int2 radius, int2 canvas_pixel)
 
         // multiply by total overlap, because we only want as much paint as there is for this reservoir pixel
         volume_to_emit *= rakel_mapped_info.total_overlap;
-        
+
         //TODO there might be problems with rounding to negative indizes
         // VOLUME_TO_EMIT_TARGET_PU *= DistortionMap[XY(rakel_reservoir_pixel_nearest.x + DistortionMapIndex, rakel_reservoir_pixel_nearest.y, DistortionMapSize.xy)];
 
@@ -101,11 +100,10 @@ float volume_to_emit_(int2 radius, int2 canvas_pixel)
 #pragma kernel main
 
 [numthreads(32,1,1)]
-void main (uint3 id_ : SV_DispatchThreadID)
+void main(uint3 id_ : SV_DispatchThreadID)
 {
     id__ = id_;
-    if (is_relevant_thread(id(), CalculationSize))
-    {
+    if (is_relevant_thread(id(), CalculationSize)) {
         // calculate pixel position on canvas
         // was uint2 before, but negative values are possible due to padding and no prevention of that because it should not cause any more problems
         int2 canvas_pixel = id() + CalculationPosition;

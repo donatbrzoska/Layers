@@ -14,8 +14,7 @@ float2 SurfaceSize;
 void test_pixel_to_world_space(uint3 id_ : SV_DispatchThreadID)
 {
     id__ = id_;
-    if (is_relevant_thread(id(), CalculationSize))
-    {
+    if (is_relevant_thread(id(), CalculationSize)) {
         float3 pixel_to_world_space_result = pixel_to_world_space(Pixel, TextureResolution, SurfacePosition, SurfaceSize);
         log_float3(pixel_to_world_space_result);
     }
@@ -31,8 +30,7 @@ float3 WorldSpacePosition;
 void test_rakel_anchor_to_index_space(uint3 id_ : SV_DispatchThreadID)
 {
     id__ = id_;
-    if (is_relevant_thread(id(), CalculationSize))
-    {
+    if (is_relevant_thread(id(), CalculationSize)) {
         float2 test_rakel_anchor_to_index_space_result = rakel_anchor_to_index_space(WorldSpacePosition, TextureResolution);
         log_float2(test_rakel_anchor_to_index_space_result);
     }

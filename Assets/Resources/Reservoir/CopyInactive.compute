@@ -18,15 +18,13 @@ uint3 ReservoirSize;
 #pragma kernel main
 
 [numthreads(32,1,1)]
-void main (uint3 id_ : SV_DispatchThreadID)
+void main(uint3 id_ : SV_DispatchThreadID)
 {
     id__ = id_;
-    if (is_relevant_thread(id(), CalculationSize))
-    {
+    if (is_relevant_thread(id(), CalculationSize)) {
         int2 pixel = id() + CalculationPosition;
 
-        if (pixel_in_array_range(pixel, ReservoirSize.xy))
-        {
+        if (pixel_in_array_range(pixel, ReservoirSize.xy)) {
             MappedInfo rakel_mapped_info = RakelMappedInfo[XY(pixel.x, pixel.y, RakelMappedInfoSize.xy)];
             // Initially this condition was:
             // if (rakel_mapped_info.reservoir_pixel.x <= -0.5 || rakel_mapped_info.reservoir_pixel.x >= RakelReservoirSize.x - 0.5 ||
@@ -34,8 +32,8 @@ void main (uint3 id_ : SV_DispatchThreadID)
             // ... that would be just outside the rakel reservoir range. For some reason we
             // need to not copy these pixels yet though and check for "one additional pixel" out of range
             if (rakel_mapped_info.reservoir_pixel.x <= -1.5 || rakel_mapped_info.reservoir_pixel.x >= RakelReservoirSize.x + 0.5 ||
-                rakel_mapped_info.reservoir_pixel.y <= -1.5 || rakel_mapped_info.reservoir_pixel.y >= RakelReservoirSize.y + 0.5)
-            {
+                rakel_mapped_info.reservoir_pixel.y <= -1.5 || rakel_mapped_info.reservoir_pixel.y >= RakelReservoirSize.y + 0.5
+            ) {
                 paint_grid_copy(
                     ReservoirInfo, ReservoirContent, ReservoirSize, pixel,
                     ReservoirInfoDuplicate, ReservoirContentDuplicate, ReservoirSize, pixel);

@@ -18,8 +18,7 @@ uint3 CanvasReservoirSize;
 void main(uint3 id_ : SV_DispatchThreadID)
 {
     id__ = id_;
-    if (is_relevant_thread(id(), CalculationSize))
-    {
+    if (is_relevant_thread(id(), CalculationSize)) {
         int2 rakel_pixel = id() + CalculationPosition;
 
         MappedInfo canvasMappedInfo = CanvasMappedInfo[XY(rakel_pixel.x, rakel_pixel.y, CanvasMappedInfoSize.xy)];

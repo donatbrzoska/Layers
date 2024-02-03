@@ -12,8 +12,7 @@ uint StrokeBegin;
 void test_floating_avg(uint3 id_ : SV_DispatchThreadID)
 {
     id__ = id_;
-    if (is_relevant_thread(id(), CalculationSize))
-    {
+    if (is_relevant_thread(id(), CalculationSize)) {
         float new_value = ValueSourceSink[0];
         ValueSourceSink[0] = floating_avg(AvgRingbuffer, StrokeBegin, new_value);
     }

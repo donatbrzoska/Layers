@@ -36,11 +36,10 @@ float2 project_into_rakel_reservoir(float3 back_tranformed_canvas_pixel)
 #pragma kernel main
 
 [numthreads(32,1,1)]
-void main (uint3 id_ : SV_DispatchThreadID)
+void main(uint3 id_ : SV_DispatchThreadID)
 {
     id__ = id_;
-    if (is_relevant_thread(id(), CalculationSize))
-    {
+    if (is_relevant_thread(id(), CalculationSize)) {
         int2 canvas_pixel = id() + CalculationPosition;
 
         float3 back_tranformed_canvas_pixel = RakelMappedInfo[XY(canvas_pixel.x, canvas_pixel.y, RakelMappedInfoSize.xy)].transformed_pixel;

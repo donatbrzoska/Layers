@@ -25,8 +25,7 @@ float distance_from_canvas_(float3 forward_transformed_rakel_pixel)
 void main(uint3 id_ : SV_DispatchThreadID)
 {
     id__ = id_;
-    if (is_relevant_thread(id(), CalculationSize))
-    {
+    if (is_relevant_thread(id(), CalculationSize)) {
         int2 rakel_pixel = id() + CalculationPosition;
 
         float3 forward_transformed_rakel_pixel = CanvasMappedInfo[XY(rakel_pixel.x, rakel_pixel.y, CanvasMappedInfoSize.xy)].transformed_pixel;

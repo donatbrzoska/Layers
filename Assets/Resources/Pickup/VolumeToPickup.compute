@@ -49,8 +49,7 @@ float volume_to_pickup_(int2 radius, int2 rakel_pixel)
     float paint_thickness_rakel = volume_rakel * VOLUME_THICKNESS();
     float paint_thickness_canvas = volume_canvas * VOLUME_THICKNESS();
     float surface_distance = canvasMappedInfo.distance - paint_thickness_canvas;
-    if (PaintDoesPickup == 1)
-    {
+    if (PaintDoesPickup == 1) {
         surface_distance -= paint_thickness_rakel;
     }
 
@@ -66,8 +65,7 @@ float volume_to_pickup_(int2 radius, int2 rakel_pixel)
     bool surfaces_touch = surface_distance <= gravity_distance;
 
     float volume_to_pickup = 0;
-    if (surfaces_touch)
-    {
+    if (surfaces_touch) {
         // This only really picks up paint when rakel edge is inside paint on canvas
         // Why surfaces_touch then?
         // - Paint is picked up only, when rakel is somehow touching canvas paint
@@ -115,8 +113,7 @@ float volume_to_pickup_(int2 radius, int2 rakel_pixel)
 void main(uint3 id_ : SV_DispatchThreadID)
 {
     id__ = id_;
-    if (is_relevant_thread(id(), CalculationSize))
-    {
+    if (is_relevant_thread(id(), CalculationSize)) {
         // calculate pixel position in reservoir
         // was uint2 before, but negative values are possible due to padding and no prevention of that because it should not cause any more problems
         int2 rakel_pixel = id() + CalculationPosition;

@@ -20,8 +20,7 @@ uint in_reduce_bounds(uint2 index, uint2 index_base)
 void reduce_volume(uint3 id_ : SV_DispatchThreadID)
 {
     id__ = id_;
-    if (is_relevant_thread(id(), CalculationSize))
-    {
+    if (is_relevant_thread(id(), CalculationSize)) {
         uint2 upper = uint2(0, CalculationSize.y);
         uint2 right = uint2(CalculationSize.x, 0);
 
@@ -37,12 +36,10 @@ void reduce_volume(uint3 id_ : SV_DispatchThreadID)
         float value_ur = Workspace[XY(i_ur.x, i_ur.y, WorkspaceSize.xy)] * in_reduce_bounds(i_ur, i_base);
 
         float result = 0;
-        if (ReduceFunction == 0) // max
-        {
+        if (ReduceFunction == 0) { // max
             result = max(max(max(value_ll, value_lr), value_ul), value_ur);
         }
-        else if (ReduceFunction == 1) // add
-        {
+        else if (ReduceFunction == 1) { // add
             result = value_ll + value_lr + value_ul + value_ur;
         }
         Workspace[XY(i_ll.x, i_ll.y, WorkspaceSize.xy)] = result;
