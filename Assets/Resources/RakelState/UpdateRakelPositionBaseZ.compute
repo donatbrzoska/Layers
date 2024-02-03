@@ -19,7 +19,7 @@ RWStructuredBuffer<Rakel> RakelInfo;
 [numthreads(32,1,1)]
 void main(uint3 id_ : SV_DispatchThreadID)
 {
-    id__ = id_;
+    set_subgrid_id(id_);
     if (is_relevant_thread(id(), CalculationSize)) {
         Rakel rakel = RakelInfo[0];
 

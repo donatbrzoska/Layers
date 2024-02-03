@@ -32,7 +32,7 @@ void emit(int2 radius, int2 rakel_pixel)
     float target_volume_to_pickup = canvas_mapped_info.target_volume_to_transfer;
     if (target_volume_to_pickup > 0) {
         int2 canvas_reservoir_pixel_nearest = round(canvas_mapped_info.reservoir_pixel);
-        
+
         int max_z = -1;
         int y, x;
         for (y=-radius.y; y<=radius.y; y++) {
@@ -133,7 +133,7 @@ void emit(int2 radius, int2 rakel_pixel)
 [numthreads(32,1,1)]
 void main(uint3 id_ : SV_DispatchThreadID)
 {
-    id__ = id_;
+    set_subgrid_id(id_);
     if (is_relevant_thread(id(), CalculationSize)) {
         // calculate pixel position on rakel
         // was uint2 before, but negative values are possible due to padding and no prevention of that because it should not cause any more problems

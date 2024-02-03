@@ -19,7 +19,7 @@ uint in_reduce_bounds(uint2 index, uint2 index_base)
 [numthreads(32,1,1)]
 void reduce_volume(uint3 id_ : SV_DispatchThreadID)
 {
-    id__ = id_;
+    set_subgrid_id(id_);
     if (is_relevant_thread(id(), CalculationSize)) {
         uint2 upper = uint2(0, CalculationSize.y);
         uint2 right = uint2(CalculationSize.x, 0);

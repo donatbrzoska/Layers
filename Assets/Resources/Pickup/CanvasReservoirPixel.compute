@@ -43,7 +43,7 @@ float2 project_into_canvas_reservoir(float3 forward_tranformed_rakel_pixel)
 [numthreads(32,1,1)]
 void main(uint3 id_ : SV_DispatchThreadID)
 {
-    id__ = id_;
+    set_subgrid_id(id_);
     if (is_relevant_thread(id(), CalculationSize)) {
         int2 rakel_pixel = id() + CalculationPosition;
 

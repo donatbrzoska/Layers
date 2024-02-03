@@ -2,13 +2,17 @@
 #include "indexing.hlsl"
 #include "logging.hlsl"
 
-uint3 id__;
+uint2 subgrid_id;
 uint2 SubgridGroupSize;
 uint2 SubgridCurrentThreadID;
 
+void set_subgrid_id(uint3 id_)
+{
+    subgrid_id = id_.xy;
+}
+
 uint2 id()
 {
-    uint2 subgrid_id = uint2(id__.x, id__.y);
     return subgrid_id * SubgridGroupSize + SubgridCurrentThreadID;
 }
 

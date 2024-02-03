@@ -14,7 +14,7 @@ uint3 SampledRakelVolumesSize;
 [numthreads(32,1,1)]
 void main(uint3 id_ : SV_DispatchThreadID)
 {
-    id__ = id_;
+    set_subgrid_id(id_);
     if (is_relevant_thread(id(), CalculationSize)) {
         int2 canvas_pixel = id() + CalculationPosition;
         float rakel_volume = SampledRakelVolumes[XY(canvas_pixel.x, canvas_pixel.y, SampledRakelVolumesSize.xy)];
