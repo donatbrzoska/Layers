@@ -214,8 +214,8 @@ public class ComputeShaderTask
         Attributes.Add(new CSInt2("CalculationSize", ShaderRegion.Size));
 
 
-        ComputeBuffer debugBuffer = new ComputeBuffer(1, sizeof(float)); // just for the compiler
-        DebugValues = new Vector4[1]; // just for the compiler
+        ComputeBuffer debugBuffer = new ComputeBuffer(1, sizeof(float)); // initialize just for the compiler
+        DebugValues = new Vector4[1]; // initialize just for the compiler
         ComputeBuffer debugListInfoBuffer = new ComputeBuffer(1, DebugListInfo.SizeInBytes);
         DebugListInfo[] debugListInfoValue = new DebugListInfo[] { new DebugListInfo(0, DebugListType.None)};
         if (DebugEnabled)
