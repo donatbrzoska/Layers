@@ -68,17 +68,8 @@ float2 compute_intersection(float2 a, float2 b, float2 p, float2 q)
 }
 
 // inspired by Java implementation from https://rosettacode.org/wiki/Sutherland-Hodgman_polygon_clipping
-// TODO No support for differing canvas and rakel resolutions
 float calculate_exact_overlap(Rectangle subject_p, Rectangle clip_p)
 {
-    // bool debug_this = adjacent_reservoir_pixel.x == 0 && adjacent_reservoir_pixel.y == 1
-    //                && f2_eq(reservoir_pixel, float2(0.13, 0.87));
-    // if (debug_this){
-    //     Debug[XY(id.x, id.y, CalculationSize.xy)] = float2(7,7);
-    // }
-
-    // bool debug_this = (id__().x == 2 && id__().y == 2 && debug_state().x == 0 && debug_state().y == 0);
-
     float2 clip_poly[4];
     clip_poly[0] = clip_p.a;
     clip_poly[1] = clip_p.b;
