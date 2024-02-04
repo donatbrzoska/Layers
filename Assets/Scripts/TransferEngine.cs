@@ -4,18 +4,18 @@ using UnityEngine;
 public struct SimulationStep
 {
     public Vector3 RakelPosition;
-    public bool AutoZEnabled;
+    public bool AutoBaseZEnabled;
     public float RakelPressure;
     public float RakelRotation;
     public float RakelTilt;
     public TransferConfiguration TransferConfig;
 
     public SimulationStep(
-        Vector3 rakelPosition, bool autoZEnabled, float rakelPressure, float rakelRotation, float rakelTilt,
+        Vector3 rakelPosition, bool autoBaseZEnabled, float rakelPressure, float rakelRotation, float rakelTilt,
         TransferConfiguration transferConfig)
     {
         RakelPosition = rakelPosition;
-        AutoZEnabled = autoZEnabled;
+        AutoBaseZEnabled = autoBaseZEnabled;
         RakelPressure = rakelPressure;
         RakelRotation = rakelRotation;
         RakelTilt = rakelTilt;
@@ -66,10 +66,10 @@ public class TransferEngine
     }
 
     public void EnqueueOrRun(
-        Vector3 rakelPosition, bool autoZEnabled, float rakelPressure, float rakelRotation, float rakelTilt,
+        Vector3 rakelPosition, bool autoBaseZEnabled, float rakelPressure, float rakelRotation, float rakelTilt,
         TransferConfiguration transferConfig)
     {
-        SimulationStep s = new SimulationStep(rakelPosition, autoZEnabled, rakelPressure, rakelRotation, rakelTilt, transferConfig);
+        SimulationStep s = new SimulationStep(rakelPosition, autoBaseZEnabled, rakelPressure, rakelRotation, rakelTilt, transferConfig);
 
         if (DelayedExection)
         {
@@ -77,7 +77,7 @@ public class TransferEngine
         }
         else
         {
-            SimulateStep(s.RakelPosition, s.AutoZEnabled, s.RakelPressure, s.RakelRotation, s.RakelTilt, s.TransferConfig);
+            SimulateStep(s.RakelPosition, s.AutoBaseZEnabled, s.RakelPressure, s.RakelRotation, s.RakelTilt, s.TransferConfig);
         }
     }
 
@@ -88,7 +88,7 @@ public class TransferEngine
             while (n-- >= 0 && SimulationSteps.Count > 0)
             {
                 SimulationStep s = SimulationSteps.Dequeue();
-                SimulateStep(s.RakelPosition, s.AutoZEnabled, s.RakelPressure, s.RakelRotation, s.RakelTilt, s.TransferConfig);
+                SimulateStep(s.RakelPosition, s.AutoBaseZEnabled, s.RakelPressure, s.RakelRotation, s.RakelTilt, s.TransferConfig);
             }
         }
     }
@@ -121,7 +121,7 @@ public class TransferEngine
     // Rotation 0 means Rakel is directed to the right
     // Tilt 0 means Rakel is parallel to canvas
     public void SimulateStep(
-        Vector3 rakelPosition, bool autoZEnabled, float rakelPressure, float rakelRotation, float rakelTilt,
+        Vector3 rakelPosition, bool autoBaseZEnabled, float rakelPressure, float rakelRotation, float rakelTilt,
         TransferConfiguration transferConfig)
     {
         // prevent double application on the same pixel
@@ -137,11 +137,11 @@ public class TransferEngine
 
         //Debug.Log("Applying at x=" + wsc.MapToPixel(rakelPosition));
 
-        bool finalUpdateForStroke = !autoZEnabled; // (when auto Z is disabled, RecalculatePositionBaseZ won't do anything)
+        bool finalUpdateForStroke = !autoBaseZEnabled; // (when auto Z is disabled, RecalculatePositionBaseZ won't do anything)
         Rakel.UpdateState(
             rakelPosition,
             transferConfig.BaseSink_MAX, transferConfig.LayerSink_MAX_Ratio, transferConfig.TiltSink_MAX,
-            autoZEnabled, false, finalUpdateForStroke,
+            autoBaseZEnabled, false, finalUpdateForStroke,
             rakelPressure, rakelRotation, rakelTilt);
 
         ShaderRegion canvasEmitSR = Rakel.Reservoir.GetFullShaderRegion();

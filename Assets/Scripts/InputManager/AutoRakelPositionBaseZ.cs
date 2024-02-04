@@ -1,5 +1,5 @@
 ﻿
-public class AutoRakelPositionZ : FloatValueSource
+public class AutoRakelPositionBaseZ : FloatValueSource
 {
     public override void Update()
     {

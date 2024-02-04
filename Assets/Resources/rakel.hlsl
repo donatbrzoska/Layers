@@ -5,7 +5,7 @@ struct Rakel {
     float3 anchor;
 
     float3 position;
-    int auto_z_enabled;
+    int auto_base_z_enabled;
     float position_base_z;
     float actual_layer_thickness;
     float pressure;

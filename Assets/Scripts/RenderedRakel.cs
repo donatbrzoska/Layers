@@ -21,7 +21,7 @@ public class RenderedRakel : MonoBehaviour
         bool inStroke = !OilPaintEngine.TransferEngine.IsDone();
         float positionX = inStroke ? OilPaintEngine.Rakel.Info.Position.x : OilPaintEngine.InputManager.RakelPositionX;
         float positionY = inStroke ? OilPaintEngine.Rakel.Info.Position.y : OilPaintEngine.InputManager.RakelPositionY;
-        float positionZ = OilPaintEngine.InputManager.RakelPositionZ;
+        float positionZ = OilPaintEngine.InputManager.RakelPositionBaseZ;
         float rotation = inStroke ? OilPaintEngine.Rakel.Info.Rotation : OilPaintEngine.InputManager.RakelRotation;
         float tilt = inStroke ? OilPaintEngine.Rakel.Info.Tilt : OilPaintEngine.InputManager.RakelTilt;
 

@@ -11,7 +11,7 @@ public struct RakelInfo
     public Vector3 Anchor;
 
     public Vector3 Position;
-    public int AutoZEnabled;
+    public int AutoBaseZEnabled;
     public float PositionBaseZ;
     public float ActualLayerThickness;
     public float Pressure;
@@ -161,7 +161,7 @@ public class Rakel
     public void UpdateState(
         Vector3 position,
        float baseSink_MAX, float layerSink_MAX_Ratio, float tiltSink_MAX,
-       bool autoZEnabled, bool zZero, bool finalUpdateForStroke,
+       bool autoBaseZEnabled, bool zZero, bool finalUpdateForStroke,
        float pressure, float rotation, float tilt)
     {
         Vector2 previousPosition = new Vector2(Info.Position.x, Info.Position.y);
@@ -171,7 +171,7 @@ public class Rakel
 
         // Update info on CPU for rakel rendering
         Info.Position = position;
-        Info.AutoZEnabled = Cast.BoolToInt(autoZEnabled);
+        Info.AutoBaseZEnabled = Cast.BoolToInt(autoBaseZEnabled);
         Info.Pressure = pressure;
         Info.Rotation = rotation;
         if (TiltNoiseEnabled)
@@ -216,7 +216,7 @@ public class Rakel
             new List<CSAttribute>()
             {
                 new CSFloat3("Position", Info.Position),
-                new CSInt("AutoZEnabled", Info.AutoZEnabled),
+                new CSInt("AutoBaseZEnabled", Info.AutoBaseZEnabled),
                 new CSInt("ZZero", Cast.BoolToInt(zZero)),
                 new CSFloat("Pressure", Info.Pressure),
                 new CSFloat("Rotation", Info.Rotation),
@@ -307,7 +307,7 @@ public class Rakel
         float layerSink_MAX_Ratio,
         float tiltSink_MAX)
     {
-        if (Info.AutoZEnabled == 1)
+        if (Info.AutoBaseZEnabled == 1)
         {
             if (StrokeBegin)
             {
@@ -358,7 +358,7 @@ public class Rakel
                 UpdateState(
                     Info.Position,
                     baseSink_MAX, layerSink_MAX_Ratio, tiltSink_MAX,
-                    Cast.IntToBool(Info.AutoZEnabled), true, false,
+                    Cast.IntToBool(Info.AutoBaseZEnabled), true, false,
                     Info.Pressure, Info.Rotation, Info.Tilt);
                 new ComputeShaderTask(
                     "Emit/DistanceFromRakel",
@@ -417,7 +417,7 @@ public class Rakel
                 UpdateState(
                     Info.Position,
                     baseSink_MAX, layerSink_MAX_Ratio, tiltSink_MAX,
-                    Cast.IntToBool(Info.AutoZEnabled), false, true,
+                    Cast.IntToBool(Info.AutoBaseZEnabled), false, true,
                     Info.Pressure, Info.Rotation, Info.Tilt);
             }
         }

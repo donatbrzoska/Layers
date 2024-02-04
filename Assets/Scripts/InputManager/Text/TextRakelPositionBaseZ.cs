@@ -1,5 +1,5 @@
 ﻿
-public class TextRakelPositionZ : FloatValueSource
+public class TextRakelPositionBaseZ : FloatValueSource
 {
     public override void Update()
     {

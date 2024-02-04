@@ -28,7 +28,7 @@ public class InputConfiguration
 {
     public InputValue RakelPositionX;
     public InputValue RakelPositionY;
-    public InputValue RakelPositionZ;
+    public InputValue RakelPositionBaseZ;
     public InputValue RakelPressure;
 
     public InputValue RakelRotation;
@@ -40,8 +40,8 @@ public class InputConfiguration
     {
         RakelPositionX = new InputValue() { Source = InputSourceType.Mouse, Value = 0 };
         RakelPositionY = new InputValue() { Source = InputSourceType.Mouse, Value = 0 };
-        //RakelPositionZ = new InputValue() { Source = InputSourceType.Text, Value = -4 * Paint.VOLUME_THICKNESS };
-        RakelPositionZ = new InputValue() { Source = InputSourceType.Auto, Value = -4 * Paint.VOLUME_THICKNESS };
+        //RakelPositionBaseZ = new InputValue() { Source = InputSourceType.Text, Value = -4 * Paint.VOLUME_THICKNESS };
+        RakelPositionBaseZ = new InputValue() { Source = InputSourceType.Auto, Value = -4 * Paint.VOLUME_THICKNESS };
         RakelPressure = new InputValue() { Source = InputSourceType.Keyboard, Value = 0 };
 
         RakelRotation = new InputValue() { Source = InputSourceType.Text, Value = 0 };

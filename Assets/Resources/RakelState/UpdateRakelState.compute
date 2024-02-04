@@ -5,7 +5,7 @@
 #include "../floating_avg.hlsl"
 
 float3 Position;
-int AutoZEnabled;
+int AutoBaseZEnabled;
 int ZZero;
 float Pressure;
 float Rotation;
@@ -34,8 +34,8 @@ void main(uint3 id_ : SV_DispatchThreadID)
         rakel.rotation = Rotation;
         rakel.tilt = Tilt;
 
-        if (AutoZEnabled == 0) {
-            // would need to determine actual layer thickness but disabled auto z is primarily used for exact
+        if (AutoBaseZEnabled == 0) {
+            // would need to determine actual layer thickness but disabled auto base z is primarily used for exact
             // debugging, so we just skip the precision on this
             rakel.actual_layer_thickness = 0;
             // TODO include canvas position -> this would also require info about the direction the canvas is oriented

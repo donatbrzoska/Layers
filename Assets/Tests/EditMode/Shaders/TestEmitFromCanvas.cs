@@ -6,7 +6,7 @@ public class TestEmitFromCanvas
     private float BASE_SINK_MAX = 0;
     private float LAYER_SINK_MAX_RATIO = 0;
     private float TILT_SINK_MAX = 0;
-    private const bool AUTO_Z_ENABLED = false;
+    private const bool AUTO_BASE_Z_ENABLED = false;
     private const bool ZZERO = false;
     private const bool FINAL_UPDATE_FOR_STROKE = true;
     private const float PRESSURE = 0;
@@ -110,7 +110,7 @@ public class TestEmitFromCanvas
 
         Rakel.NewStroke(TILT_NOISE_ENABLED, TILT_NOISE_FREQUENCY, TILT_NOISE_AMPLITUDE, FLOATING_Z_LENGTH);
         Rakel.UpdateState(
-            new Vector3(-5, 0.5f, 0), BASE_SINK_MAX, LAYER_SINK_MAX_RATIO, TILT_SINK_MAX, AUTO_Z_ENABLED, ZZERO, FINAL_UPDATE_FOR_STROKE, PRESSURE,
+            new Vector3(-5, 0.5f, 0), BASE_SINK_MAX, LAYER_SINK_MAX_RATIO, TILT_SINK_MAX, AUTO_BASE_Z_ENABLED, ZZERO, FINAL_UPDATE_FOR_STROKE, PRESSURE,
             0, 0);
 
         // Act
@@ -153,7 +153,7 @@ public class TestEmitFromCanvas
 
         Rakel.NewStroke(TILT_NOISE_ENABLED, TILT_NOISE_FREQUENCY, TILT_NOISE_AMPLITUDE, FLOATING_Z_LENGTH);
         Rakel.UpdateState(
-            new Vector3(-5, 0.5f, -Paint.VOLUME_THICKNESS), BASE_SINK_MAX, LAYER_SINK_MAX_RATIO, TILT_SINK_MAX, AUTO_Z_ENABLED, ZZERO, FINAL_UPDATE_FOR_STROKE, PRESSURE,
+            new Vector3(-5, 0.5f, -Paint.VOLUME_THICKNESS), BASE_SINK_MAX, LAYER_SINK_MAX_RATIO, TILT_SINK_MAX, AUTO_BASE_Z_ENABLED, ZZERO, FINAL_UPDATE_FOR_STROKE, PRESSURE,
             0, 0);
 
         // Act
@@ -212,7 +212,7 @@ public class TestEmitFromCanvas
 
         Rakel.NewStroke(TILT_NOISE_ENABLED, TILT_NOISE_FREQUENCY, TILT_NOISE_AMPLITUDE, FLOATING_Z_LENGTH);
         Rakel.UpdateState(
-            new Vector3(-5, 0.5f, (INIT_LAYERS - PICKED_UP_LAYERS) * -Paint.VOLUME_THICKNESS), BASE_SINK_MAX, LAYER_SINK_MAX_RATIO, TILT_SINK_MAX, AUTO_Z_ENABLED, ZZERO, FINAL_UPDATE_FOR_STROKE, PRESSURE,
+            new Vector3(-5, 0.5f, (INIT_LAYERS - PICKED_UP_LAYERS) * -Paint.VOLUME_THICKNESS), BASE_SINK_MAX, LAYER_SINK_MAX_RATIO, TILT_SINK_MAX, AUTO_BASE_Z_ENABLED, ZZERO, FINAL_UPDATE_FOR_STROKE, PRESSURE,
             0, 0);
 
         // Act
@@ -298,7 +298,7 @@ public class TestEmitFromCanvas
 
         Rakel.NewStroke(TILT_NOISE_ENABLED, TILT_NOISE_FREQUENCY, TILT_NOISE_AMPLITUDE, FLOATING_Z_LENGTH);
         Rakel.UpdateState(
-            new Vector3(-5, 0.5f, (INIT_LAYERS - PICKED_UP_LAYERS) * -Paint.VOLUME_THICKNESS), BASE_SINK_MAX, LAYER_SINK_MAX_RATIO, TILT_SINK_MAX, AUTO_Z_ENABLED, ZZERO, FINAL_UPDATE_FOR_STROKE, PRESSURE,
+            new Vector3(-5, 0.5f, (INIT_LAYERS - PICKED_UP_LAYERS) * -Paint.VOLUME_THICKNESS), BASE_SINK_MAX, LAYER_SINK_MAX_RATIO, TILT_SINK_MAX, AUTO_BASE_Z_ENABLED, ZZERO, FINAL_UPDATE_FOR_STROKE, PRESSURE,
             0, 0);
 
         // Act
@@ -392,7 +392,7 @@ public class TestEmitFromCanvas
 
         Rakel.NewStroke(TILT_NOISE_ENABLED, TILT_NOISE_FREQUENCY, TILT_NOISE_AMPLITUDE, FLOATING_Z_LENGTH);
         Rakel.UpdateState(
-            new Vector3(-5, 0.5f, -Paint.VOLUME_THICKNESS), BASE_SINK_MAX, LAYER_SINK_MAX_RATIO, TILT_SINK_MAX, AUTO_Z_ENABLED, ZZERO, FINAL_UPDATE_FOR_STROKE, PRESSURE,
+            new Vector3(-5, 0.5f, -Paint.VOLUME_THICKNESS), BASE_SINK_MAX, LAYER_SINK_MAX_RATIO, TILT_SINK_MAX, AUTO_BASE_Z_ENABLED, ZZERO, FINAL_UPDATE_FOR_STROKE, PRESSURE,
             30, 0);
 
         // Act

@@ -213,15 +213,15 @@ public class OilPaintEngine : MonoBehaviour
                     Config.TransferConfig.CanvasSnapshotBufferEnabled);
             }
 
-            Vector3 position = new Vector3(InputManager.RakelPositionX, InputManager.RakelPositionY, InputManager.RakelPositionZ);
-            bool autoZEnabled = Config.InputConfig.RakelPositionZ.Source != InputSourceType.Text ? true : false;
+            Vector3 position = new Vector3(InputManager.RakelPositionX, InputManager.RakelPositionY, InputManager.RakelPositionBaseZ);
+            bool autoBaseZEnabled = Config.InputConfig.RakelPositionBaseZ.Source != InputSourceType.Text ? true : false;
             float pressure = InputManager.RakelPressure;
             float rotation = InputManager.RakelRotation;
             float tilt = InputManager.RakelTilt;
 
             InputInterpolator.AddNode(
                 position,
-                autoZEnabled,
+                autoBaseZEnabled,
                 pressure,
                 rotation,
                 tilt,
@@ -237,7 +237,7 @@ public class OilPaintEngine : MonoBehaviour
         }
         TransferEngine.ProcessSteps(STEPS_PER_FRAME);
     }
-    
+
     private void OnDestroy()
     {
         DisposeTransferEngine();
@@ -268,7 +268,7 @@ public class OilPaintEngine : MonoBehaviour
 
     public bool RakelPositionYLocked { get { return Config.InputConfig.RakelPositionY.Source == InputSourceType.Text; } }
 
-    public bool RakelPositionZLocked { get { return Config.InputConfig.RakelPositionZ.Source == InputSourceType.Text; } }
+    public bool RakelPositionBaseZLocked { get { return Config.InputConfig.RakelPositionBaseZ.Source == InputSourceType.Text; } }
 
     public bool RakelPressureLocked { get { return Config.InputConfig.RakelPressure.Source == InputSourceType.Text; } }
 
@@ -302,15 +302,15 @@ public class OilPaintEngine : MonoBehaviour
         CreateInputManager();
     }
 
-    public void UpdateRakelPositionZ(float value)
+    public void UpdateRakelPositionBaseZ(float value)
     {
-        Config.InputConfig.RakelPositionZ.Value = value;
+        Config.InputConfig.RakelPositionBaseZ.Value = value;
         CreateInputManager();
     }
 
-    public void UpdateRakelPositionZLocked(bool locked)
+    public void UpdateRakelPositionBaseZLocked(bool locked)
     {
-        Config.InputConfig.RakelPositionZ.Source = locked ? InputSourceType.Text : InputSourceType.Auto;
+        Config.InputConfig.RakelPositionBaseZ.Source = locked ? InputSourceType.Text : InputSourceType.Auto;
         CreateInputManager();
     }
 
@@ -477,7 +477,7 @@ public class OilPaintEngine : MonoBehaviour
         }
 
         ReservoirFiller filler = new ReservoirFiller(colorFiller, volumeFiller);
-        
+
         Rakel.Fill(filler);
     }
 
@@ -632,7 +632,7 @@ public class OilPaintEngine : MonoBehaviour
                 Canvas.Texture.height);
     }
 
-    private void DoLineDown(float posX, Color_ color, bool autoZEnabled, float height)
+    private void DoLineDown(float posX, Color_ color, bool autoBaseZEnabled, float height)
     {
         Rakel.Fill(new ReservoirFiller(new FlatColorFiller(color, Config.ColorSpace), new FlatVolumeFiller(1, 60)));
         InputInterpolator.NewStroke(
@@ -642,13 +642,13 @@ public class OilPaintEngine : MonoBehaviour
             Config.TransferConfig.FloatingZLength,
             Config.TransferConfig.CanvasSnapshotBufferEnabled);
         InputInterpolator.AddNode(
-            new Vector3(posX, 5, -height), autoZEnabled, 0,
+            new Vector3(posX, 5, -height), autoBaseZEnabled, 0,
             90,
             0,
             Config.TransferConfig,
             Config.TextureResolution);
         InputInterpolator.AddNode(
-            new Vector3(posX, -5, -height), autoZEnabled, 0,
+            new Vector3(posX, -5, -height), autoBaseZEnabled, 0,
             90,
             0,
             Config.TransferConfig,
@@ -657,15 +657,15 @@ public class OilPaintEngine : MonoBehaviour
 
     private void DoThreeLinesDown(float posX, float lineWidth, Color_ color1, Color_ color2, Color_ color3)
     {
-        bool AUTO_Z_ENABLED = false;
+        bool AUTO_BASE_Z_ENABLED = false;
         float HEIGHT = 4 * Paint.VOLUME_THICKNESS;
 
         ClearRakel();
-        DoLineDown(posX - lineWidth, color1, AUTO_Z_ENABLED, HEIGHT);
+        DoLineDown(posX - lineWidth, color1, AUTO_BASE_Z_ENABLED, HEIGHT);
         ClearRakel();
-        DoLineDown(posX, color2, AUTO_Z_ENABLED, HEIGHT);
+        DoLineDown(posX, color2, AUTO_BASE_Z_ENABLED, HEIGHT);
         ClearRakel();
-        DoLineDown(posX + lineWidth, color3, AUTO_Z_ENABLED, HEIGHT);
+        DoLineDown(posX + lineWidth, color3, AUTO_BASE_Z_ENABLED, HEIGHT);
     }
 
     float MATRIX_INIT_RAKEL_LENGTH = 0.5f;
@@ -697,10 +697,10 @@ public class OilPaintEngine : MonoBehaviour
         DoThreeLinesDown(x2, MATRIX_INIT_RAKEL_LENGTH, COLOR_1, COLOR_2, COLOR_3);
         DoThreeLinesDown(x3, MATRIX_INIT_RAKEL_LENGTH, COLOR_1, COLOR_2, COLOR_3);
 
-        
+
         // setup default config for macro 4
         // by doing it here, you can also change it before executing macro 4
-        UpdateRakelPositionZLocked(false); // auto z enabled
+        UpdateRakelPositionBaseZLocked(false); // auto z enabled
 
         UpdateRakelPressureLocked(true);
         UpdateRakelPressure(0.5f);
@@ -710,8 +710,8 @@ public class OilPaintEngine : MonoBehaviour
 
     private void DoSwipeRight(float posX0, float posX1, float posY)
     {
-        bool autoZEnabled = Config.InputConfig.RakelPositionZ.Source == InputSourceType.Auto;
-        
+        bool autoBaseZEnabled = Config.InputConfig.RakelPositionBaseZ.Source == InputSourceType.Auto;
+
         InputInterpolator.NewStroke(
             Config.RakelConfig.TiltNoiseEnabled,
             Config.RakelConfig.TiltNoiseFrequency,
@@ -719,13 +719,13 @@ public class OilPaintEngine : MonoBehaviour
             Config.TransferConfig.FloatingZLength,
             Config.TransferConfig.CanvasSnapshotBufferEnabled);
         InputInterpolator.AddNode(
-            new Vector3(posX0, posY, InputManager.RakelPositionZ), autoZEnabled, InputManager.RakelPressure,
+            new Vector3(posX0, posY, InputManager.RakelPositionBaseZ), autoBaseZEnabled, InputManager.RakelPressure,
             InputManager.RakelRotation,
             InputManager.RakelTilt,
             Config.TransferConfig,
             Config.TextureResolution);
         InputInterpolator.AddNode(
-            new Vector3(posX1, posY, InputManager.RakelPositionZ), autoZEnabled, InputManager.RakelPressure,
+            new Vector3(posX1, posY, InputManager.RakelPositionBaseZ), autoBaseZEnabled, InputManager.RakelPressure,
             InputManager.RakelRotation,
             InputManager.RakelTilt,
             Config.TransferConfig,
@@ -739,7 +739,7 @@ public class OilPaintEngine : MonoBehaviour
 
         UpdateRakelLength(MATRIX_SWIPE_RAKEL_LENGTH);
         UpdateRakelTiltNoiseEnabled(false);
-        UpdateRakelPositionZ(-3 * Paint.VOLUME_THICKNESS);
+        UpdateRakelPositionBaseZ(-3 * Paint.VOLUME_THICKNESS);
 
         float paramBegin = 0;
         float paramEnd = 1;
@@ -806,23 +806,23 @@ public class OilPaintEngine : MonoBehaviour
         UpdateRakelLength(MATRIX_INIT_RAKEL_LENGTH);
 
         Color_ COLOR = Color_.CadmiumYellow;
-        bool AUTO_Z_ENABLED = false;
+        bool AUTO_BASE_Z_ENABLED = false;
         float HEIGHT = 4 * Paint.VOLUME_THICKNESS;
 
         float x1 = -7.5f + MATRIX_SWIPE_RAKEL_WIDTH + 1.5f * MATRIX_INIT_RAKEL_LENGTH;
         float x2 = -2.5f + MATRIX_SWIPE_RAKEL_WIDTH + 1.5f * MATRIX_INIT_RAKEL_LENGTH;
         float x3 = 2.5f + MATRIX_SWIPE_RAKEL_WIDTH + 1.5f * MATRIX_INIT_RAKEL_LENGTH;
         ClearRakel();
-        DoLineDown(x1, COLOR, AUTO_Z_ENABLED, HEIGHT);
+        DoLineDown(x1, COLOR, AUTO_BASE_Z_ENABLED, HEIGHT);
         ClearRakel();
-        DoLineDown(x2, COLOR, AUTO_Z_ENABLED, HEIGHT);
+        DoLineDown(x2, COLOR, AUTO_BASE_Z_ENABLED, HEIGHT);
         ClearRakel();
-        DoLineDown(x3, COLOR, AUTO_Z_ENABLED, HEIGHT);
+        DoLineDown(x3, COLOR, AUTO_BASE_Z_ENABLED, HEIGHT);
 
 
         // setup default config for macro 6
         // by doing it here, you can also change it before executing macro 6
-        UpdateRakelPositionZLocked(false); // auto z enabled
+        UpdateRakelPositionBaseZLocked(false); // auto z enabled
 
         UpdateRakelPressureLocked(true);
         UpdateRakelPressure(0.5f);
@@ -866,7 +866,7 @@ public class OilPaintEngine : MonoBehaviour
         STEPS_PER_FRAME = 400;
 
         int LAYERS = 4;
-        bool AUTO_Z_ENABLED = false;
+        bool AUTO_BASE_Z_ENABLED = false;
         bool PICKUP_BENCHMARK = false;
 
         Config.TextureResolution = 70;
@@ -881,13 +881,13 @@ public class OilPaintEngine : MonoBehaviour
             Canvas.Reservoir.Fill(new ReservoirFiller(new FlatColorFiller(Color_.CadmiumLightGreen, Config.ColorSpace), new FlatVolumeFiller(1, 4)));
             Canvas.Render(Canvas.Reservoir.GetFullShaderRegion());
 
-            AUTO_Z_ENABLED = false;
+            AUTO_BASE_Z_ENABLED = false;
             beginPosition.z = 0;
             endPosition.z = 0;
         }
         else // EMIT BENCHMARK with option of no auto z
         {
-            // NOTE that this only hits when AUTO_Z_ENABLED is false
+            // NOTE that this only hits when AUTO_BASE_Z_ENABLED is false
             beginPosition.z = -LAYERS * Paint.VOLUME_THICKNESS;
             endPosition.z = -LAYERS * Paint.VOLUME_THICKNESS;
 
@@ -909,7 +909,7 @@ public class OilPaintEngine : MonoBehaviour
 
             InputInterpolator.AddNode(
                 beginPosition,
-                AUTO_Z_ENABLED,
+                AUTO_BASE_Z_ENABLED,
                 0,
                 rotation,
                 tilt,
@@ -918,7 +918,7 @@ public class OilPaintEngine : MonoBehaviour
 
             InputInterpolator.AddNode(
                 endPosition,
-                AUTO_Z_ENABLED,
+                AUTO_BASE_Z_ENABLED,
                 0,
                 rotation,
                 tilt,
