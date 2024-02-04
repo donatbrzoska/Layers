@@ -111,6 +111,7 @@ public class TestPaintGrid_delete
             PaintGridContentData);
     }
 
+    // TODO This test case assumes row major layer-by-layer memory layout and is therefore currently broken
     [Test]
     public void delete_correct_position_also()
     {

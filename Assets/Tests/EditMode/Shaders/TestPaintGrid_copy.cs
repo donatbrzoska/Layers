@@ -41,6 +41,7 @@ public class TestPaintGrid_copy
         return new Paint(new Vector3(v, v, v), v);
     }
 
+    // TODO This test case assumes row major layer-by-layer memory layout and is therefore currently broken
     [Test]
     public void copy()
     {
