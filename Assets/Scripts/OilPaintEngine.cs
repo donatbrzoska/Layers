@@ -4,7 +4,6 @@ using UnityEngine.InputSystem;
 public class OilPaintEngine : MonoBehaviour
 {
     // These attributes are set through inspector
-    public int BENCHMARK_STEPS;
     public int TH_GROUP_SIZE_X;
     public int TH_GROUP_SIZE_Y;
 
@@ -75,11 +74,6 @@ public class OilPaintEngine : MonoBehaviour
 
         CreateInputManager();
 
-        if (BENCHMARK_STEPS > 0)
-        {
-            Config.LoadBenchmark();
-        }
-
         if (EVALUATE)
         {
             Config.TextureResolution = 60;
@@ -112,7 +106,7 @@ public class OilPaintEngine : MonoBehaviour
     void CreateTransferEngine()
     {
         DisposeTransferEngine();
-        TransferEngine = new TransferEngine(STEPS_PER_FRAME > 0 && BENCHMARK_STEPS == 0);
+        TransferEngine = new TransferEngine(STEPS_PER_FRAME > 0);
         InputInterpolator.SetTransferEngine(TransferEngine);
     }
 
@@ -200,62 +194,46 @@ public class OilPaintEngine : MonoBehaviour
             PenConfigLoaded = true;
         }
 
-        if (BENCHMARK_STEPS > 0){
-            for (int i = 0; i < BENCHMARK_STEPS; i++){
-                float x = Random.Range(-5f, 5f);
-                float y = Random.Range(-3f, 3f);
-                TransferEngine.SimulateStep(
-                    new Vector3(x, y, 0),
-                    false,
-                    0,
-                    0,
-                    0,
-                    Config.TransferConfig);
-            }
-        }
-        else
+        InputManager.Update();
+
+        if (TransferEngine.IsDone())
         {
-            InputManager.Update();
+            InputLocked = false;
+        }
 
-            if (TransferEngine.IsDone())
+        if (InputManager.InStroke && !InputLocked)
+        {
+            if (InputManager.StrokeBegin)
             {
-                InputLocked = false;
+                InputInterpolator.NewStroke(
+                    Config.RakelConfig.TiltNoiseEnabled,
+                    Config.RakelConfig.TiltNoiseFrequency,
+                    Config.RakelConfig.TiltNoiseAmplitude,
+                    Config.TransferConfig.FloatingZLength,
+                    Config.TransferConfig.CanvasSnapshotBufferEnabled);
             }
 
-            if (InputManager.InStroke && !InputLocked)
-            {
-                if (InputManager.StrokeBegin)
-                {
-                    InputInterpolator.NewStroke(
-                        Config.RakelConfig.TiltNoiseEnabled,
-                        Config.RakelConfig.TiltNoiseFrequency,
-                        Config.RakelConfig.TiltNoiseAmplitude,
-                        Config.TransferConfig.FloatingZLength,
-                        Config.TransferConfig.CanvasSnapshotBufferEnabled);
-                }
+            Vector3 position = new Vector3(InputManager.RakelPositionX, InputManager.RakelPositionY, InputManager.RakelPositionZ);
+            bool autoZEnabled = Config.InputConfig.RakelPositionZ.Source != InputSourceType.Text ? true : false;
+            float pressure = InputManager.RakelPressure;
+            float rotation = InputManager.RakelRotation;
+            float tilt = InputManager.RakelTilt;
 
-                Vector3 position = new Vector3(InputManager.RakelPositionX, InputManager.RakelPositionY, InputManager.RakelPositionZ);
-                bool autoZEnabled = Config.InputConfig.RakelPositionZ.Source != InputSourceType.Text ? true : false;
-                float pressure = InputManager.RakelPressure;
-                float rotation = InputManager.RakelRotation;
-                float tilt = InputManager.RakelTilt;
+            InputInterpolator.AddNode(
+                position,
+                autoZEnabled,
+                pressure,
+                rotation,
+                tilt,
+                Config.TransferConfig,
+                Config.TextureResolution);
+        }
 
-                InputInterpolator.AddNode(
-                    position,
-                    autoZEnabled,
-                    pressure,
-                    rotation,
-                    tilt,
-                    Config.TransferConfig,
-                    Config.TextureResolution);
-            }
-
-            // Prevent accidental tap while waiting for stroke computations to finish
-            bool inputForStrokeHasEnded = !InputManager.InStroke;
-            if (inputForStrokeHasEnded && !TransferEngine.IsDone())
-            {
-                InputLocked = true;
-            }
+        // Prevent accidental tap while waiting for stroke computations to finish
+        bool inputForStrokeHasEnded = !InputManager.InStroke;
+        if (inputForStrokeHasEnded && !TransferEngine.IsDone())
+        {
+            InputLocked = true;
         }
         TransferEngine.ProcessSteps(STEPS_PER_FRAME);
     }

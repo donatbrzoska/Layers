@@ -22,14 +22,6 @@ public class Configuration
         FillConfig = new FillConfiguration();
         TransferConfig = new TransferConfiguration();
     }
-
-    public void LoadBenchmark()
-    {
-        TextureResolution = 50;
-
-        RakelConfig.Length = 1;
-        RakelConfig.Width = 1;
-    }
 }
 
 public class InputConfiguration
