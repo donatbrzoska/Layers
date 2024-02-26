@@ -1,5 +1,5 @@
 
-public class CSBEnabledController: ToggleController
+public class CSBEnabledController: ConfigToggleController
 {
     void Start()
     {

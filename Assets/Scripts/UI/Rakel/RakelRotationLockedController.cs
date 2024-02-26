@@ -1,13 +1,13 @@
 
-public class RakelRotationLockedController : ToggleController
+public class RakelRotationLockedController : RakelControlToggleController
 {
     void Start()
     {
-        Toggle.SetIsOnWithoutNotify(OilPaintEngine.RakelRotationLocked);
+        Toggle.SetIsOnWithoutNotify(InputManager.UsingScriptRotation);
     }
 
     override public void OnValueChanged(bool locked)
     {
-        OilPaintEngine.UpdateRakelRotationLocked(locked);
+        InputManager.UpdateUsingScriptRotation(locked);
     }
 }

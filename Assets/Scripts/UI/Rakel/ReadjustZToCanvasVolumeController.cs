@@ -1,5 +1,5 @@
 
-public class ReadjustZToCanvasVolumeController : ToggleController
+public class ReadjustZToCanvasVolumeController : ConfigToggleController
 {
     void Start()
     {

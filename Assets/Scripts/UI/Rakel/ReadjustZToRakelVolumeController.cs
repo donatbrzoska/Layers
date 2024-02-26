@@ -1,5 +1,5 @@
 
-public class ReadjustZToRakelVolumeController : ToggleController
+public class ReadjustZToRakelVolumeController : ConfigToggleController
 {
     void Start()
     {

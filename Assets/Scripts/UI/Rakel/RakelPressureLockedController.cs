@@ -1,13 +1,13 @@
 ﻿
-public class RakelPressureLockedController : ToggleController
+public class RakelPressureLockedController : RakelControlToggleController
 {
     void Start()
     {
-        Toggle.SetIsOnWithoutNotify(OilPaintEngine.RakelPressureLocked);
+        Toggle.SetIsOnWithoutNotify(InputManager.UsingScriptPressure);
     }
 
     override public void OnValueChanged(bool locked)
     {
-        OilPaintEngine.UpdateRakelPressureLocked(locked);
+        InputManager.UpdateUsingScriptPressure(locked);
     }
 }

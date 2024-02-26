@@ -1,13 +1,13 @@
 ﻿
-public class RakelTiltLockedController : ToggleController
+public class RakelTiltLockedController : RakelControlToggleController
 {
     void Start()
     {
-        Toggle.SetIsOnWithoutNotify(OilPaintEngine.RakelTiltLocked);
+        Toggle.SetIsOnWithoutNotify(InputManager.UsingScriptTilt);
     }
 
     override public void OnValueChanged(bool locked)
     {
-        OilPaintEngine.UpdateRakelTiltLocked(locked);
+        InputManager.UpdateUsingScriptTilt(locked);
     }
 }

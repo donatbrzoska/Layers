@@ -1,5 +1,5 @@
 
-public class TiltNoiseEnabledController : ToggleController
+public class TiltNoiseEnabledController : ConfigToggleController
 {
     void Start()
     {

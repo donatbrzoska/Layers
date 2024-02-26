@@ -1,5 +1,5 @@
 ﻿
-public class TiltAdjustLTController : ToggleController
+public class TiltAdjustLTController : ConfigToggleController
 {
     void Start()
     {
