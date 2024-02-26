@@ -5,7 +5,6 @@ public class Configuration
     public int TextureResolution;
     public ColorSpace ColorSpace;
 
-    public InputConfiguration InputConfig;
     public CanvasConfiguration CanvasConfig;
     public RakelConfiguration RakelConfig;
     public FillConfiguration FillConfig;
@@ -16,38 +15,10 @@ public class Configuration
         TextureResolution = 40;
         ColorSpace = ColorSpace.RGB;
 
-        InputConfig = new InputConfiguration();
         CanvasConfig = new CanvasConfiguration();
         RakelConfig = new RakelConfiguration();
         FillConfig = new FillConfiguration();
         TransferConfig = new TransferConfiguration();
-    }
-}
-
-public class InputConfiguration
-{
-    public InputValue RakelPositionX;
-    public InputValue RakelPositionY;
-    public InputValue RakelPositionBaseZ;
-    public InputValue RakelPressure;
-
-    public InputValue RakelRotation;
-    public InputValue RakelTilt;
-
-    public InputSourceType StrokeStateSource;
-
-    public InputConfiguration()
-    {
-        RakelPositionX = new InputValue() { Source = InputSourceType.Mouse, Value = 0 };
-        RakelPositionY = new InputValue() { Source = InputSourceType.Mouse, Value = 0 };
-        //RakelPositionBaseZ = new InputValue() { Source = InputSourceType.Text, Value = -4 * Paint.VOLUME_THICKNESS };
-        RakelPositionBaseZ = new InputValue() { Source = InputSourceType.Auto, Value = -4 * Paint.VOLUME_THICKNESS };
-        RakelPressure = new InputValue() { Source = InputSourceType.Keyboard, Value = 0 };
-
-        RakelRotation = new InputValue() { Source = InputSourceType.Text, Value = 0 };
-        RakelTilt = new InputValue() { Source = InputSourceType.Keyboard, Value = 0 };
-
-        StrokeStateSource = InputSourceType.Mouse;
     }
 }
 

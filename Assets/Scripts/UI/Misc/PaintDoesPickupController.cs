@@ -1,5 +1,5 @@
 
-public class PaintDoesPickupController : ToggleController
+public class PaintDoesPickupController : ConfigToggleController
 {
     void Start()
     {

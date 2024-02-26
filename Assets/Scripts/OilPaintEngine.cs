@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class OilPaintEngine : MonoBehaviour
 {
@@ -13,8 +12,11 @@ public class OilPaintEngine : MonoBehaviour
 
     public bool EVALUATE;
 
-    private bool UsePen;
-    private bool PenConfigLoaded;
+    public GameObject _InputManager;
+    public GameObject _ScriptControl;
+
+    private InputManager InputManager;
+    private ScriptControl Control;
 
     private bool InputLocked = false;
 
@@ -61,7 +63,6 @@ public class OilPaintEngine : MonoBehaviour
         }
     }
 
-    public InputManager InputManager { get; private set; }
 
     public TransferEngine TransferEngine;
     private Canvas_ Canvas;
@@ -71,8 +72,8 @@ public class OilPaintEngine : MonoBehaviour
     void Awake()
     {
         Config = new Configuration();
-
-        CreateInputManager();
+        InputManager = _InputManager.GetComponent<InputManager>();
+        Control = _ScriptControl.GetComponent<ScriptControl>();
 
         if (EVALUATE)
         {
@@ -85,11 +86,6 @@ public class OilPaintEngine : MonoBehaviour
         {
             GameObject.Find("Paint Mode Text").SetActive(false);
         }
-    }
-
-    void CreateInputManager()
-    {
-        InputManager = new InputManager(Config.InputConfig);
     }
 
     void Start()
@@ -177,25 +173,6 @@ public class OilPaintEngine : MonoBehaviour
 
     void Update()
     {
-        if (Pen.current.IsActuated() && !PenConfigLoaded)
-        {
-            Config.InputConfig.RakelPressure.Source = InputSourceType.Pen;
-            Config.InputConfig.RakelPositionX.Source = InputSourceType.Pen;
-            Config.InputConfig.RakelPositionY.Source = InputSourceType.Pen;
-            if (Config.InputConfig.RakelRotation.Source == InputSourceType.Mouse)
-            {
-                Config.InputConfig.RakelRotation.Source = InputSourceType.Pen;
-            }
-            Config.InputConfig.StrokeStateSource = InputSourceType.Pen;
-
-            CreateInputManager();
-
-            UsePen = true;
-            PenConfigLoaded = true;
-        }
-
-        InputManager.Update();
-
         if (TransferEngine.IsDone())
         {
             InputLocked = false;
@@ -213,11 +190,11 @@ public class OilPaintEngine : MonoBehaviour
                     Config.TransferConfig.CanvasSnapshotBufferEnabled);
             }
 
-            Vector3 position = new Vector3(InputManager.RakelPositionX, InputManager.RakelPositionY, InputManager.RakelPositionBaseZ);
-            bool autoBaseZEnabled = Config.InputConfig.RakelPositionBaseZ.Source != InputSourceType.Text ? true : false;
-            float pressure = InputManager.RakelPressure;
-            float rotation = InputManager.RakelRotation;
-            float tilt = InputManager.RakelTilt;
+            Vector3 position = new Vector3(InputManager.PositionX, InputManager.PositionY, InputManager.PositionBaseZ);
+            bool autoBaseZEnabled = InputManager.PositionAutoBaseZEnabled;
+            float pressure = InputManager.Pressure;
+            float rotation = InputManager.Rotation;
+            float tilt = InputManager.Tilt;
 
             InputInterpolator.AddNode(
                 position,
@@ -264,56 +241,6 @@ public class OilPaintEngine : MonoBehaviour
     // ***                                      TOP LEFT                                    ***
     // ****************************************************************************************
 
-    public bool RakelPositionXLocked { get { return Config.InputConfig.RakelPositionX.Source == InputSourceType.Text; } }
-
-    public bool RakelPositionYLocked { get { return Config.InputConfig.RakelPositionY.Source == InputSourceType.Text; } }
-
-    public bool RakelPositionBaseZLocked { get { return Config.InputConfig.RakelPositionBaseZ.Source == InputSourceType.Text; } }
-
-    public bool RakelPressureLocked { get { return Config.InputConfig.RakelPressure.Source == InputSourceType.Text; } }
-
-    public bool RakelRotationLocked { get { return Config.InputConfig.RakelRotation.Source == InputSourceType.Text; } }
-
-    public bool RakelTiltLocked { get { return Config.InputConfig.RakelTilt.Source == InputSourceType.Text; } }
-
-    public void UpdateRakelPositionX(float value)
-    {
-        Config.InputConfig.RakelPositionX.Value = value;
-        CreateInputManager();
-    }
-
-    public void UpdateRakelPositionXLocked(bool locked)
-    {
-        InputSourceType penOrMouse = UsePen ? InputSourceType.Pen : InputSourceType.Mouse;
-        Config.InputConfig.RakelPositionX.Source = locked ? InputSourceType.Text : penOrMouse;
-        CreateInputManager();
-    }
-
-    public void UpdateRakelPositionY(float value)
-    {
-        Config.InputConfig.RakelPositionY.Value = value;
-        CreateInputManager();
-    }
-
-    public void UpdateRakelPositionYLocked(bool locked)
-    {
-        InputSourceType penOrMouse = UsePen ? InputSourceType.Pen : InputSourceType.Mouse;
-        Config.InputConfig.RakelPositionY.Source = locked ? InputSourceType.Text : penOrMouse;
-        CreateInputManager();
-    }
-
-    public void UpdateRakelPositionBaseZ(float value)
-    {
-        Config.InputConfig.RakelPositionBaseZ.Value = value;
-        CreateInputManager();
-    }
-
-    public void UpdateRakelPositionBaseZLocked(bool locked)
-    {
-        Config.InputConfig.RakelPositionBaseZ.Source = locked ? InputSourceType.Text : InputSourceType.Auto;
-        CreateInputManager();
-    }
-
     public void UpdateRakelVolumeReduceFunction(ReduceFunction value)
     {
         Config.TransferConfig.RakelVolumeReduceFunction = value;
@@ -337,44 +264,6 @@ public class OilPaintEngine : MonoBehaviour
     public void UpdateSmoothZLength(float value)
     {
         Config.TransferConfig.FloatingZLength = value;
-    }
-
-    public void UpdateRakelPressure(float value)
-    {
-        Config.InputConfig.RakelPressure.Value = value;
-        CreateInputManager();
-    }
-
-    public void UpdateRakelPressureLocked(bool locked)
-    {
-        InputSourceType penOrKeyboard = UsePen ? InputSourceType.Pen : InputSourceType.Keyboard;
-        Config.InputConfig.RakelPressure.Source = locked ? InputSourceType.Text : penOrKeyboard;
-        CreateInputManager();
-    }
-
-    public void UpdateRakelRotation(float rotation)
-    {
-        Config.InputConfig.RakelRotation.Value = rotation;
-        CreateInputManager();
-    }
-
-    public void UpdateRakelRotationLocked(bool locked)
-    {
-        InputSourceType penOrMouse = UsePen ? InputSourceType.Pen : InputSourceType.Mouse;
-        Config.InputConfig.RakelRotation.Source = locked ? InputSourceType.Text : penOrMouse;
-        CreateInputManager();
-    }
-
-    public void UpdateRakelTilt(float tilt)
-    {
-        Config.InputConfig.RakelTilt.Value = tilt;
-        CreateInputManager();
-    }
-
-    public void UpdateRakelTiltLocked(bool locked)
-    {
-        Config.InputConfig.RakelTilt.Source = locked ? InputSourceType.Text : InputSourceType.Keyboard;
-        CreateInputManager();
     }
 
     public void UpdateRakelTiltNoiseEnabled(bool enabled)
@@ -700,18 +589,16 @@ public class OilPaintEngine : MonoBehaviour
 
         // setup default config for macro 4
         // by doing it here, you can also change it before executing macro 4
-        UpdateRakelPositionBaseZLocked(false); // auto z enabled
+        InputManager.UpdateUsingScriptPositionBaseZ(false); // auto z enabled
 
-        UpdateRakelPressureLocked(true);
-        UpdateRakelPressure(0.5f);
+        InputManager.UpdateUsingScriptPressure(true);
+        Control.Pressure = 0.5f;
 
-        UpdateRakelTilt(0);
+        Control.Tilt = 0;
     }
 
     private void DoSwipeRight(float posX0, float posX1, float posY)
     {
-        bool autoBaseZEnabled = Config.InputConfig.RakelPositionBaseZ.Source == InputSourceType.Auto;
-
         InputInterpolator.NewStroke(
             Config.RakelConfig.TiltNoiseEnabled,
             Config.RakelConfig.TiltNoiseFrequency,
@@ -719,15 +606,15 @@ public class OilPaintEngine : MonoBehaviour
             Config.TransferConfig.FloatingZLength,
             Config.TransferConfig.CanvasSnapshotBufferEnabled);
         InputInterpolator.AddNode(
-            new Vector3(posX0, posY, InputManager.RakelPositionBaseZ), autoBaseZEnabled, InputManager.RakelPressure,
-            InputManager.RakelRotation,
-            InputManager.RakelTilt,
+            new Vector3(posX0, posY, InputManager.PositionBaseZ), InputManager.PositionAutoBaseZEnabled, InputManager.Pressure,
+            InputManager.Rotation,
+            InputManager.Tilt,
             Config.TransferConfig,
             Config.TextureResolution);
         InputInterpolator.AddNode(
-            new Vector3(posX1, posY, InputManager.RakelPositionBaseZ), autoBaseZEnabled, InputManager.RakelPressure,
-            InputManager.RakelRotation,
-            InputManager.RakelTilt,
+            new Vector3(posX1, posY, InputManager.PositionBaseZ), InputManager.PositionAutoBaseZEnabled, InputManager.Pressure,
+            InputManager.Rotation,
+            InputManager.Tilt,
             Config.TransferConfig,
             Config.TextureResolution);
     }
@@ -739,7 +626,7 @@ public class OilPaintEngine : MonoBehaviour
 
         UpdateRakelLength(MATRIX_SWIPE_RAKEL_LENGTH);
         UpdateRakelTiltNoiseEnabled(false);
-        UpdateRakelPositionBaseZ(-3 * Paint.VOLUME_THICKNESS);
+        Control.PositionBaseZ = -3 * Paint.VOLUME_THICKNESS;
 
         float paramBegin = 0;
         float paramEnd = 1;
@@ -755,7 +642,7 @@ public class OilPaintEngine : MonoBehaviour
         {
             ClearRakel();
             Rakel.Fill(new ReservoirFiller(new FlatColorFiller(color, ColorSpace.RGB), new FlatVolumeFiller(1, volume)));
-            UpdateRakelPressure(paramCurrent);
+            Control.Pressure = paramCurrent;
             DoSwipeRight(posX0, posX1, yCurrent);
 
             paramCurrent += paramStep;
@@ -822,12 +709,12 @@ public class OilPaintEngine : MonoBehaviour
 
         // setup default config for macro 6
         // by doing it here, you can also change it before executing macro 6
-        UpdateRakelPositionBaseZLocked(false); // auto z enabled
+        InputManager.UpdateUsingScriptPositionBaseZ(false); // auto z enabled
 
-        UpdateRakelPressureLocked(true);
-        UpdateRakelPressure(0.5f);
+        InputManager.UpdateUsingScriptPressure(true);
+        Control.Pressure = 0.5f;
 
-        UpdateRakelTilt(0);
+        Control.Tilt = 0;
     }
 
     public void DoMacro6Action()

@@ -1,22 +1,36 @@
-﻿
+﻿using UnityEngine;
+
 public class RakelPressureController : InputFieldController
 {
+    public GameObject _InputManager;
+    public GameObject _PressureSink;
+
+    private InputManager InputManager;
+    private PressureSink PressureSink;
+
+    new void Awake()
+    {
+        base.Awake();
+        InputManager = _InputManager.GetComponent<InputManager>();
+        PressureSink = _PressureSink.GetComponent<PressureSink>();
+    }
+
     public void Start()
     {
-        InputField.SetTextWithoutNotify("" + OilPaintEngine.InputManager.RakelPressure);
+        InputField.SetTextWithoutNotify("" + InputManager.Pressure);
     }
 
     public void Update()
     {
-        if (!OilPaintEngine.RakelPressureLocked)
+        if (!InputManager.UsingScriptPressure)
         {
-            InputField.SetTextWithoutNotify("" + OilPaintEngine.InputManager.RakelPressure);
+            InputField.SetTextWithoutNotify("" + InputManager.Pressure);
         }
     }
 
     override public void OnValueChanged(string arg0)
     {
         float value = float.Parse(arg0);
-        OilPaintEngine.UpdateRakelPressure(value);
+        PressureSink.Pressure = value;
     }
 }

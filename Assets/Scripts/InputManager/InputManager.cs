@@ -1,187 +1,172 @@
 ﻿using UnityEngine;
+using UnityEngine.InputSystem;
 
-public abstract class FloatValueSource
+public class InputManager : MonoBehaviour
 {
-    public abstract void Update();
-    public float Value { get; set; }
-}
+    public GameObject _ScriptControl;
+    public GameObject _KeyboardControl;
+    public GameObject _MouseControl;
+    public GameObject _PenControl;
 
+    private ScriptControl ScriptControl;
+    private KeyboardControl KeyboardControl;
+    private MouseControl MouseControl;
+    private PenControl PenControl;
 
-public abstract class StrokeStateSource
-{
-    public abstract void Update();
-    public bool StrokeBegin { get; protected set; }
-    public bool InStroke { get; protected set; }
-}
-
-
-public enum InputSourceType
-{
-    Text,
-    Mouse,
-    Keyboard,
-    Pen,
-    Auto
-}
-
-public struct InputValue
-{
-    public InputSourceType Source;
-    public float Value;
-}
-
-
-public class InputManager
-{
-    private FloatValueSource RakelPositionXSource;
-    private FloatValueSource RakelPositionYSource;
-    private FloatValueSource RakelPositionBaseZSource;
-    private FloatValueSource RakelPressureSource;
-    private FloatValueSource RakelRotationSource;
-    private FloatValueSource RakelTiltSource;
-
+    private PositionXSource PositionXSource;
+    private PositionYSource PositionYSource;
+    private PositionBaseZSource PositionBaseZSource;
+    private PressureSource PressureSource;
+    private RotationSource RotationSource;
+    private TiltSource TiltSource;
     private StrokeStateSource StrokeStateSource;
 
-    private InputConfiguration InputConfig;
+    private const int EMPTY_POSITION_BASE_Z = 0;
 
-    public InputManager(InputConfiguration inputConfig)
+    void Awake()
     {
-        InputConfig = inputConfig;
+        ScriptControl = _ScriptControl.GetComponent<ScriptControl>();
+        KeyboardControl = _KeyboardControl.GetComponent<KeyboardControl>();
+        MouseControl = _MouseControl.GetComponent<MouseControl>();
+        PenControl = _PenControl.GetComponent<PenControl>();
 
-        switch (inputConfig.RakelPositionX.Source)
-        {
-            case InputSourceType.Text:
-                RakelPositionXSource = new TextRakelPositionX();
-                break;
-            case InputSourceType.Mouse:
-                RakelPositionXSource = new MouseRakelPositionX();
-                break;
-            case InputSourceType.Pen:
-                RakelPositionXSource = new PenRakelPositionX();
-                break;
-            default:
-                Debug.LogError(string.Format("Unsupported InputSourceType '{0}' for RakelPositionXSource", inputConfig.RakelPositionX.Source.ToString())); 
-                break;
-        }
-        switch (inputConfig.RakelPositionY.Source)
-        {
-            case InputSourceType.Text:
-                RakelPositionYSource = new TextRakelPositionY();
-                break;
-            case InputSourceType.Mouse:
-                RakelPositionYSource = new MouseRakelPositionY();
-                break;
-            case InputSourceType.Pen:
-                RakelPositionYSource = new PenRakelPositionY();
-                break;
-            default:
-                Debug.LogError(string.Format("Unsupported InputSourceType '{0}' for RakelPositionYSource", inputConfig.RakelPositionY.Source.ToString()));
-                break;
-        }
-        switch (inputConfig.RakelPositionBaseZ.Source)
-        {
-            case InputSourceType.Text:
-                RakelPositionBaseZSource = new TextRakelPositionBaseZ();
-                break;
-            case InputSourceType.Auto:
-                RakelPositionBaseZSource = new AutoRakelPositionBaseZ();
-                break;
-            default:
-                Debug.LogError(string.Format("Unsupported InputSourceType '{0}' for RakelPositionBaseZSource", inputConfig.RakelPositionBaseZ.Source.ToString()));
-                break;
-        }
-        switch (inputConfig.RakelPressure.Source)
-        {
-            case InputSourceType.Text:
-                RakelPressureSource = new TextRakelPressure();
-                break;
-            case InputSourceType.Keyboard:
-                RakelPressureSource = new KeyboardRakelPressure();
-                break;
-            case InputSourceType.Pen:
-                RakelPressureSource = new PenRakelPressure();
-                break;
-            default:
-                Debug.LogError(string.Format("Unsupported InputSourceType '{0}' for RakelPressureSource", inputConfig.RakelPressure.Source.ToString()));
-                break;
-        }
-        switch (inputConfig.RakelRotation.Source)
-        {
-            case InputSourceType.Text:
-                RakelRotationSource = new TextRakelRotation();
-                break;
-            case InputSourceType.Mouse:
-                RakelRotationSource = new MouseRakelRotation();
-                break;
-            case InputSourceType.Pen:
-                RakelRotationSource = new PenRakelRotation();
-                break;
-            default:
-                Debug.LogError(string.Format("Unsupported InputSourceType '{0}' for RakelRotationSource", inputConfig.RakelRotation.Source.ToString()));
-                break;
-        }
-        switch (inputConfig.RakelTilt.Source)
-        {
-            case InputSourceType.Text:
-                RakelTiltSource = new TextRakelTilt();
-                break;
-            case InputSourceType.Keyboard:
-                RakelTiltSource = new KeyboardRakelTilt();
-                break;
-            default:
-                Debug.LogError(string.Format("Unsupported InputSourceType '{0}' for RakelTiltSource", inputConfig.RakelTilt.Source.ToString()));
-                break;
-        }
+        PositionXSource = MouseControl;
+        PositionYSource = MouseControl;
+        PositionBaseZSource = null; // = auto
+        PressureSource = KeyboardControl;
+        RotationSource = ScriptControl;
+        TiltSource = KeyboardControl;
+        StrokeStateSource = MouseControl;
+    }
 
-        // HACK This is necessary for keeping the complete current configuration
-        // Ideally we wouldn't need to reinitialize the entire InputManager every
-        // time a value changes via GUI, but it works and there is no time to fix it
-        RakelPositionXSource.Value = inputConfig.RakelPositionX.Value;
-        RakelPositionYSource.Value = inputConfig.RakelPositionY.Value;
-        RakelPositionBaseZSource.Value = inputConfig.RakelPositionBaseZ.Value;
-        RakelPressureSource.Value = inputConfig.RakelPressure.Value;
-        RakelRotationSource.Value = inputConfig.RakelRotation.Value;
-        RakelTiltSource.Value = inputConfig.RakelTilt.Value;
-
-        switch (inputConfig.StrokeStateSource)
+    void Update()
+    {
+        if (Pen.current.IsActuated() && !PenControl.Active)
         {
-            case InputSourceType.Mouse:
-                StrokeStateSource = new MouseStrokeState();
-                break;
-            case InputSourceType.Pen:
-                StrokeStateSource = new PenStrokeState();
-                break;
-            default:
-                Debug.LogError(string.Format("Unsupported InputSourceType '{0}' for StrokeStateSource", inputConfig.StrokeStateSource.ToString()));
-                break;
+            PenControl.Active = true;
+            PositionXSource = PenControl;
+            PositionYSource = PenControl;
+            PressureSource = PenControl;
+            if (ReferenceEquals(RotationSource, MouseControl))
+            {
+                RotationSource = PenControl;
+            }
+            StrokeStateSource = PenControl;
         }
     }
 
-    public void Update()
-    {
-        RakelPositionXSource.Update();
-        InputConfig.RakelPositionX.Value = RakelPositionXSource.Value;
-        RakelPositionYSource.Update();
-        InputConfig.RakelPositionY.Value = RakelPositionYSource.Value;
-        RakelPositionBaseZSource.Update();
-        InputConfig.RakelPositionBaseZ.Value = RakelPositionBaseZSource.Value;
-        RakelPressureSource.Update();
-        InputConfig.RakelPressure.Value = RakelPressureSource.Value;
-        RakelRotationSource.Update();
-        InputConfig.RakelRotation.Value = RakelRotationSource.Value;
-        RakelTiltSource.Update();
-        InputConfig.RakelTilt.Value = RakelTiltSource.Value;
-
-        StrokeStateSource.Update();
-    }
-
-    public float RakelPositionX { get { return RakelPositionXSource.Value; } }
-    public float RakelPositionY { get { return RakelPositionYSource.Value; } }
-    public float RakelPositionBaseZ { get { return RakelPositionBaseZSource.Value; } }
-    public float RakelPressure { get { return RakelPressureSource.Value; } }
-    public float RakelRotation { get { return RakelRotationSource.Value; } }
-    public float RakelTilt { get { return RakelTiltSource.Value; } }
-
+    public float PositionX { get { return PositionXSource.PositionX; } }
+    public float PositionY { get { return PositionYSource.PositionY; } }
+    public bool PositionAutoBaseZEnabled { get { return PositionBaseZSource == null; } }
+    public float PositionBaseZ { get { return PositionAutoBaseZEnabled ? EMPTY_POSITION_BASE_Z : PositionBaseZSource.PositionBaseZ; } }
+    public float Pressure { get { return PressureSource.Pressure; } }
+    public float Rotation { get { return RotationSource.Rotation; } }
+    public float Tilt { get { return TiltSource.Tilt; } }
     public bool StrokeBegin { get { return StrokeStateSource.StrokeBegin; } }
     public bool InStroke { get { return StrokeStateSource.InStroke; } }
+
+    // ****************************************************************************************
+    // ***                             UI AND MAIN SCRIPTING API                            ***
+    // ****************************************************************************************
+
+    public bool UsingScriptPositionX { get { return ReferenceEquals(PositionXSource, ScriptControl); } }
+    public bool UsingScriptPositionY { get { return ReferenceEquals(PositionYSource, ScriptControl); } }
+    public bool UsingScriptPositionBaseZ { get { return ReferenceEquals(PositionBaseZSource, ScriptControl); } }
+    public bool UsingScriptPressure { get { return ReferenceEquals(PressureSource, ScriptControl); } }
+    public bool UsingScriptRotation { get { return ReferenceEquals(RotationSource, ScriptControl); } }
+    public bool UsingScriptTilt { get { return ReferenceEquals(TiltSource, ScriptControl); } }
+
+    public void UpdateUsingScriptPositionX(bool usingScriptPositionX)
+    {
+        if (usingScriptPositionX)
+        {
+            ScriptControl.PositionX = PositionX;
+            PositionXSource = ScriptControl;
+        }
+        else if (PenControl.Active)
+        {
+            PositionXSource = PenControl;
+        }
+        else
+        {
+            PositionXSource = MouseControl;
+        }
+    }
+
+    public void UpdateUsingScriptPositionY(bool usingScriptPositionY)
+    {
+        if (usingScriptPositionY)
+        {
+            ScriptControl.PositionY = PositionY;
+            PositionYSource = ScriptControl;
+        }
+        else if (PenControl.Active)
+        {
+            PositionYSource = PenControl;
+        }
+        else
+        {
+            PositionYSource = MouseControl;
+        }
+    }
+
+    public void UpdateUsingScriptPositionBaseZ(bool usingScriptPositionBaseZ)
+    {
+        if (usingScriptPositionBaseZ)
+        {
+            ScriptControl.PositionBaseZ = PositionBaseZ;
+            PositionBaseZSource = ScriptControl;
+        }
+        else
+        {
+            PositionBaseZSource = null;
+        }
+    }
+
+    public void UpdateUsingScriptPressure(bool usingScriptPressure)
+    {
+        if (usingScriptPressure)
+        {
+            ScriptControl.Pressure = Pressure;
+            PressureSource = ScriptControl;
+        }
+        else if (PenControl.Active)
+        {
+            PressureSource = PenControl;
+        }
+        else
+        {
+            PressureSource = KeyboardControl;
+        }
+    }
+
+    public void UpdateUsingScriptRotation(bool usingScriptRotation)
+    {
+        if (usingScriptRotation)
+        {
+            ScriptControl.Rotation = Rotation;
+            RotationSource = ScriptControl;
+        }
+        else if (PenControl.Active)
+        {
+            RotationSource = PenControl;
+        }
+        else
+        {
+            RotationSource = MouseControl;
+        }
+    }
+
+    public void UpdateUsingScriptTilt(bool usingScriptTilt)
+    {
+        if (usingScriptTilt)
+        {
+            ScriptControl.Tilt = Tilt;
+            TiltSource = ScriptControl;
+        }
+        else
+        {
+            TiltSource = KeyboardControl;
+        }
+    }
 }

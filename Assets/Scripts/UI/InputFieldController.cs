@@ -7,7 +7,7 @@ public abstract class InputFieldController : MonoBehaviour
     protected OilPaintEngine OilPaintEngine;
     protected TMP_InputField InputField;
 
-    void Awake()
+    public void Awake()
     {
         OilPaintEngine = GameObject.Find("OilPaintEngine").GetComponent<OilPaintEngine>();
         InputField = GetComponent<TMP_InputField>();

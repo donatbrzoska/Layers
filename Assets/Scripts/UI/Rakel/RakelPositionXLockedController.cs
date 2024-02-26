@@ -1,13 +1,13 @@
 ﻿
-public class RakelPositionXLockedController : ToggleController
+public class RakelPositionXLockedController : RakelControlToggleController
 {
     void Start()
     {
-        Toggle.SetIsOnWithoutNotify(OilPaintEngine.RakelPositionXLocked);
+        Toggle.SetIsOnWithoutNotify(InputManager.UsingScriptPositionX);
     }
 
     override public void OnValueChanged(bool locked)
     {
-        OilPaintEngine.UpdateRakelPositionXLocked(locked);
+        InputManager.UpdateUsingScriptPositionX(locked);
     }
 }

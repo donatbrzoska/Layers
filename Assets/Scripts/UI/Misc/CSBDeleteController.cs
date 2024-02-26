@@ -1,5 +1,5 @@
 
-public class CSBDeleteController : ToggleController
+public class CSBDeleteController : ConfigToggleController
 {
     void Start()
     {

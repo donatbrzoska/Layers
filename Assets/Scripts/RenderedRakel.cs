@@ -2,13 +2,17 @@ using UnityEngine;
 
 public class RenderedRakel : MonoBehaviour
 {
+    public GameObject _InputManager;
+
     private OilPaintEngine OilPaintEngine;
+    private InputManager InputManager;
 
     private Quaternion BaseRotation;
 
     void Start()
     {
         OilPaintEngine = GameObject.Find("OilPaintEngine").GetComponent<OilPaintEngine>();
+        InputManager = _InputManager.GetComponent<InputManager>();
 
         BaseRotation = transform.rotation;
     }
@@ -19,11 +23,11 @@ public class RenderedRakel : MonoBehaviour
         transform.localScale = scale;
 
         bool inStroke = !OilPaintEngine.TransferEngine.IsDone();
-        float positionX = inStroke ? OilPaintEngine.Rakel.Info.Position.x : OilPaintEngine.InputManager.RakelPositionX;
-        float positionY = inStroke ? OilPaintEngine.Rakel.Info.Position.y : OilPaintEngine.InputManager.RakelPositionY;
-        float positionZ = OilPaintEngine.InputManager.RakelPositionBaseZ;
-        float rotation = inStroke ? OilPaintEngine.Rakel.Info.Rotation : OilPaintEngine.InputManager.RakelRotation;
-        float tilt = inStroke ? OilPaintEngine.Rakel.Info.Tilt : OilPaintEngine.InputManager.RakelTilt;
+        float positionX = inStroke ? OilPaintEngine.Rakel.Info.Position.x : InputManager.PositionX;
+        float positionY = inStroke ? OilPaintEngine.Rakel.Info.Position.y : InputManager.PositionY;
+        float positionZ = InputManager.PositionBaseZ;
+        float rotation = inStroke ? OilPaintEngine.Rakel.Info.Rotation : InputManager.Rotation;
+        float tilt = inStroke ? OilPaintEngine.Rakel.Info.Tilt : InputManager.Tilt;
 
         Vector3 position = new Vector3(positionX, positionY, positionZ);
         transform.position = position - Quaternion.AngleAxis(rotation, Vector3.back) * OilPaintEngine.Rakel.Info.Anchor;
