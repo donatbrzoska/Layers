@@ -41,8 +41,9 @@ public class InputManager : MonoBehaviour
 
     void Update()
     {
-        if (Pen.current.IsActuated() && !PenControl.Active)
+        if (PenControl.ChangeDetected && !PenControl.Active)
         {
+            MouseControl.Active = false;
             PenControl.Active = true;
             PositionXSource = PenControl;
             PositionYSource = PenControl;
@@ -52,6 +53,20 @@ public class InputManager : MonoBehaviour
                 RotationSource = PenControl;
             }
             StrokeStateSource = PenControl;
+        }
+
+        if (MouseControl.ChangeDetected && !MouseControl.Active)
+        {
+            PenControl.Active = false;
+            MouseControl.Active = true;
+            PositionXSource = MouseControl;
+            PositionYSource = MouseControl;
+            PressureSource = KeyboardControl;
+            if (ReferenceEquals(RotationSource, PenControl))
+            {
+                RotationSource = MouseControl;
+            }
+            StrokeStateSource = MouseControl;
         }
     }
 
