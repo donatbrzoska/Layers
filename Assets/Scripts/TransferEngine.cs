@@ -1,34 +1,13 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public struct SimulationStep
-{
-    public Vector3 RakelPosition;
-    public bool AutoBaseZEnabled;
-    public float RakelPressure;
-    public float RakelRotation;
-    public float RakelTilt;
-    public TransferConfiguration TransferConfig;
-
-    public SimulationStep(
-        Vector3 rakelPosition, bool autoBaseZEnabled, float rakelPressure, float rakelRotation, float rakelTilt,
-        TransferConfiguration transferConfig)
-    {
-        RakelPosition = rakelPosition;
-        AutoBaseZEnabled = autoBaseZEnabled;
-        RakelPressure = rakelPressure;
-        RakelRotation = rakelRotation;
-        RakelTilt = rakelTilt;
-        TransferConfig = transferConfig;
-    }
-}
-
 public class TransferEngine
 {
     private Vector2Int PreviousApplyPosition = new Vector2Int(int.MinValue, int.MinValue);
 
     private bool DelayedExection;
-    private Queue<SimulationStep> SimulationSteps;
+    private TransferConfiguration TransferConfig;
+    private InputStateSource InputStateSource;
 
     private Rakel Rakel;
     private ComputeBuffer CanvasMappedInfo;
@@ -36,13 +15,11 @@ public class TransferEngine
     private Canvas_ Canvas;
     private ComputeBuffer RakelMappedInfo;
 
-    public TransferEngine(bool delayedExecution)
+    public TransferEngine(bool delayedExecution, TransferConfiguration transferConfig, InputStateSource inputStateSource)
     {
         DelayedExection = delayedExecution;
-        if (delayedExecution)
-        {
-            SimulationSteps = new Queue<SimulationStep>();
-        }
+        TransferConfig = transferConfig;
+        InputStateSource = inputStateSource;
     }
 
     public void SetRakel(Rakel rakel)
@@ -65,37 +42,23 @@ public class TransferEngine
         Canvas = canvas;
     }
 
-    public void EnqueueOrRun(
-        Vector3 rakelPosition, bool autoBaseZEnabled, float rakelPressure, float rakelRotation, float rakelTilt,
-        TransferConfiguration transferConfig)
+    public void ProcessSteps(int n=0)
     {
-        SimulationStep s = new SimulationStep(rakelPosition, autoBaseZEnabled, rakelPressure, rakelRotation, rakelTilt, transferConfig);
+        while (InputStateSource.HasNext())
+        {
+            SimulateStep(InputStateSource.Next());
 
-        if (DelayedExection)
-        {
-            SimulationSteps.Enqueue(s);
-        }
-        else
-        {
-            SimulateStep(s.RakelPosition, s.AutoBaseZEnabled, s.RakelPressure, s.RakelRotation, s.RakelTilt, s.TransferConfig);
-        }
-    }
-
-    public void ProcessSteps(int n)
-    {
-        if (DelayedExection)
-        {
-            while (n-- >= 0 && SimulationSteps.Count > 0)
+            // only used for delayed execution
+            if (--n == 0)
             {
-                SimulationStep s = SimulationSteps.Dequeue();
-                SimulateStep(s.RakelPosition, s.AutoBaseZEnabled, s.RakelPressure, s.RakelRotation, s.RakelTilt, s.TransferConfig);
+                break;
             }
         }
     }
 
     public bool IsDone()
     {
-        if (DelayedExection && SimulationSteps.Count > 0)
+        if (DelayedExection && InputStateSource.HasNext())
         {
             return false;
         }
@@ -120,12 +83,10 @@ public class TransferEngine
     // Position is located at Rakel Anchor
     // Rotation 0 means Rakel is directed to the right
     // Tilt 0 means Rakel is parallel to canvas
-    public void SimulateStep(
-        Vector3 rakelPosition, bool autoBaseZEnabled, float rakelPressure, float rakelRotation, float rakelTilt,
-        TransferConfiguration transferConfig)
+    public void SimulateStep(InputState inputState)
     {
         // prevent double application on the same pixel
-        rakelPosition = Canvas.AlignToPixelGrid(rakelPosition);
+        Vector3 rakelPosition = Canvas.AlignToPixelGrid(inputState.Position);
         if (Canvas.MapToPixel(rakelPosition).Equals(PreviousApplyPosition))
         {
             return;
@@ -137,12 +98,12 @@ public class TransferEngine
 
         //Debug.Log("Applying at x=" + wsc.MapToPixel(rakelPosition));
 
-        bool finalUpdateForStroke = !autoBaseZEnabled; // (when auto Z is disabled, RecalculatePositionBaseZ won't do anything)
+        bool finalUpdateForStroke = !inputState.PositionAutoBaseZEnabled; // (when auto Z is disabled, RecalculatePositionBaseZ won't do anything)
         Rakel.UpdateState(
             rakelPosition,
-            transferConfig.BaseSink_MAX, transferConfig.LayerSink_MAX_Ratio, transferConfig.TiltSink_MAX,
-            autoBaseZEnabled, false, finalUpdateForStroke,
-            rakelPressure, rakelRotation, rakelTilt);
+            TransferConfig.BaseSink_MAX, TransferConfig.LayerSink_MAX_Ratio, TransferConfig.TiltSink_MAX,
+            inputState.PositionAutoBaseZEnabled, false, finalUpdateForStroke,
+            inputState.Pressure, inputState.Rotation, inputState.Tilt);
 
         ShaderRegion canvasEmitSR = Rakel.Reservoir.GetFullShaderRegion();
 
@@ -170,15 +131,15 @@ public class TransferEngine
             Canvas,
             RakelMappedInfo,
             rakelEmitSR,
-            transferConfig.CanvasVolumeReduceFunction,
-            transferConfig.RakelVolumeReduceFunction,
-            transferConfig.ReadjustZToRakelVolume,
-            transferConfig.ReadjustZToCanvasVolume,
-            transferConfig.LayerThickness_MAX,
-            transferConfig.TiltAdjustLayerThickness,
-            transferConfig.BaseSink_MAX,
-            transferConfig.LayerSink_MAX_Ratio,
-            transferConfig.TiltSink_MAX);
+            TransferConfig.CanvasVolumeReduceFunction,
+            TransferConfig.RakelVolumeReduceFunction,
+            TransferConfig.ReadjustZToRakelVolume,
+            TransferConfig.ReadjustZToCanvasVolume,
+            TransferConfig.LayerThickness_MAX,
+            TransferConfig.TiltAdjustLayerThickness,
+            TransferConfig.BaseSink_MAX,
+            TransferConfig.LayerSink_MAX_Ratio,
+            TransferConfig.TiltSink_MAX);
 
         // Now that the rakel position is calculated, we can actually
         // determine the distance to the rakel and the volume to emit also
@@ -186,11 +147,11 @@ public class TransferEngine
             Canvas,
             RakelMappedInfo,
             rakelEmitSR,
-            transferConfig.EmitDistance_MAX,
-            transferConfig.EmitVolume_MIN);
+            TransferConfig.EmitDistance_MAX,
+            TransferConfig.EmitVolume_MIN);
 
         // 3.Do paint transfer and rendering
-        if (transferConfig.CanvasSnapshotBufferEnabled)
+        if (TransferConfig.CanvasSnapshotBufferEnabled)
         {
             //Keep canvas snapshot buffer(CSB) up to date:
             // -> Copy any paint into CSB, that might get picked up in the next
@@ -216,21 +177,21 @@ public class TransferEngine
             Rakel,
             CanvasMappedInfo,
             canvasEmitSR,
-            transferConfig.PickupDistance_MAX,
-            transferConfig.PickupVolume_MIN,
+            TransferConfig.PickupDistance_MAX,
+            TransferConfig.PickupVolume_MIN,
             rakelEmitSR,
-            transferConfig.CanvasSnapshotBufferEnabled,
-            transferConfig.DeletePickedUpFromCSB,
-            transferConfig.PaintDoesPickup);
+            TransferConfig.CanvasSnapshotBufferEnabled,
+            TransferConfig.DeletePickedUpFromCSB,
+            TransferConfig.PaintDoesPickup);
 
         Rakel.EmitPaint(
             Canvas,
             RakelMappedInfo,
             rakelEmitSR);
 
-        Canvas.ApplyInputBuffer(rakelEmitSR, transferConfig.CanvasDiffuseDepth, transferConfig.CanvasDiffuseRatio);
+        Canvas.ApplyInputBuffer(rakelEmitSR, TransferConfig.CanvasDiffuseDepth, TransferConfig.CanvasDiffuseRatio);
 
-        Rakel.ApplyInputBuffer(canvasEmitSR, transferConfig.RakelDiffuseDepth, transferConfig.RakelDiffuseRatio);
+        Rakel.ApplyInputBuffer(canvasEmitSR, TransferConfig.RakelDiffuseDepth, TransferConfig.RakelDiffuseRatio);
 
         Canvas.Render(
             new ShaderRegion(

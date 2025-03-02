@@ -1,26 +1,18 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
 
-public class InputInterpolator
+public class InputInterpolator : InputStateSource
 {
-    private TransferEngine TransferEngine;
+    public Queue<InputState> LeftInputStates;
+
     private Rakel Rakel;
     private Canvas_ Canvas;
 
-    private Vector3 PreviousRakelPosition;
-    private float PreviousRakelPressure;
-    private float PreviousRakelRotation;
-    private float PreviousRakelTilt;
-
-    private float NO_VALUE = float.NaN;
-    private Vector3 NO_POSITION = Vector3.negativeInfinity;
+    private InputState PreviousInputState;
 
     public InputInterpolator()
     {
-    }
-
-    public void SetTransferEngine(TransferEngine transferEngine)
-    {
-        TransferEngine = transferEngine;
+        LeftInputStates = new();
     }
 
     public void SetRakel(Rakel rakel)
@@ -33,122 +25,107 @@ public class InputInterpolator
         Canvas = canvas;
     }
 
-    public void NewStroke(bool tiltNoiseEnabled, float tiltNoiseFrequency, float tiltNoiseAmplitude, float floatingZLength, bool csbEnabled)
+    public void AddNode(InputState inputState, bool isFirstNodeOfStroke, int interpolationResolution)
     {
-        PreviousRakelPosition = NO_POSITION;
-        PreviousRakelPressure = NO_VALUE;
-        PreviousRakelRotation = NO_VALUE;
-        PreviousRakelTilt = NO_VALUE;
-
-        TransferEngine.NewStroke(tiltNoiseEnabled, tiltNoiseFrequency, tiltNoiseAmplitude, floatingZLength, csbEnabled);
-    }
-
-    public void AddNode(Vector3 rakelPosition, bool autoBaseZEnabled, float rakelPressure, float rakelRotation, float rakelTilt, TransferConfiguration transferConfig, int interpolationResolution)
-    {
-        // only reapply if there are changes
-        if (!rakelPosition.Equals(PreviousRakelPosition)
-            || !rakelPressure.Equals(PreviousRakelPressure)
-            || !rakelRotation.Equals(PreviousRakelRotation)
-            || !rakelTilt.Equals(PreviousRakelTilt))
+        if (inputState.Equals(PreviousInputState))
         {
-            //Stopwatch sw = new Stopwatch();
-            //sw.Start();
-            bool isFirstNodeOfStroke = PreviousRakelPosition.Equals(NO_POSITION)
-                && PreviousRakelPressure.Equals(NO_VALUE)
-                && PreviousRakelRotation.Equals(NO_VALUE)
-                && PreviousRakelTilt.Equals(NO_VALUE);
-            if (isFirstNodeOfStroke)
+            return;
+        }
+
+        if (isFirstNodeOfStroke)
+        {
+            LeftInputStates.Enqueue(inputState);
+            PreviousInputState = inputState;
+            return;
+        }
+
+        // 1. determine differences and steps
+        Vector3 dp = inputState.Position - PreviousInputState.Position;
+        //float dpLength = dp.magnitude;
+        Vector2 dp_ = Canvas.MapToPixel(inputState.Position) - Canvas.MapToPixel(PreviousInputState.Position);
+        float dpLength = dp_.magnitude;
+        int positionSteps = (int)(dpLength * interpolationResolution); // don't add 1 because the first one is already done
+
+        float dpr = inputState.Pressure - PreviousInputState.Pressure;
+
+        float dr = inputState.Rotation - PreviousInputState.Rotation;
+        if (Mathf.Abs(dr) >= 300)
+        {
+            if (inputState.Rotation < PreviousInputState.Rotation)
             {
-                TransferEngine.EnqueueOrRun(
-                    rakelPosition,
-                    autoBaseZEnabled,
-                    rakelPressure,
-                    rakelRotation,
-                    rakelTilt,
-                    transferConfig
-                );
+                // turn over case 1: from 360 to 0
+                // -> dr in in this case is something like -345
+                // -> needs to be positive and small though because we want to rotate further over
+                dr = 360 + dr;
             }
             else
             {
-                // 1. determine differences and steps
-                Vector3 dp = rakelPosition - PreviousRakelPosition;
-                //float dpLength = dp.magnitude;
-                Vector2 dp_ = Canvas.MapToPixel(rakelPosition) - Canvas.MapToPixel(PreviousRakelPosition);
-                float dpLength = dp_.magnitude;
-                int positionSteps = (int)(dpLength * interpolationResolution); // don't add 1 because the first one is already done when isFirstNodeOfStroke
+                // turn over case 2: from 0 to 360
+                // -> dr in this case is something like 345
+                // -> needs to be negative negative and small though because we want to rotate further over
+                dr = dr - 360;
+            }
+        }
+        float arcLength = Mathf.PI * (Rakel.Info.Length / 2) * (Mathf.Abs(dr) / 180);
+        int rotationSteps = (int)(arcLength * interpolationResolution);
 
-                float dpr = rakelPressure - PreviousRakelPressure;
+        float dt = inputState.Tilt - PreviousInputState.Tilt;
+        arcLength = Mathf.PI * Rakel.Info.Width * (Mathf.Abs(dt) / 180);
+        int tiltSteps = (int)(arcLength * interpolationResolution);
 
-                float dr = rakelRotation - PreviousRakelRotation;
-                if (Mathf.Abs(dr) >= 300){
-                    if (rakelRotation < PreviousRakelRotation) {
-                        // turn over case 1: from 360 to 0
-                        // -> dr in in this case is something like -345
-                        // -> needs to be positive and small though because we want to rotate further over
-                        dr = 360 + dr;
-                    } else {
-                        // turn over case 2: from 0 to 360
-                        // -> dr in this case is something like 345
-                        // -> needs to be negative negative and small though because we want to rotate further over
-                        dr = dr - 360;
-                    }
-                }
-                float arcLength = Mathf.PI * (Rakel.Info.Length / 2) * (Mathf.Abs(dr)/180);
-                int rotationSteps = (int)(arcLength * interpolationResolution);
-
-                float dt = rakelTilt - PreviousRakelTilt;
-                arcLength = Mathf.PI * Rakel.Info.Width * (Mathf.Abs(dt)/180);
-                int tiltSteps = (int)(arcLength * interpolationResolution);
-
-                int steps = Mathf.Max(1, Mathf.Max(Mathf.Max(positionSteps, rotationSteps), tiltSteps));
+        int steps = Mathf.Max(1, Mathf.Max(Mathf.Max(positionSteps, rotationSteps), tiltSteps));
 
 
-                // 2. interpolate
-                Vector3 previousPosition = PreviousRakelPosition;
-                float previousPressure = PreviousRakelPressure;
-                float previousRotation = PreviousRakelRotation;
-                float previousTilt = PreviousRakelTilt;
+        // 2. interpolate
+        Vector3 previousPosition = PreviousInputState.Position;
+        float previousPressure = PreviousInputState.Pressure;
+        float previousRotation = PreviousInputState.Rotation;
+        float previousTilt = PreviousInputState.Tilt;
 
-                for (int i=0; i<steps; i++)
-                {
-                    // first one is skipped, because that was already done when isFirstNodeOfStroke
+        for (int i = 0; i < steps; i++)
+        {
+            // first one is skipped, because that was already done when isFirstNodeOfStroke
 
-                    Vector3 currentPosition = previousPosition + dp / steps;
-                    //Vector3 currentPosition = PreviousRakelPosition + (i+1) * (dp / steps); // doesn't seem to make a difference
+            Vector3 currentPosition = previousPosition + dp / steps;
+            //Vector3 currentPosition = PreviousRakelPosition + (i+1) * (dp / steps); // doesn't seem to make a difference
 
-                    float currentPressure = previousPressure + dpr / steps;
+            float currentPressure = previousPressure + dpr / steps;
 
-                    float currentRotation = previousRotation + dr / steps;
-                    if (currentRotation >= 360) { // fix turnover case 1
-                        currentRotation = currentRotation % 360;
-                    }
-                    if (currentRotation < 0) { // fix turnover case 2
-                        currentRotation = 360 + currentRotation;
-                    }
-
-                    float currentTilt = previousTilt + dt / steps;
-
-                    TransferEngine.EnqueueOrRun(
-                        currentPosition,
-                        autoBaseZEnabled,
-                        currentPressure,
-                        currentRotation,
-                        currentTilt,
-                        transferConfig
-                    );
-
-                    previousPosition = currentPosition;
-                    previousRotation = currentRotation;
-                    previousTilt = currentTilt;
-                }
+            float currentRotation = previousRotation + dr / steps;
+            if (currentRotation >= 360)
+            { // fix turnover case 1
+                currentRotation = currentRotation % 360;
+            }
+            if (currentRotation < 0)
+            { // fix turnover case 2
+                currentRotation = 360 + currentRotation;
             }
 
-            PreviousRakelPosition = rakelPosition;
-            PreviousRakelPressure = rakelPressure;
-            PreviousRakelRotation = rakelRotation;
-            PreviousRakelTilt = rakelTilt;
-            //if (logTime)
-            //    UnityEngine.Debug.Log("UpdatePosition took " + sw.ElapsedMilliseconds + "ms");
+            float currentTilt = previousTilt + dt / steps;
+
+            LeftInputStates.Enqueue(
+                new InputState(
+                    currentPosition,
+                    inputState.PositionAutoBaseZEnabled,
+                    currentPressure,
+                    currentRotation,
+                    currentTilt));
+
+            previousPosition = currentPosition;
+            previousRotation = currentRotation;
+            previousTilt = currentTilt;
         }
+
+        PreviousInputState = inputState;
+    }
+
+    public bool HasNext()
+    {
+        return LeftInputStates.Count > 0;
+    }
+
+    public InputState Next()
+    {
+        return LeftInputStates.Dequeue();
     }
 }

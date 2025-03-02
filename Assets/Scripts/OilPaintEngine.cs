@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class OilPaintEngine : MonoBehaviour
 {
@@ -102,8 +103,7 @@ public class OilPaintEngine : MonoBehaviour
     void CreateTransferEngine()
     {
         DisposeTransferEngine();
-        TransferEngine = new TransferEngine(STEPS_PER_FRAME > 0);
-        InputInterpolator.SetTransferEngine(TransferEngine);
+        TransferEngine = new TransferEngine(STEPS_PER_FRAME > 0, Config.TransferConfig, InputInterpolator);
     }
 
     void CreateCanvas()
@@ -182,28 +182,14 @@ public class OilPaintEngine : MonoBehaviour
         {
             if (InputManager.StrokeBegin)
             {
-                InputInterpolator.NewStroke(
+                TransferEngine.NewStroke(
                     Config.RakelConfig.TiltNoiseEnabled,
                     Config.RakelConfig.TiltNoiseFrequency,
                     Config.RakelConfig.TiltNoiseAmplitude,
                     Config.TransferConfig.FloatingZLength,
                     Config.TransferConfig.CanvasSnapshotBufferEnabled);
             }
-
-            Vector3 position = new Vector3(InputManager.PositionX, InputManager.PositionY, InputManager.PositionBaseZ);
-            bool autoBaseZEnabled = InputManager.PositionAutoBaseZEnabled;
-            float pressure = InputManager.Pressure;
-            float rotation = InputManager.Rotation;
-            float tilt = InputManager.Tilt;
-
-            InputInterpolator.AddNode(
-                position,
-                autoBaseZEnabled,
-                pressure,
-                rotation,
-                tilt,
-                Config.TransferConfig,
-                Config.TextureResolution);
+            InputInterpolator.AddNode(InputManager.InputState, InputManager.StrokeBegin, Config.TextureResolution);
         }
 
         // Prevent accidental tap while waiting for stroke computations to finish
@@ -212,6 +198,7 @@ public class OilPaintEngine : MonoBehaviour
         {
             InputLocked = true;
         }
+
         TransferEngine.ProcessSteps(STEPS_PER_FRAME);
     }
 
@@ -524,23 +511,25 @@ public class OilPaintEngine : MonoBehaviour
     private void DoLineDown(float posX, Color_ color, bool autoBaseZEnabled, float height)
     {
         Rakel.Fill(new ReservoirFiller(new FlatColorFiller(color, Config.ColorSpace), new FlatVolumeFiller(1, 60)));
-        InputInterpolator.NewStroke(
+        TransferEngine.NewStroke(
             false,
             Config.RakelConfig.TiltNoiseFrequency,
             Config.RakelConfig.TiltNoiseAmplitude,
             Config.TransferConfig.FloatingZLength,
             Config.TransferConfig.CanvasSnapshotBufferEnabled);
         InputInterpolator.AddNode(
-            new Vector3(posX, 5, -height), autoBaseZEnabled, 0,
-            90,
-            0,
-            Config.TransferConfig,
+            new InputState(
+                new Vector3(posX, 5, -height), autoBaseZEnabled, 0,
+                90,
+                0),
+            true,
             Config.TextureResolution);
         InputInterpolator.AddNode(
-            new Vector3(posX, -5, -height), autoBaseZEnabled, 0,
-            90,
-            0,
-            Config.TransferConfig,
+            new InputState(
+                new Vector3(posX, -5, -height), autoBaseZEnabled, 0,
+                90,
+                0),
+            false,
             Config.TextureResolution);
     }
 
@@ -599,23 +588,25 @@ public class OilPaintEngine : MonoBehaviour
 
     private void DoSwipeRight(float posX0, float posX1, float posY)
     {
-        InputInterpolator.NewStroke(
+        TransferEngine.NewStroke(
             Config.RakelConfig.TiltNoiseEnabled,
             Config.RakelConfig.TiltNoiseFrequency,
             Config.RakelConfig.TiltNoiseAmplitude,
             Config.TransferConfig.FloatingZLength,
             Config.TransferConfig.CanvasSnapshotBufferEnabled);
         InputInterpolator.AddNode(
-            new Vector3(posX0, posY, InputManager.PositionBaseZ), InputManager.PositionAutoBaseZEnabled, InputManager.Pressure,
-            InputManager.Rotation,
-            InputManager.Tilt,
-            Config.TransferConfig,
+            new InputState(
+                new Vector3(posX0, posY, InputManager.PositionBaseZ), InputManager.PositionAutoBaseZEnabled, InputManager.Pressure,
+                InputManager.Rotation,
+                InputManager.Tilt),
+            true,
             Config.TextureResolution);
         InputInterpolator.AddNode(
-            new Vector3(posX1, posY, InputManager.PositionBaseZ), InputManager.PositionAutoBaseZEnabled, InputManager.Pressure,
-            InputManager.Rotation,
-            InputManager.Tilt,
-            Config.TransferConfig,
+            new InputState(
+                new Vector3(posX1, posY, InputManager.PositionBaseZ), InputManager.PositionAutoBaseZEnabled, InputManager.Pressure,
+                InputManager.Rotation,
+                InputManager.Tilt),
+            false,
             Config.TextureResolution);
     }
 
@@ -787,7 +778,7 @@ public class OilPaintEngine : MonoBehaviour
         int RUNS = 10;
         for (int i = 0; i < RUNS; i++)
         {
-            InputInterpolator.NewStroke(
+            TransferEngine.NewStroke(
                 Config.RakelConfig.TiltNoiseEnabled,
                 Config.RakelConfig.TiltNoiseFrequency,
                 Config.RakelConfig.TiltNoiseAmplitude,
@@ -795,21 +786,23 @@ public class OilPaintEngine : MonoBehaviour
                 Config.TransferConfig.CanvasSnapshotBufferEnabled);
 
             InputInterpolator.AddNode(
-                beginPosition,
-                AUTO_BASE_Z_ENABLED,
-                0,
-                rotation,
-                tilt,
-                Config.TransferConfig,
+                new InputState(
+                    beginPosition,
+                    AUTO_BASE_Z_ENABLED,
+                    0,
+                    rotation,
+                    tilt),
+                true,
                 Config.TextureResolution);
 
             InputInterpolator.AddNode(
-                endPosition,
-                AUTO_BASE_Z_ENABLED,
-                0,
-                rotation,
-                tilt,
-                Config.TransferConfig,
+                new InputState(
+                    endPosition,
+                    AUTO_BASE_Z_ENABLED,
+                    0,
+                    rotation,
+                    tilt),
+                false,
                 Config.TextureResolution);
         }
     }

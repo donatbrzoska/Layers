@@ -77,6 +77,19 @@ public class InputManager : MonoBehaviour
     public float Pressure { get { return PressureSource.Pressure; } }
     public float Rotation { get { return RotationSource.Rotation; } }
     public float Tilt { get { return TiltSource.Tilt; } }
+    public InputState InputState
+    {
+        get
+        {
+            return new InputState(
+                new Vector3(PositionX, PositionY, PositionBaseZ),
+                PositionAutoBaseZEnabled,
+                Pressure,
+                Rotation,
+                Tilt
+            );
+        }
+    }
     public bool StrokeBegin { get { return StrokeStateSource.StrokeBegin; } }
     public bool InStroke { get { return StrokeStateSource.InStroke; } }
 
